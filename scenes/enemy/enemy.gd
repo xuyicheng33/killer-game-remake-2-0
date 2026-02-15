@@ -15,6 +15,16 @@ var enemy_action_picker: EnemyActionPicker
 var current_action: EnemyAction : set = set_current_action
 
 
+func _ready() -> void:
+	if not Events.enemy_action_completed.is_connected(_on_enemy_action_completed):
+		Events.enemy_action_completed.connect(_on_enemy_action_completed)
+
+
+func _exit_tree() -> void:
+	if Events.enemy_action_completed.is_connected(_on_enemy_action_completed):
+		Events.enemy_action_completed.disconnect(_on_enemy_action_completed)
+
+
 func set_current_action(value: EnemyAction) -> void:
 	current_action = value
 	if current_action:
@@ -78,6 +88,13 @@ func do_turn() -> void:
 		return
 	
 	current_action.perform_action()
+
+
+func _on_enemy_action_completed(enemy: Enemy) -> void:
+	if enemy != self:
+		return
+	if enemy_action_picker and current_action:
+		enemy_action_picker.note_action_executed(current_action)
 
 
 func take_damage(damage: int) -> void:

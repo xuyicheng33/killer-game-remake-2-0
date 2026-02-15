@@ -1,56 +1,43 @@
 class_name EnemyActionPicker
 extends Node
 
+const ENEMY_INTENT_RULES_SCRIPT := preload("res://modules/enemy_intent/intent_rules.gd")
+
 @export var enemy: Enemy: set = _set_enemy
 @export var target: Node2D: set = _set_target
 
-@onready var total_weight := 0.0
+@export_range(0, 20, 1) var ascension_level := 0
+@export var disallow_consecutive := true
+
+var last_action_name: StringName = &""
 
 
 func _ready() -> void:
 	target = get_tree().get_first_node_in_group("player")
-	setup_chances()
 
 
 func get_action() -> EnemyAction:
-	var action := get_first_conditional_action()
-	if action:
-		return action
-		
-	return get_chance_based_action()
+	return ENEMY_INTENT_RULES_SCRIPT.pick_next_action(
+		_get_actions(),
+		last_action_name,
+		ascension_level,
+		disallow_consecutive
+	)
 
 
 func get_first_conditional_action() -> EnemyAction:
-	for action: EnemyAction in get_children():
-		if not action or action.type != EnemyAction.Type.CONDITIONAL:
-			continue
-			
-		if action.is_performable():
-			return action
-	
-	return null
+	return ENEMY_INTENT_RULES_SCRIPT.pick_first_conditional_action(
+		_get_actions(),
+		last_action_name,
+		ascension_level,
+		disallow_consecutive
+	)
 
 
-func get_chance_based_action() -> EnemyAction:
-	var roll := randf_range(0.0, total_weight)
-	
-	for action: EnemyAction in get_children():
-		if not action or action.type != EnemyAction.Type.CHANCE_BASED:
-			continue
-		
-		if action.accumulated_weight > roll:
-			return action
-	
-	return null
-
-
-func setup_chances() -> void:
-	for action: EnemyAction in get_children():
-		if not action or action.type != EnemyAction.Type.CHANCE_BASED:
-			continue
-		
-		total_weight += action.chance_weight
-		action.accumulated_weight = total_weight
+func note_action_executed(action: EnemyAction) -> void:
+	if not action:
+		return
+	last_action_name = action.name
 
 
 func _set_enemy(value: Enemy) -> void:
@@ -65,3 +52,12 @@ func _set_target(value: Node2D) -> void:
 	
 	for action: EnemyAction in get_children():
 		action.target = target
+
+
+func _get_actions() -> Array[EnemyAction]:
+	var out: Array[EnemyAction] = []
+	for child in get_children():
+		var action := child as EnemyAction
+		if action:
+			out.append(action)
+	return out
