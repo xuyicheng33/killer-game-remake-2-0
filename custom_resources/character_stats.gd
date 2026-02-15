@@ -33,6 +33,8 @@ func can_play_card(card: Card) -> bool:
 
 func create_instance() -> Resource:
 	var instance: CharacterStats = self.duplicate()
+	instance._status_container = _status_container.duplicate(true)
+	instance._status_container.clear_all()
 	instance.health = max_health
 	instance.block = 0
 	instance.reset_mana()

@@ -2,6 +2,7 @@ class_name DamageEffect
 extends Effect
 
 const EFFECT_STACK_ENGINE := preload("res://modules/effect_engine/effect_stack_engine.gd")
+const BUFF_SYSTEM := preload("res://modules/buff_system/buff_system.gd")
 
 var amount := 0
 
@@ -15,5 +16,10 @@ func _apply_damage_to_target(target: Node) -> void:
 	if not (target is Enemy or target is Player):
 		return
 
-	target.take_damage(amount)
+	var buff_system := BUFF_SYSTEM.get_instance()
+	var source := buff_system.resolve_damage_source(target)
+	var final_damage := buff_system.get_modified_damage(amount, source, target)
+
+	target.take_damage(final_damage)
+	buff_system.on_entity_hit(target, source, final_damage)
 	SFXPlayer.play(sound)

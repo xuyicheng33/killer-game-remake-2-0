@@ -1,4 +1,4 @@
-# BattleState 契约（v0.3.0）
+# BattleState 契约（v0.4.0）
 
 ## 目的
 
@@ -17,6 +17,8 @@
 | `discard_pile` | `Array` | 弃牌堆 |
 | `exhaust_pile` | `Array` | 消耗堆 |
 | `stack` | `Array` | 待结算效果队列（FIFO）。每项至少包含 `effect`、`target`、`id` |
+| `player.statuses` | `Dictionary` | 玩家状态层数，键示例：`strength/dexterity/vulnerable/weak/poison` |
+| `enemies[].statuses` | `Dictionary` | 敌人状态层数，键与玩家一致 |
 
 ## 阶段迁移约束（A1）
 
@@ -34,6 +36,19 @@
 - 入队接口：`enqueue_effect(effect_name, targets, apply_callable)`。
 - 结算顺序：严格按入队顺序逐条处理，不合并多段伤害。
 - 调试最小可视：可读取队列长度与当前处理条目（用于 HUD/日志）。
+
+## 状态系统约束（A4）
+
+- 状态容器：按实体维护状态层数字典，最低为 0，不允许负层。
+- 核心状态：`strength`、`dexterity`、`vulnerable`、`weak`、`poison`。
+- 触发时机：
+  - 回合开始：预留钩子（可扩展状态触发）。
+  - 回合结束：`weak`/`vulnerable` 衰减，`poison` 结算并衰减。
+  - 受击：预留钩子（当前 A4 用于联通受击触发链）。
+  - 出牌后：预留钩子（当前 A4 用于联通出牌后触发链）。
+- 数值联动：
+  - 伤害：`strength` 影响攻击方，`weak` 降低攻击方伤害，`vulnerable` 放大受击方承伤。
+  - 格挡：`dexterity` 影响格挡获得量。
 
 ## 变更规则
 

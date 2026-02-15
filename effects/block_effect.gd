@@ -2,6 +2,7 @@ class_name BlockEffect
 extends Effect
 
 const EFFECT_STACK_ENGINE := preload("res://modules/effect_engine/effect_stack_engine.gd")
+const BUFF_SYSTEM := preload("res://modules/buff_system/buff_system.gd")
 
 var amount := 0
 
@@ -15,5 +16,7 @@ func _apply_block_to_target(target: Node) -> void:
 	if not (target is Enemy or target is Player):
 		return
 
-	target.stats.block += amount
+	var buff_system := BUFF_SYSTEM.get_instance()
+	var final_block := buff_system.get_modified_block(amount, target)
+	target.stats.block += final_block
 	SFXPlayer.play(sound)
