@@ -29,6 +29,9 @@ func _ready() -> void:
 	Events.card_drag_started.connect(_on_card_drag_or_aiming_started)
 	Events.card_drag_ended.connect(_on_card_drag_or_aim_ended)
 	Events.card_aim_ended.connect(_on_card_drag_or_aim_ended)
+	Events.player_hand_drawn.connect(_refresh_playable_state)
+	Events.player_turn_ended.connect(_refresh_playable_state)
+	Events.player_hand_discarded.connect(_refresh_playable_state)
 	card_state_machine.init(self)
 
 
@@ -43,6 +46,10 @@ func animate_to_position(new_position: Vector2, duration: float) -> void:
 
 func play() -> void:
 	if not card:
+		return
+	if char_stats == null:
+		return
+	if not card.can_play(char_stats):
 		return
 	
 	card.play(targets, char_stats)
@@ -66,8 +73,9 @@ func _set_card(value: Card) -> void:
 		await ready
 
 	card = value
-	cost.text = str(card.cost)
+	cost.text = card.get_cost_label()
 	icon.texture = card.icon
+	_refresh_playable_state()
 
 
 func _set_playable(value: bool) -> void:
@@ -82,7 +90,9 @@ func _set_playable(value: bool) -> void:
 
 func _set_char_stats(value: CharacterStats) -> void:
 	char_stats = value
-	char_stats.stats_changed.connect(_on_char_stats_changed)
+	if not char_stats.stats_changed.is_connected(_on_char_stats_changed):
+		char_stats.stats_changed.connect(_on_char_stats_changed)
+	_refresh_playable_state()
 
 
 func _on_drop_point_detector_area_entered(area: Area2D) -> void:
@@ -103,8 +113,16 @@ func _on_card_drag_or_aiming_started(used_card: CardUI) -> void:
 
 func _on_card_drag_or_aim_ended(_card: CardUI) -> void:
 	disabled = false
-	self.playable = char_stats.can_play_card(card)
+	_refresh_playable_state()
 
 
 func _on_char_stats_changed() -> void:
-	self.playable = char_stats.can_play_card(card)
+	_refresh_playable_state()
+
+
+func _refresh_playable_state() -> void:
+	if card == null:
+		return
+	if char_stats == null:
+		return
+	self.playable = card.can_play(char_stats)

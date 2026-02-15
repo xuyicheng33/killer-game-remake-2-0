@@ -1,0 +1,215 @@
+class_name CardZonesModel
+extends RefCounted
+
+signal zone_counts_changed(draw_count: int, hand_count: int, discard_count: int, exhaust_count: int)
+
+static var _instance: CardZonesModel
+
+var _events_connected := false
+var _character: CharacterStats = null
+var _hand: Hand = null
+var _exhaust_pile: CardPile = CardPile.new()
+var _bound_draw_pile: CardPile = null
+var _bound_discard_pile: CardPile = null
+var _turn_end_hand_snapshot: Array[Card] = []
+var _player_action_window_open := false
+
+
+static func get_instance() -> CardZonesModel:
+	if _instance == null:
+		_instance = CardZonesModel.new()
+		_instance._connect_events()
+	return _instance
+
+
+func bind_context(character: CharacterStats, hand: Hand) -> void:
+	_disconnect_pile_signals()
+	_disconnect_hand_signals()
+
+	_character = character
+	_hand = hand
+	_exhaust_pile = CardPile.new()
+	_turn_end_hand_snapshot.clear()
+	_player_action_window_open = false
+
+	_connect_pile_signals()
+	_connect_hand_signals()
+	_emit_zone_counts()
+
+
+func is_player_action_window_open() -> bool:
+	return _player_action_window_open
+
+
+func get_draw_count() -> int:
+	if _character == null or _character.draw_pile == null:
+		return 0
+	return _character.draw_pile.size()
+
+
+func get_hand_count() -> int:
+	if _hand == null or not is_instance_valid(_hand):
+		return 0
+	return _hand.get_child_count()
+
+
+func get_discard_count() -> int:
+	if _character == null or _character.discard == null:
+		return 0
+	return _character.discard.size()
+
+
+func get_exhaust_count() -> int:
+	return _exhaust_pile.size()
+
+
+func get_zone_counts() -> Dictionary:
+	return {
+		"draw": get_draw_count(),
+		"hand": get_hand_count(),
+		"discard": get_discard_count(),
+		"exhaust": get_exhaust_count(),
+	}
+
+
+func _connect_events() -> void:
+	if _events_connected:
+		return
+
+	_events_connected = true
+	Events.card_played.connect(_on_card_played)
+	Events.player_turn_ended.connect(_on_player_turn_ended)
+	Events.player_hand_discarded.connect(_on_player_hand_discarded)
+	Events.player_hand_drawn.connect(_on_player_hand_drawn)
+
+
+func _on_card_played(card: Card) -> void:
+	if card == null or _character == null:
+		return
+	call_deferred("_handle_post_card_played", card)
+
+
+func _handle_post_card_played(card: Card) -> void:
+	if _character == null or _character.discard == null:
+		return
+	if not card.keyword_exhaust:
+		_emit_zone_counts()
+		return
+
+	if _character.discard.remove_card(card):
+		_exhaust_pile.add_card(card)
+	_emit_zone_counts()
+
+
+func _on_player_turn_ended() -> void:
+	_player_action_window_open = false
+	_turn_end_hand_snapshot.clear()
+	if _hand == null or not is_instance_valid(_hand):
+		return
+
+	for child_node: Node in _hand.get_children():
+		if not (child_node is CardUI):
+			continue
+
+		var card_ui: CardUI = child_node
+		if card_ui.card == null:
+			continue
+		_turn_end_hand_snapshot.append(card_ui.card)
+
+
+func _on_player_hand_discarded() -> void:
+	if _character == null or _character.discard == null:
+		_turn_end_hand_snapshot.clear()
+		_emit_zone_counts()
+		return
+
+	for card in _turn_end_hand_snapshot:
+		if card == null:
+			continue
+
+		if card.is_ethereal_card():
+			if _character.discard.remove_card(card):
+				_exhaust_pile.add_card(card)
+			continue
+
+		if card.keyword_retain:
+			if _character.discard.remove_card(card):
+				if _hand != null and is_instance_valid(_hand):
+					_hand.add_card(card)
+
+	_turn_end_hand_snapshot.clear()
+	_emit_zone_counts()
+
+
+func _on_player_hand_drawn() -> void:
+	_player_action_window_open = true
+	_connect_pile_signals()
+	_emit_zone_counts()
+
+
+func _connect_pile_signals() -> void:
+	_disconnect_pile_signals()
+
+	if _character == null:
+		return
+
+	if _character.draw_pile != null and not _character.draw_pile.card_pile_size_changed.is_connected(_on_pile_size_changed):
+		_character.draw_pile.card_pile_size_changed.connect(_on_pile_size_changed)
+		_bound_draw_pile = _character.draw_pile
+
+	if _character.discard != null and not _character.discard.card_pile_size_changed.is_connected(_on_pile_size_changed):
+		_character.discard.card_pile_size_changed.connect(_on_pile_size_changed)
+		_bound_discard_pile = _character.discard
+
+	if not _exhaust_pile.card_pile_size_changed.is_connected(_on_pile_size_changed):
+		_exhaust_pile.card_pile_size_changed.connect(_on_pile_size_changed)
+
+
+func _disconnect_pile_signals() -> void:
+	if _bound_draw_pile != null and _bound_draw_pile.card_pile_size_changed.is_connected(_on_pile_size_changed):
+		_bound_draw_pile.card_pile_size_changed.disconnect(_on_pile_size_changed)
+	_bound_draw_pile = null
+
+	if _bound_discard_pile != null and _bound_discard_pile.card_pile_size_changed.is_connected(_on_pile_size_changed):
+		_bound_discard_pile.card_pile_size_changed.disconnect(_on_pile_size_changed)
+	_bound_discard_pile = null
+
+	if _exhaust_pile != null and _exhaust_pile.card_pile_size_changed.is_connected(_on_pile_size_changed):
+		_exhaust_pile.card_pile_size_changed.disconnect(_on_pile_size_changed)
+
+
+func _connect_hand_signals() -> void:
+	if _hand == null or not is_instance_valid(_hand):
+		return
+
+	if not _hand.child_entered_tree.is_connected(_on_hand_children_changed):
+		_hand.child_entered_tree.connect(_on_hand_children_changed)
+	if not _hand.child_exiting_tree.is_connected(_on_hand_children_changed):
+		_hand.child_exiting_tree.connect(_on_hand_children_changed)
+
+
+func _disconnect_hand_signals() -> void:
+	if _hand == null or not is_instance_valid(_hand):
+		return
+
+	if _hand.child_entered_tree.is_connected(_on_hand_children_changed):
+		_hand.child_entered_tree.disconnect(_on_hand_children_changed)
+	if _hand.child_exiting_tree.is_connected(_on_hand_children_changed):
+		_hand.child_exiting_tree.disconnect(_on_hand_children_changed)
+
+
+func _on_pile_size_changed(_size: int) -> void:
+	_emit_zone_counts()
+
+
+func _on_hand_children_changed(_node: Node) -> void:
+	call_deferred("_emit_zone_counts")
+
+
+func _emit_zone_counts() -> void:
+	zone_counts_changed.emit(
+		get_draw_count(),
+		get_hand_count(),
+		get_discard_count(),
+		get_exhaust_count()
+	)

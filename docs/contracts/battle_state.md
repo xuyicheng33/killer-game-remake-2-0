@@ -1,4 +1,4 @@
-# BattleState 契约（v0.4.0）
+# BattleState 契约（v0.5.0）
 
 ## 目的
 
@@ -49,6 +49,18 @@
 - 数值联动：
   - 伤害：`strength` 影响攻击方，`weak` 降低攻击方伤害，`vulnerable` 放大受击方承伤。
   - 格挡：`dexterity` 影响格挡获得量。
+
+## 牌区与关键词约束（A2）
+
+- 四牌区模型：`draw_pile`、`hand`、`discard_pile`、`exhaust_pile`。
+- 最小关键词字段：
+  - `keyword_exhaust`（消耗）：打出后进入 `exhaust_pile`。
+  - `keyword_retain`（保留）：回合结束时保留在 `hand`。
+  - `keyword_void` / `keyword_ethereal`（虚无）：回合结束时若仍在 `hand`，进入 `exhaust_pile`。
+  - `keyword_x_cost`（X费）：打出时消耗当前全部能量，`last_x_value` 记录本次消耗值。
+- 边界规则：
+  - 抽牌堆与弃牌堆都为空时，抽牌操作返回空，不允许崩溃。
+  - 未显式配置关键词时使用默认值（`false` 或 `0`），不改变既有流程稳定性。
 
 ## 变更规则
 

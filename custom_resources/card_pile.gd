@@ -11,14 +11,33 @@ func empty() -> bool:
 
 
 func draw_card() -> Card:
-	var card = cards.pop_front()
+	if cards.is_empty():
+		return null
+
+	var card: Card = cards.pop_front()
 	card_pile_size_changed.emit(cards.size())
 	return card
 
 
 func add_card(card: Card) -> void:
+	if card == null:
+		return
 	cards.append(card)
 	card_pile_size_changed.emit(cards.size())
+
+
+func remove_card(card: Card) -> bool:
+	var index := cards.find(card)
+	if index == -1:
+		return false
+
+	cards.remove_at(index)
+	card_pile_size_changed.emit(cards.size())
+	return true
+
+
+func size() -> int:
+	return cards.size()
 
 
 func shuffle() -> void:
