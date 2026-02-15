@@ -1,7 +1,8 @@
 # battle_loop
 
 状态：
-- 待实现
+- A1 `feat-battle-loop-state-machine-v1` 进行中
 
 职责：
-- TODO: 在对应任务ID中补全该模块的接口与数据结构。
+- 提供战斗回合阶段状态机（`DRAW -> ACTION -> ENEMY -> RESOLVE`）。
+- 维护回合计数与阶段迁移约束。
