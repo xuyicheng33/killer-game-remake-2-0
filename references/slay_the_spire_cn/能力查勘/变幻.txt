@@ -1,0 +1,8 @@
+变幻
+Buffs id: Shifting
+Buffs信息
+效果中文描述每当受到伤害，它将在回合结束前失去相应点数的力量。
+效果英文描述 Upon losing HP, loses that much Strength until the end of the turn.
+类型敌方BUFF
+不可叠加
+变幻 （Shifting） 是杀戮尖塔中的一个的不可叠加状态。

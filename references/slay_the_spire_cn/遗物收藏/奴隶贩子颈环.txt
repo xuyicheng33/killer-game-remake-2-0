@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+奴隶贩子颈环
+遗物 id: Slavers Collar
+遗物信息
+效果中文描述在Boss战与精英战中，你在每回合开始时获得1点能量。
+效果英文描述 During Boss and Elite combats, gain [E] at the start of your turn.
+中文引言锈蚀可憎的铁链。
+英文引言 Rusty miserable chains.
+所属通用
+稀有度 BOSS
+锈蚀可憎的铁链。
+简介
+奴隶贩子颈环 （Slavers Collar） 是杀戮尖塔中的一件BOSS 遗物。
+在BOSS战和精英战中每回合额外获得1点能量。
+少见的没有负面效果的加费遗物，但也意味着与普通敌人的战斗中不会有任何额外提升。

@@ -1,0 +1,8 @@
+黑暗之拥（能力）
+Buffs id: Dark Embrace
+Buffs信息
+效果中文描述每当有一张牌被消耗时，抽 X 张牌。
+效果英文描述 Whenever a card is Exhausted,draw X card.
+类型玩家BUFF(来源唯一)
+可叠加
+黑暗之拥 （Dark Embrace） 是杀戮尖塔中的一个的可叠加状态。

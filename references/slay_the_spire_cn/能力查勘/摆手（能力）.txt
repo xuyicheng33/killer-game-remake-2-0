@@ -1,0 +1,8 @@
+摆手（能力）
+Buffs id: Wave of the Hand
+Buffs信息
+效果中文描述在本回合，你每次获得格挡时，给予所有敌人 X 层虚弱。
+效果英文描述 Whenever you gain Block , apply X Weak to ALL enemies.
+类型玩家BUFF(来源唯一)
+可叠加
+摆手 （Wave of the Hand） 是杀戮尖塔中的一个的可叠加状态。

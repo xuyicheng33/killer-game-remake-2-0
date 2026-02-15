@@ -1,0 +1,45 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+破灭 Havoc
+技能
+升级前升级后测试画风 1 破灭技能打出抽牌堆顶部的牌，将其消耗。 0 破灭+ 技能打出抽牌堆顶部的牌，将其消耗。 1 破灭技能打出抽牌堆顶部的牌，将其消耗。
+升级前
+升级后
+测试画风
+打出抽牌堆顶部的牌，将其消耗。
+英文名称 Havoc
+颜色红色
+稀有度普通
+耗能 1
+描述打出抽牌堆顶部的牌，将其消耗。
+升级耗能 0
+升级描述打出抽牌堆顶部的牌，将其消耗。
+→点此查看数据页面
+简介
+破灭 （Havoc） 是杀戮尖塔中铁甲战士的一张技能牌。
+如果打出时抽牌堆中没有牌，则进行一轮洗牌后正常触发效果。
+协同效应
+不能被打出的牌：只会将其消耗。
+当有蓝蜡烛时，打出诅咒牌将损失一点生命。
+需要在特定条件下打出的牌（如交锋）：如果在打出破灭后满足该牌的打出条件，则正常触发效果。否则仅将其消耗。
+头槌，战吼、冻结之眼：使破灭打出的牌变得可以预测。
+能力牌：不触发消耗效果。
+Update History
+Patch V2.0: The Watcher Fixed Mayhem, Havoc, Distilled Chaos, and Omniscience sometimes not playing cards if original target is dead.
+Fixed Mayhem, Havoc, Distilled Chaos, and Omniscience sometimes not playing cards if original target is dead.
+Weekly Patch 54: Loop Tingsha, Sword Boomerang, Bouncing Flask, Rip and Tear, Thunder Orbs, Havoc, and Juggernaut now utilize seeded enemy target randomization.
+Tingsha, Sword Boomerang, Bouncing Flask, Rip and Tear, Thunder Orbs, Havoc, and Juggernaut now utilize seeded enemy target randomization.
+Weekly Patch 51: Recursion Accuracy power now correctly works with Shivs played from the top of the deck via cards like Mayhem or Havoc.
+Accuracy power now correctly works with Shivs played from the top of the deck via cards like Mayhem or Havoc.
+Weekly Patch 35: Aggregate Fix for crash when playing Havoc against half dead enemies (Darkling/Awakened one).
+Fix for crash when playing Havoc against half dead enemies (Darkling/Awakened one).
+Weekly Patch 33: Terror Havoc card now utilizes RNG to select its random target (save/load consistency).
+Havoc card now utilizes RNG to select its random target (save/load consistency).
+Weekly Patch 23: Testing Continues Havoc card's description: Exhaust was not capitalized.
+Havoc card's description: Exhaust was not capitalized.
+Weekly Patch 3: Balance Balance Balance Havoc can now be played even when no cards are in your deck. (Discard will shuffle in)
+Havoc can now be played even when no cards are in your deck. (Discard will shuffle in)

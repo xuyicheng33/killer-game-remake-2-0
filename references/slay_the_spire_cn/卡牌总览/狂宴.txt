@@ -1,0 +1,32 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+狂宴 Feed
+攻击
+升级前升级后测试画风 1 狂宴攻击造成10点伤害。若斩杀，则永久获得3点最大生命。消耗。 1 狂宴+ 攻击造成12点伤害。若斩杀，则永久获得4点最大生命。消耗。 1 狂宴攻击造成10点伤害。若斩杀，则永久获得3点最大生命。消耗。
+升级前
+升级后
+测试画风
+造成10点伤害。若斩杀，则永久获得3点最大生命。消耗。
+造成12点伤害。若斩杀，则永久获得4点最大生命。消耗。
+英文名称 Feed
+颜色红色
+稀有度稀有
+耗能 1
+描述造成10点伤害。若斩杀，则永久获得3点最大生命。消耗。
+升级耗能 1
+升级描述造成12点伤害。若斩杀，则永久获得4点最大生命。消耗。
+→点此查看数据页面
+狂宴 （Feed） 是杀戮尖塔中铁甲战士的一张攻击牌。造成10(12)点伤害。若杀死了不为爪牙的敌人，获得3(4)点最大生命。使用后移出本场战斗。
+策略
+狂宴适合在游戏早期时拾取并升级，从而充分利用它在每场战斗中增加生命上限。面对成长性较弱的敌人，也可以适当拖延回合直到抽到狂宴来杀死敌人。狂宴在高力量的卡组中表现良好，因为很高的伤害可以更容易地让狂宴可以杀死敌人。
+协同效应
+有多个敌人时可以用双持复制此牌获得更多收益。
+在三小黑的遭遇战中，击杀最后一个小黑之前的击杀不作数；击杀觉醒者的第一阶段同理。
+轶事
+成就哦！甜甜圈与该卡相关，在使用该卡“吃掉” 甜圈后解锁。
+Update History
+Patch V2.0: The Watcher Fatal keyword added for cards which have effects upon killing a non-Minion enemy. Weekly Update 52: Release Date Price Increase Adding VFX for Feed card. Weekly Patch 46: Adrenaline Feed now correctly works on the Awakened One when it is in its second form. Weekly Patch 44: Chrysalis All sources of random temporary card generation in combat (like Dead Branch) can no longer generate cards that provide healing. New tip added to indicate that healing cards cannot be generated randomly during combat. Weekly Patch 7: Setting Up All the Things Feed no longer works on Minions (New Power: Minion to let you know who are minions). Weekly Patch 4: Full speed ahead! Fix rare crash with Feed card. Weekly Patch 3: Balance Balance Balance Feed no longer works on enemies that go into a half dead state (Darkling, Awakened One).

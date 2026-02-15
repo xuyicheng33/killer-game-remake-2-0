@@ -1,0 +1,8 @@
+分裂
+Buffs id: Split
+Buffs信息
+效果中文描述当生命值等于或低于 50% 时，将会分裂成 2 只较小的史莱姆，每只都拥有当前的生命值。
+效果英文描述 When its HP is at or below 50% , will split into 2 smaller slimes with's current HP.
+类型敌方BUFF
+不可叠加
+分裂 （Split） 是杀戮尖塔中的一个的不可叠加状态。

@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+化学物X
+遗物 id: Chemical X
+遗物信息
+效果中文描述耗能为 X 的牌的效果数值增加 2 点。
+效果英文描述 The effects of your cost X cards are increased by 2 .
+中文引言警告：严禁与糖、香料还有一切美好的味道混合在一起。
+英文引言 WARNING: Do not combine with sugar, spice, and everything nice.
+所属通用
+稀有度商店
+简介
+化学物X（Chemical X）是杀戮尖塔中的一件普通遗物。
+轶事
+该遗物的引言是向美国动画《飞天小女警》( The Powerpuff Girls )中的同名剧情道具致敬。剧中三位主角飞天小女警正是由“糖、香料还有各种美好的味道混在一起”，加入化学物X创造的。
+相关卡牌
+旋风斩串刺双重存在萎靡暴风雨多重释放收集聚能成刃转化

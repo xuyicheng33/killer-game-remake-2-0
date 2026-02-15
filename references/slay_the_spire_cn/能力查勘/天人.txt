@@ -1,0 +1,8 @@
+天人
+Buffs id: Deva
+Buffs信息
+效果中文描述在你的回合开始时，获得 [P] X 次。然后将次数增加 X。
+效果英文描述 At the start of your turn, gain [P] X times.and increase this by X
+类型玩家BUFF(来源唯一)
+可叠加
+天人 （Deva） 是杀戮尖塔中的一个的可叠加状态。

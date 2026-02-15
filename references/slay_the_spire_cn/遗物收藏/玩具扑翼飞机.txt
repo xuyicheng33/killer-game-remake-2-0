@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+玩具扑翼飞机
+遗物 id: Toy Ornithopter
+遗物信息
+效果中文描述你每使用一瓶药水，回复 5 点生命。
+效果英文描述 Whenever you use a potion , heal 5 HP.
+中文引言这个小玩具最适合陪伴孤独一人的冒险者啦！
+英文引言 "This little toy is the perfect companion for the lone adventurer!"
+所属通用
+稀有度普通
+这个小玩具最适合陪伴孤独一人的冒险者啦！
+简介
+玩具扑翼飞机 （Toy Ornithopter） 是杀戮尖塔中的一件普通遗物。
+协同效应
+与白兽雕像或炼制药水配合能产生不错的生命回复效果。

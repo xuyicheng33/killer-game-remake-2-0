@@ -1,0 +1,22 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+痛楚印记
+遗物 id: Mark of Pain
+遗物信息
+效果中文描述每回合开始获得 [R]。在战斗开始时，将 2 张伤口放入你的抽牌堆。
+效果英文描述 Gain [R] at the start of your turn. At the start of combat, shuffle 2 Wounds into your draw pile.
+中文引言北方部落中使用这个工具来给那些在战斗中掌握痛楚的战士们打上烙印。
+英文引言 This brand was used by the northern tribes to signify warriors who had mastered pain in battle.
+所属铁甲战士
+稀有度 BOSS
+北方部落中使用这个工具来给那些在战斗中掌握痛楚的战士们打上烙印。
+简介
+痛楚印记 （Mark of Pain） 是杀戮尖塔中铁甲战士的一件BOSS 遗物。
+注意
+伤口是在玩家第一轮抽取手牌之后加入的，这就意味着第一回合玩家将不会抽到其添加的伤口。
+但是，拾取遗物的先后顺序将会影响其添加顺序。例如，若玩家在获得痛楚印记之后获得了准备背包，那么就有概率在额外的抽牌中抽取到伤口，反之则不会。赌博筹码则将会在其添加伤口后进行结算，不论先后顺序。
+赌博筹码则将会在其添加伤口后进行结算，不论先后顺序。

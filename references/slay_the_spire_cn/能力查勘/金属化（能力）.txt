@@ -1,0 +1,11 @@
+金属化（能力）
+Buffs id: Metallicize
+Buffs信息
+效果中文描述在你的回合结束时获得 X 点格挡。
+效果英文描述 At the end of your turn, gain X Block .
+类型通用BUFF
+可叠加
+金属化 （Metallicize） 是杀戮尖塔中的一个的可叠加状态。
+协同效应
+敏捷、脆弱：不影响金属化的效果。
+奥利哈钢：在金属化生效之前判定。

@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+奇怪蘑菇
+遗物 id: Odd Mushroom
+遗物信息
+效果中文描述当你有易伤状态时，受到的额外伤害从 50% 下降为 25%。
+效果英文描述 When Vulnerable , take 25% more attack damage rather than 50% .
+中文引言吃了寄生毛菇之后，我觉得自己更高大了，也更……不容易受伤了。”——兰伟德
+英文引言 After consuming trichella parastius I felt larger and less... susceptible. - Ranwid
+所属通用
+稀有度事件
+吃了寄生毛菇之后，我觉得自己更高大了，也更……不容易受伤了。”——兰伟德
+简介
+奇怪蘑菇 （Odd Mushroom） 是杀戮尖塔中的一件事件遗物。
+轶事
+引言中的“毛菇”是有意为之，对应英文中将“parasiticus”（寄生者）拼成“parastius”，表现出兰伟德吃掉寄生蘑菇后口齿不清的状态。

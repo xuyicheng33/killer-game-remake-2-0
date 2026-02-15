@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+微笑面具
+遗物 id: Smiling Mask
+遗物信息
+效果中文描述商人的卡牌移除服务现在价格永远是 50 金币。
+效果英文描述 The Merchant's card removal service now always costs 50 Gold .
+中文引言商人戴着的面具，看来他有很多备用的……
+英文引言 Mask worn by the Merchant. He must have spares...
+所属通用
+稀有度普通
+商人戴着的面具，看来他有很多备用的……
+简介
+微笑面具 （Smiling Mask） 是杀戮尖塔中的一件普通遗物。
+注意
+这件遗物不会在商店里或49层（即第三幕BOSS战）后出现。
+它会真正地将卡牌移除服务价格固定为50金币，不受会员卡和送货员的降价影响。

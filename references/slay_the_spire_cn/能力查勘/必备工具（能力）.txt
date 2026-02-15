@@ -1,0 +1,8 @@
+必备工具（能力）
+Buffs id: Tools of the Trade
+Buffs信息
+效果中文描述在你的回合开始时，抽 X 张牌，丢弃 X 张牌。
+效果英文描述 At the start of your turn, draw X card and discard X card(s).
+类型玩家BUFF(来源唯一)
+可叠加
+必备工具 （Tools of the Trade） 是杀戮尖塔中的一个的可叠加状态。

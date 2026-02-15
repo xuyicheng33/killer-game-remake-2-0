@@ -1,0 +1,8 @@
+不能抽牌
+Buffs id: No Draw
+Buffs信息
+效果中文描述你在回合结束前都无法再抽牌。
+效果英文描述 You cannot draw cards this turn.
+类型玩家Debuff
+不可叠加
+不能抽牌 （No Draw） 是杀戮尖塔中的一个的不可叠加状态。

@@ -1,0 +1,13 @@
+无实体
+Buffs id: Intangible
+Buffs信息
+效果中文描述将本回合受到的所有伤害和生命减少效果降低为 1。
+效果英文描述 Reduce ALL damage taken and HP loss to 1 this turn. (lasts X turns)
+类型通用BUFF
+可叠加
+无实体 （Intangible） 是杀戮尖塔中的一个的可叠加状态。
+注意&协同效应
+会影响卡牌（如悔恨、放血）造成的生命损失效果，但不影响疼痛造成的生命损失效果。
+这个buff在玩家的回合开始时减少1层。
+腾跃并不会减少无实体的层数。
+钨合金棍：可以使玩家不受到伤害。

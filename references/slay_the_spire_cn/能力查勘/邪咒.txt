@@ -1,0 +1,8 @@
+邪咒
+Buffs id: Hex
+Buffs信息
+效果中文描述你每打出一张非攻击牌，都会将 X 张晕眩随机放入你的牌组中。
+效果英文描述 Whenever you play a non-Attack card, shuffle X Dazed into your draw pile.
+类型玩家Debuff
+可叠加
+邪咒 （Hex） 是杀戮尖塔中的一个的可叠加状态。

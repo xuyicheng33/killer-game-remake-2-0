@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+纸鹤
+遗物 id: Paper Crane
+遗物信息
+效果中文描述有虚弱状态的敌人造成的伤害降低 40% 而非 25%。
+效果英文描述 Enemies with Weak deal 40% less damage rather than 25% .
+中文引言某种过去时代生物的折纸。
+英文引言 An origami of a creature from a past age.
+所属静默猎手
+稀有度罕见
+某种过去时代生物的折纸。
+简介
+纸鹤 （Paper Crane） 是杀戮尖塔中静默猎手的一件罕见遗物。

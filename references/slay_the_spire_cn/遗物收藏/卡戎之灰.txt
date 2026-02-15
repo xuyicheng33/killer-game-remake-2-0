@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+卡戎之灰
+遗物 id: Charon's Ashes
+遗物信息
+效果中文描述每当你消耗一张牌，对所有敌人造成 3 点伤害。
+效果英文描述 Whenever you Exhaust a card, deal 3 damage to ALL enemies.
+中文引言传说中卡戎是重生的神祇，永远都在烈焰之中反复地死亡和重生。
+英文引言 Charon was said to be the god of rebirth, eternally dying and reviving in a burst of flame.
+所属铁甲战士
+稀有度稀有
+传说中卡戎是重生的神祇，永远都在烈焰之中反复地死亡和重生。
+简介
+卡戎之灰 （Charon's Ashes） 是杀戮尖塔中铁甲战士的一件稀有遗物。

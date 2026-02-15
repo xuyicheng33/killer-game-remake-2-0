@@ -1,0 +1,22 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+黄金眼
+遗物 id: Golden Eye
+遗物信息
+效果中文描述你每次预见时，额外预见 2 张牌。
+效果英文描述 Whenever you Scry , Scry 2 additional cards.
+中文引言能够看见近处生灵的心智，让你可以预判他们将来的动作。
+英文引言 See into the minds of those nearby, predicting their future moves.
+所属观者
+稀有度稀有
+能够看见近处生灵的心智，让你可以预判他们将来的动作。
+简介
+黄金眼 （Golden Eye） 是杀戮尖塔中观者的一件稀有遗物。
+轶事
+该遗物可能neta了《游戏王》中的七神器之一的千年眼，它拥有洞察人心的能力。
+画廊
+《游戏王》中的千年眼

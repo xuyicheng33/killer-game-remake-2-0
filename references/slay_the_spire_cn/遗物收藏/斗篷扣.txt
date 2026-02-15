@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+斗篷扣
+遗物 id: Cloak Clasp
+遗物信息
+效果中文描述在你的回合结束时，每有一张手牌获得 1 点格挡。
+效果英文描述 At the end of your turn, gain 1 Block for each card in your hand.
+中文引言设计简约但牢固。
+英文引言 A simple but sturdy design.
+所属观者
+稀有度稀有
+设计简约但牢固。
+简介
+斗篷扣 （Cloak Clasp） 是杀戮尖塔中观者的一件稀有遗物。

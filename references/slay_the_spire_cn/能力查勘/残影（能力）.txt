@@ -1,0 +1,8 @@
+残影（能力）
+Buffs id: Blur
+Buffs信息
+效果中文描述格挡不会在你的下 X 个回合开始时消失。
+效果英文描述 Block is not removed at the start of your next X turns.
+类型玩家BUFF(来源唯一)
+可叠加
+残影 （Blur） 是杀戮尖塔中的一个的可叠加状态。

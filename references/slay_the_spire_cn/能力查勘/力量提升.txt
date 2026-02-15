@@ -1,0 +1,9 @@
+力量提升
+Buffs id: Strength Up
+Buffs信息
+效果中文描述每回合结束时，获得X点力量
+效果英文描述 At the end of your turn,gain X Strength .
+类型敌方BUFF
+可叠加
+力量提升 （Strength Up） 是杀戮尖塔中的一个的可叠加状态。
+通常只有圆球行者会拥有此状态。

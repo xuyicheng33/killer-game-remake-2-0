@@ -1,0 +1,8 @@
+脆弱
+Buffs id: Frail
+Buffs信息
+效果中文描述在 X 个回合内，从卡牌中获得的格挡减少 25%。
+效果英文描述 Gain 25% less Block from cards for X turn(s).
+类型玩家Debuff
+可叠加
+脆弱 （Frail） 是杀戮尖塔中的一个的可叠加状态。

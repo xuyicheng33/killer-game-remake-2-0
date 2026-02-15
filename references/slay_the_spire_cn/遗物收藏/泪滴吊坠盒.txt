@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+泪滴吊坠盒
+遗物 id: Teardrop Locket
+遗物信息
+效果中文描述每场战斗开始时处于平静。
+效果英文描述 Start each combat in Calm .
+中文引言盒子的主人双目失明，其中的东西无人知晓。
+英文引言 Its owner blind, its contents unseen.
+所属观者
+稀有度罕见
+盒子的主人双目失明，其中的东西无人知晓。
+简介
+泪滴吊坠盒 （Teardrop Locket） 是杀戮尖塔中观者的一件罕见遗物。

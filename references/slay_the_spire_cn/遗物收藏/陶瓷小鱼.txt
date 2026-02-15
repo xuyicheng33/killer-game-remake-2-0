@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+陶瓷小鱼
+遗物 id: Ceramic Fish
+遗物信息
+效果中文描述每次你往自己的牌组中加入一张卡牌时，获得 9 金币。
+效果英文描述 Whenever you add a card to your deck, gain 9 gold .
+中文引言这些被精心上色的鱼儿被认为可以带来滚滚财源。
+英文引言 Meticulously painted, these fish were revered to bring great fortune.
+所属通用
+稀有度普通
+这些被精心上色的鱼儿被认为可以带来滚滚财源。
+简介
+陶瓷小鱼 （Ceramic Fish） 是杀戮尖塔中的一件普通遗物。
+这件遗物只会在49层（即第三幕BOSS）前出现。
+与鲜血神像协同，能够取得相当不错的生命值恢复效果。
+变化所获得的牌（例如潘多拉魔盒和药贩子）同样会触发该遗物的效果。

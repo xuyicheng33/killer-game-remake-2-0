@@ -1,0 +1,8 @@
+夜魇（能力）
+Buffs id: Nightmare
+Buffs信息
+效果中文描述在你的下回合开始时，增加 X张此牌的复制品到你的手牌中。
+效果英文描述 Add X cards into your hand next turn.
+类型玩家BUFF(来源唯一)
+特殊
+夜魇 （Nightmare） 是杀戮尖塔中的一个的特殊状态。

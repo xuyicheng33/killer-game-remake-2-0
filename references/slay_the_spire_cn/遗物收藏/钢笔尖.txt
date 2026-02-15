@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+钢笔尖
+遗物 id: Pen Nib
+遗物信息
+效果中文描述你每打出的第 10 张攻击牌将会造成双倍伤害。
+效果英文描述 Every 10th Attack you play deals double damage.
+中文引言拿着这支笔尖时，你可以看见所有被笔尖前主人杀死过的人。真是血腥的历史。
+英文引言 Holding the nib, you can see everyone ever slain by a previous owner of the pen. A violent history.
+所属通用
+稀有度普通
+拿着这支笔尖时，你可以看见所有被笔尖前主人杀死过的人。真是血腥的历史。
+简介
+钢笔尖 （Pen Nib） 是杀戮尖塔中的一件普通遗物。
+协同效应
+与其他提升伤害倍率效果（如易伤、幻影杀手）乘算。

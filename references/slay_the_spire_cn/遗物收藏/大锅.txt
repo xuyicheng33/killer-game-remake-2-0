@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+大锅
+遗物 id: Cauldron
+遗物信息
+效果中文描述拾起时，制作 5 瓶随机药水。
+效果英文描述 Upon pickup, brews 5 random potions.
+中文引言商人其实是位技术相当不错的药剂师。买四送一。
+英文引言 The Merchant is actually a rather skilled potion brewer. Buy 4 get 1 free.
+所属通用
+稀有度商店
+商人其实是位技术相当不错的药剂师。买四送一。
+简介
+大锅 （Cauldron） 是杀戮尖塔中的一件商店遗物。
+轶事
+由引言可知商人是位技术很好的药剂师，其售卖的药水或为其自行熬制。

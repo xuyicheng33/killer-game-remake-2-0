@@ -1,0 +1,8 @@
+毒雾（能力）
+Buffs id: Noxious Fumes
+Buffs信息
+效果中文描述在你的回合开始时，给予所有敌人 X 层中毒。
+效果英文描述 At the start of your turn, apply X Poison to ALL enemies.
+类型玩家BUFF(来源唯一)
+可叠加
+毒雾 （Noxious Fumes） 是杀戮尖塔中的一个的可叠加状态。

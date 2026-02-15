@@ -1,0 +1,8 @@
+增幅（能力）
+Buffs id: Amplify
+Buffs信息
+效果中文描述在这个回合，你的下 X 张能力牌会打出两次。
+效果英文描述 Your next Power card is played #b times this turn.
+类型玩家BUFF(来源唯一)
+可叠加
+增幅 （Amplify） 是杀戮尖塔中的一个的可叠加状态。

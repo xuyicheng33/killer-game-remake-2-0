@@ -1,0 +1,10 @@
+双发（能力）
+Buffs id: Double Tap
+Buffs信息
+效果中文描述在这个回合，你打出的下 X 张攻击牌会打出两次。
+效果英文描述 Your next #b Attacks are played twice this turn.
+类型玩家BUFF(来源唯一)
+计数
+双发 （Double Tap） 是杀戮尖塔中的一个的计数状态。
+协同效应
+参见双发。

@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+螺类化石
+遗物 id: Fossilized Helix
+遗物信息
+效果中文描述阻止你在每场战斗中第一次受到的生命值损伤。
+效果英文描述 Prevent the first time you would lose HP each combat.
+中文引言似乎坚不可摧，你很好奇究竟是何种生物曾拥有这样的部分。
+英文引言 Seemingly indestructible, you wonder what kind of creature this belonged to.
+所属通用
+稀有度稀有
+似乎坚不可摧，你很好奇究竟是何种生物曾拥有这样的部分。
+简介
+螺类化石 （Fossilized Helix） 是杀戮尖塔中的一件稀有遗物。
+注意
+效果为在战斗开始时给予一层缓冲。
+详见缓冲。

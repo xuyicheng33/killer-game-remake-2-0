@@ -1,0 +1,8 @@
+愤怒（能力）
+Buffs id: Rage
+Buffs信息
+效果中文描述你在这回合每打出一张攻击牌，获得 X 点格挡。
+效果英文描述 Whenever you play an Attack this turn, gain X Block .
+类型玩家BUFF(来源唯一)
+可叠加
+愤怒 （Rage） 是杀戮尖塔中的一个的可叠加状态。

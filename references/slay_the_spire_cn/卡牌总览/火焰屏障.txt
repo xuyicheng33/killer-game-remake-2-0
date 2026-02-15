@@ -1,0 +1,37 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+火焰屏障 Flame Barrier
+技能
+升级前升级后测试画风 2 火焰屏障技能获得12点格挡。你在这个回合每受到一次攻击，都对攻击者造成4点伤害。 2 火焰屏障+ 技能获得16点格挡。你在这个回合每受到一次攻击，都对攻击者造成6点伤害。 2 火焰屏障技能获得12点格挡。你在这个回合每受到一次攻击，都对攻击者造成4点伤害。
+升级前
+升级后
+测试画风
+获得12点格挡。你在这个回合每受到一次攻击，都对攻击者造成4点伤害。
+获得16点格挡。你在这个回合每受到一次攻击，都对攻击者造成6点伤害。
+英文名称 Flame Barrier
+颜色红色
+稀有度罕见
+耗能 2
+描述获得12点格挡。你在这个回合每受到一次攻击，都对攻击者造成4点伤害。
+能力火焰屏障
+升级耗能 2
+升级描述获得16点格挡。你在这个回合每受到一次攻击，都对攻击者造成6点伤害。
+→点此查看数据页面
+火焰屏障 （Flame Barrier） 是杀戮尖塔中铁甲战士的一张技能牌。获得12 (16)⁺ 点格挡，这个回合每受到一次攻击，都对攻击者造成4 (6)⁺ 点伤害。
+更新历史
+Weekly Patch 44: Chrysalis WORDING: Improving consistency for Flame Barrier and Thorns wording.
+WORDING: Improving consistency for Flame Barrier and Thorns wording.
+Weekly Patch 42: Reboot Updating SFX for Flame Barrier Power.
+Updating SFX for Flame Barrier Power.
+Weekly Patch 40: Forethought Flame Barrier card gets a new SFX.
+Flame Barrier card gets a new SFX.
+Weekly Patch 36: Power Through Thorns and Flame Barrier powers are made consistent.
+Thorns and Flame Barrier powers are made consistent.
+Weekly Patch 5: Happy Holidays! Card FlameBarrier+ gets buffed. Deals 2 more damage back.
+Card FlameBarrier+ gets buffed. Deals 2 more damage back.
+Weekly Patch 2: Slimes! FlameBarrier, Flight, Malleable, and Torii now have more checks to ensure that their effects trigger correctly.
+FlameBarrier, Flight, Malleable, and Torii now have more checks to ensure that their effects trigger correctly.

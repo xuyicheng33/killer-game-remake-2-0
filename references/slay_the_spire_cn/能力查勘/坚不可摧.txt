@@ -1,0 +1,9 @@
+坚不可摧
+Buffs id: Invincible
+Buffs信息
+效果中文描述本回合最多只能受到 X 点伤害。
+效果英文描述 Can only lose X more HP this turn.
+类型敌方BUFF
+可叠加
+坚不可摧 （Invincible） 是杀戮尖塔中的一个的可叠加状态。
+通常只有腐化之心会在战斗开始时获得300(A19+:200)点此状态。

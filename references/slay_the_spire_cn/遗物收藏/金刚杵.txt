@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+金刚杵
+遗物 id: Vajra
+遗物信息
+效果中文描述在每场战斗开始时，获得 1 点力量。
+效果英文描述 Start each combat with 1 Strength .
+中文引言一件交给在战斗中展示了荣耀的战士们的装饰性遗物。
+英文引言 An ornamental relic given to warriors displaying glory in battle.
+所属通用
+稀有度普通
+一件交给在战斗中展示了荣耀的战士们的装饰性遗物。
+简介
+金刚杵 （Vajra） 是杀戮尖塔中的一件普通遗物。

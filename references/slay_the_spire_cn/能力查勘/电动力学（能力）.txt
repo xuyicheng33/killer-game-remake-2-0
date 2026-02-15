@@ -1,0 +1,8 @@
+电动力学（能力）
+Buffs id: Electro
+Buffs信息
+效果中文描述闪电充能球将击中所有敌人。
+效果英文描述 Lightning hits ALL enemies.
+类型玩家BUFF(来源唯一)
+不叠加
+电动力学 （Electro） 是杀戮尖塔中的一个的不叠加状态。

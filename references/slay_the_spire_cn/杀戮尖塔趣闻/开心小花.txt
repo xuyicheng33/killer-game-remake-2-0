@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+开心小花
+遗物 id: Happy Flower
+遗物信息
+效果中文描述每 3 个回合，获得一点能量。
+效果英文描述 Every 3 turns, gain 1 energy .
+中文引言这朵一直面带笑容的花是贵族间流行的小礼物。
+英文引言 This unceasingly joyous plant is a popular novelty item among nobles.
+所属通用
+稀有度普通
+这朵一直面带笑容的花是贵族间流行的小礼物。
+简介
+开心小花 （Happy Flower） 是杀戮尖塔中的一件普通遗物。
+轶事
+其效果和外貌致敬了游戏《植物大战僵尸》中的向日葵 (Sunflower)和花盆 (Flower pot)，向日葵可以产生消耗性资源（费用），而花盆是在特定地图中放置向日葵的前提条件。

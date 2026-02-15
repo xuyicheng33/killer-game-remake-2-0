@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+铲子
+遗物 id: Shovel
+遗物信息
+效果中文描述现在你可以在休息处挖掘遗物。
+效果英文描述 You can now Dig for relics at Rest Sites.
+中文引言高塔中有着无数过去文明遗留下的遗物和强大的冒险者们遗失的宝物，现在你可以把它们挖出来了！
+英文引言 The Spire houses all number of relics from past civilizations and powerful adventurers lost to time. Time to go dig them up!
+所属通用
+稀有度稀有
+高塔中有着无数过去文明遗留下的遗物和强大的冒险者们遗失的宝物，现在你可以把它们挖出来了！
+简介
+铲子 （Shovel） 是杀戮尖塔中的一件稀有遗物。
+这件遗物只会在49层（即第三幕BOSS）前出现。
+轶事
+遗物描述中的“过去文明”可能指先古之民。

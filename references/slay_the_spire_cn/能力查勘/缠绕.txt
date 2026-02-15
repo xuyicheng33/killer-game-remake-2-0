@@ -1,0 +1,8 @@
+缠绕
+Buffs id: Constricted
+Buffs信息
+效果中文描述在你的回合结束时，受到 X 点伤害。
+效果英文描述 At the end of your turn, take X damage.
+类型玩家Debuff
+可叠加
+缠绕 （Constricted） 是杀戮尖塔中的一个的可叠加状态。

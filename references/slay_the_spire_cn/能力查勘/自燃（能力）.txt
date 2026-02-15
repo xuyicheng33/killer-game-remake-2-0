@@ -1,0 +1,10 @@
+自燃（能力）
+Buffs id: Combust
+Buffs信息
+效果中文描述在你的回合结束时，失去 Y 点生命并对所有敌人造成 X 点伤害。
+效果英文描述 At the end of your turn, lose Y HP and deal X damage to ALL enemies.
+类型玩家BUFF(来源唯一)
+可叠加
+自燃 （Combust） 是杀戮尖塔中的一个的可叠加状态。
+协同效应
+再生：先于自燃生效。

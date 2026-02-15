@@ -1,0 +1,34 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+武装 Armaments
+技能
+升级前升级后测试画风 1 武装技能获得5点格挡。在本场战斗中升级手牌中的一张牌。 1 武装+ 技能获得5点格挡。在本场战斗中升级手牌中的所有牌。 1 武装技能获得5点格挡。在本场战斗中升级手牌中的一张牌。
+升级前
+升级后
+测试画风
+获得5点格挡。在本场战斗中升级手牌中的一张牌。
+获得5点格挡。在本场战斗中升级手牌中的所有牌。
+英文名称 Armaments
+颜色红色
+稀有度普通
+耗能 1
+描述获得5点格挡。在本场战斗中升级手牌中的一张牌。
+升级耗能 1
+升级描述获得5点格挡。在本场战斗中升级手牌中的所有牌。
+→点此查看数据页面
+武装 （Armaments） 是杀戮尖塔中铁甲战士的一张技能牌。获得5点格挡，在本场战斗中升级手牌中的一张 (所有)⁺ 牌。
+更新历史
+Patch V2.0: The Watcher Fixed Armaments card not updating descriptions of upgraded cards.
+Fixed Armaments card not updating descriptions of upgraded cards.
+Weekly Patch 42: Reboot Using more noticeable flashy VFX for cards upgraded via Armaments or Warped Tongs.
+Using more noticeable flashy VFX for cards upgraded via Armaments or Warped Tongs.
+Weekly Patch 36: Power Through Draw and Discard piles can now be opened from hand select screen (Gambling Chip, Armaments, etc).
+Draw and Discard piles can now be opened from hand select screen (Gambling Chip, Armaments, etc).
+Weekly Patch 5: Happy Holidays! Previewing cards via Armaments wasn't applying powers. Fixed.
+Previewing cards via Armaments wasn't applying powers. Fixed.
+Weekly Patch 1: The First of Many! Armaments' upgrade preview now displays values based on Powers applied to you.
+Armaments' upgrade preview now displays values based on Powers applied to you.

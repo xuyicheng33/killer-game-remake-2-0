@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+诅咒钥匙
+遗物 id: Cursed Key
+遗物信息
+效果中文描述你每次打开一个非Boss宝箱，都会获得一张诅咒。在每回合开始时获得一点能量。
+效果英文描述 at the start of your turn.gain 1 energy. Whenever you open a non-Boss chest, obtain a Curse .
+中文引言你能感到这把钥匙上散发出邪恶的能量。力量总是需要付出代价的。
+英文引言 You can feel the malicious energy emanating from the key. Power comes at a price.
+所属通用
+稀有度 BOSS
+你能感到这把钥匙上散发出邪恶的能量。力量总是需要付出代价的。
+简介
+诅咒钥匙 （Cursed Key） 是杀戮尖塔中的一件BOSS 遗物。
+注意
+对于想要进入终幕的玩家，必须打开宝箱来获取蓝宝石钥匙，该遗物至少会带来一张诅咒。

@@ -1,0 +1,11 @@
+蜷身
+Buffs id: Curl Up
+Buffs信息
+效果中文描述当受到攻击伤害时，蜷起身子并获得点格挡。（每场战斗一次）
+效果英文描述 On receiving attack damage, rolls up and gains X Block . (Once per combat)
+类型敌方BUFF
+可叠加
+蜷身 （Curl Up） 是杀戮尖塔中的一个的可叠加状态。
+在受到攻击伤害时，敌人将会蜷身并获得X点格挡，然后该状态会被移除。
+虱虫会在战斗开始时携带此状态，这使其很难在一个回合内被击杀。
+对于多段攻击，蜷身会在该攻击结算后才触发。

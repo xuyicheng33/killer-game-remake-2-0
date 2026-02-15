@@ -1,0 +1,8 @@
+跟踪锁定
+Buffs id: Locken
+Buffs信息
+效果中文描述从充能球受到的伤害增加 50%，持续 X 回合。
+效果英文描述 Receives 50% more damage from Orbs for #b turn(s).
+类型敌方Debuff
+可叠加
+跟踪锁定 （Locken） 是杀戮尖塔中的一个的可叠加状态。

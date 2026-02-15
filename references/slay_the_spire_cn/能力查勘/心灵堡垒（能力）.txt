@@ -1,0 +1,8 @@
+心灵堡垒（能力）
+Buffs id: Mental Fortress
+Buffs信息
+效果中文描述每当你转换姿态时，获得 X 点格挡。
+效果英文描述 Whenever you change Stances,gain X block.
+类型玩家BUFF(来源唯一)
+可叠加
+心灵堡垒 （Mental Fortress） 是杀戮尖塔中的一个的可叠加状态。

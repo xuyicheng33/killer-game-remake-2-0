@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+李家华夫饼
+遗物 id: Lee's Waffle
+遗物信息
+效果中文描述拾起时，将你的最大生命值提升 7 点，并回复所有生命。
+效果英文描述 Upon pickup, raise your Max HP by 7 and heal all of your HP.
+中文引言 “全高塔你能找到的最好吃的东西！今天特地为你烤的。”
+英文引言 Tastiest treat you will find in all the Spire! Baked today just for you.
+所属通用
+稀有度商店
+“全高塔你能找到的最好吃的东西！今天特地为你烤的。”
+简介
+李家华夫饼 （Lee's Waffle） 是杀戮尖塔中的一件商店遗物。
+轶事
+该遗物原型来自于开发者的一个朋友李，他在工作的地方有一台华夫饼机。

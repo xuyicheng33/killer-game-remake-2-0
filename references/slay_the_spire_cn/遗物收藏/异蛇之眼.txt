@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+异蛇之眼
+遗物 id: Snecko Eye
+遗物信息
+效果中文描述每回合多抽 2 张牌。每场战斗开始时获得混乱效果。
+效果英文描述 At the start of your turn, draw 2 additional cards. Start each combat Confused .
+中文引言一条死去异蛇的眼珠，比你想象中的要大上不少。
+英文引言 An eye of a fallen snecko. Much larger than you imagined.
+所属通用
+稀有度 BOSS
+一条死去异蛇的眼珠，比你想象中的要大上不少。
+简介
+异蛇之眼 （Snecko Eye） 是杀戮尖塔中的一件BOSS 遗物。
+注意
+更多信息可参阅混乱。

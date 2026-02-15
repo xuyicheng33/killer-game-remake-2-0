@@ -1,0 +1,8 @@
+腐化（能力）
+Buffs id: Corruption
+Buffs信息
+效果中文描述技能牌耗能变为 0。你每打出一张技能牌，都将其消耗。
+效果英文描述 Skills cost 0 . Whenever you play a Skill , Exhaust it.
+类型玩家BUFF(来源唯一)
+不可叠加
+腐化 （Corruption） 是杀戮尖塔中的一个的不可叠加状态。

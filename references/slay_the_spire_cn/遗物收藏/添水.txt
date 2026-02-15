@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+添水
+遗物 id: Sozu
+遗物信息
+效果中文描述你无法再获得药水。在每回合开始时获得1点能量。
+效果英文描述 Gain 1 Energy at the start of each turn. You can no longer obtain potions.
+中文引言你注意到所有带魔力的液体在接近这件遗物时都会失去效力。
+英文引言 You notice that magical liquids seem to lose their properties when near this relic.
+所属通用
+稀有度 BOSS
+你注意到所有带魔力的液体在接近这件遗物时都会失去效力。
+简介
+添水 （Sozu） 是杀戮尖塔中的一件BOSS 遗物。
+注意
+添水会限制你从任何方式获得药水，包括混沌药水，因此在决定选取添水时，请先使用混沌药水以避免损失。

@@ -1,0 +1,8 @@
+势不可当（能力）
+Buffs id: Juggernaut
+Buffs信息
+效果中文描述每当你获得格挡时，对一名随机敌人造成 X 点伤害。
+效果英文描述 Whenever you gain Block , deal X damage to a random enemy.
+类型玩家BUFF(来源唯一)
+可叠加
+势不可当 （Juggernaut） 是杀戮尖塔中的一个的可叠加状态。

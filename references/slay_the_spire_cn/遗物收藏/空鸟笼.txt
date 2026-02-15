@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+空鸟笼
+遗物 id: Empty Cage
+遗物信息
+效果中文描述拾起时，选择移除牌组中的 2 张牌。
+效果英文描述 Upon pickup, remove 2 cards from your deck.Choose 2 Cards to Remove.
+中文引言 “将崇拜之物关进笼子，这是多么奇异的行为啊。”——兰伟德
+英文引言 "How unusual to cage that which you worship." - Ranwid
+所属通用
+稀有度 BOSS
+“将崇拜之物关进笼子，这是多么奇异的行为啊。”——兰伟德
+简介
+空鸟笼 （Empty Cage） 是杀戮尖塔中的一件BOSS 遗物。
+轶事
+遗物描述中的“兰伟德”出现在事件我们又见面了！，他是先古之民中的一员。
+遗物描述中提到的“崇拜之物”可能与邪教徒、被拣选者、异鸟和觉醒者所属的崇拜巨大鸟类的邪教有关。

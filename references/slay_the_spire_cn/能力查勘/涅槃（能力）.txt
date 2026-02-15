@@ -1,0 +1,8 @@
+涅槃（能力）
+Buffs id: Nirvana
+Buffs信息
+效果中文描述你每次预见时，获得 X 点格挡。
+效果英文描述 Whenever you Scry, gain X Block .
+类型玩家BUFF(来源唯一)
+可叠加
+涅槃 （Nirvana） 是杀戮尖塔中的一个的可叠加状态。

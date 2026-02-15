@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+核能电池
+遗物 id: Nuclear Battery
+遗物信息
+效果中文描述在每场战斗开始时，生成 1 个等离子充能球。
+效果英文描述 At the start of each combat, Channel 1 Plasma .
+中文引言哇噢……
+英文引言 Ooooh...
+所属故障机器人
+稀有度 BOSS
+哇噢……
+简介
+核能电池 （Nuclear Battery） 是杀戮尖塔中故障机器人的一件BOSS 遗物。

@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+缩放仪
+遗物 id: Pantograph
+遗物信息
+效果中文描述在Boss战开始时，回复 25点 #生命值。
+效果英文描述 At the start of Boss combats, heal 25 HP.
+中文引言 “坚实的地基从不是出自偶然，规划工具是重中之重。”——建筑师
+英文引言 Solid foundations are not accidental. Tools for planning are a must.\ - The Architect
+所属通用
+稀有度罕见
+“坚实的地基从不是出自偶然，规划工具是重中之重。”——建筑师
+简介
+缩放仪 （Pantograph） 是杀戮尖塔中的一件罕见遗物。

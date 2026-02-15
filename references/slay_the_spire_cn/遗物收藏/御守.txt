@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+御守
+遗物 id: Omamori
+遗物信息
+效果中文描述抵消你下 2 次获得的诅咒。
+效果英文描述 Negate the next 2 Curses you obtain.
+中文引言常见的用来抵御邪灵的护身符，这个护符里似乎有一股神圣的能量。
+英文引言 A common charm for staving off vile spirits. This one seems to possess a spark of divine energy.
+所属通用
+稀有度普通
+常见的用来抵御邪灵的护身符，这个护符里似乎有一股神圣的能量。
+简介
+御守 （Omamori） 是杀戮尖塔中的一件普通遗物。
+这件遗物只会在49层（即第三幕BOSS）前出现。
+该遗物可以抵挡死灵诅咒和铃铛的诅咒。

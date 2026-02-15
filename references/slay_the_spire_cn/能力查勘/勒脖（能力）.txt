@@ -1,0 +1,8 @@
+勒脖（能力）
+Buffs id: Choked
+Buffs信息
+效果中文描述你这回合你每打出一张牌，其便失去 X 点生命。
+效果英文描述 Whenever you play a card this turn, loses #b HP.
+类型敌方Debuff
+可叠加
+勒脖 （Choked） 是杀戮尖塔中的一个的可叠加状态。

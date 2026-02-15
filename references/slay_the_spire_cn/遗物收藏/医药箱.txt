@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+医药箱
+遗物 id: Medical Kit
+遗物信息
+效果中文描述可以打出原本不能被打出的状态牌。打出状态牌会将其消耗。
+效果英文描述 Unplayable Status cards can now be played. Whenever you play a Status card, Exhaust it.
+中文引言 “什么都有！治痒痒、治烧伤、治中毒，应有尽有！”
+英文引言 Has everything you need! Anti-itch, anti-burn, anti-venom, and more!
+所属通用
+稀有度商店
+“什么都有！治痒痒、治烧伤、治中毒，应有尽有！”
+简介
+医药箱 （Medical Kit） 是杀戮尖塔中的一件商店遗物。

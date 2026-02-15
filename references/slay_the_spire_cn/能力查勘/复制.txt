@@ -1,0 +1,8 @@
+复制
+Buffs id: Duplication
+Buffs信息
+效果中文描述你下 X 张牌会打出2次。
+效果英文描述 The next X cards you play will play twice.
+类型玩家BUFF(来源唯一)
+计数
+复制 （Duplication） 是杀戮尖塔中的一个的计数状态。

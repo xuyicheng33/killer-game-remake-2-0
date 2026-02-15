@@ -1,0 +1,32 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+发掘 Exhume
+技能
+升级前升级后测试画风 1 发掘技能选择一张已消耗的牌，将其放入你的手牌。消耗。 0 发掘+ 技能选择一张已消耗的牌，将其放入你的手牌。消耗。 1 发掘技能选择一张已消耗的牌，将其放入你的手牌。消耗。
+升级前
+升级后
+测试画风
+选择一张已消耗的牌，将其放入你的手牌。消耗。
+英文名称 Exhume
+颜色红色
+稀有度稀有
+耗能 1
+描述选择一张已消耗的牌，将其放入你的手牌。消耗。
+升级耗能 0
+升级描述选择一张已消耗的牌，将其放入你的手牌。消耗。
+→点此查看数据页面
+简介
+发掘 （Exhume） 是杀戮尖塔中铁甲战士的一张技能牌。
+策略
+发掘不能以另一个发掘为目标，防止玩家创造简单的无限。
+发掘可以回收强大的消耗卡牌（例如祭品、狂宴、死亡收割、震荡波等），甚至将它们在一回合内打出两次。
+发掘也可以作用于因虚无而被消耗的卡牌，例如幽灵铠甲。
+更新历史
+Weekly Patch 19: Seed Put vs Place wording inconsistency on Thinking Ahead and Exhume cards.
+Put vs Place wording inconsistency on Thinking Ahead and Exhume cards.
+Weekly Patch 7: Setting Up All the Things Exhume card can no longer return an Exhume card to your hand.
+Exhume card can no longer return an Exhume card to your hand.

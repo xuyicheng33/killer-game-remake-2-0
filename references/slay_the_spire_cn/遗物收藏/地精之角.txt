@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+地精之角
+遗物 id: Gremlin Horn
+遗物信息
+效果中文描述每当有一名敌人死亡，获得1点能量并抽 1 张牌。
+效果英文描述 Whenever an enemy dies, gain an energy and draw 1 card.
+中文引言 “地精大块头到死都能一直长得更大，真是厉害。”——兰伟德
+英文引言 Gremlin Nobs are capable of growing until the day they die. Remarkable. - Ranwid
+所属通用
+稀有度罕见
+“地精大块头到死都能一直长得更大，真是厉害。”——兰伟德
+简介
+地精之角 （Gremlin Horn） 是杀戮尖塔中的一件罕见遗物。
+注意
+若敌人在其回合内死亡，则地精之角提供的卡牌将会保留至下一回合，但提供的能量不会保留（在有冰淇淋的情况下则会保留）。

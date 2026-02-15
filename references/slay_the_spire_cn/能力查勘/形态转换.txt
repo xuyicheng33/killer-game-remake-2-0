@@ -1,0 +1,11 @@
+形态转换
+Buffs id: Mode Shift
+Buffs信息
+效果中文描述受到 X 点伤害后，会变成防御形态
+效果英文描述 After receiving X damage, changes to a defensive mode.
+类型敌方BUFF
+可叠加
+形态转换 （Mode Shift） 是杀戮尖塔中的一个的可叠加状态。
+通常只有守护者会在战斗开始时获得30(A4+:35,A19+:40)点此状态。
+注意
+从防御形态切换回来时，会使此状态的数值+10。

@@ -1,0 +1,8 @@
+爆发（能力）
+Buffs id: Burst
+Buffs信息
+效果中文描述在这个回合，你的下 X 张技能牌会打出两次。
+效果英文描述 Your next X Skills are played twice this turn.
+类型玩家BUFF(来源唯一)
+计数
+爆发 （Burst） 是杀戮尖塔中的一个的计数状态。

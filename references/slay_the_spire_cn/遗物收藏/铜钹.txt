@@ -1,0 +1,23 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+铜钹
+遗物 id: Tingsha
+遗物信息
+效果中文描述你每在你的回合丢弃一张牌，就对一名随机敌人造成 3 点伤害。
+效果英文描述 Whenever you discard a card during your turn, deal 3 damage to a random enemy.
+中文引言这件乐器发出的响声似乎能回荡到让人耳朵发痛。
+英文引言 The sound this instrument generates seems to be capable of reverberating to painful levels of volume.
+所属静默猎手
+稀有度稀有
+这件乐器发出的响声似乎能回荡到让人耳朵发痛。
+简介
+铜钹 （Tingsha） 是杀戮尖塔中静默猎手的一件稀有遗物。
+协同效应
+通过赌博筹码弃置的卡牌仍会触发此遗物效果，尽管此时并非“回合内”。
+使用计算下注时，可以触发多次遗物效果，造成一些伤害。
+轶事
+当你点击遗物列表中的铜钹时，它会“震荡”（发出扩散的波纹状特效，类似遗物被触发时的效果）。

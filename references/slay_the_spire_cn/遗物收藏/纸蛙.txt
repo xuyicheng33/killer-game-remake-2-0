@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+纸蛙
+遗物 id: Paper Frog
+遗物信息
+效果中文描述有易伤状态的敌人受到的伤害增加 75% 而非 50%。
+效果英文描述 Enemies with Vulnerable take 75% more damage rather than 50% .
+中文引言这张纸似乎会不断自己翻折，变成某种小动物的形状。
+英文引言 The paper continually folds and unfolds itself into the shape of a small creature.
+所属铁甲战士
+稀有度罕见
+这张纸似乎会不断自己翻折，变成某种小动物的形状。
+简介
+纸蛙 （Paper Frog） 是杀戮尖塔中铁甲战士的一件罕见遗物。

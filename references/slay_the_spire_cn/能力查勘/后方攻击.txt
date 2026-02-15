@@ -1,0 +1,10 @@
+后方攻击
+Buffs id: BackAttack
+Buffs信息
+效果中文描述因为从后方对你攻击，造成的伤害增加 50%。
+效果英文描述 Deals 50% more damage as it is attacking you from behind.
+类型敌方BUFF
+不可叠加
+后方攻击 （BackAttack） 是杀戮尖塔中的一个的不可叠加状态。
+对你造成的伤害增加50%
+该效果只会出现在矛盾一战中，且只会使背对你的敌人获得

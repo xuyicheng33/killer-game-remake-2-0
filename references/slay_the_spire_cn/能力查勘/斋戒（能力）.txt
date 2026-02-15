@@ -1,0 +1,8 @@
+斋戒（能力）
+Buffs id: Fasting
+Buffs信息
+效果中文描述在你的回合开始时，失去 X 点能量。
+效果英文描述 At the start of your turn, lose #b energy.
+类型玩家Debuff
+可叠加
+斋戒 （Fasting） 是杀戮尖塔中的一个的可叠加状态。

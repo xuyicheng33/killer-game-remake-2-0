@@ -1,0 +1,29 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+死灵之书
+遗物 id: Necronomicon
+遗物信息
+效果中文描述你每回合打出的第一张耗能大于等于 2 的攻击牌将被打出两次。当你拾起这件遗物时，被诅咒。
+效果英文描述 The first Attack played each turn that costs 2 or more is played twice. Upon pickup, obtain a special Curse .
+中文引言只有傻瓜才会想要去掌控这种邪恶的力量。你每晚的梦境中都充斥着这本书将你的心智逐渐吞噬的噩梦。
+英文引言 Only a fool would try and harness this evil power. At night your dreams are haunted by images of the book devouring your mind.
+所属通用
+稀有度事件
+只有傻瓜才会想要去掌控这种邪恶的力量。你每晚的梦境中都充斥着这本书将你的心智逐渐吞噬的噩梦。
+简介
+死灵之书 （Necronomicon） 是杀戮尖塔中的一件事件遗物。
+注意
+该遗物在事件诅咒书本中以1/3的概率出现。
+拾取时，在牌组中加入死灵诅咒。
+协同效应
+混乱、x耗能牌及其他不确定耗能的情况（如精巧刺击）：以打出时实际消耗的能量为准。
+关于“打出两次”效果的协同效应，请参见双发。
+化学物X：打出X耗能攻击牌时若能量大于等于2，可以同时触发死灵之书与化学物X 的效果。否则，只会触发化学物X。
+免费攻击 （来自旋身）：能量大于等于2时，打出X耗能攻击牌可以触发死灵之书的效果，且不会消耗能量。
+轶事
+该遗物在向电影《鬼玩人》中的“死亡之书”致敬。
+死灵之书(Necronomicon)是美国著名小说家洛夫克拉夫特（H. P. Lovecraft）创构的克苏鲁神话中出现的虚构魔典之一，记载了世界上最疯狂最邪恶的事物。

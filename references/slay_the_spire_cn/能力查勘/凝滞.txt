@@ -1,0 +1,13 @@
+凝滞
+Buffs id: Stasis
+Buffs信息
+效果中文描述在死亡时，所盗窃的卡牌会被放回你的手牌。
+效果英文描述 On death,the card which it has stolen is returned to your hand.
+类型敌方BUFF
+不可叠加
+凝滞 （Stasis） 是杀戮尖塔中的一个的不可叠加状态。
+来源
+的召唤物。
+注意
+被凝滞返还的卡牌被视为“战斗中临时加入的卡牌”，会被操控现实升级。
+关于同名敌人行动及其应对策略，参见铜制机械人偶。

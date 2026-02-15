@@ -1,0 +1,8 @@
+涂毒（能力）
+Buffs id: Envenom
+Buffs信息
+效果中文描述每当你造成未被格挡的攻击伤害，给予 X 层中毒。
+效果英文描述 Whenever you deal unblocked attack damage, apply X Poison .
+类型玩家BUFF(来源唯一)
+可叠加
+涂毒 （Envenom） 是杀戮尖塔中的一个的可叠加状态。

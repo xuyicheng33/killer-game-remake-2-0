@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+冻结之眼
+遗物 id: Frozen Eye
+遗物信息
+效果中文描述现在观看抽牌堆时，卡牌将按顺序排列。
+效果英文描述 When viewing your Draw Pile , the cards are now shown in order.
+中文引言凝视这只眼睛时，你能隐约捕捉到你自己的未来。
+英文引言 Staring into the eye, you see a glimpse of your future.
+所属通用
+稀有度商店
+凝视这只眼睛时，你能隐约捕捉到你自己的未来。
+简介
+冻结之眼 （Frozen Eye） 是杀戮尖塔中的一件商店遗物。

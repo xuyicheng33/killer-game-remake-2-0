@@ -1,0 +1,8 @@
+收集（能力）
+Buffs id: Collect
+Buffs信息
+效果中文描述在你的下 X 个回合开始时，增加一张奇迹+ 到你的手牌。
+效果英文描述 At the start of your next turn, put a Miracle+ into your hand.
+类型玩家BUFF(来源唯一)
+计数
+收集 （Collect） 是杀戮尖塔中的一个的计数状态。

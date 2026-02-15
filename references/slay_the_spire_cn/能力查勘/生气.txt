@@ -1,0 +1,10 @@
+生气
+Buffs id: Angry
+Buffs信息
+效果中文描述每当受到攻击伤害，就获得 X 点力量。
+效果英文描述 Upon receiving attack damage, gains X Strength .
+类型敌方BUFF
+可叠加
+生气 （Angry） 是杀戮尖塔中的一个的可叠加状态。
+每当受到一次伤害，自身获得X层力量。
+通常只有火大地精会在战斗开始时获得1(A17+:2)点此状态。

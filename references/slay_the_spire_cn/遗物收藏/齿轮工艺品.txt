@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+齿轮工艺品
+遗物 id: Clockwork Souvenir
+遗物信息
+效果中文描述每场战斗开始时，获得 1 层人工制品。
+效果英文描述 Start each combat with 1 Artifact .
+中文引言 “你看里面齿轮这么多，是不是很精巧。”
+英文引言 So many intricate gears.
+所属通用
+稀有度商店
+“你看里面齿轮这么多，是不是很精巧。”
+简介
+齿轮工艺品 （Clockwork Souvenir） 是杀戮尖塔中的一件商店遗物。

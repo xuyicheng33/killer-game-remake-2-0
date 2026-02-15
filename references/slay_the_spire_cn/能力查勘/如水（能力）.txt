@@ -1,0 +1,10 @@
+如水（能力）
+Buffs id: Like Water
+Buffs信息
+效果中文描述在你的回合结束时，如果你处于平静，则获得 X 点格挡。
+效果英文描述 At the end of your turn, if you are in Calm , gain X Block .
+类型玩家BUFF(来源唯一)
+可叠加
+如水 （Like Water） 是杀戮尖塔中的一个的可叠加状态。
+协同效应
+奥利哈钢：在如水之前判定。

@@ -1,0 +1,30 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+暴走 Rampage
+攻击
+升级前升级后测试画风 1 暴走攻击造成8点伤害。这张牌每被打出一次，在本场战斗中其伤害增加5。 1 暴走+ 攻击造成8点伤害。这张牌每被打出一次，在本场战斗中其伤害增加8。 1 暴走攻击造成8点伤害。这张牌每被打出一次，在本场战斗中其伤害增加5。
+升级前
+升级后
+测试画风
+造成8点伤害。这张牌每被打出一次，在本场战斗中其伤害增加5。
+造成8点伤害。这张牌每被打出一次，在本场战斗中其伤害增加8。
+英文名称 Rampage
+颜色红色
+稀有度罕见
+耗能 1
+描述造成8点伤害。这张牌每被打出一次，在本场战斗中其伤害增加5。
+升级耗能 1
+升级描述造成8点伤害。这张牌每被打出一次，在本场战斗中其伤害增加8。
+→点此查看数据页面
+暴走 （Rampage） 是杀戮尖塔中铁甲战士的一张攻击牌。造成8点伤害，在本场战斗中每打出一次伤害增加5 (8)⁺。
+策略
+玩家早期卡组会比较小，所以暴走是一个不错的伤害来源。
+暴走需要长期续航的能力，比较适合于基于防御牌的卡组。当然，你的卡组达到无限时也可以通过它来快速解决战斗。
+轶事
+该卡牌的测试画风卡图是将其英文名（Rampage）进行了拆词（公羊“ram”+书页“page”）。
+Update History
+Weekly Patch 46: Adrenaline Fix for proper behavior when duplicating cards like Rampage and Genetic Algorithm with effects like Echo Form. Weekly Patch 34: Malaise Rampage card's ramp increased from 4 -> 5. No change to upgraded version.

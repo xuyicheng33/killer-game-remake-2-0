@@ -1,0 +1,10 @@
+集中
+Buffs id: Focus
+Buffs信息
+效果中文描述所有充能球的效果增加 X 点。（等离子充能球不受影响）
+效果英文描述 Increases the effectiveness of Orbs by X .
+类型玩家BUFF
+可叠加
+集中 （Focus） 是杀戮尖塔中的一个的可叠加状态。
+相关卡牌
+超能光束耗尽碎片整理偏差认知

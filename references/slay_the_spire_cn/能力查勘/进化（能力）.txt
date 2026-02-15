@@ -1,0 +1,8 @@
+进化（能力）
+Buffs id: Evolve
+Buffs信息
+效果中文描述每当你抽到一张状态牌，抽 X 张牌。
+效果英文描述 Whenever you draw a Status card,draw X cards.
+类型玩家BUFF(来源唯一)
+可叠加
+进化 （Evolve） 是杀戮尖塔中的一个的可叠加状态。

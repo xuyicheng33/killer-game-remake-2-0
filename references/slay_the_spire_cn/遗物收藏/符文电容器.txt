@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+符文电容器
+遗物 id: Runic Capacitor
+遗物信息
+效果中文描述每场战斗开始时，获得 3 个额外充能球栏位。
+效果英文描述 More is better.
+中文引言多多益善。
+英文引言 Start each combat with #b3 additional Orb slots.
+所属通用
+稀有度商店
+多多益善。
+简介
+符文电容器 （Runic Capacitor） 是杀戮尖塔中的一件商店遗物。

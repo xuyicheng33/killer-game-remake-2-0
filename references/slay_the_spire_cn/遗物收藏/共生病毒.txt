@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+共生病毒
+遗物 id: Symbiotic Virus
+遗物信息
+效果中文描述在每场战斗开始时，生成 1 个黑暗充能球。
+效果英文描述 At the start of each combat, Channel 1 Dark .
+中文引言小小的麻烦，却可以带来大大的益处……
+英文引言 A little bit of bad can do a lot of good...
+所属故障机器人
+稀有度罕见
+小小的麻烦，却可以带来大大的益处……
+简介
+共生病毒 （Symbiotic Virus） 是杀戮尖塔中故障机器人的一件罕见遗物。

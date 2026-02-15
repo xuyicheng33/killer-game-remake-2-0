@@ -1,0 +1,10 @@
+仪式
+Buffs id: Ritual
+Buffs信息
+效果中文描述在其回合结束时，获得 X 点力量。
+效果英文描述 At the end of its turn, gains X Strength .
+类型通用BUFF
+可叠加
+仪式 （Ritual） 是杀戮尖塔中的一个的可叠加状态。
+注意
+尽管算作同一个buff，但是此buff在玩家和敌人身上的描述与表现略有不同。

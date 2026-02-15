@@ -1,0 +1,8 @@
+钢笔尖（能力）
+Buffs id: Pen Nib
+Buffs信息
+效果中文描述你的下一次攻击造成双倍伤害。
+效果英文描述 Your next Attack deals double damage.
+类型玩家BUFF(来源唯一)
+不可叠加
+钢笔尖 （Pen Nib） 是杀戮尖塔中的一个的不可叠加状态。

@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+勇气投石索
+遗物 id: Sling of Courage
+遗物信息
+效果中文描述在与精英敌人战斗时，获得 2 点力量。
+效果英文描述 Start each Elite combat with 2 Strength .
+中文引言 “对格外强大的对手非常好用的工具。”
+英文引言 A handy tool for dealing with particularly tough opponents.
+所属通用
+稀有度商店
+“对格外强大的对手非常好用的工具。”
+简介
+勇气投石索 （Sling of Courage） 是杀戮尖塔中的一件商店遗物。

@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+干瘪之手
+遗物 id: Mummified Hand
+遗物信息
+效果中文描述你每打出一张能力牌，手牌中就有一张随机牌在这个回合耗能变为 0。
+效果英文描述 Whenever you play a Power card, a random card in your hand costs 0 that turn.
+中文引言这只手经常都在抽动，尤其是在你心跳很快的时候。
+英文引言 Frequently twitches, especially when your pulse is high.
+所属通用
+稀有度罕见
+这只手经常都在抽动，尤其是在你心跳很快的时候。
+简介
+干瘪之手 （Mummified Hand） 是杀戮尖塔中的一件罕见遗物。
+漏洞
+该遗物的描述有误，实际效果应为：你每打出一张能力牌，手牌中就有一张随机牌在本回合内本次在手牌中时耗能变为0。也就是说，将这张牌打出或弃置都会使其变回原本的耗能。
+也就是说，将这张牌打出或弃置都会使其变回原本的耗能。

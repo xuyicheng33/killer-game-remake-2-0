@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+圣水
+遗物 id: Holy Water
+遗物信息
+效果中文描述在每场战斗开始时，将 3 张奇迹放入你的手牌。
+效果英文描述 Replaces Pure Water . At the start of each combat, add 3 Miracles into your hand.
+中文引言从高塔出现的时代前收集来的水。
+英文引言 Collected from a time before the Spire.
+所属观者
+稀有度 BOSS
+从高塔出现的时代前收集来的水。
+简介
+圣水 （Holy Water） 是杀戮尖塔中观者的一件BOSS 遗物。
+这件遗物只会在你拥有至纯之水时出现在BOSS宝箱中。
+漏洞
+遗物描述中的中文文本存在遗漏，没有说明该遗物会替换至纯之水。

@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+破碎金冠
+遗物 id: Busted Crown
+遗物信息
+效果中文描述在卡牌奖励画面，可供选择的牌数减少 2 张。在每回合开始时获得1点能量。
+效果英文描述 Gain an energy at the start of your turn. Future card rewards have 2 less cards to choose from.
+中文引言第一勇士的金冠……或者只是一个拙劣的仿制品？
+英文引言 The Champ's crown... or a pale imitation?
+所属通用
+稀有度 BOSS
+第一勇士的金冠……或者只是一个拙劣的仿制品？
+简介
+破碎金冠 （Busted Crown） 是杀戮尖塔中的一件BOSS 遗物。
+协同效应
+拥有问号牌、转经轮可以减少一些该遗物带来的负面效果。

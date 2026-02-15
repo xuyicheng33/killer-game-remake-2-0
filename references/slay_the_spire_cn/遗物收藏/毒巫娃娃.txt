@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+毒巫娃娃
+遗物 id: Du-Vu Doll
+遗物信息
+效果中文描述你的牌组中每有一张诅咒牌，你在战斗开始时就额外获得 1点力量。
+效果英文描述 For each Curse in your deck, start each combat with 1 Strength .
+中文引言一个设计为能从邪恶能量中获得力量的娃娃。
+英文引言 A doll devised to gain strength from malicious energy.
+所属通用
+稀有度稀有
+一个设计为能从邪恶能量中获得力量的娃娃。
+简介
+毒巫娃娃 （Du-Vu Doll） 是杀戮尖塔中的一件稀有遗物。

@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+弯曲铁钳
+遗物 id: Warped Tongs
+遗物信息
+效果中文描述在你的每个回合开始时，随机升级一张你的手牌（只影响本场战斗）。
+效果英文描述 At the start of your turn, Upgrade a random card in your hand for the rest of combat.
+中文引言这对被偷来的诅咒铁钳上散发着强烈的怨念，它似乎十分想要回到原本的地方。
+英文引言 The cursed tongs emit a strong desire to return to where they were stolen from.
+所属通用
+稀有度事件
+这对被偷来的诅咒铁钳上散发着强烈的怨念，它似乎十分想要回到原本的地方。
+简介
+弯曲铁钳 （Warped Tongs） 是杀戮尖塔中的一件事件遗物。

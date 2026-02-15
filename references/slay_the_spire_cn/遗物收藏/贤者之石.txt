@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+贤者之石
+遗物 id: Philosopher's Stone
+遗物信息
+效果中文描述在每回合开始时获得1点能量。所有敌人初始获得 1点力量。
+效果英文描述 Gain an energy at the start of your turn. ALL enemies start combat with 1 Strength .
+中文引言这块石头中散发出纯粹的能量，所有周围的人与物都会因此而变强。
+英文引言 Raw energy emanates from the stone, empowering all nearby.
+所属通用
+稀有度 BOSS
+这块石头中散发出纯粹的能量，所有周围的人与物都会因此而变强。
+简介
+贤者之石 （Philosopher's Stone） 是杀戮尖塔中的一件BOSS 遗物。

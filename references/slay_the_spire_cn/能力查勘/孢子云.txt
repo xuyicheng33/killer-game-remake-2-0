@@ -1,0 +1,8 @@
+孢子云
+Buffs id: Spore Cloud
+Buffs信息
+效果中文描述在死亡时，给予你 X 回合的易伤。
+效果英文描述 On death, applies X Vulnerable .
+类型敌方BUFF
+可叠加
+孢子云 （Spore Cloud） 是杀戮尖塔中的一个的可叠加状态。

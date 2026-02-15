@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+黑石护符
+遗物 id: Darkstone Periapt
+遗物信息
+效果中文描述每当你获得一张诅咒，将你的最大生命值提高 6
+效果英文描述 Whenever you obtain a Curse , increase your Max HP by 6
+中文引言这块黑石能吸取黑暗的能量，将其转化为佩戴者的生命力。
+英文引言 The stone draws power from dark energy, converting it into vitality for the wearer.
+所属通用
+稀有度罕见
+这块黑石能吸取黑暗的能量，将其转化为佩戴者的生命力。
+简介
+黑石护符 （Darkstone Periapt） 是杀戮尖塔中的一件罕见遗物。
+这件遗物只会在49层（即第三幕BOSS）前出现。
+将诅咒牌进行变化时也会触发该遗物的效果。

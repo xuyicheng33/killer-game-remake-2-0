@@ -1,0 +1,34 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+燔祭 Immolate
+攻击
+升级前升级后测试画风 2 燔祭攻击对所有敌人造成21点伤害。将一张灼伤放入你的弃牌堆中。 2 燔祭+ 攻击对所有敌人造成28点伤害。将一张灼伤放入你的弃牌堆中。 2 燔祭攻击对所有敌人造成21点伤害。将一张灼伤放入你的弃牌堆中。
+升级前
+升级后
+测试画风
+对所有敌人造成21点伤害。将一张灼伤放入你的弃牌堆中。
+对所有敌人造成28点伤害。将一张灼伤放入你的弃牌堆中。
+英文名称 Immolate
+颜色红色
+稀有度稀有
+耗能 2
+描述对所有敌人造成21点伤害。将一张灼伤放入你的弃牌堆中。
+升级耗能 2
+升级描述对所有敌人造成28点伤害。将一张灼伤放入你的弃牌堆中。
+→点此查看数据页面
+燔祭 （Immolate） 是杀戮尖塔中铁甲战士的一张攻击牌。对所有敌人造成21 (28)⁺ 点伤害，将一张灼伤放入你的弃牌堆中。
+旧版（补丁20 前）
+消耗一张卡牌，如果这张卡牌是诅咒牌或状态牌，对所有敌人造成10 (15)⁺ 点伤害。
+Update History
+Weekly Patch 21: Channel Lightning Immolate card buff: Adds a Burn to discard pile instead of draw pile. Immolate card buff: 18 -> 21 damage. Immolate+ card buff: 24 -> 28 damage.
+Immolate card buff: Adds a Burn to discard pile instead of draw pile.
+Immolate card buff: 18 -> 21 damage.
+Immolate+ card buff: 24 -> 28 damage.
+Weekly Patch 20: Immolate Immolate now costs 2, deals considerably more damage, and shuffles a Burn into your draw pile.
+Immolate now costs 2, deals considerably more damage, and shuffles a Burn into your draw pile.
+Weekly Patch 3: Balance Balance Balance Immolate now uses proper exhausting. Triggers stuff better and Purity Achievement works with it.
+Immolate now uses proper exhausting. Triggers stuff better and Purity Achievement works with it.

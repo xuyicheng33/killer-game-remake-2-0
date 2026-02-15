@@ -1,0 +1,22 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+生物样本
+遗物 id: The Specimen
+遗物信息
+效果中文描述每当有敌人死去时，将其身上的中毒层数移到一名随机敌人身上。
+效果英文描述 Whenever an enemy dies, transfer any Poison it has to a random enemy.
+中文引言 “有意思！我发现了一个有着惊人毒性的变异生物，先采集份样本以后再仔细研究吧。”——兰伟德
+英文引言 Fascinating! I found a mutated creature demonstrating astounding toxic properties. Storing a sample for later examination.- Ranwid
+所属静默猎手
+稀有度稀有
+“有意思！我发现了一个有着惊人毒性的变异生物，先采集份样本以后再仔细研究吧。”——兰伟德
+简介
+生物样本 （The Specimen） 是杀戮尖塔中静默猎手的一件稀有遗物。
+注意
+该遗物会触发异蛇头骨的效果。
+觉醒者的第一次死亡、小黑在场上有其他同类存活时死亡会触发该遗物，但爆炸机爆炸、史莱姆分裂不会。
+对于群体怪物时，一只怪物中毒死亡时，中毒层数会转移到另一只怪物，但不会接着触发中毒伤害。

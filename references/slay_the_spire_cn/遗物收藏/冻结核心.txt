@@ -1,0 +1,19 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+冻结核心
+遗物 id: FrozenCore
+遗物信息
+效果中文描述替换破损核心。如果你在你的回合结束时还有空余的充能球栏位，生成 1 个冰霜充能球。
+效果英文描述 Replaces Cracked Core.If you end your turn with empty Orb slots. Channel 1 Forest orb.
+中文引言某种脉动的冰冷能量充满了你核心中的破损处。
+英文引言 The crack in your core has been filled with a pulsating cold energy.
+所属通用
+稀有度 BOSS
+某种脉动的冰冷能量充满了你核心中的破损处。
+简介
+冻结核心 （FrozenCore） 是杀戮尖塔中的一件BOSS 遗物。
+这件遗物只会在你拥有破损核心时出现在BOSS宝箱中。

@@ -1,0 +1,25 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+橙色药丸
+遗物 id: Orange Pellets
+遗物信息
+效果中文描述你每在同一回合内打出能力牌、攻击牌和技能牌各一张，移除你身上的所有负面效果。
+效果英文描述 Made from various fungi found throughout the Spire, they will stave off any affliction.
+中文引言 “用塔里各处真菌做出来的药，包治百病！”
+英文引言 Whenever you play a #yPower, #yAttack, and #ySkill in the same turn, remove all of your debuffs.
+所属通用
+稀有度商店
+“用塔里各处真菌做出来的药，包治百病！”
+简介
+橙色药丸 （Orange Pellets） 是杀戮尖塔中的一件商店遗物。
+注意&策略
+在解除负面效果时可以把敏捷下降与易伤、虚弱等负面效果集中起来一并解除，从而获得更高的收益。
+该遗物是唯一一个可以解除异蛇之眼的混乱效果的遗物，但解除之后卡组的所有卡牌的费用都会固定下来，因此请酌情购买并选择合适的解除时机。
+轶事
+它的外形致敬了游戏《黑暗之魂3》中的道具“红虫药丸”。
+画廊
+《黑暗之魂3》中的红虫药丸

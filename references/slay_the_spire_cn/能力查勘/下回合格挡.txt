@@ -1,0 +1,13 @@
+下回合格挡
+Buffs id: Next Turn Block
+Buffs信息
+效果中文描述在你的下回合开始时，获得 X 点格挡。
+效果英文描述 Gain X Block next turn.
+类型玩家BUFF
+可叠加
+下回合格挡 （Next Turn Block） 是杀戮尖塔中的一个的可叠加状态。
+来源
+遗物：自成型黏土
+卡牌：闪躲翻滚
+协同效应
+外卡钳：先于下回合格挡结算。

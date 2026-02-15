@@ -1,0 +1,12 @@
+能量提升（蓝）
+Buffs id: Energized_B
+Buffs信息
+效果中文描述下一回合获得额外 X 点能量
+效果英文描述 Gain X additional energy next turn.
+类型玩家BUFF
+可叠加
+能量提升（绿）
+Buffs id: Energized_G
+Buffs信息
+类型玩家BUFF
+可叠加

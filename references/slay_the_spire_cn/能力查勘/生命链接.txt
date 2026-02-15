@@ -1,0 +1,9 @@
+生命链接
+Buffs id: Life Link
+Buffs信息
+效果中文描述若场上还有其他敌人存活，则将在 2 回合后以 50% 生命复活。
+效果英文描述 If other enemies are still alive, revives in 2 turns at 50% HP.
+类型敌方BUFF
+不可叠加
+生命链接 （Life Link） 是杀戮尖塔中的一个的不可叠加状态。
+通常只有小黑会在战斗开始时获得此状态，这使得您必须要合理地分配每只小黑的血量，否则这场战斗将永不会结束。

@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+墨水瓶
+遗物 id: Ink Bottle
+遗物信息
+效果中文描述你每打出 10 张牌，抽 1 张牌。
+效果英文描述 Whenever you play 10 cards, draw 1 card.
+中文引言每次用光，都会自动装满一种颜色不同的墨水。
+英文引言 Once exhausted, appears to refill itself in a different color.
+所属通用
+稀有度罕见
+每次用光，都会自动装满一种颜色不同的墨水。
+简介
+墨水瓶 （Ink Bottle） 是杀戮尖塔中的一件罕见遗物。

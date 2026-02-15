@@ -1,0 +1,25 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+咖啡滤杯
+遗物 id: Coffee Dripper
+遗物信息
+效果中文描述你无法再在休息处休息。在每回合开始时获得1点能量。
+效果英文描述 Gain an energy at the start of your turn. You can no longer Rest at Rest Sites.
+中文引言 “好的，请再来一杯。继续工作，继续工作！”——建筑师"
+英文引言 Yes, another cup please. Back to work. Back to work! - The Architect
+所属通用
+稀有度 BOSS
+“好的，请再来一杯。继续工作，继续工作！”——建筑师"
+简介
+咖啡滤杯 （Coffee Dripper） 是杀戮尖塔中的一件BOSS 遗物。
+注意
+拥有该遗物会使捕梦网、皇家枕头失去作用。
+更新历史
+每周更新56:收藏家：现在若拾取咖啡滤杯， “睡觉” 选项将不再可选。
+现在若拾取咖啡滤杯， “睡觉” 选项将不再可选。
+每周更新29:内核加速咖啡滤杯被首次加入到游戏中。
+咖啡滤杯被首次加入到游戏中。

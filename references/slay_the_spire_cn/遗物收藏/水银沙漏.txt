@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+水银沙漏
+遗物 id: Mercury Hourglass
+遗物信息
+效果中文描述在你的回合开始时，对所有敌人造成 3 点伤害。
+效果英文描述 At the start of your turn, deal 3 damage to ALL enemies.
+中文引言一个附加魔力的沙漏，一直都在不断滴下水银。
+英文引言 An enchanted hourglass that endlessly drips.
+所属通用
+稀有度罕见
+一个附加魔力的沙漏，一直都在不断滴下水银。
+简介
+水银沙漏 （Mercury Hourglass） 是杀戮尖塔中的一件罕见遗物。

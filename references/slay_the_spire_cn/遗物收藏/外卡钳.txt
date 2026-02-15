@@ -1,0 +1,21 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+外卡钳
+遗物 id: Calipers
+遗物信息
+效果中文描述在你的回合开始时，不再失去所有格挡，而是失去 15 点格挡。
+效果英文描述 At the start of your turn, lose 15 Block rather than all of your Block .
+中文引言机械精度正是通向崇高之路。”——建筑师
+英文引言 "Mechanical precision leads to greatness" - The Architect"
+所属通用
+稀有度稀有
+机械精度正是通向崇高之路。”——建筑师
+简介
+外卡钳 （Calipers） 是杀戮尖塔中的一件稀有遗物。
+配合
+壁垒（能力）：覆盖外卡钳。
+下回合格挡：先失去格挡，后获得格挡。

@@ -1,0 +1,7 @@
+创造性AI（能力）
+Buffs id: Creative AI
+Buffs信息
+效果中文描述在你的回合开始时，增加 X 张随机能力牌到你的手牌。（不包括“自我修复”）
+效果英文描述 At the start of your turn, add X random Power card into your hand.
+类型玩家BUFF(来源唯一)
+可叠加

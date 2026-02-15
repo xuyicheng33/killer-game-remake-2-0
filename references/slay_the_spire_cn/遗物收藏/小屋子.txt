@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+小屋子
+遗物 id: Tiny House
+遗物信息
+效果中文描述拾起时，获得 1 瓶药水。获得 50 金币。将你的最大生命值提升 5。获得 1 张牌。随机升级 1 张牌。
+效果英文描述 Upon pickup, obtain 1 potion. Gain 50 Gold . Raise your Max HP by #b. Obtain 1 card. Upgrade 1 random card.
+中文引言 “一项近乎完美的微缩化工程。这是我至今最优秀的作品，但仍然远远不够。”——建筑师
+英文引言 A near perfect implementation of miniaturization. My finest work to date, but still not adequate. - The Architect
+所属通用
+稀有度 BOSS
+“一项近乎完美的微缩化工程。这是我至今最优秀的作品，但仍然远远不够。”——建筑师
+简介
+小屋子 （Tiny House） 是杀戮尖塔中的一件BOSS 遗物。

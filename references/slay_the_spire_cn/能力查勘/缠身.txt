@@ -1,0 +1,10 @@
+缠身
+Buffs id: Entangled
+Buffs信息
+效果中文描述你在这个回合不能打出攻击牌。
+效果英文描述 You cannot play Attacks this turn.
+类型玩家Debuff
+不可叠加
+缠身 （Entangled） 是杀戮尖塔中的一个的不可叠加状态。
+协同效应
+腾跃：状态不会消失。

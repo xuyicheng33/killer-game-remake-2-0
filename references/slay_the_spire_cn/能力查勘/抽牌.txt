@@ -1,0 +1,8 @@
+抽牌
+Buffs id: Draw Card
+Buffs信息
+效果中文描述下回合抽 X 张牌。
+效果英文描述 Draw X additional card(s) next turn.
+类型玩家BUFF
+可叠加
+抽牌 （Draw Card） 是杀戮尖塔中的一个的可叠加状态。

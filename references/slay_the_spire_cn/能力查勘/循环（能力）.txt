@@ -1,0 +1,8 @@
+循环（能力）
+Buffs id: Loop
+Buffs信息
+效果中文描述在你的回合开始时，使用你最右侧充能球的被动能力 X 次。
+效果英文描述 At the start of your turn, trigger the passive ability of your next Orb X time(s).
+类型玩家BUFF(来源唯一)
+可叠加
+循环 （Loop） 是杀戮尖塔中的一个的可叠加状态。

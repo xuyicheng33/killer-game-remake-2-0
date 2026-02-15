@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+紫色莲花
+遗物 id: Violet Lotus
+遗物信息
+效果中文描述每次你离开平静时，获得1点额外能量。
+效果英文描述 Whenever you exit Calm , gain an additional energy.
+中文引言远古的经书上记载着，“法力池”的水面上总是有许多这些花朵。
+英文引言 The old texts describe that the surface of \"mana pools\" were littered with these flowers.
+所属观者
+稀有度 BOSS
+远古的经书上记载着，“法力池”的水面上总是有许多这些花朵。
+简介
+紫色莲花 （Violet Lotus） 是杀戮尖塔中观者的一件BOSS 遗物。
+轶事
+其引言来自《万智牌》中以黑莲花为代表的一系列“莲花”卡牌。这些卡牌通常有提供法术力的效果。

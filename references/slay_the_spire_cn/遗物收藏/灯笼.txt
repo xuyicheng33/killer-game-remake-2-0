@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+灯笼
+遗物 id: Lantern
+遗物信息
+效果中文描述在每场战斗的第一回合获得一点能量。
+效果英文描述 Start each combat with an additional energy.
+中文引言一盏诡异的灯笼，只为提灯者照明。
+英文引言 An eerie lantern which illuminates only for the wielder.
+所属通用
+稀有度普通
+一盏诡异的灯笼，只为提灯者照明。
+简介
+灯笼 （Lantern） 是杀戮尖塔中的一件普通遗物。

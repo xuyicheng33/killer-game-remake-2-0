@@ -1,0 +1,8 @@
+磁力（能力）
+Buffs id: Magnetism
+Buffs信息
+效果中文描述在你的回合开始时，增加 X 张随机无色牌到你的手牌。
+效果英文描述 At the start of your turn, add X random Colorless card into your hand.
+类型玩家BUFF(来源唯一)
+可叠加
+磁力 （Magnetism） 是杀戮尖塔中的一个的可叠加状态。

@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+战纹涂料
+遗物 id: War Paint
+遗物信息
+效果中文描述拾起时，随机升级 2 张技能牌。
+效果英文描述 Upon pickup, Upgrade 2 random Skills .
+中文引言在过去，铁甲军团的士兵们会在战斗前使用带有魔力的涂料来绘制保护性的战纹。
+英文引言 In the past, Ironclads would create wards using enchanted war paint before charging into battle.
+所属通用
+稀有度普通
+在过去，铁甲军团的士兵们会在战斗前使用带有魔力的涂料来绘制保护性的战纹。
+简介
+战纹涂料 （War Paint） 是杀戮尖塔中的一件普通遗物。
+轶事
+由于通常防御在牌组中较多，更容易被战纹涂料升级，玩家也戏称其为防御涂料。

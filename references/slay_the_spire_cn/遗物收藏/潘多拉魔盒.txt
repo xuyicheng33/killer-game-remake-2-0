@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+潘多拉魔盒
+遗物 id: Pandora's Box
+遗物信息
+效果中文描述变化所有“打击”和“防御”牌。
+效果英文描述 Upon pickup, Transform all Strike and Defend cards.
+中文引言你觉得打开这个盒子会很不吉利。
+英文引言 You have a bad feeling about opening this.
+所属通用
+稀有度 BOSS
+你觉得打开这个盒子会很不吉利。
+简介
+潘多拉魔盒 （Pandora's Box） 是杀戮尖塔中的一件BOSS 遗物。
+漏洞
+在变化完成的确认界面，点击设置——放弃这局游戏——设置——返回——前进，即可跳过拿取潘多拉魔盒变化出的卡牌，删除牌组中所有打击防御牌的同时不引入新卡牌。

@@ -1,0 +1,10 @@
+虚弱
+Buffs id: Weak
+Buffs信息
+效果中文描述攻击造成的伤害减少 25%。持续时间 X 回合。
+效果英文描述 Attacks deal 25% less damage for X turn(s).
+类型通用Debuff
+可叠加
+虚弱 （Weak） 是杀戮尖塔中的一个的可叠加状态。
+注意
+向下取整。

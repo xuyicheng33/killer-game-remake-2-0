@@ -1,0 +1,19 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+带骨肉
+遗物 id: Meat on the Bone
+遗物信息
+效果中文描述如果你在战斗结束时生命值等于或低于 50%，回复 12 点生命。
+效果英文描述 If your HP is at or below 50% at the end of combat, heal 12 HP.
+中文引言这块肉会不断恢复，似乎永远也不会彻底吃光。
+英文引言 The meat keeps replenishing, never seeming to fully run out.
+所属通用
+稀有度罕见
+这块肉会不断恢复，似乎永远也不会彻底吃光。
+简介
+带骨肉 （Meat on the Bone） 是杀戮尖塔中的一件罕见遗物。
+这件遗物只会在49层（即第三幕BOSS）前出现。

@@ -1,0 +1,8 @@
+免费攻击
+Buffs id: Free Attack Power
+Buffs信息
+效果中文描述你打出下 X 张的攻击牌无视耗能。
+效果英文描述 The next X Attack won't cost.
+类型玩家BUFF(来源唯一)
+计数
+免费攻击 （Free Attack Power） 是杀戮尖塔中的一个的计数状态。

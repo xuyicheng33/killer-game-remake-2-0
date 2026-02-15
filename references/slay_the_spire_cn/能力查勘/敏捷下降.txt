@@ -1,0 +1,8 @@
+敏捷下降
+Buffs id: Dexterity Down
+Buffs信息
+效果中文描述在你的回合结束时，失去 X 点敏捷。
+效果英文描述 At the end of your turn,lose X Dexterity .
+类型玩家Debuff
+可叠加
+敏捷下降 （Dexterity Down） 是杀戮尖塔中的一个的可叠加状态。

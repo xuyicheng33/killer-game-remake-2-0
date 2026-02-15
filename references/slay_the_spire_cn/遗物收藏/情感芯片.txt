@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+情感芯片
+遗物 id: Emotion Chip
+遗物信息
+效果中文描述在每回合开始时，如果你在之前回合受到过伤害，则触发所有充能球的被动效果。
+效果英文描述 If you lost HP during the previous turn, trigger the passive ability of all Orbs at the start of your turn.
+中文引言 ……<3……？
+英文引言 ...<3...?
+所属故障机器人
+稀有度稀有
+……<3……？
+简介
+情感芯片 （Emotion Chip） 是杀戮尖塔中故障机器人的一件稀有遗物。

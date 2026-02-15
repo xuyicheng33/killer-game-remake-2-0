@@ -1,0 +1,10 @@
+回响形态（能力）
+Buffs id: Echo Form
+Buffs信息
+效果中文描述你在每回合打出的前 X 张牌将被打出两次。
+效果英文描述 The first X cards you play each turn are played twice.
+类型玩家BUFF(来源唯一)
+计数
+回响形态 （Echo Form） 是杀戮尖塔中的一个的计数状态。
+注意&协同效应&漏洞
+参见回响形态。

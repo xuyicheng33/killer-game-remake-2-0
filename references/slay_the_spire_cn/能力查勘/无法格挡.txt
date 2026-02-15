@@ -1,0 +1,9 @@
+无法格挡
+Buffs id: No Block
+Buffs信息
+效果中文描述你无法从卡牌中获得格挡持续 X 个回合。
+效果英文描述 You cannot gain Block from cards until the next X turns.
+类型玩家Debuff
+持续时间
+无法格挡 （No Block） 是杀戮尖塔中的一个的持续时间状态。
+大体上来说，此debuff的效果可以理解为暂时性的-999999敏捷。此debuff不影响以下获得格挡的方式：余像、金属化、多层护甲、当头棒喝、无惧疼痛、巩固、冰霜充能球、以手拒之等

@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+怀表
+遗物 id: Pocketwatch
+遗物信息
+效果中文描述若你在某个回合打出的牌少于等于 3 张，则在你的下个回合开始时额外抽 3 张牌。
+效果英文描述 Whenever you play 3 or less cards during your turn, draw 3 additional cards at the start of your next turn.
+中文引言指针似乎永远卡在3点的位置。
+英文引言 The hands seem stuck on the 3 o'clock position.
+所属通用
+稀有度稀有
+指针似乎永远卡在3点的位置。
+简介
+怀表 （Pocketwatch） 是杀戮尖塔中的一件稀有遗物。
+轶事
+原型为《魔兽世界》的任务道具安多哈尔怀表，安多哈尔是由于瘟疫时间停止在了3点，尖塔也是由于荒疫而使时间定格在了3点。

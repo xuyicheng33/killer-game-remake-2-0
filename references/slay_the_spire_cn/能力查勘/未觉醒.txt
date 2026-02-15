@@ -1,0 +1,9 @@
+未觉醒
+Buffs id: Unawakened
+Buffs信息
+效果中文描述这位敌人尚未觉醒……
+效果英文描述 This enemy hasn't awakened yet...
+类型敌方BUFF
+不可叠加
+未觉醒 （Unawakened） 是杀戮尖塔中的一个的不可叠加状态。
+它会在觉醒者尚未觉醒时出现，提醒玩家注意它的觉醒设定

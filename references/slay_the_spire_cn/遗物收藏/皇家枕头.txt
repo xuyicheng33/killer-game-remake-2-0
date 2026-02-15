@@ -1,0 +1,19 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+皇家枕头
+遗物 id: Regal Pillow
+遗物信息
+效果中文描述在休息时额外回复 15 点生命。
+效果英文描述 Whenever you Rest , heal an additional 15 HP.
+中文引言这下能好好睡一觉了。
+英文引言 Now you can get a proper night's rest.
+所属通用
+稀有度普通
+这下能好好睡一觉了。
+简介
+皇家枕头 （Regal Pillow） 是杀戮尖塔中的一件普通遗物。
+这件遗物只会在49层（即第三幕BOSS）前出现。

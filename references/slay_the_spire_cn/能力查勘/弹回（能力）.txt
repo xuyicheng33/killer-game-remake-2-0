@@ -1,0 +1,8 @@
+弹回（能力）
+Buffs id: Rebound
+Buffs信息
+效果中文描述你在这个回合打出的下 X 张牌，将会被放置到抽牌堆的顶部。
+效果英文描述 The next X cards you play this turn are placed on top of your draw pile.
+类型玩家BUFF(来源唯一)
+计数
+弹回 （Rebound） 是杀戮尖塔中的一个的计数状态。

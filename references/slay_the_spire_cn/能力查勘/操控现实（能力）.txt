@@ -1,0 +1,8 @@
+操控现实（能力）
+Buffs id: Master Reality
+Buffs信息
+效果中文描述在战斗中临时增加的牌将被升级。
+效果英文描述 Whenever a card is created during combat,#y Upgrade it.
+类型玩家BUFF(来源唯一)
+不可叠加
+操控现实 （Master Reality） 是杀戮尖塔中的一个的不可叠加状态。

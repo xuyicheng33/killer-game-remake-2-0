@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+工具箱
+遗物 id: Toolbox
+遗物信息
+效果中文描述在每场战斗开始时，你可以从 3 张随机无色牌中选择 1 张增加到你的手牌。
+效果英文描述 At the start of each combat, choose 1 of 3 random Colorless cards and add the chosen card into your hand.
+中文引言不管面对什么工作，都能找到相应的工具。
+英文引言 A tool for every job.
+所属通用
+稀有度商店
+不管面对什么工作，都能找到相应的工具。
+简介
+工具箱 （Toolbox） 是杀戮尖塔中的一件商店遗物。
+注意
+该遗物只会生成通过奖励和商店获得的卡牌，且不会生成如包扎的回复类卡牌。

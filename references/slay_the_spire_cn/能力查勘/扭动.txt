@@ -1,0 +1,8 @@
+扭动
+Buffs id: Compulsive
+Buffs信息
+效果中文描述受到攻击伤害时，改变自己的行动意图。
+效果英文描述 Upon receiving attack damage, changes its intent.
+类型敌方BUFF
+不可叠加
+扭动 （Compulsive） 是杀戮尖塔中的一个的不可叠加状态。

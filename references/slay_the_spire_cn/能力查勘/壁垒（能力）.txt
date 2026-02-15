@@ -1,0 +1,10 @@
+壁垒（能力）
+Buffs id: Barricade
+Buffs信息
+效果中文描述格挡不会在你的回合开始时消失。
+效果英文描述 Block is not removed at the start of your turn.
+类型通用BUFF
+不可叠加
+壁垒 （Barricade） 是杀戮尖塔中的一个的不可叠加状态。
+注意
+优先于外卡钳。

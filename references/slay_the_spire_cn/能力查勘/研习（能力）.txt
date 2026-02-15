@@ -1,0 +1,8 @@
+研习（能力）
+Buffs id: Study
+Buffs信息
+效果中文描述在你的回合结束时，在你的抽牌堆中加入 X 张洞见。
+效果英文描述 At the end of your turn, shuffle X Insight into your draw pile.
+类型玩家BUFF(来源唯一)
+可叠加
+研习 （Study） 是杀戮尖塔中的一个的可叠加状态。

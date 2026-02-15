@@ -1,0 +1,8 @@
+盗窃
+Buffs id: Thievery
+Buffs信息
+效果中文描述在攻击时会偷走 X 金币。
+效果英文描述 steals X Gold whenever it attacks.
+类型敌方BUFF
+可叠加
+盗窃 （Thievery） 是杀戮尖塔中的一个的可叠加状态。

@@ -1,0 +1,8 @@
+炸弹（能力）
+Buffs id: The Bomb
+Buffs信息
+效果中文描述在 #N 回合结束后，对所有敌人造成 X 伤害。
+效果英文描述 At the end of #N turns, deal #X damage to ALL enemies.
+类型玩家BUFF(来源唯一)
+特殊
+炸弹 （The Bomb） 是杀戮尖塔中的一个的特殊状态。

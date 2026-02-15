@@ -1,0 +1,9 @@
+抽牌减少
+Buffs id: Draw Reduction
+Buffs信息
+效果中文描述下 X 回合少抽 1 张牌。
+效果英文描述 Draw 1 less card for X turn(s).
+类型玩家Debuff
+持续时间
+来源
+时间吞噬者

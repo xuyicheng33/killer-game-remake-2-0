@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+天鹅绒颈圈
+遗物 id: Velvet Choker
+遗物信息
+效果中文描述你每回合不能打出超过 6 张牌。在每回合开始时获得1点能量。
+效果英文描述 Gain an energy at the start of your turn. You cannot play more than 6 cards per turn.
+中文引言 “力量巨大，但过于局限。”——忽必烈大帝
+英文引言 Immense power, but too limited. - Kublai the Great
+所属通用
+稀有度 BOSS
+“力量巨大，但过于局限。”——忽必烈大帝
+简介
+天鹅绒颈圈 （Velvet Choker） 是杀戮尖塔中的一件BOSS 遗物。

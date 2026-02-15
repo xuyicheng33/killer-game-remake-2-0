@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+针线
+遗物 id: Thread and Needle
+遗物信息
+效果中文描述在每场战斗开始时，获得 4层多层护甲。
+效果英文描述 Start each combat with 4 Plated Armor .
+中文引言将这些魔法线缠绕在你的周围时，你觉得自己变得更坚硬了。
+英文引言 Wrapping the magical thread around your body, you feel harder to the touch.
+所属通用
+稀有度稀有
+将这些魔法线缠绕在你的周围时，你觉得自己变得更坚硬了。
+简介
+针线 （Thread and Needle） 是杀戮尖塔中的一件稀有遗物。

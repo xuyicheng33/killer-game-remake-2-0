@@ -1,0 +1,7 @@
+幻影
+Buffs id: Phantasmal
+Buffs信息
+效果中文描述下 X个回合造成双倍伤害。
+效果英文描述 Deal Double Damage for the next #b turns.
+类型玩家BUFF(来源唯一)
+持续时间

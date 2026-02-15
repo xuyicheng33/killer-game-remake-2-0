@@ -1,0 +1,19 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+意外光滑的石头
+遗物 id: Oddly Smooth Stone
+遗物信息
+效果中文描述在每场战斗开始时，获得 1 点敏捷。
+效果英文描述 Start each combat with 1 Dexterity .
+中文引言你从没有见过这么光滑完好的东西，这一定是出自先古之民的手艺。
+英文引言 You have never seen something so smooth and pristine. This must be the work of the Ancients.
+所属通用
+稀有度普通
+你从没有见过这么光滑完好的东西，这一定是出自先古之民的手艺。
+简介
+意外光滑的石头 （Oddly Smooth Stone） 是杀戮尖塔中的一件普通遗物。
+可参阅：先古之民

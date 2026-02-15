@@ -1,0 +1,22 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+转经轮
+遗物 id: Prayer Wheel
+遗物信息
+效果中文描述普通敌人多掉落一次卡牌奖励。
+效果英文描述 Normal enemies drop an additional card reward.
+中文引言经轮一直转动，永远不停。
+英文引言 The wheel continues to spin, never stopping.
+所属通用
+稀有度稀有
+经轮一直转动，永远不停。
+简介
+转经轮 （Prayer Wheel） 是杀戮尖塔中的一件稀有遗物。
+这件遗物只会在49层（即第三幕BOSS）前出现。
+协同效应
+可以与问号牌同时生效。
+会受到破碎金冠的影响

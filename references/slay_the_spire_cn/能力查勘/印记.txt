@@ -1,0 +1,8 @@
+印记
+Buffs id: PathToVictoryPower
+Buffs信息
+效果中文描述每当你打出点穴时，这名敌人失去 X 点生命。
+效果英文描述 Whenever you play Pressure Points , loses X HP.
+类型敌方Debuff
+可叠加
+印记 （PathToVictoryPower） 是杀戮尖塔中的一个的可叠加状态。

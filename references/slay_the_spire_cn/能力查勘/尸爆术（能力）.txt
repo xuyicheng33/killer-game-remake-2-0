@@ -1,0 +1,8 @@
+尸爆术（能力）
+Buffs id: Corpse Explosion
+Buffs信息
+效果中文描述当这名敌人死亡时，对所有敌人造成等于其最大生命值 X 倍的伤害。
+效果英文描述 On death, deal damage equal to its Max HP X times to ALL enemies.
+类型敌方Debuff
+可叠加
+尸爆术 （Corpse Explosion） 是杀戮尖塔中的一个的可叠加状态。

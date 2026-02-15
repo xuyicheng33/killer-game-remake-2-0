@@ -1,0 +1,2 @@
+# Keep the tutorial project as reference only.
+# This prevents duplicate global script classes from being registered in the root project.

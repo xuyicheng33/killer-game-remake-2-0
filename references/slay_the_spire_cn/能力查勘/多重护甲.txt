@@ -1,0 +1,8 @@
+多重护甲
+Buffs id: Plated Armor
+Buffs信息
+效果中文描述在你的回合结束时获得 X 点格挡。受到攻击伤害而失去生命时，多层护甲的层数将会减少 1。
+效果英文描述 At the end of your turn, gain X Block . Receiving unblocked attack damage reduces Plated Armor by 1 .
+类型通用BUFF
+可叠加
+多重护甲 （Plated Armor） 是杀戮尖塔中的一个的可叠加状态。

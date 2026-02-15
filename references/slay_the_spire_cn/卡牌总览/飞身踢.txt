@@ -1,0 +1,33 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+飞身踢 Dropkick
+攻击
+升级前升级后测试画风 1 飞身踢攻击造成5点伤害。如果敌人有易伤状态，获得并且抽1张牌。 1 飞身踢+ 攻击造成8点伤害。如果敌人有易伤状态，获得并且抽1张牌。 1 飞身踢攻击造成5点伤害。如果敌人有易伤状态，获得并且抽1张牌。
+升级前
+升级后
+测试画风
+造成5点伤害。如果敌人有易伤状态，获得并且抽1张牌。
+造成8点伤害。如果敌人有易伤状态，获得并且抽1张牌。
+英文名称 Dropkick
+颜色红色
+稀有度罕见
+耗能 1
+描述造成5点伤害。如果敌人有易伤状态，获得并且抽1张牌。
+升级耗能 1
+升级描述造成8点伤害。如果敌人有易伤状态，获得并且抽1张牌。
+→点此查看数据页面
+飞身踢 （Dropkick） 是杀戮尖塔中铁甲战士的一张攻击牌。如果敌人有易伤状态，获得并且抽1张牌。
+协同效应
+当敌人有易伤状态时，这张牌在一定程度上算是一张免费攻击，类似于亮剑。然而，当你没有能量时，它仍然无法打出。
+如果这张牌通过某种方式降低到0费，当敌人拥有易伤时，它可以额外提供1能量。但是，当拥有异蛇之眼等手段使卡牌费用提高时，获得能量可能不能弥补花掉的费用。
+Update History
+Patch V2.0: The Watcher Dropkick card now resolves its actions in order of its description.
+Dropkick card now resolves its actions in order of its description.
+Weekly Patch 1: The First of Many! Fixed rare crash with Dropkick.
+Fixed rare crash with Dropkick.
+Day 1 Patch Dropkick, Fire Breathing, and Shockwave portraits weren't rendering in card popup view.
+Dropkick, Fire Breathing, and Shockwave portraits weren't rendering in card popup view.

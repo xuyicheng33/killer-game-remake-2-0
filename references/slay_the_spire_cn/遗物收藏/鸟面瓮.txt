@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+鸟面瓮
+遗物 id: Bird Faced Urn
+遗物信息
+效果中文描述每当你打出一张能力牌，回复 2 点生命。
+效果英文描述 Whenever you play a Power card, heal 2 HP.
+中文引言这个瓮上雕着乌鸦之神Mazaleth嘲弄的样貌。
+英文引言 This urn shows the crow god Mazaleth looking mischievous.
+所属通用
+稀有度稀有
+这个瓮上雕着乌鸦之神Mazaleth嘲弄的样貌。
+简介
+鸟面瓮 （Bird Faced Urn） 是杀戮尖塔中的一件稀有遗物。
+轶事
+遗物引言中提到的“乌鸦之神Mazaleth”有可能是邪教徒们信奉的对象，也有可能就是觉醒者。

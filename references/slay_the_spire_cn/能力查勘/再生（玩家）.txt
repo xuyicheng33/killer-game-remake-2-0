@@ -1,0 +1,10 @@
+再生（玩家）
+Buffs id: Regen
+Buffs信息
+效果中文描述在你的回合结束时回复 X 点生命，然后将再生层数减少 1。
+效果英文描述 Regen heals Hp at the end of your turn.Each turn,Regen is reduced by 1.
+类型玩家BUFF(来源唯一)
+可叠加
+再生 （Regen） 是杀戮尖塔中的一个的可叠加状态。
+协同效应
+自燃：生效时间晚于再生。

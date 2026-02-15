@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+两仪
+遗物 id: Duality
+遗物信息
+效果中文描述每回合中，你每次打出一张攻击牌，获得 1 点临时敏捷。
+效果英文描述 Whenever you play an Attack , gain 1 temporary Dexterity .
+中文引言 “于是太阳永远熄灭了，如同天幕在其之前坠下。”——佐罗斯"
+英文引言 And the sun was extinguished forever, as if curtains fell before it. - Zoroth
+所属观者
+稀有度罕见
+“于是太阳永远熄灭了，如同天幕在其之前坠下。”——佐罗斯"
+简介
+两仪 （Duality） 是杀戮尖塔中观者的一件罕见遗物。

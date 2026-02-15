@@ -1,0 +1,22 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+蓝蜡烛
+遗物 id: Blue Candle
+遗物信息
+效果中文描述可以打出原本不能被打出的诅咒牌，打出诅咒牌会让你失去 1 点生命并将其消耗。
+效果英文描述 Unplayable Curse cards can now be played. Whenever you play a Curse , lose 1 HP and Exhaust it.
+中文引言当处于黑暗中时，这支蜡烛会自动点燃。
+英文引言 The flame ignites when shrouded in darkness.
+所属通用
+稀有度罕见
+当处于黑暗中时，这支蜡烛会自动点燃。
+简介
+蓝蜡烛 （Blue Candle） 是杀戮尖塔中的一件罕见遗物。
+注意
+使用蓝蜡烛打出诅咒牌会使时间扭曲的计数增加。
+轶事
+该遗物原型来自于《塞尔达传说》中的蓝蜡烛。

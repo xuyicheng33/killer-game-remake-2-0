@@ -1,0 +1,27 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+无谋冲锋 Reckless Charge
+攻击
+升级前升级后测试画风 0 无谋冲锋攻击造成7点伤害。将一张晕眩放入你的抽牌堆中。 0 无谋冲锋+ 攻击造成10点伤害。将一张晕眩放入你的抽牌堆中。 0 无谋冲锋攻击造成7点伤害。将一张晕眩放入你的抽牌堆中。
+升级前
+升级后
+测试画风
+造成7点伤害。将一张晕眩放入你的抽牌堆中。
+造成10点伤害。将一张晕眩放入你的抽牌堆中。
+英文名称 Reckless Charge
+颜色红色
+稀有度罕见
+耗能 0
+描述造成7点伤害。将一张晕眩放入你的抽牌堆中。
+升级耗能 0
+升级描述造成10点伤害。将一张晕眩放入你的抽牌堆中。
+→点此查看数据页面
+无谋冲锋 （Reckless Charge） 是杀戮尖塔中铁甲战士的一张攻击牌。
+轶事
+该卡牌的测试画风卡图使用了英文中“冲锋”与“消费”（charge）的双关语。
+Update History
+Weekly Patch 21: Channel Lightning Reckless Charge card is now Uncommon. Reckless Charge+ card nerfed damage by 1. Weekly Patch 20: Immolate Reckless charge is now Common and shuffles a Dazed into your draw pile rather than making you Vulnerable.

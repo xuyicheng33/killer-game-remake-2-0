@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+双节棍
+遗物 id: Nunchaku
+遗物信息
+效果中文描述你每打出 10张攻击牌，获得一点能量。
+效果英文描述 Every time you play 10 Attacks , gain 1 energy.
+中文引言优良的练武器具，能改善使用者的姿势、提升灵活度。
+英文引言 A good training tool. Improves the posture and agility of the wielder.
+所属通用
+稀有度普通
+优良的练武器具，能改善使用者的姿势、提升灵活度。
+简介
+双节棍 （Nunchaku） 是杀戮尖塔中的一件普通遗物。

@@ -1,0 +1,8 @@
+缓慢
+Buffs id: Slow
+Buffs信息
+效果中文描述你在这个回合每打出一张卡牌，，该敌人本回合受到的伤害增加 10%。
+效果英文描述 Whenever you play a card, receives 10% more damage from Attacks this turn.
+类型敌方Debuff
+不可叠加
+缓慢 （Slow） 是杀戮尖塔中的一个的不可叠加状态。

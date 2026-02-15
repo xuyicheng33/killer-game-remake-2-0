@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+古钱币
+遗物 id: Old Coin
+遗物信息
+效果中文描述拾起时，获得 300 金币
+效果英文描述 Upon pickup, gain 300 Gold .
+中文引言因为其历史价值和稀有金属成分而被商人出以高价的独特钱币。
+英文引言 Unique coins are highly valued by merchants for their historical value and rare metallic composition.
+所属通用
+稀有度稀有
+因为其历史价值和稀有金属成分而被商人出以高价的独特钱币。
+简介
+古钱币 （Old Coin） 是杀戮尖塔中的一件稀有遗物。
+这件遗物不会在商店里或49层（即第三幕BOSS）后出现。
+遗物给予的300金币基本可以在商人购买任意一个稀有遗物（285 - 315金币），或者用于其他地方。

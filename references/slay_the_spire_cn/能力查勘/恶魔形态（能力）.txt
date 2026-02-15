@@ -1,0 +1,8 @@
+恶魔形态（能力）
+Buffs id: Demon Form
+Buffs信息
+效果中文描述在你的回合开始时，获得 #b 点力量。
+效果英文描述 At the start of your turn, gain X Strength .
+类型玩家BUFF(来源唯一)
+可叠加
+恶魔形态 （Demon Form） 是杀戮尖塔中的一个的可叠加状态。

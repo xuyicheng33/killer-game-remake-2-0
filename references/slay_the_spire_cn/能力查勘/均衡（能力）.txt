@@ -1,0 +1,8 @@
+均衡
+Buffs id: Equilibrium
+Buffs信息
+效果中文描述在接下来 X 回合保留你的手牌。
+效果英文描述 Retain your hand this turn.
+类型玩家BUFF(来源唯一)
+可叠加
+均衡 （Equilibrium） 是杀戮尖塔中的一个的可叠加状态。

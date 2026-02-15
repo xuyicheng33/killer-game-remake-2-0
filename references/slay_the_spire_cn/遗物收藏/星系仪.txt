@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+星系仪
+遗物 id: Orrery
+遗物信息
+效果中文描述从五组三选一的卡牌中选择 5 张牌加入你的牌组。
+效果英文描述 Upon pickup, choose and add 5 cards to your deck.
+中文引言 “一旦你理解了宇宙……”——佐罗斯",
+英文引言 Once you understand the universe... - Zoroth
+所属通用
+稀有度商店
+“一旦你理解了宇宙……”——佐罗斯",
+简介
+星系仪 （Orrery） 是杀戮尖塔中的一件商店遗物。

@@ -1,0 +1,18 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+融合之锤
+遗物 id: Fusion Hammer
+遗物信息
+效果中文描述你无法再在休息处锻造升级卡牌。每回合开始时获得1点能量。
+效果英文描述 Gain an energy at the start of your turn. You can no longer Smith at Rest Sites.
+中文引言一旦握住，就永远无法放下。
+英文引言 Once wielded, the owner can never let go.
+所属通用
+稀有度 BOSS
+一旦握住，就永远无法放下。
+简介
+融合之锤 （Fusion Hammer） 是杀戮尖塔中的一件BOSS 遗物。

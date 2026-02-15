@@ -1,0 +1,20 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+巨口储蓄罐
+遗物 id: Maw Bank
+遗物信息
+效果中文描述每攀爬一层楼层获得 12 金币。一旦在商店中花费金币就会失效。
+效果英文描述 Whenever you climb a floor, gain 12 Gold . No longer works when you spend any 12 Gold at the shop.
+中文引言尽管巨口袭击频繁发生，这个造型的储蓄罐却意外相当流行。
+英文引言 Surprisingly popular, despite maw attacks being a regular occurrence.
+所属通用
+稀有度普通
+尽管巨口袭击频繁发生，这个造型的储蓄罐却意外相当流行。
+简介
+巨口储蓄罐 （Maw Bank） 是杀戮尖塔中的一件普通遗物。
+这件遗物不会在商店里或49层（即第三幕BOSS战）后出现。
+轶事

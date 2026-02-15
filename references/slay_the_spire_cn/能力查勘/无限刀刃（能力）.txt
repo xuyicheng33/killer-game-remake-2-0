@@ -1,0 +1,8 @@
+无限刀刃（能力）
+Buffs id: Infinite Blades
+Buffs信息
+效果中文描述在你的回合开始时，得到 X 张小刀。
+效果英文描述 At the start of your turn, add #b Shiv(s) into your hand.
+类型玩家BUFF(来源唯一)
+可叠加
+无限刀刃 （Infinite Blades） 是杀戮尖塔中的一个的可叠加状态。

@@ -1,0 +1,19 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+赌博筹码
+遗物 id: Gambling Chip
+遗物信息
+效果中文描述在每场战斗开始时，丢弃任意张牌，然后抽相同数量张牌。
+效果英文描述 At the start of each combat, discard any number of cards, then draw that many cards.
+中文引言你能看见筹码的一面上刻着一行小字：“熊的幸运筹码！
+英文引言 You can see a small inscription on one side. It reads: "Bear's Lucky Chip!"
+所属通用
+稀有度稀有
+你能看见筹码的一面上刻着一行小字：“熊的幸运筹码！
+简介
+赌博筹码 （Gambling Chip） 是杀戮尖塔中的一件稀有遗物。
+在拥有英雄宝典和忍术卷轴时可以弃掉更多的牌，以抽到关键牌。

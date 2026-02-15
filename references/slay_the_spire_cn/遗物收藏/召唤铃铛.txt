@@ -1,0 +1,22 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+召唤铃铛
+遗物 id: Calling Bell
+遗物信息
+效果中文描述获得一个独特的诅咒和 3 件遗物。
+效果英文描述 Upon pickup, obtain a unique Curse and 3 relics.
+中文引言这个黑铁铃铛在你找到它时作响了3次，但现在它已经不再响了。
+英文引言 his dark iron bell rang 3 times when you found it, but now stays silent.
+所属通用
+稀有度 BOSS
+这个黑铁铃铛在你找到它时作响了3次，但现在它已经不再响了。
+简介
+召唤铃铛 （Calling Bell） 是杀戮尖塔中的一件BOSS 遗物。
+注意
+必定获得普通、罕见、稀有遗物各一个。
+“独特的诅咒”指铃铛的诅咒。
+不会给予瓶装火焰、瓶装闪电、瓶装旋风与磨刀石。

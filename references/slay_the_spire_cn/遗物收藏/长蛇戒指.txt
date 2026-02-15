@@ -1,0 +1,19 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+长蛇戒指
+遗物 id: Ring of the Serpent
+遗物信息
+效果中文描述替换 #g蛇之戒指。在你的每个回合开始时，额外抽 1 张牌。
+效果英文描述 Replaces #gRing #gof #gthe #gSnake.At the start of your turn, draw 1 additional card.
+中文引言你的戒指改变了形态，焕然一新。
+英文引言 Your ring has morphed and changed forms.
+所属静默猎手
+稀有度 BOSS
+你的戒指改变了形态，焕然一新。
+简介
+长蛇戒指 （Ring of the Serpent） 是杀戮尖塔中静默猎手的一件BOSS 遗物。
+这件遗物只会在你拥有蛇之戒指时出现在BOSS宝箱中。

@@ -1,0 +1,8 @@
+确立基础（能力）
+Buffs id: Establishment
+Buffs信息
+效果中文描述每当有卡牌被保留时，将其耗能减少 X 点。
+效果英文描述 Whenever a card is Retained , lower its cost by X
+类型玩家BUFF(来源唯一)
+可叠加
+确立基础 （Establishment） 是杀戮尖塔中的一个的可叠加状态。

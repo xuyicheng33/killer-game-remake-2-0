@@ -1,0 +1,8 @@
+先见之明（能力）
+Buffs id: WireheadingPower
+Buffs信息
+效果中文描述在你的回合开始时，预见 X
+效果英文描述 At the start of your turn, Scry #b
+类型玩家BUFF(来源唯一)
+可叠加
+先见之明 （WireheadingPower） 是杀戮尖塔中的一个的可叠加状态。

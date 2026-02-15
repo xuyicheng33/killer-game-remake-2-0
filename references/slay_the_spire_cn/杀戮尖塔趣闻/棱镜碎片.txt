@@ -1,0 +1,26 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+棱镜碎片
+遗物 id: Prismatic Shard
+遗物信息
+效果中文描述战斗奖励掉落的卡牌现在会包括无色牌和其他颜色的牌。
+效果英文描述 Combat reward screens now contain Colorless cards and cards from other colors.
+中文引言通过碎片，你能以全新的视角观察这个世界。
+英文引言 Looking through the shard, you are able to see entirely new perspectives.
+所属通用
+稀有度商店
+通过碎片，你能以全新的视角观察这个世界。
+简介
+棱镜碎片 （Prismatic Shard） 是杀戮尖塔中的一件商店遗物。
+注意
+不会影响商店中的牌和战斗中临时加入的牌。如果想让所有地方出现的牌都不受职业限制，可以使用自定义模式中的“涉猎广泛”选项。
+如果想让所有地方出现的牌都不受职业限制，可以使用自定义模式中的“涉猎广泛”选项。
+协同效应
+捕梦网：对捕梦网提供的选牌有效。
+尼利的宝典：对尼利的宝典提供的选牌无效。
+轶事
+该遗物很有可能参考了游戏《星露谷物语》( Stardew valley )当中的稀有道具五彩碎片 (Prismatic shard)。

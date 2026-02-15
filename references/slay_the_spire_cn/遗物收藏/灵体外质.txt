@@ -1,0 +1,22 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+灵体外质
+遗物 id: Ectoplasm
+遗物信息
+效果中文描述你不能再获得任何金币。在回合开始时获得1点能量。
+效果英文描述 ou can no longer gain Gold .Gain an energy at the start of your turn.
+中文引言这团黏液与能量的混合物微微脉动，仿佛有着生命。
+英文引言 This blob of slime and energy seems to pulse with life.
+所属通用
+稀有度 BOSS
+这团黏液与能量的混合物微微脉动，仿佛有着生命。
+简介
+灵体外质 （Ectoplasm） 是杀戮尖塔中的一件BOSS 遗物。
+注意
+该遗物只会在涅奥的祝福或第一阶段的BOSS宝箱中出现。
+虽然看上去是绿色的，但这并不是静默猎手的专属遗物。
+该遗物会阻止任何形式的获得金币，包括战斗掉落、事件获得与被打劫的和抢劫的抢走再拿回的金币。

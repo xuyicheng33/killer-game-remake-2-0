@@ -1,0 +1,19 @@
+卡牌总览
+遗物收藏
+药水小样
+敌人图鉴
+能力查勘
+事件日志
+鸟居
+遗物 id: Torii
+遗物信息
+效果中文描述每当你受到小于等于 5点的未被格挡攻击伤害时，将伤害降低为 1。
+效果英文描述 Whenever you would receive 5 or less unblocked attack damage, reduce it to 1 .
+中文引言你拿着这个小小的鸟居，感觉心中有一股宁静与安全的感觉。
+英文引言 Holding the small Torii, you feel a sense of calm and safety drift through your mind.
+所属通用
+稀有度稀有
+你拿着这个小小的鸟居，感觉心中有一股宁静与安全的感觉。
+简介
+鸟居 （Torii） 是杀戮尖塔中的一件稀有遗物。
+与钨合金棍配合时会使每一个小于5点的伤害变为0。

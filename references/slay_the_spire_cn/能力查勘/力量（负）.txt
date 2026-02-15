@@ -1,0 +1,15 @@
+力量
+Buffs id: Strength
+Buffs信息
+效果中文描述攻击伤害提升 X点。
+效果英文描述 Increases attack damage by #b.
+类型通用BUFF
+可叠加
+力量（负）
+Buffs id: Strngth (Negative)
+Buffs信息
+效果中文描述攻击伤害降低 X点。
+效果英文描述 Decreases attack damage by #b.
+类型通用Debuff
+可叠加
+力量 （Strength） 是杀戮尖塔中的一个的可叠加状态。

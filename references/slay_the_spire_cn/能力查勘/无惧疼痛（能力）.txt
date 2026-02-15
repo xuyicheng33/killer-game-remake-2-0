@@ -1,0 +1,8 @@
+无惧疼痛（能力）
+Buffs id: Feel No Pain
+Buffs信息
+效果中文描述每当有一张牌被消耗，获得 X 点格挡。
+效果英文描述 Whenever a card is Exhausted , gain X Block .
+类型玩家BUFF(来源唯一)
+可叠加
+无惧疼痛 （Feel No Pain） 是杀戮尖塔中的一个的可叠加状态。
