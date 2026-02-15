@@ -3,7 +3,9 @@ extends Node
 
 const MAP_SCREEN_SCENE := preload("res://scenes/map/map_screen.tscn")
 const BATTLE_SCENE := preload("res://scenes/battle/battle.tscn")
+const REWARD_SCREEN_SCENE := preload("res://scenes/reward/reward_screen.tscn")
 const HERO_TEMPLATE := preload("res://characters/warrior/warrior.tres")
+const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_generator.gd")
 
 @onready var scene_host: Node = %SceneHost
 @onready var game_over_panel: Panel = %GameOverPanel
@@ -83,16 +85,28 @@ func _on_battle_finished(result: int) -> void:
 	_clear_scene_host()
 
 	if result == BattleOverPanel.Type.WIN:
-		run_state.add_gold(pending_reward_gold)
-		run_state.next_floor()
-		_open_map()
+		_open_reward()
 		return
 
 	game_over_panel.show()
 	game_over_text.text = "本次远征失败\n到达层数：%d\n最终金币：%d" % [run_state.floor + 1, run_state.gold]
 
 
+func _open_reward() -> void:
+	_clear_scene_host()
+	var reward_screen := REWARD_SCREEN_SCENE.instantiate() as RewardScreen
+	reward_screen.run_state = run_state
+	reward_screen.reward_gold = pending_reward_gold
+	reward_screen.reward_completed.connect(_on_reward_completed)
+	scene_host.add_child(reward_screen)
+
+
+func _on_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
+	# Apply and return to map.
+	REWARD_GENERATOR_SCRIPT.apply_post_battle_reward(run_state, bundle, chosen_card)
+	_open_map()
+
+
 func _clear_scene_host() -> void:
 	for child in scene_host.get_children():
 		child.queue_free()
-
