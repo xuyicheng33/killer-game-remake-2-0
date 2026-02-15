@@ -1,7 +1,8 @@
 # effect_engine
 
 状态：
-- 待实现
+- A3 `feat-effect-stack-v1` 已接入基础队列
 
 职责：
-- TODO: 在对应任务ID中补全该模块的接口与数据结构。
+- 提供效果入队与按序结算能力（enqueue/process）。
+- 维护最小调试状态（队列长度、当前处理条目）。

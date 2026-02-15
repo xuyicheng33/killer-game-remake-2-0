@@ -1,4 +1,4 @@
-# BattleState 契约（v0.2.0）
+# BattleState 契约（v0.3.0）
 
 ## 目的
 
@@ -16,7 +16,7 @@
 | `hand` | `Array` | 手牌 |
 | `discard_pile` | `Array` | 弃牌堆 |
 | `exhaust_pile` | `Array` | 消耗堆 |
-| `stack` | `Array` | 待结算效果队列/栈 |
+| `stack` | `Array` | 待结算效果队列（FIFO）。每项至少包含 `effect`、`target`、`id` |
 
 ## 阶段迁移约束（A1）
 
@@ -28,6 +28,12 @@
 - `ACTION`：玩家可打牌或结束回合。
 - `ENEMY`：敌方按顺序执行行动。
 - `RESOLVE`：回合收尾，刷新下一轮敌方行动并切回 `DRAW`。
+
+## 效果队列约束（A3）
+
+- 入队接口：`enqueue_effect(effect_name, targets, apply_callable)`。
+- 结算顺序：严格按入队顺序逐条处理，不合并多段伤害。
+- 调试最小可视：可读取队列长度与当前处理条目（用于 HUD/日志）。
 
 ## 变更规则
 
