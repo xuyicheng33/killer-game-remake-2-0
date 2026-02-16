@@ -33,7 +33,8 @@ func _refresh() -> void:
 	if _bundle.card_choices.is_empty():
 		var hint := Label.new()
 		hint.text = "无卡牌奖励（可直接返回地图）"
-		hint.add_theme_font_size_override("font_size", 24)
+		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		hint.add_theme_font_size_override("font_size", 22)
 		cards_container.add_child(hint)
 		return
 
@@ -41,9 +42,9 @@ func _refresh() -> void:
 		var btn := Button.new()
 		btn.text = _format_card_label(card)
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, 84)
+		btn.custom_minimum_size = Vector2(0, 76)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		btn.add_theme_font_size_override("font_size", 26)
+		btn.add_theme_font_size_override("font_size", 24)
 		btn.pressed.connect(_on_card_pressed.bind(card))
 		if card != null and card.tooltip_text.length() > 0:
 			btn.tooltip_text = card.tooltip_text

@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://wqv3lvlc5o8q"]
+[gd_scene load_steps=4 format=3 uid="uid://wqv3lvlc5o8q"]
 
 [ext_resource type="Script" path="res://scenes/map/rest_screen.gd" id="1_780l4"]
+[ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="2_7icm8"]
+[ext_resource type="Texture2D" path="res://art/ui/theme_grid_overlay.svg" id="3_74bw2"]
 
 [node name="RestScreen" type="Control"]
 layout_mode = 3
@@ -9,6 +11,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_7icm8")
 script = ExtResource("1_780l4")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -18,59 +21,84 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.0745098, 0.0745098, 0.121569, 1)
+color = Color(0.027451, 0.0352941, 0.0588235, 1)
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="BackdropPattern" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 260.0
-offset_top = 150.0
-offset_right = -260.0
-offset_bottom = -150.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
+mouse_filter = 2
+texture = ExtResource("3_74bw2")
+expand_mode = 1
+stretch_mode = 1
+modulate = Color(1, 1, 1, 0.45)
 
-[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 18
+[node name="ToneOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.152941, 0.117647, 0.0823529, 0.2)
 
-[node name="Title" type="Label" parent="MarginContainer/VBox"]
+[node name="Frame" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 180.0
+offset_top = 106.0
+offset_right = -180.0
+offset_bottom = -106.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Frame"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 58
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Frame/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Frame/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
 text = "营火"
 
-[node name="HPLabel" type="Label" parent="MarginContainer/VBox"]
+[node name="HPLabel" type="Label" parent="Frame/MarginContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "生命：--/--"
 
-[node name="DescLabel" type="Label" parent="MarginContainer/VBox"]
+[node name="DescLabel" type="Label" parent="Frame/MarginContainer/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
 text = "选择其一：休息（回血）或升级（强化牌组第1张卡）"
 
-[node name="RestButton" type="Button" parent="MarginContainer/VBox"]
+[node name="RestButton" type="Button" parent="Frame/MarginContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "休息（恢复 20% 生命，最低 6）"
 
-[node name="UpgradeButton" type="Button" parent="MarginContainer/VBox"]
+[node name="UpgradeButton" type="Button" parent="Frame/MarginContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "升级（强化牌组第 1 张卡）"
 
-[node name="InfoLabel" type="Label" parent="MarginContainer/VBox"]
+[node name="InfoLabel" type="Label" parent="Frame/MarginContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
 text = ""
-

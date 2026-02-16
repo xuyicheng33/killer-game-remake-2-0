@@ -57,7 +57,7 @@ func _render_nodes() -> void:
 	for floor_index in range(map_graph.floor_count):
 		var floor_title := Label.new()
 		floor_title.text = _format_floor_label(floor_index)
-		floor_title.add_theme_font_size_override("font_size", 24)
+		floor_title.add_theme_font_size_override("font_size", 22)
 		node_list.add_child(floor_title)
 
 		var floor_row := HBoxContainer.new()
@@ -69,7 +69,7 @@ func _render_nodes() -> void:
 		for node in floor_nodes:
 			var button := Button.new()
 			button.text = _format_node_text(node)
-			button.custom_minimum_size = Vector2(0, 120)
+			button.custom_minimum_size = Vector2(0, 96)
 			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
