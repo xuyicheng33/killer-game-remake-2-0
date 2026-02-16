@@ -3,6 +3,11 @@ extends Area2D
 
 const ARROW_OFFSET := 5
 const WHITE_SPRITE_MATERIAL := preload("res://art/white_sprite_material.tres")
+const HIGH_RES_MIN_TEXTURE_HEIGHT := 128.0
+const TARGET_PORTRAIT_HEIGHT := 360.0
+const MAX_PORTRAIT_WIDTH := 220.0
+const MIN_PORTRAIT_SCALE := 0.06
+const MAX_PORTRAIT_SCALE := 6.0
 
 @export var stats: EnemyStats : set = set_enemy_stats
 
@@ -13,9 +18,12 @@ const WHITE_SPRITE_MATERIAL := preload("res://art/white_sprite_material.tres")
 
 var enemy_action_picker: EnemyActionPicker
 var current_action: EnemyAction : set = set_current_action
+var _default_sprite_scale := Vector2.ONE
+var _display_half_width := 0.0
 
 
 func _ready() -> void:
+	_default_sprite_scale = sprite_2d.scale
 	if not Events.enemy_action_completed.is_connected(_on_enemy_action_completed):
 		Events.enemy_action_completed.connect(_on_enemy_action_completed)
 
@@ -75,10 +83,45 @@ func update_enemy() -> void:
 		await ready
 	
 	sprite_2d.texture = stats.art
-	var scaled_half_width := (sprite_2d.get_rect().size.x * sprite_2d.scale.x) / 2.0
-	arrow.position = Vector2.RIGHT * (scaled_half_width + ARROW_OFFSET)
+	_apply_portrait_scale()
+	arrow.position = Vector2.RIGHT * (_display_half_width + ARROW_OFFSET)
 	setup_ai()
 	update_stats()
+
+
+func _apply_portrait_scale() -> void:
+	if not sprite_2d.texture:
+		sprite_2d.scale = _default_sprite_scale
+		_display_half_width = (sprite_2d.get_rect().size.x * sprite_2d.scale.x) / 2.0
+		return
+
+	var texture_height := float(sprite_2d.texture.get_size().y)
+	if texture_height <= HIGH_RES_MIN_TEXTURE_HEIGHT:
+		sprite_2d.scale = _default_sprite_scale
+		_display_half_width = (sprite_2d.get_rect().size.x * sprite_2d.scale.x) / 2.0
+		return
+
+	var visible_size := _get_visible_texture_size(sprite_2d.texture)
+	var visible_height := maxf(1.0, visible_size.y)
+	var visible_width := maxf(1.0, visible_size.x)
+	var scale_by_height := TARGET_PORTRAIT_HEIGHT / visible_height
+	var scale_by_width := MAX_PORTRAIT_WIDTH / visible_width
+	var uniform_scale := clampf(minf(scale_by_height, scale_by_width), MIN_PORTRAIT_SCALE, MAX_PORTRAIT_SCALE)
+	sprite_2d.scale = Vector2.ONE * uniform_scale
+	_display_half_width = (visible_width * uniform_scale) / 2.0
+
+
+func _get_visible_texture_size(texture: Texture2D) -> Vector2:
+	var texture_size := texture.get_size()
+	var image := texture.get_image()
+	if image.is_empty():
+		return Vector2(texture_size.x, texture_size.y)
+
+	var used_rect := image.get_used_rect()
+	if used_rect.size.x <= 0 or used_rect.size.y <= 0:
+		return Vector2(texture_size.x, texture_size.y)
+
+	return Vector2(float(used_rect.size.x), float(used_rect.size.y))
 
 
 func do_turn() -> void:
