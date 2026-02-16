@@ -10,6 +10,7 @@ const EVENT_SCREEN_SCENE := preload("res://scenes/events/event_screen.tscn")
 const HERO_TEMPLATE := preload("res://characters/warrior/warrior.tres")
 const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_generator.gd")
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://modules/relic_potion/relic_potion_system.gd")
+const SAVE_SERVICE_SCRIPT := preload("res://modules/persistence/save_service.gd")
 
 @onready var scene_host: Node = %SceneHost
 @onready var relic_potion_ui: RelicPotionUI = %RelicPotionUI
@@ -30,7 +31,8 @@ func _ready() -> void:
 
 	Events.battle_finished.connect(_on_battle_finished)
 	restart_button.pressed.connect(_start_new_run)
-	_start_new_run()
+	if not _try_load_saved_run():
+		_start_new_run()
 
 
 func _start_new_run() -> void:
@@ -54,6 +56,7 @@ func _open_map() -> void:
 	map_screen.set_map_graph(run_state.map_graph)
 	map_screen.node_selected.connect(_on_map_node_selected)
 	scene_host.add_child(map_screen)
+	_save_checkpoint("map")
 
 
 func _on_map_node_selected(node: MapNodeData) -> void:
@@ -97,6 +100,7 @@ func _on_battle_finished(result: int) -> void:
 		_open_reward()
 		return
 
+	SAVE_SERVICE_SCRIPT.clear_save()
 	game_over_panel.show()
 	game_over_text.text = "本次远征失败\n到达层数：%d\n最终金币：%d" % [run_state.floor + 1, run_state.gold]
 
@@ -166,3 +170,41 @@ func _apply_b3_node_bonus_if_needed() -> void:
 func _clear_scene_host() -> void:
 	for child in scene_host.get_children():
 		child.queue_free()
+
+
+func _try_load_saved_run() -> bool:
+	var load_result: Dictionary = SAVE_SERVICE_SCRIPT.load_run_state(HERO_TEMPLATE)
+	if not bool(load_result.get("ok", false)):
+		var error_message: String = str(load_result.get("message", "读档失败。"))
+		print("[save] %s" % error_message)
+		return false
+
+	var loaded_run_state := load_result.get("run_state") as RunState
+	if loaded_run_state == null:
+		print("[save] 读档失败：恢复出的 RunState 为空。")
+		return false
+
+	_clear_scene_host()
+	game_over_panel.hide()
+	get_tree().paused = false
+
+	run_state = loaded_run_state
+	relic_potion_system.bind_run_state(run_state)
+	relic_potion_ui.run_state = run_state
+	_open_map()
+	relic_potion_system.push_external_log("继续游戏：层数 %d，金币 %d" % [run_state.floor + 1, run_state.gold])
+	return true
+
+
+func _save_checkpoint(tag: String) -> void:
+	if run_state == null:
+		return
+
+	var save_result: Dictionary = SAVE_SERVICE_SCRIPT.save_run_state(run_state)
+	if not bool(save_result.get("ok", false)):
+		var error_message: String = str(save_result.get("message", "存档失败。"))
+		print("[save] %s" % error_message)
+		return
+
+	if tag.length() > 0:
+		print("[save] checkpoint: %s" % tag)

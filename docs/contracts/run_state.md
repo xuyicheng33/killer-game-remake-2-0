@@ -44,6 +44,17 @@
   - 使用成功后从 `potions` 移除对应条目
   - 具体效果由 `PotionData.effect_type/value` 决定并立即作用于 `RunState`
 
+## C1 存档/读档约束（feat-save-load-v1）
+
+- 存档范围（单槽位最小可用）至少覆盖：
+  - `seed` / `act` / `floor` / `gold`
+  - `player_stats`：`health` / `max_health` / `deck`
+  - 地图推进：`map_current_node_id` / `map_reachable_node_ids` / `map_visited_node_ids` / `map_graph`
+  - `relic_capacity` / `potion_capacity` / `relics` / `potions`
+- 存档文件需包含 `save_version` 字段。
+- 版本不匹配时必须安全失败并给出提示，不允许崩溃或写坏当前运行态。
+- 当前范围不含“战斗中断点恢复”，仅保证恢复后可继续局外流程推进。
+
 ## 兼容说明
 
 - 本版本新增遗物/药水字段，属于兼容性扩展（MINOR）。
