@@ -38,18 +38,23 @@ func _open_map() -> void:
 	_clear_scene_host()
 	var map_screen := MAP_SCREEN_SCENE.instantiate() as MapScreen
 	map_screen.run_state = run_state
-	map_screen.set_nodes(MapGenerator.create_act1_seed_map(run_state.seed, run_state.floor))
+	map_screen.set_map_graph(run_state.map_graph)
 	map_screen.node_selected.connect(_on_map_node_selected)
 	scene_host.add_child(map_screen)
 
 
 func _on_map_node_selected(node: MapNodeData) -> void:
+	if not run_state.enter_map_node(node.id):
+		return
+
 	match node.type:
-		MapNodeData.NodeType.BATTLE, MapNodeData.NodeType.ELITE:
+		MapNodeData.NodeType.BATTLE, MapNodeData.NodeType.ELITE, MapNodeData.NodeType.BOSS:
 			pending_reward_gold = node.reward_gold
 			_open_battle()
 		MapNodeData.NodeType.REST:
 			_apply_rest_node()
+		MapNodeData.NodeType.SHOP:
+			_apply_shop_node()
 		MapNodeData.NodeType.EVENT:
 			_apply_event_node(node)
 		_:
@@ -72,6 +77,12 @@ func _apply_rest_node() -> void:
 
 func _apply_event_node(node: MapNodeData) -> void:
 	run_state.add_gold(node.reward_gold)
+	run_state.next_floor()
+	_open_map()
+
+
+func _apply_shop_node() -> void:
+	# B2 only: shop is a map node type placeholder; no transaction flow yet.
 	run_state.next_floor()
 	_open_map()
 

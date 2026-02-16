@@ -6,7 +6,8 @@ enum NodeType {
 	ELITE,
 	REST,
 	SHOP,
-	EVENT
+	EVENT,
+	BOSS
 }
 
 @export var id: String
@@ -14,4 +15,6 @@ enum NodeType {
 @export var title: String
 @export_multiline var description: String
 @export var reward_gold: int = 0
-
+@export var floor_index: int = 0
+@export var lane_index: int = 0
+@export var next_node_ids: PackedStringArray = PackedStringArray()

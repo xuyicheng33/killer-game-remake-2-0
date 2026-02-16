@@ -1,23 +1,41 @@
-# RunState 契约（v0.1.0）
+# RunState 契约（v0.2.0）
 
 ## 目的
 
 定义跨战斗持久状态字段，确保存档与流程一致。
 
-## 建议字段
+## 当前核心字段（实现对齐）
 
 | 字段 | 类型 | 描述 |
 |---|---|---|
 | `seed` | `int` | 本局随机种子 |
 | `act` | `int` | 当前章节 |
-| `map_node_id` | `String` | 当前地图节点 |
-| `deck` | `Array` | 当前牌组 |
-| `relics` | `Array` | 持有遗物 |
-| `potions` | `Array` | 持有药水 |
+| `floor` | `int` | 当前层数（从 0 开始） |
 | `gold` | `int` | 金币 |
-| `hp` | `int` | 当前生命 |
-| `max_hp` | `int` | 最大生命 |
-| `ascension` | `int` | 进阶等级 |
+| `player_stats` | `CharacterStats` | 运行时玩家状态容器（含 `health/max_health/deck/draw_pile/discard` 等） |
+| `map_graph` | `MapGraphData` | 当前章节地图图结构（运行时对象） |
+| `map_current_node_id` | `String` | 当前已进入节点 ID |
+| `map_reachable_node_ids` | `PackedStringArray` | 当前可选择节点 ID 集合 |
+| `map_visited_node_ids` | `PackedStringArray` | 已走过节点 ID 集合 |
+
+## B2 地图推进约束（feat-map-graph-progression-v1）
+
+- 节点类型至少包含：`BATTLE` / `ELITE` / `REST` / `SHOP` / `EVENT` / `BOSS`。
+- 仅允许选择 `map_reachable_node_ids` 内节点。
+- 成功进入节点后：
+  - `map_current_node_id` 更新为该节点 ID
+  - 该节点写入 `map_visited_node_ids`
+  - `map_reachable_node_ids` 更新为该节点的 `next_node_ids`
+- 楼层推进由节点流程完成时触发（如战斗胜利奖励后、休息/事件/商店占位流程后）。
+
+## 兼容说明
+
+- 本版本新增地图推进相关字段，属于兼容性扩展（MINOR）。
+- 旧存档无上述字段时，应使用默认值：
+  - `map_current_node_id = ""`
+  - `map_reachable_node_ids = []`
+  - `map_visited_node_ids = []`
+  - `map_graph = null`（可在开局时重建）
 
 ## 变更规则
 
