@@ -1,46 +1,75 @@
-# 模块架构与边界
+# 模块架构与边界（对齐代码现状）
 
-## 1. 代码根目录约定
+更新时间：2026-02-16
 
-- 项目协作根：`/Users/xuyicheng/杀戮游戏复刻2.0`
-- 当前玩法代码基线：`references/tutorial_baseline/`
-- 下文模块路径均默认相对该基线目录。
+## 1. 当前代码基线
 
-## 2. 模块边界总览
+本文件以仓库当前运行代码为准（不是 `references/tutorial_baseline`）：
 
-| 模块 | 职责 | 推荐目录 |
-|---|---|---|
-| `run_meta` | 局外开局、角色、种子、难度、结算 | `scenes/run/`, `scenes/menu/`, `global/run_*` |
-| `battle_loop` | 回合状态机、阶段切换、行动窗口 | `scenes/battle/` |
-| `card_system` | 卡牌实体、手牌/抽牌/弃牌/消耗流转 | `scenes/card_ui/`, `custom_resources/cards/` |
-| `effect_engine` | 效果调度、结算栈、触发时机 | `effects/`, `global/effect_*` |
-| `buff_system` | 力量/敏捷/易伤/虚弱等状态系统 | `effects/`, `characters/*_stats*` |
-| `enemy_intent` | 敌人行为脚本、意图展示与刷新 | `scenes/enemy/`, `enemies/`, `scenes/ui/intent_*` |
-| `map_event` | 地图节点、事件、路线推进 | `scenes/map/`, `scenes/events/` |
-| `reward_economy` | 金币、战后奖励、商店、删卡 | `scenes/reward/`, `scenes/shop/` |
-| `relic_potion` | 遗物触发链、药水使用与容量 | `custom_resources/relics/`, `custom_resources/potions/` |
-| `save_seed_replay` | 存档、随机数种子、复盘日志 | `global/save_*`, `global/rng_*` |
-| `content_pipeline` | 内容表、平衡参数、导入导出 | `custom_resources/`, `tools/content_*` |
-| `ui_shell` | UI 展示层与输入表现，不承载规则 | `scenes/ui/` |
+- 运行编排入口：`scenes/app/app.gd`
+- 核心运行态：`modules/run_meta/run_state.gd`
+- 存档实现：`modules/persistence/save_service.gd`
+- 全局随机与复盘：`global/run_rng.gd`、`global/repro_log.gd`
 
-## 3. 层次规则
+## 2. 模块总览（现状）
 
-1. `ui_shell` 只读状态，不直接改核心规则状态。
-2. `battle_loop` 作为编排层，不直接实现具体效果细节。
-3. `effect_engine` 通过明确接口调用 `buff_system` 与实体状态。
-4. `enemy_intent` 只产出“动作意图”，最终执行由 `battle_loop/effect_engine` 驱动。
-5. 共享状态结构变更必须更新 `docs/contracts/`。
+| 模块 | 主要文件 | 职责摘要 | 实现度 |
+|---|---|---|---|
+| `run_meta` | `modules/run_meta/run_state.gd` | 跨场景运行态与地图推进状态 | 部分 |
+| `run_flow` | `modules/run_flow/README.md` | 应用层流程编排目标模块（仅 README 占位） | 占位 |
+| `battle_loop` | `modules/battle_loop/battle_phase_state_machine.gd` | 战斗阶段状态机 | 已实现（最小） |
+| `card_system` | `modules/card_system/card_zones_model.gd` | 牌区计数与关键词联动 | 部分 |
+| `effect_engine` | `modules/effect_engine/effect_stack_engine.gd` | 效果队列与顺序结算 | 已实现（最小） |
+| `buff_system` | `modules/buff_system/buff_system.gd` | 状态层规则与数值修正 | 部分 |
+| `enemy_intent` | `modules/enemy_intent/intent_rules.gd` | 敌方意图规则选择 | 部分 |
+| `map_event` | `modules/map_event/*.gd` | 地图图生成与事件效果 | 部分 |
+| `reward_economy` | `modules/reward_economy/*.gd` | 奖励/商店生成与写回 | 部分 |
+| `relic_potion` | `modules/relic_potion/relic_potion_system.gd` | 遗物触发与药水使用 | 部分 |
+| `persistence` | `modules/persistence/save_service.gd` | 存档/读档/版本校验 | 已实现（最小） |
+| `save_seed_replay` | `modules/save_seed_replay/README.md` | 历史命名占位目录 | 占位 |
+| `content_pipeline` | `tools/content_import_cards.py` | 卡牌导入校验与生成 | 部分 |
+| `ui_shell` | `scenes/ui/*.gd`（目录占位） | UI 展示与交互壳层 | 部分 |
 
-## 4. 跨模块依赖白名单
+## 3. 依赖方向（当前可见）
 
-- 允许：`battle_loop -> card_system -> effect_engine -> buff_system`
-- 允许：`battle_loop -> enemy_intent`
-- 允许：`battle_loop -> ui_shell`（只推送显示数据）
-- 禁止：`ui_shell -> effect_engine` 的直接规则调用
-- 禁止：`map_event` 直接写战斗运行时对象（应通过 `run_meta` 中转）
+### 3.1 场景 -> 模块
 
-## 5. 变更级别判定
+- `scenes/app/app.gd` -> `reward_economy`、`relic_potion`、`persistence`
+- `scenes/battle/battle.gd` -> `battle_loop`
+- `scenes/events/event_screen.gd` -> `map_event/event_service`
+- `scenes/shop/shop_screen.gd` -> `reward_economy/shop_offer_generator`
+- `scenes/reward/reward_screen.gd` -> `reward_economy/reward_generator`
+- `scenes/ui/battle_ui.gd` -> `card_system`
+- `scenes/ui/stats_ui.gd` -> `buff_system`
 
-- L0：UI 文案、纯文档、注释、低风险单文件。
-- L1：单模块内部逻辑调整，外部接口不变。
-- L2：跨模块接口变更、存档结构变更、战斗结算链路变更。
+### 3.2 模块 -> 模块
+
+- `run_meta` -> `map_event/map_generator`
+- `map_event/event_service` -> `reward_economy/reward_generator`（当前存在反向耦合）
+- `persistence` -> `map_event/map_generator`
+- `reward_economy/shop_offer_generator` -> `reward_economy/reward_generator`
+
+### 3.3 模块 -> global
+
+- `map_event`、`reward_economy`、`enemy_intent`、`persistence` -> `global/run_rng.gd`
+- 多模块与场景共享 `global/events.gd` 事件总线
+
+## 4. 当前边界偏差（只记录，不在 Phase 1 改代码）
+
+1. `run_flow` 应用编排未模块化：流程逻辑主要在 `scenes/app/app.gd`。
+2. `ui_shell` 目录未承载实现：UI 脚本实际在 `scenes/ui/`。
+3. `save_seed_replay` 与 `persistence` 并存但只有后者有实现。
+4. `scenes/shop/rest/event` 仍有直接写 `RunState` 行为（属于 Phase 2 收敛项）。
+5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按“禁止新增、存量待迁移”处理。
+
+## 5. 命名与归属收口（Phase 1 决议）
+
+1. `persistence` 为唯一存档模块名（当前真实实现目录）。
+2. `save_seed_replay` 仅保留过渡占位，不新增实现。
+3. `run_flow` 保留目录并定义为“应用服务编排层”的目标归属。
+
+## 6. 变更规则（从本版本起）
+
+1. 新增跨模块接口必须同步更新：`docs/contracts/module_boundaries_v1.md`。
+2. 变更 `RunState` 字段或存档结构必须同步更新：`docs/contracts/run_state.md`。
+3. 在 `run_flow` 未落地前，`scenes/app` 新增流程逻辑需在任务文档中注明“临时放置点”。
