@@ -3,7 +3,7 @@ extends Control
 
 signal event_completed
 
-const EVENT_SERVICE_SCRIPT := preload("res://modules/map_event/event_service.gd")
+const EVENT_FLOW_SERVICE_SCRIPT := preload("res://modules/run_flow/event_flow_service.gd")
 
 @export var run_state: RunState
 
@@ -14,9 +14,13 @@ const EVENT_SERVICE_SCRIPT := preload("res://modules/map_event/event_service.gd"
 @onready var continue_button: Button = %ContinueButton
 
 var _template: Dictionary = {}
+var flow_service: EventFlowService
 
 
 func _ready() -> void:
+	if flow_service == null:
+		flow_service = EVENT_FLOW_SERVICE_SCRIPT.new() as EventFlowService
+
 	continue_button.pressed.connect(_on_continue_pressed)
 	continue_button.hide()
 	_setup_template()
@@ -24,7 +28,7 @@ func _ready() -> void:
 
 
 func _setup_template() -> void:
-	_template = EVENT_SERVICE_SCRIPT.pick_event_template(run_state)
+	_template = flow_service.pick_event_template(run_state)
 	title_label.text = str(_template.get("title", "未知事件"))
 	desc_label.text = str(_template.get("description", "没有描述。"))
 
@@ -46,7 +50,7 @@ func _render_options() -> void:
 
 
 func _on_option_pressed(option: Dictionary) -> void:
-	var result := EVENT_SERVICE_SCRIPT.apply_option(run_state, option)
+	var result := flow_service.execute_option(run_state, option)
 	result_label.text = result
 	for child in options_container.get_children():
 		var btn := child as Button
@@ -56,6 +60,5 @@ func _on_option_pressed(option: Dictionary) -> void:
 
 
 func _on_continue_pressed() -> void:
-	if run_state:
-		run_state.next_floor()
+	flow_service.execute_continue(run_state)
 	event_completed.emit()

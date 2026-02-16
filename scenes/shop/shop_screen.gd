@@ -4,6 +4,7 @@ extends Control
 signal shop_completed
 
 const SHOP_OFFER_GENERATOR_SCRIPT := preload("res://modules/reward_economy/shop_offer_generator.gd")
+const SHOP_FLOW_SERVICE_SCRIPT := preload("res://modules/run_flow/shop_flow_service.gd")
 
 @export var run_state: RunState
 
@@ -14,11 +15,15 @@ const SHOP_OFFER_GENERATOR_SCRIPT := preload("res://modules/reward_economy/shop_
 @onready var leave_button: Button = %LeaveButton
 
 var _offers: Array[Dictionary] = []
+var flow_service: ShopFlowService
 
 
 func _ready() -> void:
+	if flow_service == null:
+		flow_service = SHOP_FLOW_SERVICE_SCRIPT.new() as ShopFlowService
+
 	leave_button.pressed.connect(_on_leave_pressed)
-	_offers = SHOP_OFFER_GENERATOR_SCRIPT.generate_offers(run_state)
+	_offers = flow_service.generate_offers(run_state)
 	_refresh()
 
 
@@ -70,53 +75,34 @@ func _render_deck_ops() -> void:
 
 
 func _on_buy_offer(index: int) -> void:
-	if run_state == null:
-		return
-	if index < 0 or index >= _offers.size():
+	if flow_service == null:
 		return
 
-	var offer := _offers[index]
-	var card := offer.get("card") as Card
-	var price := int(offer.get("price", SHOP_OFFER_GENERATOR_SCRIPT.BUY_PRICE))
-	if not run_state.spend_gold(price):
-		status_label.text = "金币不足，无法购买。"
-		_refresh()
+	var result := flow_service.execute_buy_offer(run_state, _offers, index)
+	if not bool(result.get("handled", false)):
 		return
 
-	if not run_state.add_card_to_deck(card):
-		# Refund when add-to-deck fails (e.g. invalid card data).
-		run_state.add_gold(price)
-		status_label.text = "购买失败：卡牌无效，已退款。"
-		_refresh()
-		return
-
-	status_label.text = "已购买：%s" % _card_name(card)
-	_offers.remove_at(index)
+	status_label.text = str(result.get("status_text", ""))
 	_refresh()
 
 
 func _on_remove_card(index: int) -> void:
-	if run_state == null:
-		return
-	if not run_state.spend_gold(SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE):
-		status_label.text = "金币不足，无法移除卡牌。"
-		_refresh()
+	if flow_service == null:
 		return
 
-	var removed := run_state.remove_card_from_deck_at(index)
-	if removed == null:
-		# Refund when remove fails.
-		run_state.add_gold(SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE)
-		status_label.text = "移除卡牌失败。"
-	else:
-		status_label.text = "已移除：%s" % _card_name(removed)
+	var result := flow_service.execute_remove_card(run_state, index)
+	if not bool(result.get("handled", false)):
+		return
 
+	status_label.text = str(result.get("status_text", ""))
 	_refresh()
 
 
 func _on_leave_pressed() -> void:
-	if run_state:
-		run_state.next_floor()
+	if flow_service == null:
+		flow_service = SHOP_FLOW_SERVICE_SCRIPT.new() as ShopFlowService
+
+	flow_service.execute_leave(run_state)
 	shop_completed.emit()
 
 

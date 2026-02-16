@@ -44,7 +44,7 @@ func _update_statuses(stats: Stats) -> void:
 
 		var label_variant: Variant = badge.get("label", "?")
 		var status_label := Label.new()
-		status_label.theme_override_font_sizes.font_size = 18
+		status_label.add_theme_font_size_override("font_size", 18)
 		status_label.text = "%s%s" % [str(label_variant), str(stacks)]
 		statuses.add_child(status_label)
 

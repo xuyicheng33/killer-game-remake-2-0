@@ -10,7 +10,7 @@
 ├── modules/                   # 领域模块目录（部分已实现，部分占位）
 │   ├── run_meta/              # RunState
 │   ├── persistence/           # SaveService（已实现）
-│   ├── run_flow/              # 占位目录（仅 README；目标应用编排层）
+│   ├── run_flow/              # 应用编排服务目录（shop/event/rest 第一批已落地）
 │   ├── save_seed_replay/      # 占位目录（无实现）
 │   └── ...                    # battle/card/effect/buff/enemy/map/reward/relic/content/ui
 ├── global/                    # 全局基础能力（events/run_rng/repro_log 等）

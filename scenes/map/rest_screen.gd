@@ -3,6 +3,8 @@ extends Control
 
 signal rest_completed
 
+const REST_FLOW_SERVICE_SCRIPT := preload("res://modules/run_flow/rest_flow_service.gd")
+
 @export var run_state: RunState
 
 @onready var hp_label: Label = %HPLabel
@@ -10,8 +12,13 @@ signal rest_completed
 @onready var rest_button: Button = %RestButton
 @onready var upgrade_button: Button = %UpgradeButton
 
+var flow_service: RestFlowService
+
 
 func _ready() -> void:
+	if flow_service == null:
+		flow_service = REST_FLOW_SERVICE_SCRIPT.new() as RestFlowService
+
 	rest_button.pressed.connect(_on_rest_pressed)
 	upgrade_button.pressed.connect(_on_upgrade_pressed)
 	_refresh()
@@ -25,28 +32,13 @@ func _refresh() -> void:
 
 
 func _on_rest_pressed() -> void:
-	if run_state == null or run_state.player_stats == null:
+	var result := flow_service.execute_rest(run_state)
+	if bool(result.get("completed", true)):
 		rest_completed.emit()
-		return
-
-	var recover := maxi(6, int(round(run_state.player_stats.max_health * 0.2)))
-	run_state.heal_player(recover)
-	run_state.next_floor()
-	rest_completed.emit()
 
 
 func _on_upgrade_pressed() -> void:
-	if run_state == null:
+	var result := flow_service.execute_upgrade(run_state)
+	info_label.text = str(result.get("info_text", ""))
+	if bool(result.get("completed", true)):
 		rest_completed.emit()
-		return
-
-	var upgraded := run_state.upgrade_card_in_deck_at(0)
-	if upgraded:
-		info_label.text = "升级成功：牌组第 1 张卡已强化。"
-	else:
-		# Keep "rest/upgrade choose one" meaningful even when upgrade cannot be applied.
-		run_state.add_gold(5)
-		info_label.text = "当前无可升级卡，改为获得 5 金币。"
-
-	run_state.next_floor()
-	rest_completed.emit()

@@ -11,6 +11,7 @@ const HERO_TEMPLATE := preload("res://characters/warrior/warrior.tres")
 const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_generator.gd")
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://modules/relic_potion/relic_potion_system.gd")
 const SAVE_SERVICE_SCRIPT := preload("res://modules/persistence/save_service.gd")
+const RUN_FLOW_SERVICE_SCRIPT := preload("res://modules/run_flow/run_flow_service.gd")
 const RUN_RNG_SCRIPT := preload("res://global/run_rng.gd")
 const REPRO_LOG_SCRIPT := preload("res://global/repro_log.gd")
 
@@ -24,9 +25,12 @@ var run_state: RunState
 var pending_reward_gold := 0
 var pending_node_type: MapNodeData.NodeType = MapNodeData.NodeType.BATTLE
 var relic_potion_system: RelicPotionSystem
+var run_flow_service: RunFlowService
 
 
 func _ready() -> void:
+	run_flow_service = RUN_FLOW_SERVICE_SCRIPT.new() as RunFlowService
+
 	relic_potion_system = RELIC_POTION_SYSTEM_SCRIPT.new() as RelicPotionSystem
 	add_child(relic_potion_system)
 	relic_potion_ui.relic_potion_system = relic_potion_system
@@ -133,6 +137,7 @@ func _open_rest_screen() -> void:
 	_clear_scene_host()
 	var rest_screen := REST_SCREEN_SCENE.instantiate() as RestScreen
 	rest_screen.run_state = run_state
+	rest_screen.flow_service = run_flow_service.rest_flow_service
 	rest_screen.rest_completed.connect(_on_rest_completed)
 	scene_host.add_child(rest_screen)
 
@@ -145,6 +150,7 @@ func _open_shop_screen() -> void:
 	_clear_scene_host()
 	var shop_screen := SHOP_SCREEN_SCENE.instantiate() as ShopScreen
 	shop_screen.run_state = run_state
+	shop_screen.flow_service = run_flow_service.shop_flow_service
 	shop_screen.shop_completed.connect(_on_shop_completed)
 	scene_host.add_child(shop_screen)
 
@@ -158,6 +164,7 @@ func _open_event_screen() -> void:
 	_clear_scene_host()
 	var event_screen := EVENT_SCREEN_SCENE.instantiate() as EventScreen
 	event_screen.run_state = run_state
+	event_screen.flow_service = run_flow_service.event_flow_service
 	event_screen.event_completed.connect(_on_event_completed)
 	scene_host.add_child(event_screen)
 
