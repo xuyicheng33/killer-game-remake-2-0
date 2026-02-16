@@ -62,7 +62,7 @@ func _render_nodes() -> void:
 
 		var floor_row := HBoxContainer.new()
 		floor_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		floor_row.theme_override_constants.separation = 10
+		floor_row.add_theme_constant_override("separation", 10)
 		node_list.add_child(floor_row)
 
 		var floor_nodes := map_graph.get_nodes_for_floor(floor_index)

@@ -37,19 +37,19 @@ func heal(amount : int) -> void:
 
 
 func get_status(status_id: String) -> int:
-	return _status_container.get_stack(status_id)
+	return _status_container.get_status_stack(status_id)
 
 
 func set_status(status_id: String, stacks: int) -> void:
-	if _status_container.set_stack(status_id, stacks):
+	if _status_container.set_status_stack(status_id, stacks):
 		stats_changed.emit()
 
 
 func add_status(status_id: String, delta: int) -> void:
 	if delta == 0:
 		return
-	var before := _status_container.get_stack(status_id)
-	var after := _status_container.add_stack(status_id, delta)
+	var before := _status_container.get_status_stack(status_id)
+	var after := _status_container.add_status_stack(status_id, delta)
 	if before != after:
 		stats_changed.emit()
 

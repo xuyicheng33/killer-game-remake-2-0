@@ -25,7 +25,7 @@ static func pick_next_action(
 			last_action_name,
 			ascension_level,
 			disallow_consecutive,
-			/*is_weighted=*/false,
+			false,
 			rng_stream_key
 		)
 
@@ -34,7 +34,7 @@ static func pick_next_action(
 		last_action_name,
 		ascension_level,
 		disallow_consecutive,
-		/*is_weighted=*/true,
+		true,
 		rng_stream_key
 	)
 
@@ -54,8 +54,8 @@ static func pick_first_conditional_action(
 		last_action_name,
 		ascension_level,
 		disallow_consecutive,
-		/*is_weighted=*/false,
-		/*rng_stream_key=*/"enemy_intent_conditional"
+		false,
+		"enemy_intent_conditional"
 	)
 
 

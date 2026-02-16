@@ -80,7 +80,7 @@ static func randi_range(stream_key: String, from_value: int, to_value: int) -> i
 static func pick_index(stream_key: String, size: int) -> int:
 	if size <= 0:
 		return -1
-	return randi_range(stream_key, 0, size - 1)
+	return _get_stream_rng(stream_key).randi_range(0, size - 1)
 
 
 static func _get_stream_rng(stream_key: String) -> RandomNumberGenerator:
