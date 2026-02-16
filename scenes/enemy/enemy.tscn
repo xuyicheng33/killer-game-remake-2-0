@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://d0efyathkfg74"]
 
-[ext_resource type="Texture2D" uid="uid://1u3b3hwqd8yh" path="res://art/tile_0110.png" id="1_exhc0"]
+[ext_resource type="Texture2D" path="res://art/characters/埋骨钱.png" id="1_exhc0"]
 [ext_resource type="Script" path="res://scenes/enemy/enemy.gd" id="1_ogp3w"]
 [ext_resource type="Texture2D" uid="uid://bb3rcs5nqntir" path="res://art/arrow.png" id="2_x2iwj"]
 [ext_resource type="PackedScene" uid="uid://ph0oi5od64u5" path="res://scenes/ui/stats_ui.tscn" id="3_qiomm"]
