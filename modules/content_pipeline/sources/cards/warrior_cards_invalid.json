@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "character_id": "warrior",
+  "cards": [
+    {
+      "id": "broken_missing_cost",
+      "name": "Broken Card A",
+      "type": "attack",
+      "rarity": "common",
+      "target": "enemy",
+      "text": "Missing cost field.",
+      "effects": [
+        {"op": "damage", "amount": 6}
+      ]
+    },
+    {
+      "id": "broken_cost_type",
+      "name": "Broken Card B",
+      "type": "attack",
+      "rarity": "common",
+      "cost": "1",
+      "target": "enemy",
+      "text": "Cost should be int.",
+      "effects": [
+        {"op": "damage", "amount": 6}
+      ]
+    }
+  ]
+}

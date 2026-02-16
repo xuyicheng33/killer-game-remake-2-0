@@ -7,3 +7,7 @@
 - 共享状态结构（如 `BattleState`、`RunState`）必须有字段说明。
 - 新增或变更跨模块接口时，必须更新对应契约文件。
 - 非兼容变更需在任务交接中标注并按规则提升版本。
+
+当前已落地的内容管线契约：
+
+- `docs/contracts/content_pipeline_schema.md`
