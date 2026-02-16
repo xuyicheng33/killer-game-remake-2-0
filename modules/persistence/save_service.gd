@@ -2,6 +2,7 @@ class_name SaveService
 extends RefCounted
 
 const MAP_GENERATOR_SCRIPT := preload("res://modules/map_event/map_generator.gd")
+const RUN_RNG_SCRIPT := preload("res://global/run_rng.gd")
 
 const SAVE_PATH := "user://save_slot_1.json"
 const SAVE_VERSION := 1
@@ -62,6 +63,7 @@ static func load_run_state(base_stats: CharacterStats) -> Dictionary:
 
 	var result: Dictionary = _ok("读档成功。")
 	result["run_state"] = restored
+	result["rng_state"] = payload.get("rng_state", {})
 	return result
 
 
@@ -92,6 +94,7 @@ static func _serialize_run_state(run_state: RunState) -> Dictionary:
 	payload["player_stats"] = _serialize_player_stats(run_state.player_stats)
 	payload["relics"] = _serialize_relics(run_state.relics)
 	payload["potions"] = _serialize_potions(run_state.potions)
+	payload["rng_state"] = RUN_RNG_SCRIPT.export_run_state()
 	return payload
 
 

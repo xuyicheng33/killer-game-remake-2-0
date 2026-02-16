@@ -1,13 +1,14 @@
 class_name MapGenerator
 extends RefCounted
 
+const RUN_RNG_SCRIPT := preload("res://global/run_rng.gd")
+
 const NORMAL_FLOOR_COUNT := 5
 const LANE_COUNT := 3
 
 
 static func create_act1_seed_graph(seed: int) -> MapGraphData:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = seed + 104_729
+	var rng: RandomNumberGenerator = RUN_RNG_SCRIPT.create_seeded_rng(seed + 104_729, "map_generator_act1")
 
 	var graph := MapGraphData.new()
 	graph.floor_count = NORMAL_FLOOR_COUNT + 1

@@ -11,6 +11,8 @@ const HERO_TEMPLATE := preload("res://characters/warrior/warrior.tres")
 const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_generator.gd")
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://modules/relic_potion/relic_potion_system.gd")
 const SAVE_SERVICE_SCRIPT := preload("res://modules/persistence/save_service.gd")
+const RUN_RNG_SCRIPT := preload("res://global/run_rng.gd")
+const REPRO_LOG_SCRIPT := preload("res://global/repro_log.gd")
 
 @onready var scene_host: Node = %SceneHost
 @onready var relic_potion_ui: RelicPotionUI = %RelicPotionUI
@@ -41,10 +43,13 @@ func _start_new_run() -> void:
 	get_tree().paused = false
 
 	run_state = RunState.new()
-	var seed := int(Time.get_unix_time_from_system()) % 1000000007
+	var seed := _resolve_run_seed()
+	RUN_RNG_SCRIPT.begin_run(seed)
+	REPRO_LOG_SCRIPT.begin_run(seed)
 	run_state.init_with_character(HERO_TEMPLATE, seed)
 	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
+	REPRO_LOG_SCRIPT.set_progress(run_state.floor, run_state.map_current_node_id)
 
 	_open_map()
 
@@ -64,6 +69,8 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 		return
 
 	pending_node_type = node.type
+	REPRO_LOG_SCRIPT.set_progress(run_state.floor, node.id)
+	REPRO_LOG_SCRIPT.log_event("node_enter", "type=%d" % int(node.type))
 
 	match node.type:
 		MapNodeData.NodeType.BATTLE, MapNodeData.NodeType.ELITE, MapNodeData.NodeType.BOSS:
@@ -179,7 +186,7 @@ func _try_load_saved_run() -> bool:
 		print("[save] %s" % error_message)
 		return false
 
-	var loaded_run_state := load_result.get("run_state") as RunState
+	var loaded_run_state: RunState = load_result.get("run_state") as RunState
 	if loaded_run_state == null:
 		print("[save] 读档失败：恢复出的 RunState 为空。")
 		return false
@@ -189,8 +196,16 @@ func _try_load_saved_run() -> bool:
 	get_tree().paused = false
 
 	run_state = loaded_run_state
+	var restored_rng := false
+	var rng_state_variant: Variant = load_result.get("rng_state", {})
+	if typeof(rng_state_variant) == TYPE_DICTIONARY:
+		restored_rng = RUN_RNG_SCRIPT.restore_run_state(rng_state_variant as Dictionary)
+	if not restored_rng:
+		RUN_RNG_SCRIPT.begin_run(run_state.seed)
+	REPRO_LOG_SCRIPT.begin_run(RUN_RNG_SCRIPT.get_run_seed())
 	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
+	REPRO_LOG_SCRIPT.set_progress(run_state.floor, run_state.map_current_node_id)
 	_open_map()
 	relic_potion_system.push_external_log("继续游戏：层数 %d，金币 %d" % [run_state.floor + 1, run_state.gold])
 	return true
@@ -208,3 +223,10 @@ func _save_checkpoint(tag: String) -> void:
 
 	if tag.length() > 0:
 		print("[save] checkpoint: %s" % tag)
+
+
+func _resolve_run_seed() -> int:
+	var env_seed: String = OS.get_environment("STS_RUN_SEED").strip_edges()
+	if not env_seed.is_empty() and env_seed.is_valid_int():
+		return int(env_seed)
+	return int(Time.get_unix_time_from_system()) % 1000000007

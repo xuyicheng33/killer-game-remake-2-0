@@ -1,6 +1,8 @@
 class_name EnemyIntentRules
 extends RefCounted
 
+const RUN_RNG_SCRIPT := preload("res://global/run_rng.gd")
+
 # Phase A / A5: Enemy intent rule layer.
 # - Conditional actions have priority over chance-based actions.
 # - Disallow consecutive actions when there is at least one alternative.
@@ -12,7 +14,7 @@ static func pick_next_action(
 	last_action_name: StringName,
 	ascension_level: int,
 	disallow_consecutive: bool,
-	rng: RandomNumberGenerator = null
+	rng_stream_key: String = "enemy_intent"
 ) -> EnemyAction:
 	var conditional := _collect_conditionals(actions)
 	var weighted := _collect_weighted(actions)
@@ -24,7 +26,7 @@ static func pick_next_action(
 			ascension_level,
 			disallow_consecutive,
 			/*is_weighted=*/false,
-			rng
+			rng_stream_key
 		)
 
 	return _pick_from_pool(
@@ -33,7 +35,7 @@ static func pick_next_action(
 		ascension_level,
 		disallow_consecutive,
 		/*is_weighted=*/true,
-		rng
+		rng_stream_key
 	)
 
 
@@ -53,7 +55,7 @@ static func pick_first_conditional_action(
 		ascension_level,
 		disallow_consecutive,
 		/*is_weighted=*/false,
-		/*rng=*/null
+		/*rng_stream_key=*/"enemy_intent_conditional"
 	)
 
 
@@ -63,7 +65,7 @@ static func _pick_from_pool(
 	ascension_level: int,
 	disallow_consecutive: bool,
 	is_weighted: bool,
-	rng: RandomNumberGenerator
+	rng_stream_key: String
 ) -> EnemyAction:
 	if pool.size() == 0:
 		return null
@@ -82,7 +84,7 @@ static func _pick_from_pool(
 		# Conditional actions use stable ordering (node order as priority).
 		return candidates[0]
 
-	return _pick_weighted(candidates, ascension_level, rng)
+	return _pick_weighted(candidates, ascension_level, rng_stream_key)
 
 
 static func _collect_conditionals(actions: Array[EnemyAction]) -> Array[EnemyAction]:
@@ -125,7 +127,7 @@ static func _filter_no_repeat(
 static func _pick_weighted(
 	actions: Array[EnemyAction],
 	ascension_level: int,
-	rng: RandomNumberGenerator
+	rng_stream_key: String
 ) -> EnemyAction:
 	var total := 0.0
 	for action in actions:
@@ -137,7 +139,8 @@ static func _pick_weighted(
 	if total <= 0.0:
 		return actions[0] if actions.size() > 0 else null
 
-	var roll := (rng.randf() if rng else randf()) * total
+	var stream_key: String = rng_stream_key if not rng_stream_key.is_empty() else "enemy_intent"
+	var roll := RUN_RNG_SCRIPT.randf("%s:weighted_roll" % stream_key) * total
 	var acc := 0.0
 	for action in actions:
 		if not action:
@@ -148,4 +151,3 @@ static func _pick_weighted(
 
 	# In case of float rounding.
 	return actions[actions.size() - 1]
-

@@ -3,6 +3,7 @@ extends RefCounted
 
 const EVENT_CATALOG_SCRIPT := preload("res://modules/map_event/event_catalog.gd")
 const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_generator.gd")
+const RUN_RNG_SCRIPT := preload("res://global/run_rng.gd")
 
 
 static func pick_event_template(run_state: RunState) -> Dictionary:
@@ -10,11 +11,11 @@ static func pick_event_template(run_state: RunState) -> Dictionary:
 	if templates.is_empty():
 		return {}
 
-	var rng := RandomNumberGenerator.new()
-	var visited_size := run_state.map_visited_node_ids.size() if run_state else 0
-	var floor_value := run_state.floor if run_state else 0
-	var seed_value := run_state.seed if run_state else 0
-	rng.seed = int(seed_value + floor_value * 131 + visited_size * 17_557)
+	var visited_size: int = run_state.map_visited_node_ids.size() if run_state else 0
+	var floor_value: int = run_state.floor if run_state else 0
+	var seed_value: int = run_state.seed if run_state else 0
+	var stream_key: String = "event_template:f%d:v%d" % [floor_value, visited_size]
+	var rng: RandomNumberGenerator = RUN_RNG_SCRIPT.create_seeded_rng(seed_value, stream_key)
 
 	var index := rng.randi_range(0, templates.size() - 1)
 	return (templates[index] as Dictionary).duplicate(true)
@@ -97,7 +98,10 @@ static func _add_random_card(run_state: RunState) -> String:
 	var pool := REWARD_GENERATOR_SCRIPT.get_card_pool_for_run(run_state)
 	if pool.is_empty():
 		return "(无可用卡池)"
-	var card := pool.pick_random() as Card
+	var floor_value: int = run_state.floor if run_state else 0
+	var visited_size: int = run_state.map_visited_node_ids.size() if run_state else 0
+	var stream_key: String = "event_card:f%d:v%d" % [floor_value, visited_size]
+	var card: Card = REWARD_GENERATOR_SCRIPT.pick_random_card(pool, stream_key)
 	if card == null:
 		return "(无效卡)"
 	if not run_state.add_card_to_deck(card):
