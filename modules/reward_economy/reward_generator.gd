@@ -14,7 +14,7 @@ const WARRIOR_POOL: Array[Card] = [
 static func generate_post_battle_reward(run_state: RunState, gold_amount: int) -> RewardBundle:
 	var bundle := REWARD_BUNDLE_SCRIPT.new() as RewardBundle
 	bundle.gold = maxi(0, gold_amount)
-	bundle.card_choices = _pick_three_cards(_get_pool_for_run(run_state))
+	bundle.card_choices = pick_random_cards(get_card_pool_for_run(run_state), 3)
 	return bundle
 
 
@@ -36,19 +36,24 @@ static func _get_pool_for_run(_run_state: RunState) -> Array[Card]:
 	return WARRIOR_POOL
 
 
-static func _pick_three_cards(pool: Array[Card]) -> Array[Card]:
+static func get_card_pool_for_run(run_state: RunState) -> Array[Card]:
+	return _get_pool_for_run(run_state)
+
+
+static func pick_random_cards(pool: Array[Card], count: int) -> Array[Card]:
 	var out: Array[Card] = []
+	if count <= 0:
+		return out
 	if pool == null or pool.is_empty():
 		return out
 
-	# Prefer distinct picks when possible; fall back to repeats if pool < 3.
+	# Prefer distinct picks when possible; fall back to repeats if pool < count.
 	var available := pool.duplicate()
 	available.shuffle()
-	while out.size() < 3 and not available.is_empty():
+	while out.size() < count and not available.is_empty():
 		out.append(available.pop_front())
 
-	while out.size() < 3:
+	while out.size() < count:
 		out.append(pool.pick_random())
 
 	return out
-

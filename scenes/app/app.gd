@@ -4,6 +4,9 @@ extends Node
 const MAP_SCREEN_SCENE := preload("res://scenes/map/map_screen.tscn")
 const BATTLE_SCENE := preload("res://scenes/battle/battle.tscn")
 const REWARD_SCREEN_SCENE := preload("res://scenes/reward/reward_screen.tscn")
+const REST_SCREEN_SCENE := preload("res://scenes/map/rest_screen.tscn")
+const SHOP_SCREEN_SCENE := preload("res://scenes/shop/shop_screen.tscn")
+const EVENT_SCREEN_SCENE := preload("res://scenes/events/event_screen.tscn")
 const HERO_TEMPLATE := preload("res://characters/warrior/warrior.tres")
 const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_generator.gd")
 
@@ -52,11 +55,11 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 			pending_reward_gold = node.reward_gold
 			_open_battle()
 		MapNodeData.NodeType.REST:
-			_apply_rest_node()
+			_open_rest_screen()
 		MapNodeData.NodeType.SHOP:
-			_apply_shop_node()
+			_open_shop_screen()
 		MapNodeData.NodeType.EVENT:
-			_apply_event_node(node)
+			_open_event_screen()
 		_:
 			_apply_placeholder_node()
 
@@ -66,25 +69,6 @@ func _open_battle() -> void:
 	var battle_scene := BATTLE_SCENE.instantiate()
 	battle_scene.set("runtime_stats", run_state.player_stats)
 	scene_host.add_child(battle_scene)
-
-
-func _apply_rest_node() -> void:
-	var recover := maxi(6, int(round(run_state.player_stats.max_health * 0.2)))
-	run_state.player_stats.heal(recover)
-	run_state.next_floor()
-	_open_map()
-
-
-func _apply_event_node(node: MapNodeData) -> void:
-	run_state.add_gold(node.reward_gold)
-	run_state.next_floor()
-	_open_map()
-
-
-func _apply_shop_node() -> void:
-	# B2 only: shop is a map node type placeholder; no transaction flow yet.
-	run_state.next_floor()
-	_open_map()
 
 
 func _apply_placeholder_node() -> void:
@@ -115,6 +99,42 @@ func _open_reward() -> void:
 func _on_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
 	# Apply and return to map.
 	REWARD_GENERATOR_SCRIPT.apply_post_battle_reward(run_state, bundle, chosen_card)
+	_open_map()
+
+
+func _open_rest_screen() -> void:
+	_clear_scene_host()
+	var rest_screen := REST_SCREEN_SCENE.instantiate() as RestScreen
+	rest_screen.run_state = run_state
+	rest_screen.rest_completed.connect(_on_rest_completed)
+	scene_host.add_child(rest_screen)
+
+
+func _on_rest_completed() -> void:
+	_open_map()
+
+
+func _open_shop_screen() -> void:
+	_clear_scene_host()
+	var shop_screen := SHOP_SCREEN_SCENE.instantiate() as ShopScreen
+	shop_screen.run_state = run_state
+	shop_screen.shop_completed.connect(_on_shop_completed)
+	scene_host.add_child(shop_screen)
+
+
+func _on_shop_completed() -> void:
+	_open_map()
+
+
+func _open_event_screen() -> void:
+	_clear_scene_host()
+	var event_screen := EVENT_SCREEN_SCENE.instantiate() as EventScreen
+	event_screen.run_state = run_state
+	event_screen.event_completed.connect(_on_event_completed)
+	scene_host.add_child(event_screen)
+
+
+func _on_event_completed() -> void:
 	_open_map()
 
 
