@@ -1,7 +1,11 @@
 # relic_potion
 
 状态：
-- 待实现
+- Phase B / B4 `feat-relic-potion-core-v1`：已接入最小遗物/药水系统。
 
 职责：
-- TODO: 在对应任务ID中补全该模块的接口与数据结构。
+- 遗物触发链管理（战斗开始 / 出牌后 / 受击后）。
+- 药水使用入口与触发日志透出。
+
+当前最小实现：
+- `relic_potion_system.gd`：绑定 `RunState`，监听全局事件并应用遗物触发效果。

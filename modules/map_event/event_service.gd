@@ -55,6 +55,9 @@ static func apply_option(run_state: RunState, option: Dictionary) -> String:
 			if not run_state.spend_gold(cost):
 				return "金币不足，交易失败。"
 			var bought := _add_random_card(run_state)
+			if bought.begins_with("("):
+				run_state.add_gold(cost)
+				return "交易失败：%s，已退款 %d 金币" % [bought, maxi(0, cost)]
 			return "支付 %d 金币，获得卡牌：%s" % [maxi(0, cost), bought]
 		"upgrade_card":
 			var upgraded := _upgrade_first_card(run_state)
@@ -97,7 +100,8 @@ static func _add_random_card(run_state: RunState) -> String:
 	var card := pool.pick_random() as Card
 	if card == null:
 		return "(无效卡)"
-	run_state.add_card_to_deck(card)
+	if not run_state.add_card_to_deck(card):
+		return "(加牌失败)"
 	return card.id
 
 

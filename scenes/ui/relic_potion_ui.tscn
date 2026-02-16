@@ -1,0 +1,58 @@
+[gd_scene load_steps=2 format=3 uid="uid://cmj8r4q7wwo6f"]
+
+[ext_resource type="Script" path="res://scenes/ui/relic_potion_ui.gd" id="1_6i7u5"]
+
+[node name="RelicPotionUI" type="PanelContainer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -470.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 300.0
+grow_horizontal = 0
+script = ExtResource("1_6i7u5")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="RelicLabel" type="Label" parent="MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "遗物 0/0"
+
+[node name="RelicListLabel" type="Label" parent="MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 3
+text = "（无）"
+
+[node name="PotionLabel" type="Label" parent="MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "药水 0/0"
+
+[node name="PotionContainer" type="VBoxContainer" parent="MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="LogLabel" type="Label" parent="MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+autowrap_mode = 3
+text = "日志：-"
+

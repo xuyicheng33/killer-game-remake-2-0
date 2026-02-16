@@ -7,9 +7,13 @@ const MAP_GENERATOR_SCRIPT := preload("res://modules/map_event/map_generator.gd"
 @export var act: int = 1
 @export var floor: int = 0
 @export var gold: int = 99
+@export var relic_capacity: int = 6
+@export var potion_capacity: int = 2
 @export var map_current_node_id: String = ""
 @export var map_reachable_node_ids: PackedStringArray = PackedStringArray()
 @export var map_visited_node_ids: PackedStringArray = PackedStringArray()
+@export var relics: Array[RelicData] = []
+@export var potions: Array[PotionData] = []
 
 var player_stats: CharacterStats
 var map_graph: MapGraphData
@@ -20,6 +24,8 @@ func init_with_character(base_stats: CharacterStats, run_seed: int) -> void:
 	act = 1
 	floor = 0
 	gold = 99
+	relics.clear()
+	potions.clear()
 
 	player_stats = base_stats.create_instance()
 	if not player_stats.stats_changed.is_connected(_on_player_stats_changed):
@@ -42,6 +48,42 @@ func spend_gold(amount: int) -> bool:
 	gold -= amount
 	emit_changed()
 	return true
+
+
+func add_relic(relic: RelicData) -> bool:
+	if relic == null:
+		return false
+	if relics.size() >= relic_capacity:
+		return false
+	relics.append(relic.duplicate(true))
+	emit_changed()
+	return true
+
+
+func add_potion(potion: PotionData) -> bool:
+	if potion == null:
+		return false
+	if potions.size() >= potion_capacity:
+		return false
+	potions.append(potion.duplicate(true))
+	emit_changed()
+	return true
+
+
+func use_potion_at(index: int) -> String:
+	if index < 0 or index >= potions.size():
+		return "药水使用失败：索引越界。"
+
+	var potion := potions[index] as PotionData
+	if potion == null:
+		potions.remove_at(index)
+		emit_changed()
+		return "药水使用失败：无效药水。"
+
+	var result := _apply_potion_effect(potion)
+	potions.remove_at(index)
+	emit_changed()
+	return result
 
 
 func next_floor() -> void:
@@ -161,6 +203,23 @@ func increase_max_health(amount: int) -> void:
 	player_stats.heal(delta)
 	player_stats.stats_changed.emit()
 	emit_changed()
+
+
+func _apply_potion_effect(potion: PotionData) -> String:
+	var value := maxi(0, potion.value)
+	match potion.effect_type:
+		PotionData.EffectType.HEAL:
+			heal_player(value)
+			return "使用 %s：恢复 %d 生命" % [potion.title, value]
+		PotionData.EffectType.GOLD:
+			add_gold(value)
+			return "使用 %s：获得 %d 金币" % [potion.title, value]
+		PotionData.EffectType.BLOCK:
+			if player_stats != null:
+				player_stats.block += value
+			return "使用 %s：获得 %d 格挡" % [potion.title, value]
+		_:
+			return "使用 %s：无效果" % potion.title
 
 
 func _init_map_progression() -> void:

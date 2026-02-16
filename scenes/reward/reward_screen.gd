@@ -9,6 +9,7 @@ const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_ge
 @export var reward_gold: int = 0
 
 @onready var gold_label: Label = %GoldLabel
+@onready var extra_reward_label: Label = %ExtraRewardLabel
 @onready var cards_container: VBoxContainer = %CardsContainer
 @onready var skip_button: Button = %SkipButton
 
@@ -24,6 +25,7 @@ func _refresh() -> void:
 	_bundle = REWARD_GENERATOR_SCRIPT.generate_post_battle_reward(run_state, reward_gold)
 
 	gold_label.text = "金币：+%d" % _bundle.gold
+	extra_reward_label.text = _format_extra_rewards(_bundle)
 
 	for child in cards_container.get_children():
 		child.queue_free()
@@ -52,6 +54,20 @@ func _format_card_label(card: Card) -> String:
 	if card == null:
 		return "(null card)"
 	return "%s  [费:%s]" % [card.id, card.get_cost_label()]
+
+
+func _format_extra_rewards(bundle: RewardBundle) -> String:
+	if bundle == null:
+		return "额外奖励：无"
+
+	var parts: PackedStringArray = []
+	if bundle.relic_reward != null:
+		parts.append("遗物：%s" % bundle.relic_reward.title)
+	if bundle.potion_reward != null:
+		parts.append("药水：%s" % bundle.potion_reward.title)
+	if parts.is_empty():
+		return "额外奖励：无"
+	return "额外奖励：" + " / ".join(parts)
 
 
 func _on_card_pressed(card: Card) -> void:
