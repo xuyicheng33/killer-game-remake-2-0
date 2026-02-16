@@ -52,11 +52,12 @@ func _setup_zone_counts_ui() -> void:
 	_zone_counts_label.offset_left = -520.0
 	_zone_counts_label.offset_top = 26.0
 	_zone_counts_label.offset_right = -20.0
-	_zone_counts_label.offset_bottom = 68.0
+	_zone_counts_label.offset_bottom = 94.0
 	_zone_counts_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_zone_counts_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_zone_counts_label.add_theme_font_size_override("font_size", 20)
 	_zone_counts_label.add_theme_color_override("font_color", Color("dbe3f2"))
-	_zone_counts_label.text = "抽:0 手牌:0 弃:0 消:0"
+	_zone_counts_label.text = "抽牌堆：0  手牌：0\n弃牌堆：0  消耗堆：0"
 	add_child(_zone_counts_label)
 
 
@@ -86,7 +87,7 @@ func _update_zone_counts_text(draw_count: int, hand_count: int, discard_count: i
 	if _zone_counts_label == null or not is_instance_valid(_zone_counts_label):
 		return
 
-	_zone_counts_label.text = "抽:%d 手牌:%d 弃:%d 消:%d" % [
+	_zone_counts_label.text = "抽牌堆：%d  手牌：%d\n弃牌堆：%d  消耗堆：%d" % [
 		draw_count,
 		hand_count,
 		discard_count,

@@ -78,13 +78,15 @@ text = "尖塔远征"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
+autowrap_mode = 3
 text = "第 1 幕 | 层数 1"
 
 [node name="StatsLabel" type="Label" parent="Frame/MarginContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "生命 80/80   金币 99"
+autowrap_mode = 3
+text = "生命：80/80   金币：99"
 
 [node name="HintLabel" type="Label" parent="Frame/MarginContainer/VBox"]
 unique_name_in_owner = true

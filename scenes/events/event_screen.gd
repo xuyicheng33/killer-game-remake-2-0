@@ -39,6 +39,7 @@ func _render_options() -> void:
 		var btn := Button.new()
 		btn.text = str(option_dict.get("label", "选项"))
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		btn.custom_minimum_size = Vector2(0, 64)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.pressed.connect(_on_option_pressed.bind(option_dict))
 		options_container.add_child(btn)
@@ -58,4 +59,3 @@ func _on_continue_pressed() -> void:
 	if run_state:
 		run_state.next_floor()
 	event_completed.emit()
-

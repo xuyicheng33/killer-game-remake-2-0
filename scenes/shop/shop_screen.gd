@@ -40,9 +40,10 @@ func _render_offers() -> void:
 		var card := offer.get("card") as Card
 		var price := int(offer.get("price", SHOP_OFFER_GENERATOR_SCRIPT.BUY_PRICE))
 		var btn := Button.new()
-		btn.text = "购买 %s（%d 金币）" % [_card_name(card), price]
+		btn.text = "购买卡牌：%s（%d 金币）" % [_card_name(card), price]
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		btn.custom_minimum_size = Vector2(0, 64)
 		btn.disabled = run_state == null or run_state.gold < price
 		btn.pressed.connect(_on_buy_offer.bind(i))
 		offers_container.add_child(btn)
@@ -59,9 +60,10 @@ func _render_deck_ops() -> void:
 	for i in range(cards.size()):
 		var card := cards[i] as Card
 		var btn := Button.new()
-		btn.text = "删卡 %s（%d 金币）" % [_card_name(card), SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE]
+		btn.text = "移除卡牌：%s（%d 金币）" % [_card_name(card), SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE]
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		btn.custom_minimum_size = Vector2(0, 64)
 		btn.disabled = run_state.gold < SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE or cards.size() <= 1
 		btn.pressed.connect(_on_remove_card.bind(i))
 		deck_container.add_child(btn)
@@ -97,7 +99,7 @@ func _on_remove_card(index: int) -> void:
 	if run_state == null:
 		return
 	if not run_state.spend_gold(SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE):
-		status_label.text = "金币不足，无法删卡。"
+		status_label.text = "金币不足，无法移除卡牌。"
 		_refresh()
 		return
 
@@ -105,7 +107,7 @@ func _on_remove_card(index: int) -> void:
 	if removed == null:
 		# Refund when remove fails.
 		run_state.add_gold(SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE)
-		status_label.text = "删卡失败。"
+		status_label.text = "移除卡牌失败。"
 	else:
 		status_label.text = "已移除：%s" % _card_name(removed)
 

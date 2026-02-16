@@ -125,7 +125,7 @@ func _on_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
 	# Apply and return to map.
 	var reward_log := REWARD_GENERATOR_SCRIPT.apply_post_battle_reward(run_state, bundle, chosen_card)
 	if reward_log.length() > 0:
-		relic_potion_system.push_external_log("战后奖励：%s" % reward_log)
+		relic_potion_system.push_external_log("战斗奖励：%s" % reward_log)
 	_open_map()
 
 

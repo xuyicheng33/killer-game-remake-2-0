@@ -55,4 +55,4 @@ custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 24
-text = "本轮结束"
+text = "结束本次远征"

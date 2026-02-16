@@ -32,7 +32,7 @@ func _refresh() -> void:
 
 	if _bundle.card_choices.is_empty():
 		var hint := Label.new()
-		hint.text = "无卡牌奖励（可直接返回地图）"
+		hint.text = "当前无卡牌奖励，可直接继续前进。"
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		hint.add_theme_font_size_override("font_size", 22)
 		cards_container.add_child(hint)

@@ -84,16 +84,18 @@ text = "生命：--/--"
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
-text = "选择其一：休息（回血）或升级（强化牌组第1张卡）"
+text = "选择一项：休息（恢复生命）或升级（强化牌组第 1 张卡）"
 
 [node name="RestButton" type="Button" parent="Frame/MarginContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "休息（恢复 20% 生命，最低 6）"
+autowrap_mode = 3
+text = "休息（恢复 20% 生命，至少 6）"
 
 [node name="UpgradeButton" type="Button" parent="Frame/MarginContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
+autowrap_mode = 3
 text = "升级（强化牌组第 1 张卡）"
 
 [node name="InfoLabel" type="Label" parent="Frame/MarginContainer/VBox"]

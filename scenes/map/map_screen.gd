@@ -37,7 +37,7 @@ func _refresh_header() -> void:
 		return
 
 	run_label.text = "第 %d 幕 | 层数 %d" % [run_state.act, run_state.floor + 1]
-	stats_label.text = "生命 %d/%d   金币 %d" % [run_state.player_stats.health, run_state.player_stats.max_health, run_state.gold]
+	stats_label.text = "生命：%d/%d   金币：%d" % [run_state.player_stats.health, run_state.player_stats.max_health, run_state.gold]
 	if run_state.map_reachable_node_ids.is_empty():
 		hint_label.text = "当前无可达节点，请开始新一局。"
 	else:

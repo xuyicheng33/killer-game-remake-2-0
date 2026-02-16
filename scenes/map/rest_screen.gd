@@ -46,8 +46,7 @@ func _on_upgrade_pressed() -> void:
 	else:
 		# Keep "rest/upgrade choose one" meaningful even when upgrade cannot be applied.
 		run_state.add_gold(5)
-		info_label.text = "无可升级卡，改为获得 5 金币。"
+		info_label.text = "当前无可升级卡，改为获得 5 金币。"
 
 	run_state.next_floor()
 	rest_completed.emit()
-
