@@ -7,7 +7,7 @@ const REWARD_SCREEN_SCENE := preload("res://runtime/scenes/reward/reward_screen.
 const REST_SCREEN_SCENE := preload("res://runtime/scenes/map/rest_screen.tscn")
 const SHOP_SCREEN_SCENE := preload("res://runtime/scenes/shop/shop_screen.tscn")
 const EVENT_SCREEN_SCENE := preload("res://runtime/scenes/events/event_screen.tscn")
-const HERO_TEMPLATE := preload("res://content/characters/warrior/warrior.tres")
+const CHARACTER_REGISTRY_SCRIPT := preload("res://runtime/modules/run_meta/character_registry.gd")
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://runtime/modules/relic_potion/relic_potion_system.gd")
 const RUN_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/run_flow_service.gd")
 
@@ -45,7 +45,12 @@ func _start_new_run() -> void:
 	game_over_panel.hide()
 	get_tree().paused = false
 
-	var result := run_flow_service.lifecycle_service.start_new_run(HERO_TEMPLATE)
+	var hero_template: CharacterStats = CHARACTER_REGISTRY_SCRIPT.get_selected_character_template()
+	if hero_template == null:
+		push_error("无法加载角色模板")
+		return
+
+	var result := run_flow_service.lifecycle_service.start_new_run(hero_template, CHARACTER_REGISTRY_SCRIPT.get_selected_character_id())
 	if not bool(result.get("ok", false)):
 		push_error("新局初始化失败")
 		return
@@ -197,7 +202,12 @@ func _clear_scene_host() -> void:
 
 
 func _try_load_saved_run() -> bool:
-	var result := run_flow_service.lifecycle_service.try_load_saved_run(HERO_TEMPLATE)
+	var hero_template: CharacterStats = CHARACTER_REGISTRY_SCRIPT.get_selected_character_template()
+	if hero_template == null:
+		push_error("无法加载角色模板")
+		return false
+
+	var result := run_flow_service.lifecycle_service.try_load_saved_run(hero_template)
 	if not bool(result.get("ok", false)):
 		print("[save] %s" % str(result.get("message", "读档失败。")))
 		return false

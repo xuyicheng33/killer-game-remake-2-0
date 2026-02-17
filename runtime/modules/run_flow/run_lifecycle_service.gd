@@ -8,17 +8,17 @@ const REPRO_LOG_SCRIPT := preload("res://runtime/global/repro_log.gd")
 var _current_floor: int = 0
 
 
-func start_new_run(hero_template: CharacterStats) -> Dictionary:
+func start_new_run(hero_template: CharacterStats, character_id: String = "warrior") -> Dictionary:
 	var seed := _resolve_run_seed()
-	return start_new_run_with_seed(hero_template, seed)
+	return start_new_run_with_seed(hero_template, seed, character_id)
 
 
-func start_new_run_with_seed(hero_template: CharacterStats, seed: int) -> Dictionary:
+func start_new_run_with_seed(hero_template: CharacterStats, seed: int, character_id: String = "warrior") -> Dictionary:
 	RUN_RNG_SCRIPT.begin_run(seed)
 	REPRO_LOG_SCRIPT.begin_run(seed)
 
 	var run_state := RunState.new()
-	run_state.init_with_character(hero_template, seed)
+	run_state.init_with_character(hero_template, seed, character_id)
 	_current_floor = run_state.floor
 
 	return {

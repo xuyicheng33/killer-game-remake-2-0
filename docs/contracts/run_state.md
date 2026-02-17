@@ -1,4 +1,4 @@
-# RunState 契约（v0.4.0）
+# RunState 契约（v0.5.0）
 
 ## 目的
 
@@ -8,6 +8,7 @@
 
 | 字段 | 类型 | 描述 |
 |---|---|---|
+| `character_id` | `String` | 角色ID（v3新增，默认"warrior"） |
 | `seed` | `int` | 本局随机种子 |
 | `act` | `int` | 当前章节 |
 | `floor` | `int` | 当前层数（从 0 开始） |
@@ -48,6 +49,7 @@
 ## C1 存档/读档约束（feat-save-load-v1）
 
 - 存档范围（单槽位最小可用）至少覆盖：
+  - `character_id`（v3新增，旧存档默认"warrior"）
   - `seed` / `act` / `floor` / `gold`
   - `player_stats`：`health` / `max_health` / `deck`
   - `player_stats.statuses`：状态层快照（`strength/dexterity/vulnerable/weak/poison`，Phase 10 新增）
@@ -59,6 +61,7 @@
 - 版本兼容策略：
   - v1 存档读取时，`statuses` 字段缺失则使用空字典默认值，不恢复任何状态层。
   - v2 存档读取时，按 `statuses` 字典恢复各状态层数值。
+  - v3 存档读取时，新增 `character_id` 字段，旧存档默认为 "warrior"。
 
 ## C2 固定种子约束（feat-seed-deterministic-v1）
 
@@ -73,7 +76,9 @@
 
 - 本版本新增遗物/药水字段，属于兼容性扩展（MINOR）。
 - Phase 10 新增玩家状态层字段（`player_stats.statuses`），属于兼容性扩展（MINOR）。
+- Phase 9 新增角色字段（`character_id`），属于兼容性扩展（MINOR）。
 - 旧存档无上述字段时，应使用默认值：
+  - `character_id = "warrior"`
   - `map_current_node_id = ""`
   - `map_reachable_node_ids = []`
   - `map_visited_node_ids = []`

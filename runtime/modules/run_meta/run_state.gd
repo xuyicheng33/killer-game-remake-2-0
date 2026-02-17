@@ -3,6 +3,7 @@ extends Resource
 
 const MAP_GENERATOR_SCRIPT := preload("res://runtime/modules/map_event/map_generator.gd")
 
+@export var character_id: String = "warrior"
 @export var seed: int = 0
 @export var act: int = 1
 @export var floor: int = 0
@@ -19,7 +20,8 @@ var player_stats: CharacterStats
 var map_graph: MapGraphData
 
 
-func init_with_character(base_stats: CharacterStats, run_seed: int) -> void:
+func init_with_character(base_stats: CharacterStats, run_seed: int, id: String = "warrior") -> void:
+	character_id = id
 	seed = run_seed
 	act = 1
 	floor = 0

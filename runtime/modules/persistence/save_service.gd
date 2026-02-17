@@ -5,7 +5,7 @@ const MAP_GENERATOR_SCRIPT := preload("res://runtime/modules/map_event/map_gener
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
 
 const SAVE_PATH := "user://save_slot_1.json"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 const MIN_COMPAT_VERSION := 1  # 最低兼容版本，用于向后兼容读取
 
 
@@ -82,6 +82,7 @@ static func clear_save() -> Dictionary:
 static func _serialize_run_state(run_state: RunState) -> Dictionary:
 	var payload: Dictionary = {}
 	payload["save_version"] = SAVE_VERSION
+	payload["character_id"] = run_state.character_id
 	payload["seed"] = run_state.seed
 	payload["act"] = run_state.act
 	payload["floor"] = run_state.floor
@@ -101,8 +102,9 @@ static func _serialize_run_state(run_state: RunState) -> Dictionary:
 
 static func _deserialize_run_state(payload: Dictionary, base_stats: CharacterStats) -> RunState:
 	var seed: int = int(payload.get("seed", 0))
+	var character_id: String = str(payload.get("character_id", "warrior"))
 	var restored := RunState.new()
-	restored.init_with_character(base_stats, seed)
+	restored.init_with_character(base_stats, seed, character_id)
 
 	restored.act = maxi(1, int(payload.get("act", restored.act)))
 	restored.floor = maxi(0, int(payload.get("floor", restored.floor)))
