@@ -80,7 +80,7 @@
 2. 变更 `RunState` 字段或存档结构必须同步更新：`docs/contracts/run_state.md`。
 3. `runtime/scenes/app` 新增流程逻辑默认应落在 `run_flow`；如临时留在场景层，任务文档必须注明迁移计划。
 
-## 7. 质量门禁（Phase 7/12/13/14）
+## 7. 质量门禁（Phase 7/12/13/14/16）
 
 1. UI 壳层契约门禁：`bash dev/tools/ui_shell_contract_check.sh`
    - 拦截 `runtime/scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -107,7 +107,13 @@
    - 校验 `run_lifecycle_service.gd` 存在 `restore_run_state` 逻辑。
    - 校验 `run_lifecycle_service.gd` 存在 `begin_run` 回退逻辑。
    - 目的：防止后续改动破坏"确定性洗牌 + 读档随机流连续性"约束。
-6. 聚合入口：`make workflow-check TASK_ID=<task-id>`
+6. 场景层 RunState 写入门禁（Phase 16 新增）：`bash dev/tools/scene_runstate_write_check.sh`
+   - 禁止 `runtime/scenes/**/*.gd` 直接写入 `run_state` 字段（赋值、复合赋值、集合操作）。
+   - 禁止调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_` 方法。
+   - 禁止写入 `run_state.player_stats` 嵌套字段。
+   - 允许只读访问（如 `run_state.gold` 读取）。
+   - 目的：防止后续回归把状态写入散落回 scenes。
+7. 聚合入口：`make workflow-check TASK_ID=<task-id>`
    - `workflow_check.sh` 已串行执行上述脚本，作为提交前必过检查。
 
 ## 8. 冒烟验证脚本（Phase 15）

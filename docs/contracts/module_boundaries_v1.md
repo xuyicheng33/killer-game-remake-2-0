@@ -41,7 +41,7 @@
    - `buff_system` -> `Enemy` / `Player`（`modules/buff_system/buff_system.gd:21`、`modules/buff_system/buff_system.gd:141`、`modules/buff_system/buff_system.gd:263`）
    - `enemy_intent` -> `EnemyAction`（`modules/enemy_intent/intent_rules.gd:13`）
 
-### 2.4 Phase 7/12/13/14 质量门禁（可脚本化）
+### 2.4 Phase 7/12/13/14/16 质量门禁（可脚本化）
 
 1. UI 壳层门禁：`dev/tools/ui_shell_contract_check.sh`
    - 禁止 `scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -67,7 +67,13 @@
    - 校验 `run_lifecycle_service.gd` 存在 `restore_run_state` 逻辑。
    - 校验 `run_lifecycle_service.gd` 存在 `begin_run` 回退逻辑。
    - 目的：防止后续改动破坏"确定性洗牌 + 读档随机流连续性"约束。
-6. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
+6. 场景层 RunState 写入门禁（Phase 16 新增）：`dev/tools/scene_runstate_write_check.sh`
+   - 禁止 `runtime/scenes/**/*.gd` 直接写入 `run_state` 字段（赋值、复合赋值、集合操作）。
+   - 禁止 `runtime/scenes/**/*.gd` 调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_` 方法。
+   - 禁止 `runtime/scenes/**/*.gd` 写入 `run_state.player_stats` 嵌套字段。
+   - 允许只读访问（如 `run_state.gold`、`run_state.player_stats.health` 读取）。
+   - 目的：防止后续回归把状态写入散落回 scenes，保持"场景层只读、模块层写入"的架构约束。
+7. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
    - 默认串行执行上述脚本，作为提交前必过项。
 
 ## 3. 模块边界清单
