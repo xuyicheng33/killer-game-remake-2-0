@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://fire_potion001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/potions/potion_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "fire_potion"
+title = "火焰药水"
+description = "对所有敌人造成 20 点伤害。"
+effect_type = 2
+value = 20

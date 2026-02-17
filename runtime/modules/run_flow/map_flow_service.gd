@@ -59,7 +59,7 @@ func resolve_non_battle_completion(run_state: RunState, node_type: MapNodeData.N
 
 	var bonus_log := ""
 	if node_type == MapNodeData.NodeType.SHOP or node_type == MapNodeData.NodeType.EVENT:
-		var bonus := REWARD_GENERATOR_SCRIPT.generate_b3_bonus(node_type)
+		var bonus := REWARD_GENERATOR_SCRIPT.generate_b3_bonus(node_type, run_state)
 		bonus_log = REWARD_GENERATOR_SCRIPT.apply_b3_bonus(run_state, bonus)
 
 	return route_dispatcher.make_result(

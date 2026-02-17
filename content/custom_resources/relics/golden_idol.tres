@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://golden_idol001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "golden_idol"
+title = "黄金神像"
+description = "每打出 3 张牌，获得 5 金币。"
+on_battle_start_heal = 0
+on_card_played_gold = 5
+card_play_interval = 3
+on_player_hit_block = 0

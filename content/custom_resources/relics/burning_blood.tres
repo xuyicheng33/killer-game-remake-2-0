@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://burning_blood001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "burning_blood"
+title = "燃烧之血"
+description = "战斗结束时，回复 6 点生命。"
+on_battle_start_heal = 6
+on_card_played_gold = 0
+card_play_interval = 1
+on_player_hit_block = 0

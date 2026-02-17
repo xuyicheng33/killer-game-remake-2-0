@@ -3,11 +3,9 @@ extends RefCounted
 
 const REWARD_BUNDLE_SCRIPT := preload("res://runtime/modules/reward_economy/reward_bundle.gd")
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
-const SAMPLE_RELIC := preload("res://content/custom_resources/relics/ember_ring.tres")
-const SAMPLE_POTION := preload("res://content/custom_resources/potions/healing_potion.tres")
-const SAMPLE_POTION_ALT := preload("res://content/custom_resources/potions/iron_skin_potion.tres")
+const RELIC_CATALOG_SCRIPT := preload("res://runtime/modules/relic_potion/relic_catalog.gd")
+const POTION_CATALOG_SCRIPT := preload("res://runtime/modules/relic_potion/potion_catalog.gd")
 
-# Minimal card pool for Phase B / B1: Warrior only.
 const WARRIOR_POOL: Array[Card] = [
 	preload("res://content/characters/warrior/cards/generated/warrior_slash.tres"),
 	preload("res://content/characters/warrior/cards/generated/warrior_block.tres"),
@@ -22,9 +20,9 @@ static func generate_post_battle_reward(run_state: RunState, gold_amount: int) -
 	bundle.card_choices = pick_random_cards(get_card_pool_for_run(run_state), 3, stream_key)
 	if run_state != null:
 		if run_state.floor % 2 == 0:
-			bundle.potion_reward = SAMPLE_POTION
+			bundle.potion_reward = POTION_CATALOG_SCRIPT.pick_random_for_reward(run_state, "post_battle")
 		else:
-			bundle.relic_reward = SAMPLE_RELIC
+			bundle.relic_reward = RELIC_CATALOG_SCRIPT.pick_random_for_reward(run_state, "post_battle")
 	return bundle
 
 
@@ -73,17 +71,16 @@ static func get_card_pool_for_run(run_state: RunState) -> Array[Card]:
 	return _get_pool_for_run(run_state)
 
 
-static func generate_b3_bonus(node_type: MapNodeData.NodeType) -> Dictionary:
+static func generate_b3_bonus(node_type: MapNodeData.NodeType, run_state: RunState = null) -> Dictionary:
 	var bonus := {
 		"relic": null,
 		"potion": null,
 	}
 	match node_type:
 		MapNodeData.NodeType.SHOP:
-			bonus["relic"] = SAMPLE_RELIC
+			bonus["relic"] = RELIC_CATALOG_SCRIPT.pick_random_for_reward(run_state, "b3_shop")
 		MapNodeData.NodeType.EVENT:
-			# Alternate potion sample to make B3 chain observable.
-			bonus["potion"] = SAMPLE_POTION_ALT
+			bonus["potion"] = POTION_CATALOG_SCRIPT.pick_random_for_reward(run_state, "b3_event")
 		_:
 			pass
 	return bonus

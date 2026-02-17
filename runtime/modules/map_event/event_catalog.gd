@@ -1,7 +1,6 @@
 class_name EventCatalog
 extends RefCounted
 
-# B3 minimum: 10 baseline event templates.
 const TEMPLATES: Array[Dictionary] = [
 	{
 		"id": "event_gold_shrine",
@@ -91,6 +90,53 @@ const TEMPLATES: Array[Dictionary] = [
 		"options": [
 			{"label": "签订（失去 10 生命，获得 2 张牌）", "effect": "cards_for_hp", "hp": 10, "count": 2},
 			{"label": "撕毁（无事发生）", "effect": "none"},
+		],
+	},
+	{
+		"id": "event_lucky_coin",
+		"title": "幸运硬币",
+		"description": "地上有一枚闪亮的硬币，正面朝上。",
+		"options": [
+			{"label": "捡起（+30 金币）", "effect": "gold", "value": 30},
+			{"label": "无视（无事发生）", "effect": "none"},
+		],
+		"tags": ["rare"],
+	},
+	{
+		"id": "event_mysterious_shrine",
+		"title": "神秘祭坛",
+		"description": "祭坛上燃烧着幽蓝色火焰。",
+		"options": [
+			{"label": "献祭生命（失去 6 生命，最大生命 +5）", "effect": "upgrade_for_hp", "hp": 6},
+			{"label": "献祭金币（失去 25 金币，回复 15 生命）", "effect": "heal_for_gold", "gold": 25, "heal": 15},
+		],
+	},
+	{
+		"id": "event_card_trader",
+		"title": "卡牌商人",
+		"description": "一个神秘的商人愿意交换卡牌。",
+		"options": [
+			{"label": "删去 1 张牌，获得 30 金币", "effect": "remove_card"},
+			{"label": "支付 30 金币，升级 1 张牌", "effect": "buy_card", "cost": 30},
+		],
+	},
+	{
+		"id": "event_healing_spring",
+		"title": "治愈之泉",
+		"description": "清澈的泉水散发着淡淡光芒。",
+		"options": [
+			{"label": "饮用（回复 20 生命）", "effect": "heal", "value": 20},
+			{"label": "装瓶（获得 1 张牌）", "effect": "add_card"},
+		],
+		"tags": ["rare"],
+	},
+	{
+		"id": "event_gambler",
+		"title": "赌徒",
+		"description": "一个赌徒向你发起挑战。",
+		"options": [
+			{"label": "赌 50 金币（50% 获得 100 金币，50% 失去 50 金币）", "effect": "gold", "value": 50},
+			{"label": "拒绝（+5 金币）", "effect": "gold", "value": 5},
 		],
 	},
 ]
