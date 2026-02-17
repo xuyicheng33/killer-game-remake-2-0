@@ -80,7 +80,7 @@
 2. 变更 `RunState` 字段或存档结构必须同步更新：`docs/contracts/run_state.md`。
 3. `runtime/scenes/app` 新增流程逻辑默认应落在 `run_flow`；如临时留在场景层，任务文档必须注明迁移计划。
 
-## 7. 质量门禁（Phase 7/12/13/14/16/17/18）
+## 7. 质量门禁（Phase 7/12/13/14/16/17/18/19）
 
 1. UI 壳层契约门禁：`bash dev/tools/ui_shell_contract_check.sh`
    - 拦截 `runtime/scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -126,7 +126,13 @@
    - 校验 `battle_flow.resolve_battle_completion` 胜利/失败返回包含 `reward_gold/game_over_text`。
    - 校验 `battle_flow.apply_battle_reward` 返回包含 `reward_log`。
    - 目的：防止路由返回结构被悄悄改坏。
-9. 聚合入口：`make workflow-check TASK_ID=<task-id>`
+9. run_flow 结果结构统一门禁（Phase 19 新增）：`bash dev/tools/run_flow_result_shape_check.sh`
+   - 校验 `route_dispatcher.make_result` 函数存在且签名正确。
+   - 校验 `map_flow` 所有返回必须通过 `route_dispatcher.make_result` 构造。
+   - 校验 `battle_flow` 所有返回必须通过 `_result` 构造。
+   - 禁止 `map_flow/battle_flow` 直接返回手写字典。
+   - 目的：强制返回字典通过统一 helper 构造，减少键漂移。
+10. 聚合入口：`make workflow-check TASK_ID=<task-id>`
    - `workflow_check.sh` 已串行执行上述脚本，作为提交前必过检查。
 
 ## 8. 冒烟验证脚本（Phase 15）

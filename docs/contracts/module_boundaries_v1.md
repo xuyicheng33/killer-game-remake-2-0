@@ -41,7 +41,7 @@
    - `buff_system` -> `Enemy` / `Player`（`modules/buff_system/buff_system.gd:21`、`modules/buff_system/buff_system.gd:141`、`modules/buff_system/buff_system.gd:263`）
    - `enemy_intent` -> `EnemyAction`（`modules/enemy_intent/intent_rules.gd:13`）
 
-### 2.4 Phase 7/12/13/14/16/17/18 质量门禁（可脚本化）
+### 2.4 Phase 7/12/13/14/16/17/18/19 质量门禁（可脚本化）
 
 1. UI 壳层门禁：`dev/tools/ui_shell_contract_check.sh`
    - 禁止 `scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -89,7 +89,14 @@
    - 校验 `battle_flow.apply_battle_reward` 返回包含 `reward_log`。
    - 校验所有返回必须通过 `route_dispatcher.make_result` 构造。
    - 目的：防止路由返回结构被悄悄改坏，确保 payload 契约稳定。
-9. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
+9. run_flow 结果结构统一门禁（Phase 19 新增）：`dev/tools/run_flow_result_shape_check.sh`
+   - 校验 `route_dispatcher.make_result` 函数存在且签名正确。
+   - 校验 `map_flow` 所有返回必须通过 `route_dispatcher.make_result` 构造。
+   - 校验 `battle_flow` 所有返回必须通过 `_result` 构造（最终调用 `make_result`）。
+   - 禁止 `map_flow/battle_flow` 直接返回手写字典（`return { ... }`）。
+   - 禁止 `map_flow/battle_flow` 直接返回包含 `next_route` 的字典。
+   - 目的：强制返回字典通过统一 helper 构造，减少键漂移。
+10. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
    - 默认串行执行上述脚本，作为提交前必过项。
 
 ## 3. 模块边界清单
