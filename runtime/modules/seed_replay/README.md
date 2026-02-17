@@ -30,5 +30,15 @@
   - `run_lifecycle_service.gd` 存在 `begin_run` 回退逻辑
 - 目的：防止后续改动破坏"确定性洗牌 + 读档随机流连续性"约束
 
+冒烟验证（Phase 15）：
+- 冒烟脚本：`dev/tools/save_load_replay_smoke.sh`
+- 检查项：
+  - fixed-seed bootstrap check：RunRng/RunLifecycleService 支持固定种子新局
+  - save/load rng continuity check：RunRng 状态导出/恢复、SaveService 存档/读档集成
+  - battle->reward->map route smoke check：路由常量与核心流程方法
+  - deterministic shuffle smoke check：CardPile/PlayerHandler 确定性洗牌
+- 用法：`bash dev/tools/save_load_replay_smoke.sh`
+- 注意：此脚本不默认接入 workflow-check，因与现有契约门禁有部分重叠，建议在 verification 阶段手动执行
+
 约束：
 - Phase 1 起不在本目录新增实现，避免与 `persistence` 双轨并行。

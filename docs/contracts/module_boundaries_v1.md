@@ -194,6 +194,7 @@
 - 禁止依赖：禁止新增与 `persistence` 重叠实现。
 - 当前实现度：`占位`。
 - 契约门禁：`dev/tools/seed_rng_contract_check.sh`（校验确定性洗牌 + 读档随机流连续性约束）。
+- 冒烟验证：`dev/tools/save_load_replay_smoke.sh`（校验固定种子/存档读档/核心流程/确定性洗牌的代码结构完整性）。
 
 ## `content_pipeline`
 

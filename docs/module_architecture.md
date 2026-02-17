@@ -109,3 +109,19 @@
    - 目的：防止后续改动破坏"确定性洗牌 + 读档随机流连续性"约束。
 6. 聚合入口：`make workflow-check TASK_ID=<task-id>`
    - `workflow_check.sh` 已串行执行上述脚本，作为提交前必过检查。
+
+## 8. 冒烟验证脚本（Phase 15）
+
+冒烟验证脚本用于快速验证核心流程的代码结构完整性，与契约门禁互补：
+
+1. 冒烟脚本：`bash dev/tools/save_load_replay_smoke.sh`
+   - fixed-seed bootstrap check：验证 RunRng/RunLifecycleService 支持固定种子新局初始化
+   - save/load rng continuity check：验证 RunRng 状态导出/恢复与 SaveService 存档/读档集成
+   - battle->reward->map route smoke check：验证路由常量定义与核心流程方法存在
+   - deterministic shuffle smoke check：验证 CardPile/PlayerHandler 确定性洗牌实现
+2. 与契约门禁的区别：
+   - 契约门禁：检查代码是否符合架构约束（禁止/强制规则）
+   - 冒烟验证：检查核心功能所需的方法/字段是否存在
+3. 不默认接入 workflow-check 的原因：
+   - 与 seed_rng_contract_check.sh、persistence_contract_check.sh 有部分重叠
+   - 冒烟验证更适合在 verification 阶段或发布前手动执行
