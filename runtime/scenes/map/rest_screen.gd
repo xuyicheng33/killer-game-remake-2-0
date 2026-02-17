@@ -3,9 +3,9 @@ extends Control
 
 signal rest_completed
 
-const REST_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/rest_flow_service.gd")
+const REST_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/rest_ui_adapter.gd")
 
-@export var run_state: RunState
+@export var run_state: RunState : set = _set_run_state
 
 @onready var frame: PanelContainer = %Frame
 @onready var hp_label: Label = %HPLabel
@@ -13,12 +13,14 @@ const REST_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/rest_f
 @onready var rest_button: Button = %RestButton
 @onready var upgrade_button: Button = %UpgradeButton
 
-var flow_service: RestFlowService
+var _adapter: RestUIAdapter = REST_UI_ADAPTER_SCRIPT.new() as RestUIAdapter
 
 
 func _ready() -> void:
-	if flow_service == null:
-		flow_service = REST_FLOW_SERVICE_SCRIPT.new() as RestFlowService
+	if not _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.connect(_render)
+	if not _adapter.rest_completed.is_connected(_on_rest_completed):
+		_adapter.rest_completed.connect(_on_rest_completed)
 
 	_apply_responsive_layout()
 	var viewport := get_viewport()
@@ -27,27 +29,34 @@ func _ready() -> void:
 
 	rest_button.pressed.connect(_on_rest_pressed)
 	upgrade_button.pressed.connect(_on_upgrade_pressed)
-	_refresh()
+	_adapter.refresh()
 
 
-func _refresh() -> void:
-	if run_state == null or run_state.player_stats == null:
-		hp_label.text = "生命：--/--"
+func _set_run_state(value: RunState) -> void:
+	run_state = value
+	_adapter.set_run_state(value)
+
+
+func _render(projection: Dictionary) -> void:
+	if not is_node_ready():
 		return
-	hp_label.text = "生命：%d/%d" % [run_state.player_stats.health, run_state.player_stats.max_health]
+
+	hp_label.text = str(projection.get("hp_text", "生命：--/--"))
+	rest_button.disabled = bool(projection.get("rest_button_disabled", true))
+	upgrade_button.disabled = bool(projection.get("upgrade_button_disabled", true))
 
 
 func _on_rest_pressed() -> void:
-	var result := flow_service.execute_rest(run_state)
-	if bool(result.get("completed", true)):
-		rest_completed.emit()
+	_adapter.execute_rest()
 
 
 func _on_upgrade_pressed() -> void:
-	var result := flow_service.execute_upgrade(run_state)
+	var result := _adapter.execute_upgrade()
 	info_label.text = str(result.get("info_text", ""))
-	if bool(result.get("completed", true)):
-		rest_completed.emit()
+
+
+func _on_rest_completed() -> void:
+	rest_completed.emit()
 
 
 func _on_viewport_resized() -> void:

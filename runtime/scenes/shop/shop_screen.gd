@@ -3,10 +3,9 @@ extends Control
 
 signal shop_completed
 
-const SHOP_OFFER_GENERATOR_SCRIPT := preload("res://runtime/modules/reward_economy/shop_offer_generator.gd")
-const SHOP_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/shop_flow_service.gd")
+const SHOP_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/shop_ui_adapter.gd")
 
-@export var run_state: RunState
+@export var run_state: RunState : set = _set_run_state
 
 @onready var content_margin: MarginContainer = %MarginContainer
 @onready var gold_label: Label = %GoldLabel
@@ -15,13 +14,14 @@ const SHOP_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/shop_f
 @onready var status_label: Label = %StatusLabel
 @onready var leave_button: Button = %LeaveButton
 
-var _offers: Array[Dictionary] = []
-var flow_service: ShopFlowService
+var _adapter: ShopUIAdapter = SHOP_UI_ADAPTER_SCRIPT.new() as ShopUIAdapter
 
 
 func _ready() -> void:
-	if flow_service == null:
-		flow_service = SHOP_FLOW_SERVICE_SCRIPT.new() as ShopFlowService
+	if not _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.connect(_render)
+	if not _adapter.shop_completed.is_connected(_on_shop_completed):
+		_adapter.shop_completed.connect(_on_shop_completed)
 
 	_apply_responsive_layout()
 	var viewport := get_viewport()
@@ -29,93 +29,92 @@ func _ready() -> void:
 		viewport.size_changed.connect(_on_viewport_resized)
 
 	leave_button.pressed.connect(_on_leave_pressed)
-	_offers = flow_service.generate_offers(run_state)
-	_refresh()
 
 
-func _refresh() -> void:
-	if run_state:
-		gold_label.text = "金币：%d" % run_state.gold
-	else:
-		gold_label.text = "金币：--"
-	_render_offers()
-	_render_deck_ops()
+func _set_run_state(value: RunState) -> void:
+	run_state = value
+	_adapter.set_run_state(value)
 
 
-func _render_offers() -> void:
+func _render(projection: Dictionary) -> void:
+	if not is_node_ready():
+		return
+
+	gold_label.text = str(projection.get("gold_text", "金币：--"))
+	status_label.text = str(projection.get("status_text", ""))
+
+	_render_offers(projection)
+	_render_deck(projection)
+
+
+func _render_offers(projection: Dictionary) -> void:
 	for child in offers_container.get_children():
 		child.queue_free()
 
-	for i in range(_offers.size()):
-		var offer := _offers[i]
-		var card := offer.get("card") as Card
-		var price := int(offer.get("price", SHOP_OFFER_GENERATOR_SCRIPT.BUY_PRICE))
+	var offer_buttons: Variant = projection.get("offer_buttons", [])
+	if not (offer_buttons is Array):
+		return
+
+	for button_variant in offer_buttons:
+		if not (button_variant is Dictionary):
+			continue
+		var button_data: Dictionary = button_variant
+
+		var index := int(button_data.get("index", -1))
+		if index < 0:
+			continue
+
 		var btn := Button.new()
-		btn.text = "购买卡牌：%s（%d 金币）" % [_card_name(card), price]
+		btn.text = str(button_data.get("text", "购买卡牌"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		btn.custom_minimum_size = Vector2(0, 64)
-		btn.disabled = run_state == null or run_state.gold < price
-		btn.pressed.connect(_on_buy_offer.bind(i))
+		btn.disabled = bool(button_data.get("disabled", true))
+		btn.pressed.connect(_on_buy_offer.bind(index))
 		offers_container.add_child(btn)
 
 
-func _render_deck_ops() -> void:
+func _render_deck(projection: Dictionary) -> void:
 	for child in deck_container.get_children():
 		child.queue_free()
 
-	if run_state == null:
+	var deck_buttons: Variant = projection.get("deck_buttons", [])
+	if not (deck_buttons is Array):
 		return
 
-	var cards := run_state.get_deck_cards()
-	for i in range(cards.size()):
-		var card := cards[i] as Card
+	for button_variant in deck_buttons:
+		if not (button_variant is Dictionary):
+			continue
+		var button_data: Dictionary = button_variant
+
+		var index := int(button_data.get("index", -1))
+		if index < 0:
+			continue
+
 		var btn := Button.new()
-		btn.text = "移除卡牌：%s（%d 金币）" % [_card_name(card), SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE]
+		btn.text = str(button_data.get("text", "移除卡牌"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		btn.custom_minimum_size = Vector2(0, 64)
-		btn.disabled = run_state.gold < SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE or cards.size() <= 1
-		btn.pressed.connect(_on_remove_card.bind(i))
+		btn.disabled = bool(button_data.get("disabled", true))
+		btn.pressed.connect(_on_remove_card.bind(index))
 		deck_container.add_child(btn)
 
 
 func _on_buy_offer(index: int) -> void:
-	if flow_service == null:
-		return
-
-	var result := flow_service.execute_buy_offer(run_state, _offers, index)
-	if not bool(result.get("handled", false)):
-		return
-
-	status_label.text = str(result.get("status_text", ""))
-	_refresh()
+	_adapter.execute_buy_offer(index)
 
 
 func _on_remove_card(index: int) -> void:
-	if flow_service == null:
-		return
-
-	var result := flow_service.execute_remove_card(run_state, index)
-	if not bool(result.get("handled", false)):
-		return
-
-	status_label.text = str(result.get("status_text", ""))
-	_refresh()
+	_adapter.execute_remove_card(index)
 
 
 func _on_leave_pressed() -> void:
-	if flow_service == null:
-		flow_service = SHOP_FLOW_SERVICE_SCRIPT.new() as ShopFlowService
+	_adapter.execute_leave()
 
-	flow_service.execute_leave(run_state)
+
+func _on_shop_completed() -> void:
 	shop_completed.emit()
-
-
-func _card_name(card: Card) -> String:
-	if card == null:
-		return "(空卡)"
-	return card.id
 
 
 func _on_viewport_resized() -> void:

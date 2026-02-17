@@ -3,10 +3,10 @@ extends Control
 
 signal reward_completed(bundle: RewardBundle, chosen_card: Card)
 
-const REWARD_GENERATOR_SCRIPT := preload("res://runtime/modules/reward_economy/reward_generator.gd")
+const REWARD_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/reward_ui_adapter.gd")
 
-@export var run_state: RunState
-@export var reward_gold: int = 0
+@export var run_state: RunState : set = _set_run_state
+@export var reward_gold: int = 0 : set = _set_reward_gold
 
 @onready var frame: PanelContainer = %Frame
 @onready var gold_label: Label = %GoldLabel
@@ -14,75 +14,91 @@ const REWARD_GENERATOR_SCRIPT := preload("res://runtime/modules/reward_economy/r
 @onready var cards_container: VBoxContainer = %CardsContainer
 @onready var skip_button: Button = %SkipButton
 
-var _bundle: RewardBundle
+var _adapter: RewardUIAdapter = REWARD_UI_ADAPTER_SCRIPT.new() as RewardUIAdapter
 
 
 func _ready() -> void:
+	if not _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.connect(_render)
+	if not _adapter.reward_completed.is_connected(_on_adapter_reward_completed):
+		_adapter.reward_completed.connect(_on_adapter_reward_completed)
+
 	_apply_responsive_layout()
 	var viewport := get_viewport()
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
 	skip_button.pressed.connect(_on_skip_pressed)
-	_refresh()
+	_adapter.generate_bundle()
 
 
-func _refresh() -> void:
-	_bundle = REWARD_GENERATOR_SCRIPT.generate_post_battle_reward(run_state, reward_gold)
+func _set_run_state(value: RunState) -> void:
+	run_state = value
+	_adapter.set_run_state(value)
 
-	gold_label.text = "金币：+%d" % _bundle.gold
-	extra_reward_label.text = _format_extra_rewards(_bundle)
 
+func _set_reward_gold(value: int) -> void:
+	reward_gold = value
+	_adapter.set_reward_gold(value)
+
+
+func _render(projection: Dictionary) -> void:
+	if not is_node_ready():
+		return
+
+	gold_label.text = str(projection.get("gold_text", "金币：+0"))
+	extra_reward_label.text = str(projection.get("extra_reward_text", "额外奖励：无"))
+
+	_render_cards(projection)
+
+
+func _render_cards(projection: Dictionary) -> void:
 	for child in cards_container.get_children():
 		child.queue_free()
 
-	if _bundle.card_choices.is_empty():
+	if not bool(projection.get("has_cards", false)):
 		var hint := Label.new()
-		hint.text = "当前无卡牌奖励，可直接继续前进。"
+		hint.text = str(projection.get("empty_hint", "当前无卡牌奖励，可直接继续前进。"))
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		hint.add_theme_font_size_override("font_size", 22)
 		cards_container.add_child(hint)
 		return
 
-	for card in _bundle.card_choices:
+	var card_choices: Variant = projection.get("card_choices", [])
+	if not (card_choices is Array):
+		return
+
+	for card_variant in card_choices:
+		if not (card_variant is Dictionary):
+			continue
+		var card_data: Dictionary = card_variant
+
+		var card: Variant = card_data.get("card")
 		var btn := Button.new()
-		btn.text = _format_card_label(card)
+		btn.text = str(card_data.get("text", "(null card)"))
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		btn.custom_minimum_size = Vector2(0, 76)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.add_theme_font_size_override("font_size", 24)
+
+		var tooltip := str(card_data.get("tooltip", ""))
+		if tooltip.length() > 0:
+			btn.tooltip_text = tooltip
+
 		btn.pressed.connect(_on_card_pressed.bind(card))
-		if card != null and card.tooltip_text.length() > 0:
-			btn.tooltip_text = card.tooltip_text
 		cards_container.add_child(btn)
 
 
-func _format_card_label(card: Card) -> String:
-	if card == null:
-		return "(null card)"
-	return "%s  [费:%s]" % [card.id, card.get_cost_label()]
-
-
-func _format_extra_rewards(bundle: RewardBundle) -> String:
-	if bundle == null:
-		return "额外奖励：无"
-
-	var parts: PackedStringArray = []
-	if bundle.relic_reward != null:
-		parts.append("遗物：%s" % bundle.relic_reward.title)
-	if bundle.potion_reward != null:
-		parts.append("药水：%s" % bundle.potion_reward.title)
-	if parts.is_empty():
-		return "额外奖励：无"
-	return "额外奖励：" + " / ".join(parts)
-
-
 func _on_card_pressed(card: Card) -> void:
-	reward_completed.emit(_bundle, card)
+	_adapter.select_card(card)
 
 
 func _on_skip_pressed() -> void:
-	reward_completed.emit(_bundle, null)
+	_adapter.skip()
+
+
+func _on_adapter_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
+	reward_completed.emit(bundle, chosen_card)
 
 
 func _on_viewport_resized() -> void:

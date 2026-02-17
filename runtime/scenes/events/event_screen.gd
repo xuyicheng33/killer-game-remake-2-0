@@ -3,9 +3,9 @@ extends Control
 
 signal event_completed
 
-const EVENT_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/event_flow_service.gd")
+const EVENT_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/event_ui_adapter.gd")
 
-@export var run_state: RunState
+@export var run_state: RunState : set = _set_run_state
 
 @onready var content_margin: MarginContainer = %MarginContainer
 @onready var title_label: Label = %TitleLabel
@@ -14,13 +14,14 @@ const EVENT_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/event
 @onready var result_label: Label = %ResultLabel
 @onready var continue_button: Button = %ContinueButton
 
-var _template: Dictionary = {}
-var flow_service: EventFlowService
+var _adapter: EventUIAdapter = EVENT_UI_ADAPTER_SCRIPT.new() as EventUIAdapter
 
 
 func _ready() -> void:
-	if flow_service == null:
-		flow_service = EVENT_FLOW_SERVICE_SCRIPT.new() as EventFlowService
+	if not _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.connect(_render)
+	if not _adapter.event_completed.is_connected(_on_event_completed):
+		_adapter.event_completed.connect(_on_event_completed)
 
 	_apply_responsive_layout()
 	var viewport := get_viewport()
@@ -29,44 +30,63 @@ func _ready() -> void:
 
 	continue_button.pressed.connect(_on_continue_pressed)
 	continue_button.hide()
-	_setup_template()
-	_render_options()
 
 
-func _setup_template() -> void:
-	_template = flow_service.pick_event_template(run_state)
-	title_label.text = str(_template.get("title", "未知事件"))
-	desc_label.text = str(_template.get("description", "没有描述。"))
+func _set_run_state(value: RunState) -> void:
+	run_state = value
+	_adapter.set_run_state(value)
 
 
-func _render_options() -> void:
+func _render(projection: Dictionary) -> void:
+	if not is_node_ready():
+		return
+
+	title_label.text = str(projection.get("title", "未知事件"))
+	desc_label.text = str(projection.get("description", "没有描述。"))
+	result_label.text = str(projection.get("result_text", ""))
+
+	var continue_visible := bool(projection.get("continue_visible", false))
+	continue_button.visible = continue_visible
+
+	_render_options(projection, continue_visible)
+
+
+func _render_options(projection: Dictionary, options_disabled: bool) -> void:
 	for child in options_container.get_children():
 		child.queue_free()
 
-	var options := _template.get("options", []) as Array
-	for option in options:
-		var option_dict := option as Dictionary
+	var options: Variant = projection.get("options", [])
+	if not (options is Array):
+		return
+
+	for option_variant in options:
+		if not (option_variant is Dictionary):
+			continue
+		var option_data: Dictionary = option_variant
+
 		var btn := Button.new()
-		btn.text = str(option_dict.get("label", "选项"))
+		btn.text = str(option_data.get("label", "选项"))
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		btn.custom_minimum_size = Vector2(0, 64)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		btn.pressed.connect(_on_option_pressed.bind(option_dict))
+		btn.disabled = options_disabled
+
+		var option_payload: Variant = option_data.get("option_data", {})
+		if option_payload is Dictionary:
+			btn.pressed.connect(_on_option_pressed.bind(option_payload as Dictionary))
+
 		options_container.add_child(btn)
 
 
 func _on_option_pressed(option: Dictionary) -> void:
-	var result := flow_service.execute_option(run_state, option)
-	result_label.text = result
-	for child in options_container.get_children():
-		var btn := child as Button
-		if btn:
-			btn.disabled = true
-	continue_button.show()
+	_adapter.execute_option(option)
 
 
 func _on_continue_pressed() -> void:
-	flow_service.execute_continue(run_state)
+	_adapter.execute_continue()
+
+
+func _on_event_completed() -> void:
 	event_completed.emit()
 
 

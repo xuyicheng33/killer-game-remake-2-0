@@ -12,12 +12,7 @@ var _view_model: RelicPotionViewModel = RELIC_POTION_VIEW_MODEL_SCRIPT.new() as 
 
 
 func set_run_state(value: RunState) -> void:
-	if _run_state and _run_state.changed.is_connected(_on_run_state_changed):
-		_run_state.changed.disconnect(_on_run_state_changed)
-
 	_run_state = value
-	if _run_state and not _run_state.changed.is_connected(_on_run_state_changed):
-		_run_state.changed.connect(_on_run_state_changed)
 	refresh()
 
 
@@ -52,10 +47,6 @@ func refresh() -> void:
 			buttons_with_state.append(button_data)
 	projection["potion_buttons"] = buttons_with_state
 	projection_changed.emit(projection)
-
-
-func _on_run_state_changed() -> void:
-	refresh()
 
 
 func _on_log_updated(text: String) -> void:
