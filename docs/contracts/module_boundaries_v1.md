@@ -41,7 +41,7 @@
    - `buff_system` -> `Enemy` / `Player`（`modules/buff_system/buff_system.gd:21`、`modules/buff_system/buff_system.gd:141`、`modules/buff_system/buff_system.gd:263`）
    - `enemy_intent` -> `EnemyAction`（`modules/enemy_intent/intent_rules.gd:13`）
 
-### 2.4 Phase 7/12/13/14/16/17 质量门禁（可脚本化）
+### 2.4 Phase 7/12/13/14/16/17/18 质量门禁（可脚本化）
 
 1. UI 壳层门禁：`dev/tools/ui_shell_contract_check.sh`
    - 禁止 `scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -79,7 +79,17 @@
    - 禁止 `runtime/scenes/**/*.gd` 对 `run_state.(relics|potions|deck|discard|exhausted|consumables)` 执行集合操作（append/erase/clear/push_/pop_/insert/remove）。
    - 禁止 `runtime/scenes/**/*.gd` 对 `run_state.player_stats.(deck|discard|draw_pile|exhausted|consumables)` 执行集合操作。
    - 目的：防止通过嵌套状态方法调用绕过 Phase 16 门禁，确保所有状态写入必须通过模块层公开接口。
-8. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
+8. run_flow payload 契约门禁（Phase 18 新增）：`dev/tools/run_flow_payload_contract_check.sh`
+   - 校验 `make_result` 函数签名正确（接受 `next_route: String, payload: Dictionary = {}`）。
+   - 校验 `make_result` 返回包含 `next_route` 字段。
+   - 校验 `map_flow.enter_map_node` 成功时返回包含 `accepted/node_id/node_type/reward_gold`。
+   - 校验 `map_flow.resolve_non_battle_completion` 返回包含 `node_type/bonus_log`。
+   - 校验 `battle_flow.resolve_battle_completion` 胜利时返回包含 `reward_gold`。
+   - 校验 `battle_flow.resolve_battle_completion` 失败时返回包含 `game_over_text`。
+   - 校验 `battle_flow.apply_battle_reward` 返回包含 `reward_log`。
+   - 校验所有返回必须通过 `route_dispatcher.make_result` 构造。
+   - 目的：防止路由返回结构被悄悄改坏，确保 payload 契约稳定。
+9. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
    - 默认串行执行上述脚本，作为提交前必过项。
 
 ## 3. 模块边界清单
