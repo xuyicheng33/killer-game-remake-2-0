@@ -9,9 +9,9 @@ const SAMPLE_POTION_ALT := preload("res://custom_resources/potions/iron_skin_pot
 
 # Minimal card pool for Phase B / B1: Warrior only.
 const WARRIOR_POOL: Array[Card] = [
-	preload("res://characters/warrior/cards/warrior_slash.tres"),
-	preload("res://characters/warrior/cards/warrior_block.tres"),
-	preload("res://characters/warrior/cards/warrior_axe_attack.tres"),
+	preload("res://characters/warrior/cards/generated/warrior_slash.tres"),
+	preload("res://characters/warrior/cards/generated/warrior_block.tres"),
+	preload("res://characters/warrior/cards/generated/warrior_axe_attack.tres"),
 ]
 
 

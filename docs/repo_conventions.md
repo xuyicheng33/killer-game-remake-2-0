@@ -44,6 +44,7 @@
 - 存档主模块统一为 `modules/persistence`。
 - `modules/save_seed_replay` 只作为占位，不新增业务实现。
 - 同一内容的“手写版 + generated 版”必须明确唯一真源，并在任务文档中声明。
+- 当前铁甲战士卡牌真源固定为 `characters/warrior/cards/generated/`。
 
 ## 5. 提交流程
 

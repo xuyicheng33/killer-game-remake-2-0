@@ -14,7 +14,7 @@
 
 ## P1（下一批，低风险）
 
-- [ ] 明确卡牌真源目录：`characters/warrior/cards/` 与 `characters/warrior/cards/generated/` 二选一
+- [x] 明确卡牌真源目录：`characters/warrior/cards/generated/` 作为唯一真源
 - [ ] 给 `references/` 增加外置方案说明（分仓或子模块）
 - [ ] 把 `docs/archive/` 建立归档规则（按月份或阶段）
 - [ ] 在 `tools/workflow_check.sh` 增加“新目录命名约束”检查（蛇形/小写/模块前缀）
