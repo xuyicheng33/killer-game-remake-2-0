@@ -23,3 +23,10 @@
 边界约束：
 - 禁止在 UI 脚本中新增效果结算、敌方决策、存档读写逻辑。
 - UI 命令入口优先走 adapter/service，不直接调用领域对象写接口。
+
+契约门禁（Phase 7）：
+- `bash tools/ui_shell_contract_check.sh`
+  - 禁止 `scenes/ui/*.gd` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
+  - 强制 `stats_ui.gd`、`relic_potion_ui.gd` 维持 `scene -> adapter -> viewmodel` 接入链路。
+- `make workflow-check TASK_ID=<task-id>`
+  - 默认会串行执行 `ui_shell_contract_check.sh`，作为提交流程必过项。

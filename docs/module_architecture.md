@@ -78,3 +78,14 @@
 1. 新增跨模块接口必须同步更新：`docs/contracts/module_boundaries_v1.md`。
 2. 变更 `RunState` 字段或存档结构必须同步更新：`docs/contracts/run_state.md`。
 3. `scenes/app` 新增流程逻辑默认应落在 `run_flow`；如临时留在场景层，任务文档必须注明迁移计划。
+
+## 7. 质量门禁（Phase 7）
+
+1. UI 壳层契约门禁：`bash tools/ui_shell_contract_check.sh`
+   - 拦截 `scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
+   - 校验 `stats_ui`、`relic_potion_ui` 仍通过 adapter/viewmodel 接入。
+2. run_flow 契约门禁：`bash tools/run_flow_contract_check.sh`
+   - 校验 `ROUTE_*` 常量单点定义仍在 `route_dispatcher.gd`。
+   - 校验 map/battle 关键 `next_route + payload` 键位不回归。
+3. 聚合入口：`make workflow-check TASK_ID=<task-id>`
+   - `workflow_check.sh` 已串行执行上述脚本，作为提交前必过检查。

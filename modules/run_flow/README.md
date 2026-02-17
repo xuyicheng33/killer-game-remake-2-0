@@ -1,7 +1,7 @@
 # run_flow
 
 状态：
-- Phase 5 已落地（flow_context 收口 + 最小契约测试）
+- Phase 7 已落地（route 常量单点定义 + payload 键位门禁）
 
 目标职责：
 - 承接应用服务层流程编排：地图 -> 战斗 -> 奖励 -> 地图，以及 REST/SHOP/EVENT 分支。
@@ -33,6 +33,8 @@
 
 最小契约测试（可脚本化）：
 - `bash tools/run_flow_contract_check.sh`
+  - 覆盖 `ROUTE_*` 常量单点定义（仅允许 `route_dispatcher.gd` 定义）。
   - 覆盖 `map node type -> next_route` 映射
-  - 覆盖 battle win/lose 路由与关键 payload
-  - 覆盖 non-battle completion `bonus_log` 契约键
+  - 覆盖 `next_route` 结果键与 map/battle 关键 payload 键位（`accepted/node_id/node_type/reward_gold/bonus_log/game_over_text/reward_log`）
+- `make workflow-check TASK_ID=<task-id>`
+  - 默认会串行执行 `run_flow_contract_check.sh`，作为提交流程必过项。

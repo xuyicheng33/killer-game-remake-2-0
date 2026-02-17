@@ -126,4 +126,8 @@ if [[ "${#changed_files[@]}" -gt 0 ]]; then
   done
 fi
 
+echo "[workflow-check] running quality gates..."
+bash tools/ui_shell_contract_check.sh
+bash tools/run_flow_contract_check.sh
+
 echo "[workflow-check] passed."

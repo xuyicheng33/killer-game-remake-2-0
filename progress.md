@@ -25,3 +25,9 @@
 - 完成 `scenes/ui/stats_ui.gd`、`scenes/ui/relic_potion_ui.gd` 瘦身改造（读投影 + 发命令）。
 - 补齐任务三件套与架构文档同步。
 - 完成验证：`rg` 静态检查通过，`make workflow-check TASK_ID=phase6-ui-shell-viewmodel-decoupling-v1` 通过。
+- 启动任务 `phase7-quality-gates-and-regression-v1`。
+- 新增 `tools/ui_shell_contract_check.sh`，固化 UI 直写 `run_state` 拦截与 stats/relic_potion adapter/viewmodel 接线检查。
+- 扩展 `tools/run_flow_contract_check.sh`，增加 `ROUTE_*` 常量单点定义校验与关键 payload 键位回归检查。
+- 更新 `tools/workflow_check.sh`，接入 `ui_shell_contract_check + run_flow_contract_check` 聚合门禁。
+- 同步 `modules/ui_shell/README.md`、`modules/run_flow/README.md`、`module_boundaries_v1/module_architecture/repo_structure/work_logs`。
+- 新增任务三件套：`docs/tasks/phase7-quality-gates-and-regression-v1/{plan,handoff,verification}.md`。

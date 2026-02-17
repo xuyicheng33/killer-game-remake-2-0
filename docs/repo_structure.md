@@ -15,7 +15,7 @@
 │   ├── save_seed_replay/      # 占位目录（无实现）
 │   └── ...                    # battle/card/effect/buff/enemy/map/reward/relic/content/ui
 ├── global/                    # 全局基础能力（events/run_rng/repro_log 等）
-├── tools/                     # 工具脚本（workflow/content import/run_flow contract check）
+├── tools/                     # 工具脚本（workflow/content import/ui_shell + run_flow contract checks）
 ├── docs/                      # 文档、任务三件套、契约
 ├── characters/ effects/ enemies/ custom_resources/
 │                               # 运行时资源与遗留目录
@@ -65,3 +65,12 @@
    - 方案 A：并入 `persistence` 子目录。
    - 方案 B：独立 `seed_replay` 模块，仅承载 RNG/复盘。
 4. 继续扩展 `ui_shell` 样板改造范围：将 `battle_ui` 等页面迁移到“viewmodel/adapter + 只读投影 + 命令转发”模式。
+
+## 6. 当前质量门禁入口（Phase 7）
+
+1. `bash tools/ui_shell_contract_check.sh`
+   - 拦截 `scenes/ui` 直写 `run_state` 核心入口，校验迁移页面 adapter/viewmodel 接线。
+2. `bash tools/run_flow_contract_check.sh`
+   - 校验 route 常量单点定义与关键 `next_route + payload` 契约。
+3. `make workflow-check TASK_ID=<task-id>`
+   - 聚合执行白名单检查 + 两个契约门禁脚本。

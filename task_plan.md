@@ -50,3 +50,26 @@
 | Error | Attempt | Resolution |
 |---|---|---|
 | 暂无 | - | - |
+
+## 2026-02-17 Task: phase7-quality-gates-and-regression-v1
+
+### Goal
+固化 Phase 2~6 关键约束为可脚本化质量门禁，并接入 `workflow-check`，实现“提交前必过”的最小回归集。
+
+### Scope
+- 新增 `tools/ui_shell_contract_check.sh`。
+- 扩展 `tools/run_flow_contract_check.sh` 的 route 常量与 payload 契约检查。
+- 在 `tools/workflow_check.sh` 中接入上述门禁脚本。
+- 补齐 phase7 三件套与架构文档同步。
+
+### Phases
+1. `completed` 新增 `ui_shell` 契约门禁脚本并通过本地验证。
+2. `completed` 扩展 `run_flow` 契约门禁脚本并通过本地验证。
+3. `completed` 将两类门禁接入 `workflow-check` 聚合入口。
+4. `completed` 补齐 phase7 三件套与相关模块/架构文档。
+5. `completed` 执行 `ui_shell/run_flow/workflow-check` 三条验证命令并记录结果。
+
+### Errors Encountered (This Task)
+| Error | Attempt | Resolution |
+|---|---|---|
+| 暂无 | - | - |
