@@ -56,6 +56,14 @@ if [[ "$branch" != "main" && ! "$branch" =~ $branch_pattern ]]; then
   exit 1
 fi
 
+# 校验分支名包含 TASK_ID
+if [[ "$branch" != "main" ]]; then
+  if [[ "$branch" != *"$task_id"* ]]; then
+    echo "[workflow-check] failed: branch '$branch' does not contain TASK_ID '$task_id'." >&2
+    exit 1
+  fi
+fi
+
 task_dir="docs/tasks/$task_id"
 for f in plan.md handoff.md verification.md; do
   if [[ ! -f "$task_dir/$f" ]]; then
