@@ -67,6 +67,7 @@ func _open_map() -> void:
 	map_screen.run_state = run_state
 	map_screen.set_map_graph(run_state.map_graph)
 	map_screen.node_selected.connect(_on_map_node_selected)
+	map_screen.restart_requested.connect(_start_new_run)
 	scene_host.add_child(map_screen)
 	_save_checkpoint("map")
 

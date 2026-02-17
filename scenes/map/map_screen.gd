@@ -2,6 +2,7 @@ class_name MapScreen
 extends Control
 
 signal node_selected(node: MapNodeData)
+signal restart_requested
 
 @export var run_state: RunState : set = _set_run_state
 
@@ -9,12 +10,16 @@ signal node_selected(node: MapNodeData)
 @onready var run_label: Label = %RunLabel
 @onready var stats_label: Label = %StatsLabel
 @onready var hint_label: Label = %HintLabel
+@onready var restart_run_button: Button = %RestartRunButton
 @onready var node_list: VBoxContainer = %NodeList
 
 var map_graph: MapGraphData
 
 
 func _ready() -> void:
+	if not restart_run_button.pressed.is_connected(_on_restart_pressed):
+		restart_run_button.pressed.connect(_on_restart_pressed)
+
 	_apply_responsive_layout()
 	var viewport := get_viewport()
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
@@ -128,6 +133,10 @@ func _node_color(type: MapNodeData.NodeType) -> Color:
 
 func _on_node_pressed(node: MapNodeData) -> void:
 	node_selected.emit(node)
+
+
+func _on_restart_pressed() -> void:
+	restart_requested.emit()
 
 
 func _on_viewport_resized() -> void:

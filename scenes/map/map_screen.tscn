@@ -96,6 +96,21 @@ theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
 text = "选择下一个节点，进入该模块的流程。"
 
+[node name="ActionsRow" type="HBoxContainer" parent="Frame/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ActionsSpacer" type="Control" parent="Frame/MarginContainer/VBox/ActionsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RestartRunButton" type="Button" parent="Frame/MarginContainer/VBox/ActionsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(180, 56)
+theme_override_font_sizes/font_size = 20
+text = "重新开局"
+
 [node name="NodeScroll" type="ScrollContainer" parent="Frame/MarginContainer/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
