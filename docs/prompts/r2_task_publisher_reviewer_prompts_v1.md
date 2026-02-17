@@ -120,23 +120,87 @@
 5. 风险与未覆盖验证点：`<bullet list>`。
 6. 下一步（给编程员的下一任务提示词）：`<完整可投喂文本>`。
 
-## 5. “自动推进下一阶段”模板
+## 5. "自动推进下一阶段"规则
 
 当当前任务通过并提交后，立刻按下述规则生成下一任务提示词：
 
+### 5.1 查找下一任务
+
 1. 从 `docs/roadmap/r2_toolchain_first_master_plan_v1.md` 找下一个状态为 `planned` 的 phase。
-2. 若下一 phase 为 `L2`，在提示词开头明确写“需先审批（回复 批准）”。
-3. 自动填充：
-   - `任务ID`
-   - `任务等级`
-   - `主模块`
-   - `目标`
-   - `白名单`
-   - `验证命令`
-4. 自动附加“禁止项”：
-   - 不做跨模块顺手重构
-   - 不改白名单外文件
-   - 不省略三件套
+2. 若下一 phase 为 `L2`，在提示词开头明确写"**需先审批（回复 批准）**"。
+3. 若已无 `planned` 任务，输出"**R2 任务链已完成**"并等待人工指示。
+
+### 5.2 自动填充字段
+
+| 字段 | 来源 |
+|---|---|
+| 任务 ID | `r2_toolchain_first_master_plan_v1.md` 中的任务 ID |
+| 任务等级 | `r2_toolchain_first_master_plan_v1.md` 中的等级（L0/L1/L2） |
+| 主模块 | `r2_toolchain_first_master_plan_v1.md` 中的主模块 |
+| 目标 | `r2_toolchain_first_master_plan_v1.md` 中的目标摘要 |
+| 白名单 | 根据任务目标推导，需明确列出允许修改的文件路径 |
+| 验证命令 | `r2_toolchain_first_master_plan_v1.md` 中的验收命令 + `make workflow-check` |
+
+### 5.3 自动附加禁止项
+
+每份任务提示词必须包含以下禁止项：
+
+- 不做跨模块顺手重构
+- 不改白名单外文件
+- 不省略三件套（plan/handoff/verification）
+- 不写"理论通过"，必须贴真实命令输出
+
+### 5.4 模板引用
+
+生成任务提示词时，参考以下模板文件：
+
+- 程序员任务卡模板：`docs/templates/programmer_task_template.md`
+- 审核员输出模板：`docs/templates/auditor_output_template.md`
+
+### 5.5 自动推进流程
+
+```
+当前任务通过 → 提交 → 查找下一 planned 任务 → 生成任务提示词 → 输出给用户
+                              ↓
+                     若无 planned 任务 → 输出"R2 任务链已完成"
+```
+
+### 5.6 示例输出格式
+
+```
+---
+当前任务 <task-id> 已提交（<commit-hash>）
+下一任务：<next-task-id>（L1，主模块：<module>）
+
+---
+
+任务ID：`<next-task-id>`
+任务等级：`L1`
+主模块：`<module>`
+
+目标：
+`<一句话描述>`
+
+本任务边界：
+1. 只做 `<scope>`，不改 `<out_of_scope>`。
+
+必做项：
+1. `<must_do_1>`
+2. `<must_do_2>`
+
+白名单文件：
+- `<path_1>`
+- `<path_2>`
+
+验证命令：
+- `<cmd_1>`
+- `make workflow-check TASK_ID=<task-id>`
+
+禁止项：
+- 不做跨模块顺手重构
+- 不改白名单外文件
+- 不省略三件套
+```
 
 ## 6. 快速核查命令清单（建议）
 
