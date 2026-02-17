@@ -107,30 +107,42 @@ func _on_battle_finished(result: int) -> void:
 	relic_potion_system.end_battle()
 	_clear_scene_host()
 
-	if result == BattleOverPanel.Type.WIN:
-		_open_reward()
+	var command_result := run_flow_service.battle_flow_service.resolve_battle_completion(
+		run_state,
+		result == BattleOverPanel.Type.WIN,
+		pending_reward_gold
+	)
+	var next_route := str(command_result.get("next_route", ""))
+	if next_route == BattleFlowService.ROUTE_REWARD:
+		_open_reward(int(command_result.get("reward_gold", pending_reward_gold)))
 		return
 
-	SAVE_SERVICE_SCRIPT.clear_save()
-	game_over_panel.show()
-	game_over_text.text = "本次远征失败\n到达层数：%d\n最终金币：%d" % [run_state.floor + 1, run_state.gold]
+	if next_route == BattleFlowService.ROUTE_GAME_OVER:
+		game_over_panel.show()
+		game_over_text.text = str(command_result.get("game_over_text", "本次远征失败"))
+		return
+
+	_open_map()
 
 
-func _open_reward() -> void:
+func _open_reward(reward_gold: int) -> void:
 	_clear_scene_host()
 	var reward_screen := REWARD_SCREEN_SCENE.instantiate() as RewardScreen
 	reward_screen.run_state = run_state
-	reward_screen.reward_gold = pending_reward_gold
+	reward_screen.reward_gold = reward_gold
 	reward_screen.reward_completed.connect(_on_reward_completed)
 	scene_host.add_child(reward_screen)
 
 
 func _on_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
-	# Apply and return to map.
-	var reward_log := REWARD_GENERATOR_SCRIPT.apply_post_battle_reward(run_state, bundle, chosen_card)
+	var command_result := run_flow_service.battle_flow_service.apply_battle_reward(run_state, bundle, chosen_card)
+	var reward_log := str(command_result.get("reward_log", ""))
 	if reward_log.length() > 0:
 		relic_potion_system.push_external_log("战斗奖励：%s" % reward_log)
-	_open_map()
+
+	var next_route := str(command_result.get("next_route", BattleFlowService.ROUTE_MAP))
+	if next_route == BattleFlowService.ROUTE_MAP:
+		_open_map()
 
 
 func _open_rest_screen() -> void:

@@ -16,7 +16,7 @@
 | 模块 | 主要文件 | 职责摘要 | 实现度 |
 |---|---|---|---|
 | `run_meta` | `modules/run_meta/run_state.gd` | 跨场景运行态与地图推进状态 | 部分 |
-| `run_flow` | `modules/run_flow/run_flow_service.gd` | 应用层流程编排与页面命令服务（shop/event/rest 首批） | 部分 |
+| `run_flow` | `modules/run_flow/run_flow_service.gd` | 应用层流程编排与页面命令服务（shop/event/rest + battle result/reward） | 部分 |
 | `battle_loop` | `modules/battle_loop/battle_phase_state_machine.gd` | 战斗阶段状态机 | 已实现（最小） |
 | `card_system` | `modules/card_system/card_zones_model.gd` | 牌区计数与关键词联动 | 部分 |
 | `effect_engine` | `modules/effect_engine/effect_stack_engine.gd` | 效果队列与顺序结算 | 已实现（最小） |
@@ -46,7 +46,7 @@
 ### 3.2 模块 -> 模块
 
 - `run_meta` -> `map_event/map_generator`
-- `run_flow` -> `reward_economy/shop_offer_generator`、`map_event/event_service`、`run_meta`
+- `run_flow` -> `reward_economy/shop_offer_generator/reward_generator`、`map_event/event_service`、`persistence/save_service`、`run_meta`
 - `map_event/event_service` -> `reward_economy/reward_generator`（当前存在反向耦合）
 - `persistence` -> `map_event/map_generator`
 - `reward_economy/shop_offer_generator` -> `reward_economy/reward_generator`
@@ -58,10 +58,10 @@
 
 ## 4. 当前边界偏差（本节仅记录当前偏差，不在本任务改代码）
 
-1. `run_flow` 仅完成 shop/event/rest 第一批；主流程编排仍主要在 `scenes/app/app.gd`。
+1. `run_flow` 已完成 shop/event/rest + battle result/reward 编排；地图主流程仍主要在 `scenes/app/app.gd`。
 2. `ui_shell` 目录未承载实现：UI 脚本实际在 `scenes/ui/`。
 3. `save_seed_replay` 与 `persistence` 并存但只有后者有实现。
-4. `scenes/app/app.gd` 仍有 `RunState` 写操作（`enter_map_node`、占位 `next_floor`），属于 Phase 2 后续批次。
+4. `scenes/app/app.gd` 仍有 `RunState` 写操作（`enter_map_node`、占位 `next_floor`），属于后续批次。
 5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按“禁止新增、存量待迁移”处理。
 
 ## 5. 命名与归属收口（Phase 1 决议）

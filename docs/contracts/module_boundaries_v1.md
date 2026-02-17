@@ -34,7 +34,7 @@
 
 ### 2.3 现状偏差（已知，留到 Phase 2/4 处理）
 
-1. `scenes/app/app.gd` 仍承担主流程编排 + 持久化接线（应继续迁至 `run_flow` 应用服务）。
+1. `scenes/app/app.gd` 仍承担地图主流程编排 + 持久化接线（应继续迁至 `run_flow` 应用服务）。
 2. `scenes/app/app.gd` 仍直接执行部分 `RunState` 写操作（如 `enter_map_node`、占位 `next_floor`），属于后续批次迁移范围。
 3. `map_event/event_service.gd` 反向依赖 `reward_economy`（事件加牌复用奖励卡池）。
 4. 模块层仍存在对场景层 class_name 的存量类型依赖（禁止新增，待迁移）：
@@ -58,11 +58,11 @@
 
 - 职责：应用服务层流程编排（地图 -> 战斗 -> 奖励 -> 地图；REST/SHOP/EVENT 分支）。
 - 输入：节点选择、战斗结果、页面完成事件、存档读档请求。
-- 输出：下一步流程命令（打开哪个场景）、流程日志、检查点存档触发。
+- 输出：统一命令结果字典（至少含 `next_route`，可扩展 `reward_gold`/`game_over_text`/`reward_log` 等）、流程日志、检查点存档触发。
 - 状态所有权：不拥有领域状态，只编排并调用其他模块。
 - 允许依赖：`run_meta`、`map_event`、`reward_economy`、`relic_potion`、`persistence`、`ui_shell`。
 - 禁止依赖：战斗细节实现（`card/effect/buff/enemy` 内部细节）、`content_pipeline`。
-- 当前实现度：`部分`（`run_flow_service.gd` + `shop/event/rest` 命令服务已接入；主流程仍在 `scenes/app/app.gd`）。
+- 当前实现度：`部分`（`run_flow_service.gd` + `shop/event/rest/battle` 命令服务已接入；地图主流程仍在 `scenes/app/app.gd`）。
 
 ## `battle_loop`
 
