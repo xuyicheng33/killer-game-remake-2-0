@@ -31,6 +31,7 @@
 - Phase C：`docs/roadmap/phase_C_engineering.md`
 - Phase D：`docs/roadmap/phase_D_content_ui.md`
 - 统一任务池与执行顺序：`docs/roadmap/task_backlog.md`
+- R2 工具链优先主规划（Phase0 起步）：`docs/roadmap/r2_toolchain_first_master_plan_v1.md`
 
 ## 5. 推荐启动顺序（结合当前缺口）
 
