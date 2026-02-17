@@ -6,7 +6,7 @@ func shake(thing: Node2D, strength: float, duration: float = 0.2) -> void:
 		return
 
 	var orig_pos := thing.position
-	var thing_ref := weakref(thing)
+	var thing_ref: WeakRef = weakref(thing)
 	var shake_count := 10
 	var tween := create_tween()
 	
