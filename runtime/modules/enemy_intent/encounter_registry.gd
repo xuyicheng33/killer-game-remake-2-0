@@ -103,7 +103,7 @@ static func pick_encounter(floor: int, tags: Array[String] = [], rng_stream_key:
 	if total_weight <= 0:
 		return candidates[0]
 	
-	var roll := RUN_RNG_SCRIPT.randi_range(1, total_weight, rng_stream_key)
+	var roll := RUN_RNG_SCRIPT.randi_range(rng_stream_key, 1, total_weight)
 	var cumulative := 0
 	for i in candidates.size():
 		cumulative += weights[i]
