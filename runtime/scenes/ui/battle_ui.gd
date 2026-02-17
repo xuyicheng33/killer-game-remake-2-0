@@ -1,7 +1,7 @@
 class_name BattleUI
 extends CanvasLayer
 
-const CARD_ZONES_MODEL_SCRIPT := preload("res://runtime/modules/card_system/card_zones_model.gd")
+const BATTLE_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/battle_ui_adapter.gd")
 
 @export var char_stats: CharacterStats : set = _set_char_stats
 
@@ -9,34 +9,38 @@ const CARD_ZONES_MODEL_SCRIPT := preload("res://runtime/modules/card_system/card
 @onready var mana_ui: ManaUI = $ManaUI
 @onready var end_turn_button: Button = %EndTurnButton
 
-var _card_zones_model: CardZonesModel
+var _adapter: BattleUIAdapter
 var _zone_counts_label: Label
 
 
 func _ready() -> void:
-	Events.player_hand_drawn.connect(_on_player_hand_drawn)
+	_adapter = BATTLE_UI_ADAPTER_SCRIPT.new() as BattleUIAdapter
+	_adapter.projection_changed.connect(_on_projection_changed)
+	_adapter.end_turn_button_enabled_changed.connect(_on_end_turn_button_enabled_changed)
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
-	_card_zones_model = CARD_ZONES_MODEL_SCRIPT.get_instance()
-	if not _card_zones_model.zone_counts_changed.is_connected(_on_zone_counts_changed):
-		_card_zones_model.zone_counts_changed.connect(_on_zone_counts_changed)
 	_setup_zone_counts_ui()
-	_bind_card_zones_context()
+	_bind_context()
 
 
 func _set_char_stats(value: CharacterStats) -> void:
 	char_stats = value
 	mana_ui.char_stats = char_stats
 	hand.char_stats = char_stats
-	_bind_card_zones_context()
+	_bind_context()
 
 
-func _on_player_hand_drawn() -> void:
-	end_turn_button.disabled = false
+func _on_projection_changed(projection: Dictionary) -> void:
+	var text_variant: Variant = projection.get("zone_counts_text", "")
+	if text_variant is String:
+		_update_zone_counts_text(text_variant)
+
+
+func _on_end_turn_button_enabled_changed(enabled: bool) -> void:
+	end_turn_button.disabled = not enabled
 
 
 func _on_end_turn_button_pressed() -> void:
-	end_turn_button.disabled = true
-	Events.player_turn_ended.emit()
+	_adapter.request_end_turn()
 
 
 func _setup_zone_counts_ui() -> void:
@@ -61,35 +65,19 @@ func _setup_zone_counts_ui() -> void:
 	add_child(_zone_counts_label)
 
 
-func _bind_card_zones_context() -> void:
+func _bind_context() -> void:
 	if not is_node_ready():
 		return
 	if char_stats == null:
 		return
-	if _card_zones_model == null:
+	if _adapter == null:
 		return
 
-	_card_zones_model.bind_context(char_stats, hand)
-	var counts: Dictionary = _card_zones_model.get_zone_counts()
-	_update_zone_counts_text(
-		int(counts.get("draw", 0)),
-		int(counts.get("hand", 0)),
-		int(counts.get("discard", 0)),
-		int(counts.get("exhaust", 0))
-	)
+	_adapter.bind_context(char_stats, hand)
 
 
-func _on_zone_counts_changed(draw_count: int, hand_count: int, discard_count: int, exhaust_count: int) -> void:
-	_update_zone_counts_text(draw_count, hand_count, discard_count, exhaust_count)
-
-
-func _update_zone_counts_text(draw_count: int, hand_count: int, discard_count: int, exhaust_count: int) -> void:
+func _update_zone_counts_text(text: String) -> void:
 	if _zone_counts_label == null or not is_instance_valid(_zone_counts_label):
 		return
 
-	_zone_counts_label.text = "抽牌堆：%d  手牌：%d\n弃牌堆：%d  消耗堆：%d" % [
-		draw_count,
-		hand_count,
-		discard_count,
-		exhaust_count,
-	]
+	_zone_counts_label.text = text

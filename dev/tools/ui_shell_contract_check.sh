@@ -7,8 +7,10 @@ cd "$ROOT_DIR"
 UI_DIR="runtime/scenes/ui"
 STATS_UI_FILE="runtime/scenes/ui/stats_ui.gd"
 RELIC_POTION_UI_FILE="runtime/scenes/ui/relic_potion_ui.gd"
+BATTLE_UI_FILE="runtime/scenes/ui/battle_ui.gd"
 STATS_ADAPTER_FILE="runtime/modules/ui_shell/adapter/stats_ui_adapter.gd"
 RELIC_POTION_ADAPTER_FILE="runtime/modules/ui_shell/adapter/relic_potion_ui_adapter.gd"
+BATTLE_ADAPTER_FILE="runtime/modules/ui_shell/adapter/battle_ui_adapter.gd"
 
 fail() {
   local message="$1"
@@ -25,7 +27,7 @@ assert_has() {
   local pattern="$1"
   local file="$2"
   local label="$3"
-  if rg -n "$pattern" "$file" >/dev/null; then
+  if grep -Eq "$pattern" "$file" 2>/dev/null; then
     pass "$label"
     return
   fi
@@ -36,9 +38,9 @@ assert_not_has() {
   local pattern="$1"
   local file="$2"
   local label="$3"
-  if rg -n "$pattern" "$file" >/dev/null; then
+  if grep -Eq "$pattern" "$file" 2>/dev/null; then
     echo "[context] unexpected matches in $file:" >&2
-    rg -n "$pattern" "$file" >&2 || true
+    grep -En "$pattern" "$file" >&2 || true
     fail "$label (found forbidden pattern '$pattern' in '$file')"
   fi
   pass "$label"
@@ -46,10 +48,18 @@ assert_not_has() {
 
 echo "[ui_shell_contract] checking forbidden direct RunState writes under runtime/scenes/ui..."
 forbidden_pattern='run_state[[:space:]]*\.[[:space:]]*(set_|add_|remove_|clear_|advance_|mark_|apply_)'
-forbidden_matches="$(rg -n --glob '*.gd' "$forbidden_pattern" "$UI_DIR" || true)"
+forbidden_matches=""
+for gd_file in "$UI_DIR"/*.gd; do
+  if [[ -f "$gd_file" ]]; then
+    match=$(grep -En "$forbidden_pattern" "$gd_file" 2>/dev/null || true)
+    if [[ -n "$match" ]]; then
+      forbidden_matches="${forbidden_matches}${gd_file}:${match}\n"
+    fi
+  fi
+done
 if [[ -n "$forbidden_matches" ]]; then
   echo "[context] forbidden direct RunState writes:" >&2
-  printf '%s\n' "$forbidden_matches" >&2
+  printf '%b' "$forbidden_matches" >&2
   fail "runtime/scenes/ui must not call run_state.set_/add_/remove_/clear_/advance_/mark_/apply_ directly"
 fi
 pass "no forbidden run_state direct writes in runtime/scenes/ui"
@@ -62,5 +72,9 @@ assert_not_has 'BuffSystem\.get_instance\(' "$STATS_UI_FILE" "stats_ui does not 
 assert_has 'runtime/modules/ui_shell/adapter/relic_potion_ui_adapter\.gd' "$RELIC_POTION_UI_FILE" "relic_potion_ui uses relic_potion adapter"
 assert_has 'runtime/modules/ui_shell/viewmodel/relic_potion_view_model\.gd' "$RELIC_POTION_ADAPTER_FILE" "relic_potion adapter uses relic_potion viewmodel"
 assert_not_has 'relic_potion_system[[:space:]]*\.[[:space:]]*use_potion\(' "$RELIC_POTION_UI_FILE" "relic_potion_ui does not directly call relic_potion_system.use_potion"
+
+assert_has 'runtime/modules/ui_shell/adapter/battle_ui_adapter\.gd' "$BATTLE_UI_FILE" "battle_ui uses battle_ui adapter"
+assert_has 'runtime/modules/ui_shell/viewmodel/battle_ui_view_model\.gd' "$BATTLE_ADAPTER_FILE" "battle_ui adapter uses battle_ui viewmodel"
+assert_not_has 'card_system/card_zones_model' "$BATTLE_UI_FILE" "battle_ui does not directly import card_system/card_zones_model"
 
 echo "[ui_shell_contract] all checks passed."

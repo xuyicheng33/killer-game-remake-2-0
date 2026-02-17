@@ -40,7 +40,7 @@
 - `runtime/scenes/map/rest_screen.gd` -> `run_flow/rest_flow_service`
 - `runtime/scenes/battle/battle.gd` -> `battle_loop`
 - `runtime/scenes/reward/reward_screen.gd` -> `reward_economy/reward_generator`
-- `runtime/scenes/ui/battle_ui.gd` -> `card_system`
+- `runtime/scenes/ui/battle_ui.gd` -> `ui_shell/adapter/battle_ui_adapter`
 - `runtime/scenes/ui/stats_ui.gd` -> `ui_shell/adapter/stats_ui_adapter`
 - `runtime/scenes/ui/relic_potion_ui.gd` -> `ui_shell/adapter/relic_potion_ui_adapter`
 
@@ -53,6 +53,7 @@
 - `reward_economy/shop_offer_generator` -> `reward_economy/reward_generator`
 - `ui_shell/viewmodel/stats_view_model` -> `buff_system`
 - `ui_shell/adapter/relic_potion_ui_adapter` -> `relic_potion/relic_potion_system`
+- `ui_shell/adapter/battle_ui_adapter` -> `card_system/card_zones_model`
 
 ### 3.3 模块 -> global
 
@@ -62,7 +63,7 @@
 ## 4. 当前边界偏差（本节仅记录当前偏差，不在本任务改代码）
 
 1. `run_flow` 已承接地图节点进入、placeholder 跳转、shop/event/rest/battle/reward 路由决策，且通过 `flow_context` 承接跨页面流程上下文；`runtime/scenes/app/app.gd` 保留页面实例化与事件接线。
-2. `ui_shell` 已有首批实现（`viewmodel + adapter`），但 `battle_ui` 等其余 UI 仍在 `runtime/scenes/ui` 直连模块阶段。
+2. `ui_shell` 已有首批实现（`viewmodel + adapter`），`stats_ui`、`relic_potion_ui`、`battle_ui` 已完成迁移。
 3. `seed_replay` 与 `persistence` 并存但只有后者有实现。
 4. `runtime/scenes/app/app.gd` 已移除地图主流程写入（`enter_map_node`、占位 `next_floor`）与 `pending_*` 流程上下文字段，后续可继续收口 checkpoint/repro 触发细节。
 5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按“禁止新增、存量待迁移”处理。
@@ -83,7 +84,8 @@
 
 1. UI 壳层契约门禁：`bash dev/tools/ui_shell_contract_check.sh`
    - 拦截 `runtime/scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
-   - 校验 `stats_ui`、`relic_potion_ui` 仍通过 adapter/viewmodel 接入。
+   - 校验 `stats_ui`、`relic_potion_ui`、`battle_ui` 仍通过 adapter/viewmodel 接入。
+   - 禁止 `battle_ui` 直接导入 `card_system/card_zones_model`。
 2. run_flow 契约门禁：`bash dev/tools/run_flow_contract_check.sh`
    - 校验 `ROUTE_*` 常量单点定义仍在 `route_dispatcher.gd`。
    - 校验 map/battle 关键 `next_route + payload` 键位不回归。

@@ -193,7 +193,7 @@
 - 状态所有权：仅拥有临时 UI 状态。
 - 允许依赖：`run_meta`（只读）、`card_system`、`buff_system`、`relic_potion`。
 - 禁止依赖：直接写战斗规则、直接执行效果结算、直接读写存档、绕过 adapter 直接调用领域写接口。
-- 当前实现度：`部分`（`modules/ui_shell/viewmodel + adapter` 已用于 `stats_ui`、`relic_potion_ui`，其余 UI 仍待迁移）。
+- 当前实现度：`部分`（`modules/ui_shell/viewmodel + adapter` 已用于 `stats_ui`、`relic_potion_ui`、`battle_ui`）。
 - 契约门禁：`dev/tools/ui_shell_contract_check.sh`（禁止 UI 直写 `run_state.*` 核心入口 + 强制迁移页面 adapter/viewmodel 接线）。
 
 ## 4. 命名与归属决策（Phase 1 基线）
