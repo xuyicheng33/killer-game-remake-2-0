@@ -8,6 +8,7 @@ const BATTLE_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/batt
 const MAP_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/map_flow_service.gd")
 const ROUTE_DISPATCHER_SCRIPT := preload("res://runtime/modules/run_flow/route_dispatcher.gd")
 const FLOW_CONTEXT_SCRIPT := preload("res://runtime/modules/run_flow/flow_context.gd")
+const LIFECYCLE_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/run_lifecycle_service.gd")
 
 var shop_flow_service: ShopFlowService
 var event_flow_service: EventFlowService
@@ -16,11 +17,13 @@ var battle_flow_service: BattleFlowService
 var map_flow_service: MapFlowService
 var route_dispatcher: RunRouteDispatcher
 var flow_context: RunFlowContext
+var lifecycle_service: RunLifecycleService
 
 
 func _init() -> void:
 	route_dispatcher = ROUTE_DISPATCHER_SCRIPT.new() as RunRouteDispatcher
 	flow_context = FLOW_CONTEXT_SCRIPT.new() as RunFlowContext
+	lifecycle_service = LIFECYCLE_SERVICE_SCRIPT.new() as RunLifecycleService
 	shop_flow_service = SHOP_FLOW_SERVICE_SCRIPT.new() as ShopFlowService
 	event_flow_service = EVENT_FLOW_SERVICE_SCRIPT.new() as EventFlowService
 	rest_flow_service = REST_FLOW_SERVICE_SCRIPT.new() as RestFlowService

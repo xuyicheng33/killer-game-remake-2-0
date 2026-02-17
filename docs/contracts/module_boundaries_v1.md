@@ -34,7 +34,7 @@
 
 ### 2.3 现状偏差（已知，留到 Phase 2/4 处理）
 
-1. `scenes/app/app.gd` 仍承担持久化接线、复盘日志写入与页面实例化（地图主流程编排已迁至 `run_flow`）。
+1. `scenes/app/app.gd` 已收口为"事件接线 + 场景实例化 + 路由执行"，生命周期逻辑已迁移至 `run_flow/run_lifecycle_service.gd`。
 2. `map_event/event_service.gd` 反向依赖 `reward_economy`（事件加牌复用奖励卡池）。
 3. 模块层仍存在对场景层 class_name 的存量类型依赖（禁止新增，待迁移）：
    - `card_system` -> `Hand` / `CardUI`（`modules/card_system/card_zones_model.gd:10`、`modules/card_system/card_zones_model.gd:111`）
@@ -66,13 +66,13 @@
 
 ## `run_flow`
 
-- 职责：应用服务层流程编排（地图 -> 战斗 -> 奖励 -> 地图；REST/SHOP/EVENT 分支）。
+- 职责：应用服务层流程编排（地图 -> 战斗 -> 奖励 -> 地图；REST/SHOP/EVENT 分支）+ 生命周期管理（新局初始化、读档恢复、checkpoint 存档、复盘日志）。
 - 输入：节点选择、战斗结果、页面完成事件、存档读档请求。
 - 输出：统一命令结果字典（至少含 `next_route`，可扩展 `reward_gold`/`game_over_text`/`reward_log` 等）、流程日志、检查点存档触发。
 - 状态所有权：不拥有领域状态，只编排并调用其他模块。
-- 允许依赖：`run_meta`、`map_event`、`reward_economy`、`relic_potion`、`persistence`、`ui_shell`。
+- 允许依赖：`run_meta`、`map_event`、`reward_economy`、`relic_potion`、`persistence`、`ui_shell`、`global/run_rng.gd`、`global/repro_log.gd`。
 - 禁止依赖：战斗细节实现（`card/effect/buff/enemy` 内部细节）、`content_pipeline`。
-- 当前实现度：`部分`（`run_flow_service.gd` + `flow_context.gd` + `route_dispatcher.gd` + `map/shop/event/rest/battle` 命令服务已接入；app 层保留场景接线与页面实例化）。
+- 当前实现度：`部分`（`run_flow_service.gd` + `run_lifecycle_service.gd` + `flow_context.gd` + `route_dispatcher.gd` + `map/shop/event/rest/battle` 命令服务已接入；app 层保留场景接线与页面实例化）。
 - 契约门禁：`dev/tools/run_flow_contract_check.sh`（`ROUTE_*` 单点定义 + 关键 `next_route/payload` 键位）。
 
 ## `battle_loop`

@@ -9,10 +9,7 @@ const SHOP_SCREEN_SCENE := preload("res://runtime/scenes/shop/shop_screen.tscn")
 const EVENT_SCREEN_SCENE := preload("res://runtime/scenes/events/event_screen.tscn")
 const HERO_TEMPLATE := preload("res://content/characters/warrior/warrior.tres")
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://runtime/modules/relic_potion/relic_potion_system.gd")
-const SAVE_SERVICE_SCRIPT := preload("res://runtime/modules/persistence/save_service.gd")
 const RUN_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/run_flow_service.gd")
-const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
-const REPRO_LOG_SCRIPT := preload("res://runtime/global/repro_log.gd")
 
 @onready var scene_host: Node = %SceneHost
 @onready var relic_potion_ui: RelicPotionUI = %RelicPotionUI
@@ -48,15 +45,16 @@ func _start_new_run() -> void:
 	game_over_panel.hide()
 	get_tree().paused = false
 
-	run_state = RunState.new()
-	var seed := _resolve_run_seed()
-	RUN_RNG_SCRIPT.begin_run(seed)
-	REPRO_LOG_SCRIPT.begin_run(seed)
-	run_state.init_with_character(HERO_TEMPLATE, seed)
+	var result := run_flow_service.lifecycle_service.start_new_run(HERO_TEMPLATE)
+	if not bool(result.get("ok", false)):
+		push_error("新局初始化失败")
+		return
+
+	run_state = result.get("run_state") as RunState
 	run_flow_service.reset_flow_context()
 	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
-	REPRO_LOG_SCRIPT.set_progress(run_state.floor, run_state.map_current_node_id)
+	run_flow_service.lifecycle_service.update_repro_progress(run_state)
 
 	_open_map()
 
@@ -78,8 +76,10 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 		return
 
 	run_flow_service.apply_map_node_context(command_result, node.type)
-	REPRO_LOG_SCRIPT.set_progress(run_state.floor, str(command_result.get("node_id", node.id)))
-	REPRO_LOG_SCRIPT.log_event("node_enter", "type=%d" % int(run_flow_service.get_pending_node_type()))
+	run_flow_service.lifecycle_service.log_node_enter(
+		str(command_result.get("node_id", node.id)),
+		int(run_flow_service.get_pending_node_type())
+	)
 	_dispatch_next_route(command_result)
 
 
@@ -197,57 +197,32 @@ func _clear_scene_host() -> void:
 
 
 func _try_load_saved_run() -> bool:
-	var load_result: Dictionary = SAVE_SERVICE_SCRIPT.load_run_state(HERO_TEMPLATE)
-	if not bool(load_result.get("ok", false)):
-		var error_message: String = str(load_result.get("message", "读档失败。"))
-		print("[save] %s" % error_message)
-		return false
-
-	var loaded_run_state: RunState = load_result.get("run_state") as RunState
-	if loaded_run_state == null:
-		print("[save] 读档失败：恢复出的 RunState 为空。")
+	var result := run_flow_service.lifecycle_service.try_load_saved_run(HERO_TEMPLATE)
+	if not bool(result.get("ok", false)):
+		print("[save] %s" % str(result.get("message", "读档失败。")))
 		return false
 
 	_clear_scene_host()
 	game_over_panel.hide()
 	get_tree().paused = false
 
-	run_state = loaded_run_state
+	run_state = result.get("run_state") as RunState
 	run_flow_service.reset_flow_context()
-	var restored_rng := false
-	var rng_state_variant: Variant = load_result.get("rng_state", {})
-	if typeof(rng_state_variant) == TYPE_DICTIONARY:
-		restored_rng = RUN_RNG_SCRIPT.restore_run_state(rng_state_variant as Dictionary)
-	if not restored_rng:
-		RUN_RNG_SCRIPT.begin_run(run_state.seed)
-	REPRO_LOG_SCRIPT.begin_run(RUN_RNG_SCRIPT.get_run_seed())
 	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
-	REPRO_LOG_SCRIPT.set_progress(run_state.floor, run_state.map_current_node_id)
 	_open_map()
 	relic_potion_system.push_external_log("继续游戏：层数 %d，金币 %d" % [run_state.floor + 1, run_state.gold])
 	return true
 
 
 func _save_checkpoint(tag: String) -> void:
-	if run_state == null:
-		return
-
-	var save_result: Dictionary = SAVE_SERVICE_SCRIPT.save_run_state(run_state)
-	if not bool(save_result.get("ok", false)):
-		var error_message: String = str(save_result.get("message", "存档失败。"))
-		print("[save] %s" % error_message)
+	var result := run_flow_service.lifecycle_service.save_checkpoint(run_state, tag)
+	if not bool(result.get("ok", false)):
+		print("[save] %s" % str(result.get("message", "存档失败。")))
 		return
 
 	if tag.length() > 0:
 		print("[save] checkpoint: %s" % tag)
-
-
-func _resolve_run_seed() -> int:
-	var env_seed: String = OS.get_environment("STS_RUN_SEED").strip_edges()
-	if not env_seed.is_empty() and env_seed.is_valid_int():
-		return int(env_seed)
-	return int(Time.get_unix_time_from_system()) % 1000000007
 
 
 func _on_viewport_resized() -> void:

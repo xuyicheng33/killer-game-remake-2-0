@@ -2,13 +2,16 @@
 
 状态：
 - Phase 7 已落地（route 常量单点定义 + payload 键位门禁）
+- Phase 11 已落地（生命周期服务收口）
 
 目标职责：
 - 承接应用服务层流程编排：地图 -> 战斗 -> 奖励 -> 地图，以及 REST/SHOP/EVENT 分支。
 - 统一场景切换决策、流程事件接线、checkpoint 触发点。
+- 承接新局初始化、读档恢复、checkpoint 存档与复盘日志接线。
 
 当前实现：
 - `run_flow_service.gd`：应用层服务聚合入口，向场景注入子服务。
+- `run_lifecycle_service.gd`：生命周期服务，负责新局初始化、读档恢复、checkpoint 存档、复盘日志更新。
 - `flow_context.gd`：跨页面流程上下文（`pending_node_type` / `pending_reward_gold`）统一承载对象。
 - `route_dispatcher.gd`：统一路由常量与命令返回构造（`next_route + payload`）。
 - `map_flow_service.gd`：地图节点进入、placeholder 楼层推进、非战斗节点完成后路由决策。
@@ -16,6 +19,13 @@
 - `event_flow_service.gd`：事件命令（应用选项/继续）写状态入口。
 - `rest_flow_service.gd`：营火命令（休息/强化）写状态入口。
 - `battle_flow_service.gd`：战斗完成判定与奖励应用命令入口。
+
+生命周期服务接口（`RunLifecycleService`）：
+- `start_new_run(hero_template)` -> `{ok, run_state, seed}`：新局初始化（含 RNG/REPRO 初始化）。
+- `try_load_saved_run(hero_template)` -> `{ok, run_state, message}`：读档恢复（含 RNG 状态恢复）。
+- `save_checkpoint(run_state, tag)` -> `{ok, tag, message}`：checkpoint 存档。
+- `update_repro_progress(run_state)`：更新复盘日志进度。
+- `log_node_enter(node_id, node_type)`：记录节点进入事件。
 
 命令返回契约（统一字典）：
 - 必含：`next_route`（`battle` / `reward` / `rest` / `shop` / `event` / `game_over` / `map`）。
@@ -28,8 +38,8 @@
   - `reward_log`：奖励写回日志。
 
 现状说明：
-- `runtime/scenes/shop|events|map/rest` 已改为“收输入 + 调服务 + 刷界面”。
-- `runtime/scenes/app/app.gd` 已收敛为“事件接线 + 场景实例化 + 路由执行”；地图节点进入、placeholder 跳转、非战斗节点完成决策迁移到 `MapFlowService`，`pending_*` 上下文迁移到 `RunFlowService.flow_context`。
+- `runtime/scenes/shop|events|map/rest` 已改为"收输入 + 调服务 + 刷界面"。
+- `runtime/scenes/app/app.gd` 已收敛为"事件接线 + 场景实例化 + 路由执行"；生命周期逻辑迁移到 `RunLifecycleService`。
 
 最小契约测试（可脚本化）：
 - `bash dev/tools/run_flow_contract_check.sh`

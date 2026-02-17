@@ -16,7 +16,7 @@
 | 模块 | 主要文件 | 职责摘要 | 实现度 |
 |---|---|---|---|
 | `run_meta` | `runtime/modules/run_meta/run_state.gd` | 跨场景运行态与地图推进状态 | 部分 |
-| `run_flow` | `runtime/modules/run_flow/run_flow_service.gd` | 应用层流程编排与页面命令服务（含 `flow_context` 上下文对象） | 部分 |
+| `run_flow` | `runtime/modules/run_flow/run_flow_service.gd` + `run_lifecycle_service.gd` | 应用层流程编排、生命周期管理与页面命令服务 | 部分 |
 | `battle_loop` | `runtime/modules/battle_loop/battle_phase_state_machine.gd` | 战斗阶段状态机 | 已实现（最小） |
 | `card_system` | `runtime/modules/card_system/card_zones_model.gd` | 牌区计数与关键词联动 | 部分 |
 | `effect_engine` | `runtime/modules/effect_engine/effect_stack_engine.gd` | 效果队列与顺序结算 | 已实现（最小） |
@@ -63,10 +63,10 @@
 ## 4. 当前边界偏差（本节仅记录当前偏差，不在本任务改代码）
 
 1. `run_flow` 已承接地图节点进入、placeholder 跳转、shop/event/rest/battle/reward 路由决策，且通过 `flow_context` 承接跨页面流程上下文；`runtime/scenes/app/app.gd` 保留页面实例化与事件接线。
-2. `ui_shell` 已有首批实现（`viewmodel + adapter`），`stats_ui`、`relic_potion_ui`、`battle_ui` 已完成迁移。
-3. `seed_replay` 与 `persistence` 并存但只有后者有实现。
-4. `runtime/scenes/app/app.gd` 已移除地图主流程写入（`enter_map_node`、占位 `next_floor`）与 `pending_*` 流程上下文字段，后续可继续收口 checkpoint/repro 触发细节。
-5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按“禁止新增、存量待迁移”处理。
+2. `run_flow` 已承接生命周期管理（新局初始化、读档恢复、checkpoint 存档、复盘日志），`runtime/scenes/app/app.gd` 不再直接调用 `persistence`、`run_rng`、`repro_log`。
+3. `ui_shell` 已有首批实现（`viewmodel + adapter`），`stats_ui`、`relic_potion_ui`、`battle_ui` 已完成迁移。
+4. `seed_replay` 与 `persistence` 并存但只有后者有实现。
+5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按"禁止新增、存量待迁移"处理。
 
 ## 5. 命名与归属收口（Phase 1 决议）
 
