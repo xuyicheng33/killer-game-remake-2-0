@@ -3,51 +3,67 @@
 ## 基本信息
 
 - 任务 ID：`r2-phase00-baseline-snapshot-v1`
-- 任务级别：`L0`
+- 任务级别：`L0`（快车道）
 - 主模块：`run_meta`
-- 负责人：AI 审核员 + 规划员
+- 负责人：-
 - 日期：2026-02-17
 
 ## 目标
 
-建立 R2（工具链优先）全新阶段规划与审核提示词基线，解决旧 `phase*` 编号混淆，并让后续任务具备可直接派发与审查的标准模板。
+建立 R2 的统一基线快照与进度看板，固化当前可审计状态，产出 R2 任务执行清单。
 
-## 范围边界
+## 任务边界
 
-- 包含：
-  - 新增 R2 主规划文档（Phase0 起步，工具链闭环优先）。
-  - 新增“任务发布者 + 审核员”提示词套件。
-  - 回填 roadmap/prompts 索引与工作日志。
-  - 维护本任务三件套。
-- 不包含：
-  - 任何玩法逻辑、运行时模块代码、存档结构改动。
-  - 视觉资源替换与 UI 视觉重构。
+1. 只做文档与状态面板，不改代码逻辑
+2. 不改动已有模块实现
+3. 仅维护任务三件套
 
-## 改动白名单文件
+## 必做项
 
-- `docs/roadmap/r2_toolchain_first_master_plan_v1.md`
-- `docs/prompts/r2_task_publisher_reviewer_prompts_v1.md`
-- `docs/roadmap/README.md`
-- `docs/prompts/README.md`
+1. 在 docs/work_logs/2026-02.md 末尾新增「R2 基线启动」章节，记录：
+   - 当前代码基线 commit hash
+   - 已完成的 phase1-22 架构收口摘要
+   - R2 任务总表（状态、依赖、负责人列留空）
+2. 创建 docs/tasks/r2-phase00-baseline-snapshot-v1/ 目录与三件套：
+   - plan.md：本任务计划（复制上述内容）
+   - handoff.md：执行摘要、风险、下一步
+   - verification.md：验证命令与结果
+3. 产出 docs/r2_baseline_status.md 基线状态文件，包含：
+   - 当前可复现命令集（make workflow-check 等）
+   - R2 Phase 0-12 任务总览表
+   - 已知缺口与风险
+
+## 白名单文件
+
 - `docs/work_logs/2026-02.md`
 - `docs/tasks/r2-phase00-baseline-snapshot-v1/plan.md`
 - `docs/tasks/r2-phase00-baseline-snapshot-v1/handoff.md`
 - `docs/tasks/r2-phase00-baseline-snapshot-v1/verification.md`
+- `docs/r2_baseline_status.md`
 
-## 实施步骤
+## 验证命令
 
-1. 基于当前实现现状整理 R2 阶段链路（`r2-phase00` 起）。
-2. 编写可执行的审核/发布提示词套件，覆盖“恢复上下文 -> 派发 -> 审核 -> 提交 -> 推进下一任务”。
-3. 更新索引与工作日志，保证文档可追踪。
-4. 执行 `workflow-check` 并记录验证结果。
+```bash
+# 1. 检查基线 commit
+git log -1 --oneline
 
-## 验证方案
+# 2. 检查 workflow 通过
+make workflow-check TASK_ID=r2-phase00-baseline-snapshot-v1
 
-1. `git status --short`：确认改动仅在白名单文件。
-2. `make workflow-check TASK_ID=r2-phase00-baseline-snapshot-v1`：验证门禁通过。
+# 3. 检查三件套存在
+ls -la docs/tasks/r2-phase00-baseline-snapshot-v1/
+
+# 4. 检查基线状态文件
+cat docs/r2_baseline_status.md | head -30
+```
+
+## 交付要求
+
+1. verification.md 必须包含上述 4 条命令的真实输出
+2. handoff.md 的 workflow-check 状态与实际一致
+3. 建议 commit message：`docs(run_meta): R2 Phase 0 基线快照与任务总表（r2-phase00-baseline-snapshot-v1）`
 
 ## 风险与回滚
 
-- 风险：规划命名与既有任务链路不一致导致理解偏差。
-- 风险：提示词模板未覆盖真实审查流程，后续执行时返工。
-- 回滚方式：仅回滚本任务白名单文件。
+- 风险：无（仅文档任务）
+- 回滚方式：回滚本任务白名单文件
