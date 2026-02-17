@@ -257,7 +257,11 @@ func _apply_overlay_layout() -> void:
 	if not is_node_ready():
 		return
 
-	var viewport_size := get_viewport_rect().size
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+
+	var viewport_size: Vector2 = viewport.get_visible_rect().size
 	var panel_width := clampf(viewport_size.x * 0.55, 520.0, 980.0)
 	var panel_height := clampf(viewport_size.y * 0.55, 320.0, 640.0)
 
