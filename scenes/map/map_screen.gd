@@ -5,12 +5,20 @@ signal node_selected(node: MapNodeData)
 
 @export var run_state: RunState : set = _set_run_state
 
+@onready var frame: PanelContainer = %Frame
 @onready var run_label: Label = %RunLabel
 @onready var stats_label: Label = %StatsLabel
 @onready var hint_label: Label = %HintLabel
 @onready var node_list: VBoxContainer = %NodeList
 
 var map_graph: MapGraphData
+
+
+func _ready() -> void:
+	_apply_responsive_layout()
+	var viewport := get_viewport()
+	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.connect(_on_viewport_resized)
 
 
 func _set_run_state(value: RunState) -> void:
@@ -120,3 +128,27 @@ func _node_color(type: MapNodeData.NodeType) -> Color:
 
 func _on_node_pressed(node: MapNodeData) -> void:
 	node_selected.emit(node)
+
+
+func _on_viewport_resized() -> void:
+	_apply_responsive_layout()
+
+
+func _apply_responsive_layout() -> void:
+	if not is_node_ready():
+		return
+
+	var viewport_size := get_viewport_rect().size
+	var horizontal_margin := clampf(viewport_size.x * 0.04, 20.0, 120.0)
+	var vertical_margin := clampf(viewport_size.y * 0.04, 16.0, 72.0)
+	var reserved_overlay_width := clampf(viewport_size.x * 0.22, 260.0, 500.0)
+
+	frame.offset_left = horizontal_margin
+	frame.offset_top = vertical_margin
+	frame.offset_right = -(horizontal_margin + reserved_overlay_width)
+	frame.offset_bottom = -vertical_margin
+
+	# Keep map content readable on narrower windows.
+	var content_width := viewport_size.x + frame.offset_right - frame.offset_left
+	if content_width < 760.0:
+		frame.offset_right = -horizontal_margin
