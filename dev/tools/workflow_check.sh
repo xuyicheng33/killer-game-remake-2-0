@@ -148,6 +148,7 @@ bash dev/tools/ui_shell_contract_check.sh
 bash dev/tools/run_flow_contract_check.sh
 bash dev/tools/run_flow_payload_contract_check.sh
 bash dev/tools/run_flow_result_shape_check.sh
+bash dev/tools/run_flow_regression_check.sh
 bash dev/tools/run_lifecycle_contract_check.sh
 bash dev/tools/persistence_contract_check.sh
 bash dev/tools/seed_rng_contract_check.sh
