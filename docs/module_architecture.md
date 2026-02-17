@@ -34,7 +34,7 @@
 
 ### 3.1 场景 -> 模块
 
-- `runtime/scenes/app/app.gd` -> `run_flow`、`relic_potion`、`persistence`
+- `runtime/scenes/app/app.gd` -> `run_flow`、`relic_potion`
 - `runtime/scenes/shop/shop_screen.gd` -> `run_flow/shop_flow_service`
 - `runtime/scenes/events/event_screen.gd` -> `run_flow/event_flow_service`
 - `runtime/scenes/map/rest_screen.gd` -> `run_flow/rest_flow_service`
