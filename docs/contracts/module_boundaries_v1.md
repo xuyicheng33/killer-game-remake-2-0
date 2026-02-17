@@ -41,7 +41,7 @@
    - `buff_system` -> `Enemy` / `Player`（`modules/buff_system/buff_system.gd:21`、`modules/buff_system/buff_system.gd:141`、`modules/buff_system/buff_system.gd:263`）
    - `enemy_intent` -> `EnemyAction`（`modules/enemy_intent/intent_rules.gd:13`）
 
-### 2.4 Phase 7/12 质量门禁（可脚本化）
+### 2.4 Phase 7/12/13 质量门禁（可脚本化）
 
 1. UI 壳层门禁：`dev/tools/ui_shell_contract_check.sh`
    - 禁止 `scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -53,8 +53,14 @@
    - 禁止 `scenes/app/app.gd` 直接 preload/use `persistence/save_service.gd`、`run_rng.gd`、`repro_log.gd`。
    - 强制 `app.gd` 通过 `run_flow_service.lifecycle_service` 调用 `start_new_run/try_load_saved_run/save_checkpoint`。
    - 目的：防止后续回归把生命周期逻辑再次耦合到入口场景。
-4. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
-   - 默认串行执行上述三个脚本，作为提交前必过项。
+4. persistence 契约门禁（Phase 13 新增）：`dev/tools/persistence_contract_check.sh`
+   - 校验 `SAVE_VERSION` 与 `MIN_COMPAT_VERSION` 常量存在。
+   - 校验 `_serialize_player_stats` 包含 `statuses` 字段（来自 `get_status_snapshot`）。
+   - 校验 `_apply_player_stats` 包含 `statuses` 恢复逻辑（调用 `set_status`）。
+   - 校验读取 `statuses` 时对旧存档有默认空字典兜底（兼容 v1）。
+   - 目的：防止后续改动破坏 phase10 的"状态层存档兼容"能力。
+5. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
+   - 默认串行执行上述四个脚本，作为提交前必过项。
 
 ## 3. 模块边界清单
 
@@ -168,6 +174,7 @@
 - 允许依赖：`run_meta`、`map_event`（地图回填）、`global/run_rng.gd`。
 - 禁止依赖：`ui_shell`、`battle_loop`、`seed_replay`。
 - 当前实现度：`已实现（最小可用）`。
+- 契约门禁：`dev/tools/persistence_contract_check.sh`（校验版本常量 + 状态层序列化/反序列化 + v1 兼容兜底）。
 
 ## `seed_replay`
 

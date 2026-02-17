@@ -88,3 +88,17 @@
 
 - 存档字段变更默认按 L2 处理。
 - 新增字段需给出向后兼容策略（默认值或迁移逻辑）。
+
+## 门禁保护的关键字段（Phase 13）
+
+以下存档关键字段由 `dev/tools/persistence_contract_check.sh` 门禁保护，修改需确保不破坏兼容性：
+
+| 检查项 | 描述 |
+|---|---|
+| `SAVE_VERSION` | 当前存档版本常量，必须存在 |
+| `MIN_COMPAT_VERSION` | 最低兼容版本常量，必须存在 |
+| `_serialize_player_stats.statuses` | 序列化时必须包含状态层字段（`get_status_snapshot`） |
+| `_apply_player_stats.statuses` | 反序列化时必须恢复状态层（`set_status`） |
+| v1 兼容兜底 | 读取 `statuses` 时必须提供空字典默认值 |
+
+门禁目的：防止后续改动破坏 Phase 10 的"状态层存档兼容"能力。
