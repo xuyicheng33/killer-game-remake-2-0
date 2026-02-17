@@ -1,7 +1,7 @@
 # run_flow
 
 状态：
-- Phase 4 第一批已落地（map orchestration + route dispatcher + battle/reward 契约统一）
+- Phase 5 已落地（flow_context 收口 + 最小契约测试）
 
 目标职责：
 - 承接应用服务层流程编排：地图 -> 战斗 -> 奖励 -> 地图，以及 REST/SHOP/EVENT 分支。
@@ -9,6 +9,7 @@
 
 当前实现：
 - `run_flow_service.gd`：应用层服务聚合入口，向场景注入子服务。
+- `flow_context.gd`：跨页面流程上下文（`pending_node_type` / `pending_reward_gold`）统一承载对象。
 - `route_dispatcher.gd`：统一路由常量与命令返回构造（`next_route + payload`）。
 - `map_flow_service.gd`：地图节点进入、placeholder 楼层推进、非战斗节点完成后路由决策。
 - `shop_flow_service.gd`：商店命令（购买/移除/离开）写状态入口。
@@ -28,4 +29,10 @@
 
 现状说明：
 - `scenes/shop|events|map/rest` 已改为“收输入 + 调服务 + 刷界面”。
-- `scenes/app/app.gd` 已收敛为“事件接线 + 场景实例化 + 路由执行”；地图节点进入、placeholder 跳转、非战斗节点完成决策迁移到 `MapFlowService`。
+- `scenes/app/app.gd` 已收敛为“事件接线 + 场景实例化 + 路由执行”；地图节点进入、placeholder 跳转、非战斗节点完成决策迁移到 `MapFlowService`，`pending_*` 上下文迁移到 `RunFlowService.flow_context`。
+
+最小契约测试（可脚本化）：
+- `bash tools/run_flow_contract_check.sh`
+  - 覆盖 `map node type -> next_route` 映射
+  - 覆盖 battle win/lose 路由与关键 payload
+  - 覆盖 non-battle completion `bonus_log` 契约键

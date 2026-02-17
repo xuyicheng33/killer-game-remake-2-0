@@ -10,11 +10,11 @@
 ├── modules/                   # 领域模块目录（部分已实现，部分占位）
 │   ├── run_meta/              # RunState
 │   ├── persistence/           # SaveService（已实现）
-│   ├── run_flow/              # 应用编排服务目录（map orchestration + route dispatcher + shop/event/rest/battle）
+│   ├── run_flow/              # 应用编排服务目录（map orchestration + route dispatcher + flow_context + shop/event/rest/battle）
 │   ├── save_seed_replay/      # 占位目录（无实现）
 │   └── ...                    # battle/card/effect/buff/enemy/map/reward/relic/content/ui
 ├── global/                    # 全局基础能力（events/run_rng/repro_log 等）
-├── tools/                     # 工具脚本（workflow/content import）
+├── tools/                     # 工具脚本（workflow/content import/run_flow contract check）
 ├── docs/                      # 文档、任务三件套、契约
 ├── characters/ effects/ enemies/ custom_resources/
 │                               # 运行时资源与遗留目录
@@ -58,7 +58,7 @@
 
 ## 5. 后续清单（Phase 4 后）
 
-1. 继续收口 `app.gd`：把 battle/reward 页面的上下文缓存（`pending_*`）进一步迁到 `run_flow` 命令上下文。
+1. 保持 `run_flow` 路由契约单点维护：新增节点类型时必须同步更新 `route_dispatcher` 与契约检查脚本。
 2. 建立 `scenes/*` 直接写 `RunState` 的迁移清单，并按页面拆任务。
 3. 明确 `seed/replay` 最终归属：
    - 方案 A：并入 `persistence` 子目录。

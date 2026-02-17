@@ -5,10 +5,6 @@ const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_ge
 const SAVE_SERVICE_SCRIPT := preload("res://modules/persistence/save_service.gd")
 const ROUTE_DISPATCHER_SCRIPT := preload("res://modules/run_flow/route_dispatcher.gd")
 
-const ROUTE_REWARD := "reward"
-const ROUTE_GAME_OVER := "game_over"
-const ROUTE_MAP := "map"
-
 var route_dispatcher: RunRouteDispatcher
 
 
@@ -20,11 +16,11 @@ func _init(dispatcher: RunRouteDispatcher = null) -> void:
 
 func resolve_battle_completion(run_state: RunState, is_win: bool, reward_gold: int) -> Dictionary:
 	if run_state == null:
-		return _result(ROUTE_MAP)
+		return _result(RunRouteDispatcher.ROUTE_MAP)
 
 	if is_win:
 		return _result(
-			ROUTE_REWARD,
+			RunRouteDispatcher.ROUTE_REWARD,
 			{
 				"reward_gold": maxi(0, reward_gold),
 			}
@@ -32,7 +28,7 @@ func resolve_battle_completion(run_state: RunState, is_win: bool, reward_gold: i
 
 	SAVE_SERVICE_SCRIPT.clear_save()
 	return _result(
-		ROUTE_GAME_OVER,
+		RunRouteDispatcher.ROUTE_GAME_OVER,
 		{
 			"game_over_text": _build_game_over_text(run_state),
 		}
@@ -41,11 +37,11 @@ func resolve_battle_completion(run_state: RunState, is_win: bool, reward_gold: i
 
 func apply_battle_reward(run_state: RunState, bundle: RewardBundle, chosen_card: Card) -> Dictionary:
 	if run_state == null:
-		return _result(ROUTE_MAP)
+		return _result(RunRouteDispatcher.ROUTE_MAP)
 
 	var reward_log := REWARD_GENERATOR_SCRIPT.apply_post_battle_reward(run_state, bundle, chosen_card)
 	return _result(
-		ROUTE_MAP,
+		RunRouteDispatcher.ROUTE_MAP,
 		{
 			"reward_log": reward_log,
 		}

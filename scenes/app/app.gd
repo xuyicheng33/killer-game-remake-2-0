@@ -21,8 +21,6 @@ const REPRO_LOG_SCRIPT := preload("res://global/repro_log.gd")
 @onready var restart_button: Button = %RestartButton
 
 var run_state: RunState
-var pending_reward_gold := 0
-var pending_node_type: MapNodeData.NodeType = MapNodeData.NodeType.BATTLE
 var relic_potion_system: RelicPotionSystem
 var run_flow_service: RunFlowService
 
@@ -50,8 +48,7 @@ func _start_new_run() -> void:
 	RUN_RNG_SCRIPT.begin_run(seed)
 	REPRO_LOG_SCRIPT.begin_run(seed)
 	run_state.init_with_character(HERO_TEMPLATE, seed)
-	pending_reward_gold = 0
-	pending_node_type = MapNodeData.NodeType.BATTLE
+	run_flow_service.reset_flow_context()
 	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
 	REPRO_LOG_SCRIPT.set_progress(run_state.floor, run_state.map_current_node_id)
@@ -74,10 +71,9 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 	if not bool(command_result.get("accepted", false)):
 		return
 
-	pending_node_type = int(command_result.get("node_type", int(node.type)))
-	pending_reward_gold = int(command_result.get("reward_gold", pending_reward_gold))
+	run_flow_service.apply_map_node_context(command_result, node.type)
 	REPRO_LOG_SCRIPT.set_progress(run_state.floor, str(command_result.get("node_id", node.id)))
-	REPRO_LOG_SCRIPT.log_event("node_enter", "type=%d" % int(pending_node_type))
+	REPRO_LOG_SCRIPT.log_event("node_enter", "type=%d" % int(run_flow_service.get_pending_node_type()))
 	_dispatch_next_route(command_result)
 
 
@@ -96,7 +92,7 @@ func _on_battle_finished(result: int) -> void:
 	var command_result := run_flow_service.battle_flow_service.resolve_battle_completion(
 		run_state,
 		result == BattleOverPanel.Type.WIN,
-		pending_reward_gold
+		run_flow_service.get_pending_reward_gold()
 	)
 	_dispatch_next_route(command_result)
 
@@ -158,7 +154,10 @@ func _on_event_completed() -> void:
 
 
 func _on_non_battle_node_completed() -> void:
-	var command_result := run_flow_service.map_flow_service.resolve_non_battle_completion(run_state, pending_node_type)
+	var command_result := run_flow_service.map_flow_service.resolve_non_battle_completion(
+		run_state,
+		run_flow_service.get_pending_node_type()
+	)
 	var bonus_log := str(command_result.get("bonus_log", ""))
 	if bonus_log.length() > 0:
 		relic_potion_system.push_external_log(bonus_log)
@@ -167,12 +166,12 @@ func _on_non_battle_node_completed() -> void:
 
 func _dispatch_next_route(command_result: Dictionary) -> void:
 	var next_route := str(command_result.get("next_route", RunRouteDispatcher.ROUTE_MAP))
+	run_flow_service.apply_route_context(command_result)
 	match next_route:
 		RunRouteDispatcher.ROUTE_BATTLE:
-			pending_reward_gold = int(command_result.get("reward_gold", pending_reward_gold))
 			_open_battle()
 		RunRouteDispatcher.ROUTE_REWARD:
-			_open_reward(int(command_result.get("reward_gold", pending_reward_gold)))
+			_open_reward(run_flow_service.reward_gold_for(command_result))
 		RunRouteDispatcher.ROUTE_REST:
 			_open_rest_screen()
 		RunRouteDispatcher.ROUTE_SHOP:
@@ -208,8 +207,7 @@ func _try_load_saved_run() -> bool:
 	get_tree().paused = false
 
 	run_state = loaded_run_state
-	pending_reward_gold = 0
-	pending_node_type = MapNodeData.NodeType.BATTLE
+	run_flow_service.reset_flow_context()
 	var restored_rng := false
 	var rng_state_variant: Variant = load_result.get("rng_state", {})
 	if typeof(rng_state_variant) == TYPE_DICTIONARY:
