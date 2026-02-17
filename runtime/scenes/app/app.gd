@@ -130,7 +130,6 @@ func _open_rest_screen() -> void:
 	_clear_scene_host()
 	var rest_screen := REST_SCREEN_SCENE.instantiate() as RestScreen
 	rest_screen.run_state = run_state
-	rest_screen.flow_service = run_flow_service.rest_flow_service
 	rest_screen.rest_completed.connect(_on_rest_completed)
 	scene_host.add_child(rest_screen)
 
@@ -143,7 +142,6 @@ func _open_shop_screen() -> void:
 	_clear_scene_host()
 	var shop_screen := SHOP_SCREEN_SCENE.instantiate() as ShopScreen
 	shop_screen.run_state = run_state
-	shop_screen.flow_service = run_flow_service.shop_flow_service
 	shop_screen.shop_completed.connect(_on_shop_completed)
 	scene_host.add_child(shop_screen)
 
@@ -156,7 +154,6 @@ func _open_event_screen() -> void:
 	_clear_scene_host()
 	var event_screen := EVENT_SCREEN_SCENE.instantiate() as EventScreen
 	event_screen.run_state = run_state
-	event_screen.flow_service = run_flow_service.event_flow_service
 	event_screen.event_completed.connect(_on_event_completed)
 	scene_host.add_child(event_screen)
 
