@@ -1,6 +1,6 @@
 # 模块架构与边界（对齐代码现状）
 
-更新时间：2026-02-16
+更新时间：2026-02-17
 
 ## 1. 当前代码基线
 
@@ -16,7 +16,7 @@
 | 模块 | 主要文件 | 职责摘要 | 实现度 |
 |---|---|---|---|
 | `run_meta` | `modules/run_meta/run_state.gd` | 跨场景运行态与地图推进状态 | 部分 |
-| `run_flow` | `modules/run_flow/run_flow_service.gd` | 应用层流程编排与页面命令服务（shop/event/rest + battle result/reward） | 部分 |
+| `run_flow` | `modules/run_flow/run_flow_service.gd` | 应用层流程编排与页面命令服务（map node orchestration + shop/event/rest + battle/reward） | 部分 |
 | `battle_loop` | `modules/battle_loop/battle_phase_state_machine.gd` | 战斗阶段状态机 | 已实现（最小） |
 | `card_system` | `modules/card_system/card_zones_model.gd` | 牌区计数与关键词联动 | 部分 |
 | `effect_engine` | `modules/effect_engine/effect_stack_engine.gd` | 效果队列与顺序结算 | 已实现（最小） |
@@ -34,7 +34,7 @@
 
 ### 3.1 场景 -> 模块
 
-- `scenes/app/app.gd` -> `run_flow`、`reward_economy`、`relic_potion`、`persistence`
+- `scenes/app/app.gd` -> `run_flow`、`relic_potion`、`persistence`
 - `scenes/shop/shop_screen.gd` -> `run_flow/shop_flow_service`
 - `scenes/events/event_screen.gd` -> `run_flow/event_flow_service`
 - `scenes/map/rest_screen.gd` -> `run_flow/rest_flow_service`
@@ -58,10 +58,10 @@
 
 ## 4. 当前边界偏差（本节仅记录当前偏差，不在本任务改代码）
 
-1. `run_flow` 已完成 shop/event/rest + battle result/reward 编排；地图主流程仍主要在 `scenes/app/app.gd`。
+1. `run_flow` 已承接地图节点进入、placeholder 跳转、shop/event/rest/battle/reward 路由决策；`scenes/app/app.gd` 仍保留页面实例化与事件接线。
 2. `ui_shell` 目录未承载实现：UI 脚本实际在 `scenes/ui/`。
 3. `save_seed_replay` 与 `persistence` 并存但只有后者有实现。
-4. `scenes/app/app.gd` 仍有 `RunState` 写操作（`enter_map_node`、占位 `next_floor`），属于后续批次。
+4. `scenes/app/app.gd` 已移除地图主流程写入（`enter_map_node`、占位 `next_floor`），后续可继续收口 battle/reward 页面实例化细节。
 5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按“禁止新增、存量待迁移”处理。
 
 ## 5. 命名与归属收口（Phase 1 决议）
@@ -74,4 +74,4 @@
 
 1. 新增跨模块接口必须同步更新：`docs/contracts/module_boundaries_v1.md`。
 2. 变更 `RunState` 字段或存档结构必须同步更新：`docs/contracts/run_state.md`。
-3. 在 `run_flow` 未落地前，`scenes/app` 新增流程逻辑需在任务文档中注明“临时放置点”。
+3. `scenes/app` 新增流程逻辑默认应落在 `run_flow`；如临时留在场景层，任务文档必须注明迁移计划。

@@ -3,10 +3,19 @@ extends RefCounted
 
 const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_generator.gd")
 const SAVE_SERVICE_SCRIPT := preload("res://modules/persistence/save_service.gd")
+const ROUTE_DISPATCHER_SCRIPT := preload("res://modules/run_flow/route_dispatcher.gd")
 
 const ROUTE_REWARD := "reward"
 const ROUTE_GAME_OVER := "game_over"
 const ROUTE_MAP := "map"
+
+var route_dispatcher: RunRouteDispatcher
+
+
+func _init(dispatcher: RunRouteDispatcher = null) -> void:
+	route_dispatcher = dispatcher
+	if route_dispatcher == null:
+		route_dispatcher = ROUTE_DISPATCHER_SCRIPT.new() as RunRouteDispatcher
 
 
 func resolve_battle_completion(run_state: RunState, is_win: bool, reward_gold: int) -> Dictionary:
@@ -48,9 +57,4 @@ func _build_game_over_text(run_state: RunState) -> String:
 
 
 func _result(next_route: String, payload: Dictionary = {}) -> Dictionary:
-	var out := {
-		"next_route": next_route,
-	}
-	for key in payload.keys():
-		out[key] = payload[key]
-	return out
+	return route_dispatcher.make_result(next_route, payload)

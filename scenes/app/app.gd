@@ -8,7 +8,6 @@ const REST_SCREEN_SCENE := preload("res://scenes/map/rest_screen.tscn")
 const SHOP_SCREEN_SCENE := preload("res://scenes/shop/shop_screen.tscn")
 const EVENT_SCREEN_SCENE := preload("res://scenes/events/event_screen.tscn")
 const HERO_TEMPLATE := preload("res://characters/warrior/warrior.tres")
-const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_generator.gd")
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://modules/relic_potion/relic_potion_system.gd")
 const SAVE_SERVICE_SCRIPT := preload("res://modules/persistence/save_service.gd")
 const RUN_FLOW_SERVICE_SCRIPT := preload("res://modules/run_flow/run_flow_service.gd")
@@ -51,6 +50,8 @@ func _start_new_run() -> void:
 	RUN_RNG_SCRIPT.begin_run(seed)
 	REPRO_LOG_SCRIPT.begin_run(seed)
 	run_state.init_with_character(HERO_TEMPLATE, seed)
+	pending_reward_gold = 0
+	pending_node_type = MapNodeData.NodeType.BATTLE
 	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
 	REPRO_LOG_SCRIPT.set_progress(run_state.floor, run_state.map_current_node_id)
@@ -69,25 +70,15 @@ func _open_map() -> void:
 
 
 func _on_map_node_selected(node: MapNodeData) -> void:
-	if not run_state.enter_map_node(node.id):
+	var command_result := run_flow_service.map_flow_service.enter_map_node(run_state, node)
+	if not bool(command_result.get("accepted", false)):
 		return
 
-	pending_node_type = node.type
-	REPRO_LOG_SCRIPT.set_progress(run_state.floor, node.id)
-	REPRO_LOG_SCRIPT.log_event("node_enter", "type=%d" % int(node.type))
-
-	match node.type:
-		MapNodeData.NodeType.BATTLE, MapNodeData.NodeType.ELITE, MapNodeData.NodeType.BOSS:
-			pending_reward_gold = node.reward_gold
-			_open_battle()
-		MapNodeData.NodeType.REST:
-			_open_rest_screen()
-		MapNodeData.NodeType.SHOP:
-			_open_shop_screen()
-		MapNodeData.NodeType.EVENT:
-			_open_event_screen()
-		_:
-			_apply_placeholder_node()
+	pending_node_type = int(command_result.get("node_type", int(node.type)))
+	pending_reward_gold = int(command_result.get("reward_gold", pending_reward_gold))
+	REPRO_LOG_SCRIPT.set_progress(run_state.floor, str(command_result.get("node_id", node.id)))
+	REPRO_LOG_SCRIPT.log_event("node_enter", "type=%d" % int(pending_node_type))
+	_dispatch_next_route(command_result)
 
 
 func _open_battle() -> void:
@@ -96,11 +87,6 @@ func _open_battle() -> void:
 	var battle_scene := BATTLE_SCENE.instantiate()
 	battle_scene.set("runtime_stats", run_state.player_stats)
 	scene_host.add_child(battle_scene)
-
-
-func _apply_placeholder_node() -> void:
-	run_state.next_floor()
-	_open_map()
 
 
 func _on_battle_finished(result: int) -> void:
@@ -112,17 +98,7 @@ func _on_battle_finished(result: int) -> void:
 		result == BattleOverPanel.Type.WIN,
 		pending_reward_gold
 	)
-	var next_route := str(command_result.get("next_route", ""))
-	if next_route == BattleFlowService.ROUTE_REWARD:
-		_open_reward(int(command_result.get("reward_gold", pending_reward_gold)))
-		return
-
-	if next_route == BattleFlowService.ROUTE_GAME_OVER:
-		game_over_panel.show()
-		game_over_text.text = str(command_result.get("game_over_text", "本次远征失败"))
-		return
-
-	_open_map()
+	_dispatch_next_route(command_result)
 
 
 func _open_reward(reward_gold: int) -> void:
@@ -139,10 +115,7 @@ func _on_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
 	var reward_log := str(command_result.get("reward_log", ""))
 	if reward_log.length() > 0:
 		relic_potion_system.push_external_log("战斗奖励：%s" % reward_log)
-
-	var next_route := str(command_result.get("next_route", BattleFlowService.ROUTE_MAP))
-	if next_route == BattleFlowService.ROUTE_MAP:
-		_open_map()
+	_dispatch_next_route(command_result)
 
 
 func _open_rest_screen() -> void:
@@ -155,7 +128,7 @@ func _open_rest_screen() -> void:
 
 
 func _on_rest_completed() -> void:
-	_open_map()
+	_on_non_battle_node_completed()
 
 
 func _open_shop_screen() -> void:
@@ -168,8 +141,7 @@ func _open_shop_screen() -> void:
 
 
 func _on_shop_completed() -> void:
-	_apply_b3_node_bonus_if_needed()
-	_open_map()
+	_on_non_battle_node_completed()
 
 
 func _open_event_screen() -> void:
@@ -182,15 +154,36 @@ func _open_event_screen() -> void:
 
 
 func _on_event_completed() -> void:
-	_apply_b3_node_bonus_if_needed()
-	_open_map()
+	_on_non_battle_node_completed()
 
 
-func _apply_b3_node_bonus_if_needed() -> void:
-	var bonus := REWARD_GENERATOR_SCRIPT.generate_b3_bonus(pending_node_type)
-	var bonus_log := REWARD_GENERATOR_SCRIPT.apply_b3_bonus(run_state, bonus)
+func _on_non_battle_node_completed() -> void:
+	var command_result := run_flow_service.map_flow_service.resolve_non_battle_completion(run_state, pending_node_type)
+	var bonus_log := str(command_result.get("bonus_log", ""))
 	if bonus_log.length() > 0:
 		relic_potion_system.push_external_log(bonus_log)
+	_dispatch_next_route(command_result)
+
+
+func _dispatch_next_route(command_result: Dictionary) -> void:
+	var next_route := str(command_result.get("next_route", RunRouteDispatcher.ROUTE_MAP))
+	match next_route:
+		RunRouteDispatcher.ROUTE_BATTLE:
+			pending_reward_gold = int(command_result.get("reward_gold", pending_reward_gold))
+			_open_battle()
+		RunRouteDispatcher.ROUTE_REWARD:
+			_open_reward(int(command_result.get("reward_gold", pending_reward_gold)))
+		RunRouteDispatcher.ROUTE_REST:
+			_open_rest_screen()
+		RunRouteDispatcher.ROUTE_SHOP:
+			_open_shop_screen()
+		RunRouteDispatcher.ROUTE_EVENT:
+			_open_event_screen()
+		RunRouteDispatcher.ROUTE_GAME_OVER:
+			game_over_panel.show()
+			game_over_text.text = str(command_result.get("game_over_text", "本次远征失败"))
+		_:
+			_open_map()
 
 
 func _clear_scene_host() -> void:
@@ -215,6 +208,8 @@ func _try_load_saved_run() -> bool:
 	get_tree().paused = false
 
 	run_state = loaded_run_state
+	pending_reward_gold = 0
+	pending_node_type = MapNodeData.NodeType.BATTLE
 	var restored_rng := false
 	var rng_state_variant: Variant = load_result.get("rng_state", {})
 	if typeof(rng_state_variant) == TYPE_DICTIONARY:

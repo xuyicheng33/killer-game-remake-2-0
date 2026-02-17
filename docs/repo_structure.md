@@ -1,6 +1,6 @@
 # 仓库结构说明（当前结构 + 目标结构 + 迁移原则）
 
-更新时间：2026-02-16
+更新时间：2026-02-17
 
 ## 1. 当前结构（以代码现状为准）
 
@@ -10,7 +10,7 @@
 ├── modules/                   # 领域模块目录（部分已实现，部分占位）
 │   ├── run_meta/              # RunState
 │   ├── persistence/           # SaveService（已实现）
-│   ├── run_flow/              # 应用编排服务目录（shop/event/rest + battle result 第一批已落地）
+│   ├── run_flow/              # 应用编排服务目录（map orchestration + route dispatcher + shop/event/rest/battle）
 │   ├── save_seed_replay/      # 占位目录（无实现）
 │   └── ...                    # battle/card/effect/buff/enemy/map/reward/relic/content/ui
 ├── global/                    # 全局基础能力（events/run_rng/repro_log 等）
@@ -56,9 +56,9 @@
 4. 场景层禁止新增核心规则写入点（旧点位按任务逐步清理）。
 5. `save_seed_replay` 与 `persistence` 禁止双轨并行实现，避免真源分裂。
 
-## 5. 后续清单（Phase 3 后）
+## 5. 后续清单（Phase 4 后）
 
-1. 在 `modules/run_flow/` 完善路由分发草案（`route dispatcher`），继续收口 `app.gd` 地图主流程。
+1. 继续收口 `app.gd`：把 battle/reward 页面的上下文缓存（`pending_*`）进一步迁到 `run_flow` 命令上下文。
 2. 建立 `scenes/*` 直接写 `RunState` 的迁移清单，并按页面拆任务。
 3. 明确 `seed/replay` 最终归属：
    - 方案 A：并入 `persistence` 子目录。
