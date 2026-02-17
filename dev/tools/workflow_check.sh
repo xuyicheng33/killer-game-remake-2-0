@@ -93,6 +93,7 @@ if git rev-parse --verify HEAD >/dev/null 2>&1; then
     {
       git -c core.quotepath=false diff --name-only --cached
       git -c core.quotepath=false diff --name-only
+      git -c core.quotepath=false ls-files --others --exclude-standard
     } | sed '/^$/d' | sort -u
   )
 else
@@ -100,7 +101,10 @@ else
   while IFS= read -r line; do
     changed_files+=("$line")
   done < <(
-    git -c core.quotepath=false diff --name-only --cached | sed '/^$/d' | sort -u
+    {
+      git -c core.quotepath=false diff --name-only --cached
+      git -c core.quotepath=false ls-files --others --exclude-standard
+    } | sed '/^$/d' | sort -u
   )
 fi
 
