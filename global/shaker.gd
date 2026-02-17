@@ -6,6 +6,7 @@ func shake(thing: Node2D, strength: float, duration: float = 0.2) -> void:
 		return
 
 	var orig_pos := thing.position
+	var thing_ref := weakref(thing)
 	var shake_count := 10
 	var tween := create_tween()
 	
@@ -17,4 +18,10 @@ func shake(thing: Node2D, strength: float, duration: float = 0.2) -> void:
 		tween.tween_property(thing, "position", target, duration / float(shake_count))
 		strength *= 0.75
 	
-	tween.finished.connect(func(): thing.position = orig_pos)
+	tween.finished.connect(
+		func():
+			var restored := thing_ref.get_ref() as Node2D
+			if restored == null or not is_instance_valid(restored):
+				return
+			restored.position = orig_pos
+	)
