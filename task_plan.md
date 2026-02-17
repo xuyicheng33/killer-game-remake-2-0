@@ -27,3 +27,26 @@
 | macOS Bash 3.2 不支持 `mapfile` | 1 | 改为 `while read` 数组收集 |
 | macOS Bash 3.2 不支持 `globstar` | 1 | 移除该依赖，简化匹配逻辑 |
 | 新仓库无 HEAD 时白名单校验误扫全量文件 | 1 | 改为“无 HEAD 仅检查 staged 文件” |
+
+## 2026-02-17 Task: phase6-ui-shell-viewmodel-decoupling-v1
+
+### Goal
+推进 UI Shell 化：为 `stats_ui` 与 `relic_potion_ui` 引入轻量 viewmodel/adapter，收口 UI 对领域对象的直接依赖，保持行为等价。
+
+### Scope
+- 在 `modules/ui_shell` 新增 `viewmodel` 与 `adapter`。
+- `scenes/ui/stats_ui.gd`、`scenes/ui/relic_potion_ui.gd` 改成“读投影 + 发命令”。
+- 同步架构文档与任务三件套。
+- 跑通 `workflow-check`。
+
+### Phases
+1. `completed` 梳理当前 UI 脚本直接依赖与业务写入点。
+2. `completed` 新增 viewmodel/adapter 并改造 `stats_ui.gd`。
+3. `completed` 新增 viewmodel/adapter 并改造 `relic_potion_ui.gd`。
+4. `completed` 补齐任务三件套与架构文档同步。
+5. `completed` 执行静态检索与 `workflow-check` 验证。
+
+### Errors Encountered (This Task)
+| Error | Attempt | Resolution |
+|---|---|---|
+| 暂无 | - | - |

@@ -1,7 +1,7 @@
 class_name StatsUI
 extends HBoxContainer
 
-const BUFF_SYSTEM := preload("res://modules/buff_system/buff_system.gd")
+const STATS_UI_ADAPTER_SCRIPT := preload("res://modules/ui_shell/adapter/stats_ui_adapter.gd")
 
 @onready var block: HBoxContainer = $Block
 @onready var block_label: Label = %BlockLabel
@@ -9,43 +9,36 @@ const BUFF_SYSTEM := preload("res://modules/buff_system/buff_system.gd")
 @onready var health_label: Label = %HealthLabel
 @onready var statuses: HBoxContainer = $Statuses
 
+var _adapter: StatsUIAdapter = STATS_UI_ADAPTER_SCRIPT.new() as StatsUIAdapter
 
 func _ready() -> void:
-	BUFF_SYSTEM.get_instance()
+	if not _adapter.projection_changed.is_connected(_apply_projection):
+		_adapter.projection_changed.connect(_apply_projection)
+	_adapter.refresh()
 
 
 func update_stats(stats: Stats) -> void:
-	block_label.text = str(stats.block)
-	health_label.text = str(stats.health)
-	
-	block.visible = stats.block > 0
-	health.visible = stats.health > 0
-	_update_statuses(stats)
+	_adapter.set_stats(stats)
 
 
-func _update_statuses(stats: Stats) -> void:
+func _apply_projection(projection: Dictionary) -> void:
+	if not is_node_ready():
+		return
+
+	block_label.text = str(projection.get("block_text", "0"))
+	health_label.text = str(projection.get("health_text", "0"))
+	block.visible = bool(projection.get("block_visible", false))
+	health.visible = bool(projection.get("health_visible", false))
+
 	for child in statuses.get_children():
 		child.queue_free()
 
-	var buff_system := BUFF_SYSTEM.get_instance()
-	var badges := buff_system.get_status_badges(stats)
-	for badge_variant in badges:
-		if not (badge_variant is Dictionary):
-			continue
+	var status_badges_variant: Variant = projection.get("status_badges", [])
+	if status_badges_variant is Array:
+		for badge_variant in status_badges_variant:
+			var status_label := Label.new()
+			status_label.add_theme_font_size_override("font_size", 18)
+			status_label.text = str(badge_variant)
+			statuses.add_child(status_label)
 
-		var badge: Dictionary = badge_variant
-		var stacks_variant: Variant = badge.get("stacks", 0)
-		if not (stacks_variant is int):
-			continue
-
-		var stacks: int = stacks_variant
-		if stacks <= 0:
-			continue
-
-		var label_variant: Variant = badge.get("label", "?")
-		var status_label := Label.new()
-		status_label.add_theme_font_size_override("font_size", 18)
-		status_label.text = "%s%s" % [str(label_variant), str(stacks)]
-		statuses.add_child(status_label)
-
-	statuses.visible = statuses.get_child_count() > 0
+	statuses.visible = bool(projection.get("statuses_visible", false))

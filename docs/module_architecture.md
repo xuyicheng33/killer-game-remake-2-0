@@ -28,7 +28,7 @@
 | `persistence` | `modules/persistence/save_service.gd` | 存档/读档/版本校验 | 已实现（最小） |
 | `save_seed_replay` | `modules/save_seed_replay/README.md` | 历史命名占位目录 | 占位 |
 | `content_pipeline` | `tools/content_import_cards.py` | 卡牌导入校验与生成 | 部分 |
-| `ui_shell` | `scenes/ui/*.gd`（目录占位） | UI 展示与交互壳层 | 部分 |
+| `ui_shell` | `modules/ui_shell/{viewmodel,adapter}/*.gd` + `scenes/ui/*.gd` | UI 展示与交互壳层 | 部分 |
 
 ## 3. 依赖方向（当前可见）
 
@@ -41,7 +41,8 @@
 - `scenes/battle/battle.gd` -> `battle_loop`
 - `scenes/reward/reward_screen.gd` -> `reward_economy/reward_generator`
 - `scenes/ui/battle_ui.gd` -> `card_system`
-- `scenes/ui/stats_ui.gd` -> `buff_system`
+- `scenes/ui/stats_ui.gd` -> `ui_shell/adapter/stats_ui_adapter`
+- `scenes/ui/relic_potion_ui.gd` -> `ui_shell/adapter/relic_potion_ui_adapter`
 
 ### 3.2 模块 -> 模块
 
@@ -50,6 +51,8 @@
 - `map_event/event_service` -> `reward_economy/reward_generator`（当前存在反向耦合）
 - `persistence` -> `map_event/map_generator`
 - `reward_economy/shop_offer_generator` -> `reward_economy/reward_generator`
+- `ui_shell/viewmodel/stats_view_model` -> `buff_system`
+- `ui_shell/adapter/relic_potion_ui_adapter` -> `relic_potion/relic_potion_system`
 
 ### 3.3 模块 -> global
 
@@ -59,7 +62,7 @@
 ## 4. 当前边界偏差（本节仅记录当前偏差，不在本任务改代码）
 
 1. `run_flow` 已承接地图节点进入、placeholder 跳转、shop/event/rest/battle/reward 路由决策，且通过 `flow_context` 承接跨页面流程上下文；`scenes/app/app.gd` 保留页面实例化与事件接线。
-2. `ui_shell` 目录未承载实现：UI 脚本实际在 `scenes/ui/`。
+2. `ui_shell` 已有首批实现（`viewmodel + adapter`），但 `battle_ui` 等其余 UI 仍在 `scenes/ui` 直连模块阶段。
 3. `save_seed_replay` 与 `persistence` 并存但只有后者有实现。
 4. `scenes/app/app.gd` 已移除地图主流程写入（`enter_map_node`、占位 `next_floor`）与 `pending_*` 流程上下文字段，后续可继续收口 checkpoint/repro 触发细节。
 5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按“禁止新增、存量待迁移”处理。

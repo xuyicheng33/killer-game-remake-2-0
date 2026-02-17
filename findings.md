@@ -30,3 +30,16 @@
 - 目录已重构为 `references/tutorial_baseline` 与 `references/slay_the_spire_cn`，参考资料与运行代码分离更清晰。
 - 当前最大功能缺口仍在 `effect_engine/buff_system/relic_potion/reward_economy/save_seed_replay`。
 - 已新增模块骨架目录，后续任务可按模块独立派发与验收。
+
+## 2026-02-17 Phase6 UI Shell 化调研
+
+- `scenes/ui/stats_ui.gd` 当前直接依赖 `BuffSystem.get_status_badges`，UI 脚本同时承担了“状态投影计算 + 组件渲染”两层职责。
+- `scenes/ui/relic_potion_ui.gd` 当前直接读取 `RunState` 拼接文案、计算可见性、创建按钮，并直接调用 `relic_potion_system.use_potion(index)`。
+- 现有流程中药水使用业务已封装在 `RelicPotionSystem` / `RunState.use_potion_at`，可通过 adapter 转发命令实现“UI 不直接写规则”。
+- `modules/ui_shell` 目前只有 README，无 viewmodel/adapter 实现，可作为本次首批样板落点。
+
+## 2026-02-17 Phase6 UI Shell 化结果
+
+- `stats_ui` 与 `relic_potion_ui` 已完成首批迁移：UI 改为“读 adapter 投影 + 发 adapter 命令”。
+- 静态检索 `run_state\\.(set_|add_|remove_|clear_|advance_|mark_|apply_)` 在 `scenes/ui` 无命中。
+- `workflow-check` 对 `TASK_ID=phase6-ui-shell-viewmodel-decoupling-v1` 已通过。

@@ -15,3 +15,13 @@
 - 重构目录结构：新增 `references/`，并迁移教程基线与原版参考资料。
 - 清理无用文件：删除 `.DS_Store` 与 `references/tutorial_baseline/.godot` 缓存目录。
 - 新增文档：`docs/gap_analysis_2026-02-15_v2.md`、`docs/development_roadmap_v2.md`、`docs/resource_rebuild_backlog.md`、`docs/repo_structure.md`、`docs/assets_licenses.md`。
+
+## 2026-02-17
+
+- 启动任务 `phase6-ui-shell-viewmodel-decoupling-v1`。
+- 完成基线扫描：确认 `stats_ui.gd` 与 `relic_potion_ui.gd` 的直接依赖与写入路径。
+- 确认本次样板改造路径：`modules/ui_shell/viewmodel/*` + `modules/ui_shell/adapter/*`。
+- 新增首批 ui_shell 组件：`StatsViewModel/StatsUIAdapter`、`RelicPotionViewModel/RelicPotionUIAdapter`。
+- 完成 `scenes/ui/stats_ui.gd`、`scenes/ui/relic_potion_ui.gd` 瘦身改造（读投影 + 发命令）。
+- 补齐任务三件套与架构文档同步。
+- 完成验证：`rg` 静态检查通过，`make workflow-check TASK_ID=phase6-ui-shell-viewmodel-decoupling-v1` 通过。

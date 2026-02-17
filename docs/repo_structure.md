@@ -11,6 +11,7 @@
 │   ├── run_meta/              # RunState
 │   ├── persistence/           # SaveService（已实现）
 │   ├── run_flow/              # 应用编排服务目录（map orchestration + route dispatcher + flow_context + shop/event/rest/battle）
+│   ├── ui_shell/              # UI 壳层（viewmodel + adapter）
 │   ├── save_seed_replay/      # 占位目录（无实现）
 │   └── ...                    # battle/card/effect/buff/enemy/map/reward/relic/content/ui
 ├── global/                    # 全局基础能力（events/run_rng/repro_log 等）
@@ -63,4 +64,4 @@
 3. 明确 `seed/replay` 最终归属：
    - 方案 A：并入 `persistence` 子目录。
    - 方案 B：独立 `seed_replay` 模块，仅承载 RNG/复盘。
-4. 为 `ui_shell` 增加目录内文档，说明 `scenes/ui` -> `modules/ui_shell` 的映射。
+4. 继续扩展 `ui_shell` 样板改造范围：将 `battle_ui` 等页面迁移到“viewmodel/adapter + 只读投影 + 命令转发”模式。

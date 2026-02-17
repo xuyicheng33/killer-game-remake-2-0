@@ -26,7 +26,7 @@
 
 ### 2.2 禁止方向（V1）
 
-1. `ui_shell` 禁止直接调用 `effect_engine`、`buff_system`、`enemy_intent` 执行规则。
+1. `ui_shell` 禁止直接调用 `effect_engine`、`buff_system`、`enemy_intent` 执行规则；允许通过 viewmodel 读取只读投影（如状态徽章）。
 2. 禁止新增模块对 `scenes/*` 的直接依赖（类型或脚本）；存量依赖列入迁移清单，按 Phase 2+ 逐步清理。
 3. 禁止新增 `save_seed_replay` 与 `persistence` 双写存档逻辑。
 4. 禁止在 `run_meta` 之外新增“局内全局状态真源”。
@@ -180,8 +180,8 @@
 - 输出：用户操作事件（按钮、选择）、展示刷新。
 - 状态所有权：仅拥有临时 UI 状态。
 - 允许依赖：`run_meta`（只读）、`card_system`、`buff_system`、`relic_potion`。
-- 禁止依赖：直接写战斗规则、直接执行效果结算、直接读写存档。
-- 当前实现度：`部分`（代码在 `scenes/ui/*.gd`，模块目录仍占位）。
+- 禁止依赖：直接写战斗规则、直接执行效果结算、直接读写存档、绕过 adapter 直接调用领域写接口。
+- 当前实现度：`部分`（`modules/ui_shell/viewmodel + adapter` 已用于 `stats_ui`、`relic_potion_ui`，其余 UI 仍待迁移）。
 
 ## 4. 命名与归属决策（Phase 1 基线）
 
