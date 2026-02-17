@@ -35,6 +35,9 @@ func _ready() -> void:
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
+	# 触发初始渲染（run_state 可能在 _ready 之前通过 @export 设置）
+	_adapter.refresh()
+
 
 func _set_run_state(value: RunState) -> void:
 	run_state = value

@@ -30,6 +30,9 @@ func _ready() -> void:
 
 	leave_button.pressed.connect(_on_leave_pressed)
 
+	# 触发初始渲染
+	_adapter.refresh()
+
 
 func _set_run_state(value: RunState) -> void:
 	run_state = value

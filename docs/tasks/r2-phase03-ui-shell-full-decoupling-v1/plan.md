@@ -45,6 +45,7 @@
 - `runtime/scenes/reward/reward_screen.gd`
 - `docs/work_logs/2026-02.md`
 - `docs/tasks/r2-phase03-ui-shell-full-decoupling-v1/`
+- `*.uid`
 
 ## 实施步骤
 

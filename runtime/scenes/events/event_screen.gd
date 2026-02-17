@@ -31,6 +31,9 @@ func _ready() -> void:
 	continue_button.pressed.connect(_on_continue_pressed)
 	continue_button.hide()
 
+	# 触发初始渲染
+	_adapter.refresh()
+
 
 func _set_run_state(value: RunState) -> void:
 	run_state = value
