@@ -40,7 +40,7 @@
 - `project.godot`
 - `Makefile`
 - `docs/**`
-- `tools/**`
+- `dev/tools/**`
 - `docs/session/task_plan.md`
 - `docs/session/findings.md`
 - `docs/session/progress.md`

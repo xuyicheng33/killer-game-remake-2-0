@@ -16,9 +16,9 @@
 ## 实现范围
 
 - 立绘资源替换：
-  - 玩家：`res://art/characters/霜北刀.png`
-  - 蝙蝠敌人：`res://art/characters/离恨烟.png`
-  - 螃蟹敌人：`res://art/characters/埋骨钱.png`
+  - 玩家：`res://content/art/characters/霜北刀.png`
+  - 蝙蝠敌人：`res://content/art/characters/离恨烟.png`
+  - 螃蟹敌人：`res://content/art/characters/埋骨钱.png`
 - 图标资源替换（最小范围）：
   - `art/ui/icons/intent_attack.png`
   - `art/ui/icons/intent_block.png`

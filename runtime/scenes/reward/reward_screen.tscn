@@ -1,0 +1,113 @@
+[gd_scene load_steps=4 format=3 uid="uid://c7l5m0otj6a5p"]
+
+[ext_resource type="Script" path="res://runtime/scenes/reward/reward_screen.gd" id="1_6qj3u"]
+[ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="2_0po7g"]
+[ext_resource type="Texture2D" path="res://content/art/ui/theme_grid_overlay.svg" id="3_otg0k"]
+
+[node name="RewardScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_0po7g")
+script = ExtResource("1_6qj3u")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027451, 0.0352941, 0.0588235, 1)
+
+[node name="BackdropPattern" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_otg0k")
+expand_mode = 1
+stretch_mode = 1
+modulate = Color(1, 1, 1, 0.42)
+
+[node name="ToneOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.121569, 0.196078, 0.121569, 0.18)
+
+[node name="Frame" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 160.0
+offset_top = 94.0
+offset_right = -160.0
+offset_bottom = -94.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Frame"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Frame/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Frame/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "战斗奖励"
+
+[node name="GoldLabel" type="Label" parent="Frame/MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "金币：+0"
+
+[node name="ExtraRewardLabel" type="Label" parent="Frame/MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+text = "额外奖励：无"
+
+[node name="Hint" type="Label" parent="Frame/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+text = "选择一张卡加入牌组。"
+
+[node name="CardsScroll" type="ScrollContainer" parent="Frame/MarginContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="CardsContainer" type="VBoxContainer" parent="Frame/MarginContainer/VBox/CardsScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="SkipButton" type="Button" parent="Frame/MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 70)
+autowrap_mode = 3
+text = "跳过奖励（仅领取金币）"

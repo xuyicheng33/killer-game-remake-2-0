@@ -121,5 +121,5 @@
 ## 13. 仓库布局约定
 1. 协作根目录：`/Users/xuyicheng/杀戮游戏复刻2.0`。
 2. 教程基线工程：`references/tutorial_baseline/`。
-3. 协作文档与流程脚本位于协作根目录：`docs/`、`tools/`、`Makefile`。
+3. 协作文档与流程脚本位于协作根目录：`docs/`、`dev/tools/`、`Makefile`。
 4. 参考资料库目录：`references/slay_the_spire_cn/`（由 `make content-index` 生成索引）。

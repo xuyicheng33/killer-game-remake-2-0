@@ -7,7 +7,7 @@
 - 模块：`app + run_meta + map_event`
 - 目标：建立根目录可运行骨架（地图->战斗->结算）。
 - 预期结果：启动进入地图，点节点进战斗，胜负后回流程。
-- 运行验收：Godot 打开根项目，运行 `res://scenes/app/app.tscn`。
+- 运行验收：Godot 打开根项目，运行 `res://runtime/scenes/app/app.tscn`。
 
 ## T01 `feat-battle-state-machine-v1`
 - 模块：`battle_loop`

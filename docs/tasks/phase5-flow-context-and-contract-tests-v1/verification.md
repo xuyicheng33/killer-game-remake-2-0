@@ -16,7 +16,7 @@
 
 ## 契约测试（可脚本化）
 
-- [x] `bash tools/run_flow_contract_check.sh`
+- [x] `bash dev/tools/run_flow_contract_check.sh`
   - 结果：`[run_flow_contract] all checks passed.`
   - 覆盖：
     - map node type -> next_route 映射（battle/elite/boss/rest/shop/event）

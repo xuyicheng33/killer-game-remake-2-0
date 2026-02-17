@@ -18,7 +18,7 @@
 - 新增内容契约：`docs/contracts/content_pipeline_schema.md`
   - 定义 `card/enemy/relic/event` 最小 schema。
   - `card` 落地字段约束、枚举、效果子结构与错误报告契约。
-- 新增导入脚本：`tools/content_import_cards.py`
+- 新增导入脚本：`dev/tools/content_import_cards.py`
   - 支持卡牌 JSON 导入、字段校验、枚举/类型/重复 ID 校验。
   - 生成卡牌脚本与资源到 `characters/warrior/cards/generated/`。
   - 生成错误报告：`modules/content_pipeline/reports/card_import_report.json`。
@@ -44,7 +44,7 @@
 - `modules/content_pipeline/sources/events/README.md`
 - `modules/content_pipeline/reports/card_import_report.json`
 - `modules/content_pipeline/reports/card_import_report_invalid.json`
-- `tools/content_import_cards.py`
+- `dev/tools/content_import_cards.py`
 - `characters/warrior/cards/generated/warrior_axe_attack.gd`
 - `characters/warrior/cards/generated/warrior_axe_attack.tres`
 - `characters/warrior/cards/generated/warrior_block.gd`

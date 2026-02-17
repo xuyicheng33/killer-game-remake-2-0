@@ -14,13 +14,13 @@
 
 ## 改动摘要
 
-1. 新增 `tools/ui_shell_contract_check.sh`：
+1. 新增 `dev/tools/ui_shell_contract_check.sh`：
    - 拦截 `scenes/ui/*.gd` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
    - 强制校验 `stats_ui.gd` 与 `relic_potion_ui.gd` 的 `scene -> adapter -> viewmodel` 接入链路。
-2. 扩展 `tools/run_flow_contract_check.sh`：
+2. 扩展 `dev/tools/run_flow_contract_check.sh`：
    - 新增 `ROUTE_*` 常量单点定义校验（仅允许 `route_dispatcher.gd` 定义）。
    - 扩展 map_flow/battle_flow 关键 `next_route + payload` 键位检查（`accepted/node_id/node_type/reward_gold/bonus_log/game_over_text/reward_log`）。
-3. 更新 `tools/workflow_check.sh`：
+3. 更新 `dev/tools/workflow_check.sh`：
    - 在白名单检查后串行执行 `ui_shell_contract_check.sh` 与 `run_flow_contract_check.sh`。
    - `make workflow-check TASK_ID=phase7-quality-gates-and-regression-v1` 可一键触发全套门禁。
 4. 文档同步：
@@ -42,9 +42,9 @@
 
 ## 变更文件
 
-- `tools/ui_shell_contract_check.sh`
-- `tools/run_flow_contract_check.sh`
-- `tools/workflow_check.sh`
+- `dev/tools/ui_shell_contract_check.sh`
+- `dev/tools/run_flow_contract_check.sh`
+- `dev/tools/workflow_check.sh`
 - `modules/ui_shell/README.md`
 - `modules/run_flow/README.md`
 - `docs/contracts/module_boundaries_v1.md`

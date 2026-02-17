@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-02-17T05:31:03.763103+00:00",
+  "source": "runtime/modules/content_pipeline/sources/cards/warrior_cards.json",
+  "summary": {
+    "total_cards": 4,
+    "valid_cards": 4,
+    "error_count": 0,
+    "output_count": 9
+  },
+  "outputs": [
+    "content/characters/warrior/cards/generated/warrior_axe_attack.gd",
+    "content/characters/warrior/cards/generated/warrior_axe_attack.tres",
+    "content/characters/warrior/cards/generated/warrior_block.gd",
+    "content/characters/warrior/cards/generated/warrior_block.tres",
+    "content/characters/warrior/cards/generated/warrior_slash.gd",
+    "content/characters/warrior/cards/generated/warrior_slash.tres",
+    "content/characters/warrior/cards/generated/warrior_pipeline_bash.gd",
+    "content/characters/warrior/cards/generated/warrior_pipeline_bash.tres",
+    "content/characters/warrior/warrior_starting_deck.tres"
+  ],
+  "errors": []
+}

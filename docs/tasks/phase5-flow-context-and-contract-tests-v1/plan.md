@@ -33,7 +33,7 @@
 - `modules/run_flow/battle_flow_service.gd`
 - `modules/run_flow/README.md`
 - `scenes/app/app.gd`
-- `tools/run_flow_contract_check.sh`
+- `dev/tools/run_flow_contract_check.sh`
 - `docs/contracts/module_boundaries_v1.md`
 - `docs/module_architecture.md`
 - `docs/repo_structure.md`
@@ -45,7 +45,7 @@
 1. 新增 `flow_context.gd`，将 `pending_node_type` / `pending_reward_gold` 从 app 状态迁移到 run_flow 服务上下文。
 2. 更新 `run_flow_service.gd` 对外暴露上下文读写接口；`app.gd` 改为通过服务读写上下文。
 3. 更新 `battle_flow_service.gd`，删除重复路由常量并复用 `RunRouteDispatcher` 常量。
-4. 新增 `tools/run_flow_contract_check.sh`，覆盖：
+4. 新增 `dev/tools/run_flow_contract_check.sh`，覆盖：
    - map node type -> next_route 映射
    - battle win/lose 路由与关键 payload
    - non-battle completion 的 `bonus_log` 契约字段
@@ -55,7 +55,7 @@
 
 1. `rg -n "pending_node_type|pending_reward_gold" scenes/app/app.gd modules/run_flow`
 2. `rg -n "ROUTE_(MAP|BATTLE|REWARD|REST|SHOP|EVENT|GAME_OVER)" modules/run_flow`
-3. `bash tools/run_flow_contract_check.sh`
+3. `bash dev/tools/run_flow_contract_check.sh`
 4. `make workflow-check TASK_ID=phase5-flow-context-and-contract-tests-v1`
 
 ## 风险与回滚

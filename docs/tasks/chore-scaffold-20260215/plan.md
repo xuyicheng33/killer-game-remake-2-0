@@ -11,7 +11,7 @@
 ## 白名单文件
 
 - `docs/**`
-- `tools/**`
+- `dev/tools/**`
 - `Makefile`
 - `AGENTS.md`
 

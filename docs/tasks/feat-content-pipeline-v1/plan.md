@@ -45,7 +45,7 @@
 ## 改动白名单文件（严格限制）
 
 - `modules/content_pipeline/**`
-- `tools/content_*`
+- `dev/tools/content_*`
 - `custom_resources/**`
 - `characters/**`
 - `docs/contracts/**`
@@ -87,7 +87,7 @@
 
 1. 在 `docs/contracts/**` 固化四类 schema 文档，明确必填/枚举/默认值/错误码。
 2. 在 `modules/content_pipeline/**` 实现 `card` 解析与结构化校验（先单文件或单目录导入）。
-3. 在 `tools/content_*` 提供最小导入命令入口（输入源数据，输出导入结果与错误清单）。
+3. 在 `dev/tools/content_*` 提供最小导入命令入口（输入源数据，输出导入结果与错误清单）。
 4. 将导入产物落到 `custom_resources/**`，并在 `characters/**` 完成最小引用接入，保证新增卡可在游戏流程出现并可使用。
 5. 补齐错误报告：至少覆盖“字段缺失/类型错误/非法枚举/重复 ID”四类，并包含字段路径与源文件定位。
 6. 按 `verification.md` 执行验证并回填结果，再更新 `handoff.md`。

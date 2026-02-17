@@ -25,7 +25,7 @@
 ## 可复验步骤（本机）
 
 1. `make workflow-check TASK_ID=feat-buff-system-core-v1`
-2. 打开 `res://scenes/app/app.tscn` 进入战斗。
+2. 打开 `res://runtime/scenes/app/app.tscn` 进入战斗。
 3. 在调试台执行：`BuffSystem.get_instance().apply_status_to_target(<enemy>, BuffSystem.STATUS_WEAK, 1)`，结束玩家回合后观察该敌人伤害下降（弱化生效）。
 4. 在调试台执行：`BuffSystem.get_instance().apply_status_to_target(<enemy>, BuffSystem.STATUS_POISON, 3)`，推进到敌方回合结束，观察中毒扣血并从 `3 -> 2` 衰减。
 5. 边界：执行 `ApplyStatusEffect.execute([])` 或对无效目标施加状态，确认不崩溃；将状态减至 0 后 UI 不显示负层。

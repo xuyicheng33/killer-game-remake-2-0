@@ -15,9 +15,9 @@
 ## 范围边界
 
 - 包含：
-  - 新增 `tools/ui_shell_contract_check.sh`，拦截 `scenes/ui` 直写核心状态入口并校验迁移页面 adapter/viewmodel 接入。
-  - 扩展 `tools/run_flow_contract_check.sh`，补 route 常量单点定义与关键 `next_route + payload` 键位回归检查。
-  - 将上述脚本接入 `tools/workflow_check.sh`，由 `make workflow-check TASK_ID=...` 一键触发。
+  - 新增 `dev/tools/ui_shell_contract_check.sh`，拦截 `scenes/ui` 直写核心状态入口并校验迁移页面 adapter/viewmodel 接入。
+  - 扩展 `dev/tools/run_flow_contract_check.sh`，补 route 常量单点定义与关键 `next_route + payload` 键位回归检查。
+  - 将上述脚本接入 `dev/tools/workflow_check.sh`，由 `make workflow-check TASK_ID=...` 一键触发。
   - 补齐 phase7 三件套与架构文档同步。
 - 不包含：
   - 玩法规则语义改动。
@@ -27,9 +27,9 @@
 
 ## 改动白名单文件
 
-- `tools/ui_shell_contract_check.sh`
-- `tools/run_flow_contract_check.sh`
-- `tools/workflow_check.sh`
+- `dev/tools/ui_shell_contract_check.sh`
+- `dev/tools/run_flow_contract_check.sh`
+- `dev/tools/workflow_check.sh`
 - `docs/tasks/phase7-quality-gates-and-regression-v1/plan.md`
 - `docs/tasks/phase7-quality-gates-and-regression-v1/handoff.md`
 - `docs/tasks/phase7-quality-gates-and-regression-v1/verification.md`
@@ -53,12 +53,12 @@
 
 ## 验证方案
 
-1. `bash tools/ui_shell_contract_check.sh`
-2. `bash tools/run_flow_contract_check.sh`
+1. `bash dev/tools/ui_shell_contract_check.sh`
+2. `bash dev/tools/run_flow_contract_check.sh`
 3. `make workflow-check TASK_ID=phase7-quality-gates-and-regression-v1`
 
 ## 风险与回滚
 
 - 风险：契约脚本误报可能阻塞正常提交。
 - 风险：静态契约检查无法替代完整运行时回归。
-- 回滚方式：回滚 `tools/*contract_check.sh` 与 `tools/workflow_check.sh` 改动，可恢复 Phase 6 提交流程。
+- 回滚方式：回滚 `dev/tools/*contract_check.sh` 与 `dev/tools/workflow_check.sh` 改动，可恢复 Phase 6 提交流程。

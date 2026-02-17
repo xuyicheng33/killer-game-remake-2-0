@@ -25,7 +25,7 @@
 ## 可复验步骤（本机）
 
 1. `make workflow-check TASK_ID=feat-effect-stack-v1`
-2. 打开 `res://scenes/app/app.tscn`，进入战斗并等待蝙蝠攻击。
+2. 打开 `res://runtime/scenes/app/app.tscn`，进入战斗并等待蝙蝠攻击。
 3. 观察输出日志，确认出现两次 `process_start/process_done` 的 `Damage(...)` 条目，顺序与入队一致。
 4. 观察日志中的 `queue=<n> current=<item>`，确认入队后队列长度变化且显示当前处理条目。
 5. 在调试台触发 `DamageEffect.execute([])` 或传入已释放目标，确认仅出现 `enqueue_skip_*` 日志，不崩溃且后续结算可继续。

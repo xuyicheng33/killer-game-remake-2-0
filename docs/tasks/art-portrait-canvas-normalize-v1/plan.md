@@ -29,7 +29,7 @@
 ## 改动白名单文件（严格）
 
 - `art/characters/**`
-- `tools/**`
+- `dev/tools/**`
 - `characters/warrior/warrior.tres`
 - `enemies/bat/bat_enemy.tres`
 - `enemies/crab/crab_enemy.tres`

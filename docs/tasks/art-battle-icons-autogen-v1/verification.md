@@ -36,7 +36,7 @@
   3. 对照旧 tile 图，确认不是旧素材直接复用。
 - 预期：意图图标为新风格图（斩击/盾形/强化盾），小尺寸可辨识。
 - 实测：静态链路验证通过（当前环境未完成可视化实跑）。
-  - 脚本执行成功：`python3 tools/generate_battle_icons.py --output-dir art/ui/icons --size 64 --seed 20260216`
+  - 脚本执行成功：`python3 dev/tools/generate_battle_icons.py --output-dir art/ui/icons --size 64 --seed 20260216`
   - 引用点确认：
     - `enemies/bat/bat_enemy_ai.tscn` -> `intent_attack.png` / `intent_block.png`
     - `enemies/crab/crab_enemy_ai.tscn` -> `intent_attack.png` / `intent_block.png` / `intent_mega_block.png`
@@ -60,7 +60,7 @@
   3. 恢复文件名。
 - 预期：日志包含可定位 `res://...` 缺图路径；不应引发引擎崩溃。
 - 实测：本轮未执行破坏性重命名；采用静态可定位性验证。
-  - 缺图时，Godot 会按资源路径输出 `res://art/ui/icons/...` 加载失败信息，路径可直接定位到对应文件。
+  - 缺图时，Godot 会按资源路径输出 `res://content/art/ui/icons/...` 加载失败信息，路径可直接定位到对应文件。
 
 ## 哈希对比（证明非同图拷贝）
 

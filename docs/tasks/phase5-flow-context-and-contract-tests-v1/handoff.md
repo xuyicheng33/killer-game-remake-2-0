@@ -26,7 +26,7 @@
 4. 更新 `modules/run_flow/battle_flow_service.gd`：
    - 删除本地重复路由常量（`reward/game_over/map`）。
    - 统一复用 `RunRouteDispatcher` 常量单点定义。
-5. 新增 `tools/run_flow_contract_check.sh` 最小契约测试：
+5. 新增 `dev/tools/run_flow_contract_check.sh` 最小契约测试：
    - 校验 map node type -> next_route 映射（`route_dispatcher`）。
    - 校验 battle win/lose 路由与关键 payload（`reward_gold` / `game_over_text`）。
    - 校验 non-battle completion 的 `bonus_log` payload 键。
@@ -45,7 +45,7 @@
 - `modules/run_flow/battle_flow_service.gd`
 - `modules/run_flow/README.md`
 - `scenes/app/app.gd`
-- `tools/run_flow_contract_check.sh`
+- `dev/tools/run_flow_contract_check.sh`
 - `docs/contracts/module_boundaries_v1.md`
 - `docs/module_architecture.md`
 - `docs/repo_structure.md`

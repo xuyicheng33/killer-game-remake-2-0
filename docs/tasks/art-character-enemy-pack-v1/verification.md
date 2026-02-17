@@ -36,10 +36,10 @@
   3. 观察敌人立绘是否为 `埋骨钱` 或 `离恨烟`（对应敌人配置）。
 - 预期：立绘正常显示，无缺图占位、无资源加载错误导致的崩溃。
 - 实测：静态链路验证通过（当前环境未完成可视化实跑）。
-  - `characters/warrior/warrior.tres` 已指向 `res://art/characters/霜北刀.png`
-  - `enemies/bat/bat_enemy.tres` 已指向 `res://art/characters/离恨烟.png`
-  - `enemies/crab/crab_enemy.tres` 已指向 `res://art/characters/埋骨钱.png`
-  - `scenes/enemy/enemy.tscn` 默认贴图已从教程图切换为 `res://art/characters/埋骨钱.png`
+  - `characters/warrior/warrior.tres` 已指向 `res://content/art/characters/霜北刀.png`
+  - `enemies/bat/bat_enemy.tres` 已指向 `res://content/art/characters/离恨烟.png`
+  - `enemies/crab/crab_enemy.tres` 已指向 `res://content/art/characters/埋骨钱.png`
+  - `scenes/enemy/enemy.tscn` 默认贴图已从教程图切换为 `res://content/art/characters/埋骨钱.png`
 
 ### 主路径 2：敌人意图图标、状态图标显示正常
 

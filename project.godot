@@ -11,16 +11,16 @@ config_version=5
 [application]
 
 config/name="杀戮游戏复刻2.0"
-run/main_scene="res://scenes/app/app.tscn"
+run/main_scene="res://runtime/scenes/app/app.tscn"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Events="*res://global/events.gd"
-Shaker="*res://global/shaker.gd"
-MusicPlayer="*res://global/music_player.tscn"
-SFXPlayer="*res://global/sfx_player.tscn"
+Events="*res://runtime/global/events.gd"
+Shaker="*res://runtime/global/shaker.gd"
+MusicPlayer="*res://runtime/global/music_player.tscn"
+SFXPlayer="*res://runtime/global/sfx_player.tscn"
 
 [display]
 

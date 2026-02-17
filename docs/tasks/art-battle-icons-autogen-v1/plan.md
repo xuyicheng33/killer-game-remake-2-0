@@ -34,7 +34,7 @@
 ## 改动白名单文件（严格）
 
 - `art/ui/icons/**`
-- `tools/**`
+- `dev/tools/**`
 - `enemies/bat/bat_enemy_ai.tscn`
 - `enemies/crab/crab_enemy_ai.tscn`
 - `scenes/ui/intent_ui.tscn`
@@ -52,7 +52,7 @@
 
 ## 实施步骤
 
-1. 新建自动生成脚本（`tools/**`）并固定随机种子，生成 5 个 `64x64` 透明底图标。
+1. 新建自动生成脚本（`dev/tools/**`）并固定随机种子，生成 5 个 `64x64` 透明底图标。
 2. 覆盖输出目标文件：
    - `art/ui/icons/intent_attack.png`
    - `art/ui/icons/intent_block.png`

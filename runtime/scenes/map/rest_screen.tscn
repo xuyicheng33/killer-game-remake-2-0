@@ -1,0 +1,113 @@
+[gd_scene load_steps=4 format=3 uid="uid://wqv3lvlc5o8q"]
+
+[ext_resource type="Script" path="res://runtime/scenes/map/rest_screen.gd" id="1_780l4"]
+[ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="2_7icm8"]
+[ext_resource type="Texture2D" path="res://content/art/ui/theme_grid_overlay.svg" id="3_74bw2"]
+
+[node name="RestScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_7icm8")
+script = ExtResource("1_780l4")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027451, 0.0352941, 0.0588235, 1)
+
+[node name="BackdropPattern" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_74bw2")
+expand_mode = 1
+stretch_mode = 1
+modulate = Color(1, 1, 1, 0.45)
+
+[node name="ToneOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.152941, 0.117647, 0.0823529, 0.2)
+
+[node name="Frame" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 180.0
+offset_top = 106.0
+offset_right = -180.0
+offset_bottom = -106.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Frame"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="ContentScroll" type="ScrollContainer" parent="Frame/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="Frame/MarginContainer/ContentScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Frame/MarginContainer/ContentScroll/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+text = "营火"
+
+[node name="HPLabel" type="Label" parent="Frame/MarginContainer/ContentScroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "生命：--/--"
+
+[node name="DescLabel" type="Label" parent="Frame/MarginContainer/ContentScroll/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+text = "选择一项：休息（恢复生命）或升级（强化牌组第 1 张卡）"
+
+[node name="RestButton" type="Button" parent="Frame/MarginContainer/ContentScroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "休息（恢复 20% 生命，至少 6）"
+
+[node name="UpgradeButton" type="Button" parent="Frame/MarginContainer/ContentScroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "升级（强化牌组第 1 张卡）"
+
+[node name="InfoLabel" type="Label" parent="Frame/MarginContainer/ContentScroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+text = ""

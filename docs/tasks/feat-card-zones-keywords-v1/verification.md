@@ -27,7 +27,7 @@
 ## 可复验步骤（本机）
 
 1. `make workflow-check TASK_ID=feat-card-zones-keywords-v1`
-2. 在 Godot 打开 `res://scenes/app/app.tscn` 并进入战斗。
+2. 在 Godot 打开 `res://runtime/scenes/app/app.tscn` 并进入战斗。
 3. 准备一张 `keyword_exhaust = true` 的“消耗测试牌”，打出后观察右上角牌区计数：`消` 增加 1。
 4. 结束回合，观察 `抽/手牌/弃/消` 四牌区计数持续联动变化。
 5. 边界：将抽牌堆与弃牌堆都清空后触发抽牌，确认不崩溃；未设置关键词的普通牌仍按默认流程运行。

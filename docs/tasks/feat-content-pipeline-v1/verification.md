@@ -29,7 +29,7 @@
 - 前置：在 `modules/content_pipeline/sources/cards/warrior_cards.json` 新增 `warrior_pipeline_bash`。
 - 步骤：
   1. 执行：
-     - `python3 tools/content_import_cards.py --input modules/content_pipeline/sources/cards/warrior_cards.json`
+     - `python3 dev/tools/content_import_cards.py --input modules/content_pipeline/sources/cards/warrior_cards.json`
   2. 检查导入报告：`modules/content_pipeline/reports/card_import_report.json`
   3. 检查产物：`characters/warrior/cards/generated/warrior_pipeline_bash.gd` 与 `characters/warrior/cards/generated/warrior_pipeline_bash.tres`
 - 期望：
@@ -44,7 +44,7 @@
 - 前置：主路径用例 1 已通过。
 - 步骤：
   1. 检查起始牌组资源：`characters/warrior/warrior_starting_deck.tres`。
-  2. 确认包含 `res://characters/warrior/cards/generated/warrior_pipeline_bash.tres`。
+  2. 确认包含 `res://content/characters/warrior/cards/generated/warrior_pipeline_bash.tres`。
   3. 检查新卡脚本效果实现：`characters/warrior/cards/generated/warrior_pipeline_bash.gd`（`DamageEffect + ApplyStatusEffect`）。
 - 期望：
   - 新卡进入勇士起始牌组并可在战斗流程中抽到/打出。
@@ -59,7 +59,7 @@
   - 样例 B：`cost` 类型错误（字符串）
 - 步骤：
   1. 执行：
-     - `python3 tools/content_import_cards.py --input modules/content_pipeline/sources/cards/warrior_cards_invalid.json --report modules/content_pipeline/reports/card_import_report_invalid.json`
+     - `python3 dev/tools/content_import_cards.py --input modules/content_pipeline/sources/cards/warrior_cards_invalid.json --report modules/content_pipeline/reports/card_import_report_invalid.json`
   2. 检查命令行错误输出与报告文件。
 - 期望：
   - 导入失败且错误可定位到字段路径。

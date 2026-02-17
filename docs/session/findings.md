@@ -46,16 +46,16 @@
 
 ## 2026-02-17 Phase7 质量门禁调研与结论
 
-- `tools/run_flow_contract_check.sh` 原有检查覆盖了核心路由分支与部分 payload 键，但未显式约束 `ROUTE_*` 单点定义。
+- `dev/tools/run_flow_contract_check.sh` 原有检查覆盖了核心路由分支与部分 payload 键，但未显式约束 `ROUTE_*` 单点定义。
 - `workflow_check.sh` 原流程只做脚手架/分支/白名单校验，尚未串行执行模块契约门禁脚本。
 - `stats_ui` 与 `relic_potion_ui` 的 adapter/viewmodel 链路已具备，可直接固化为脚本约束，防止回退到场景脚本直连业务。
 
 ## 2026-02-17 Phase7 质量门禁结果
 
-- 新增 `tools/ui_shell_contract_check.sh`，已覆盖：
+- 新增 `dev/tools/ui_shell_contract_check.sh`，已覆盖：
   - `scenes/ui` 禁止 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_` 直写。
   - `stats/relic_potion` 页面必须走 adapter -> viewmodel 接入。
-- 扩展 `tools/run_flow_contract_check.sh`，已覆盖：
+- 扩展 `dev/tools/run_flow_contract_check.sh`，已覆盖：
   - `ROUTE_*` 常量单点定义锁定到 `route_dispatcher.gd`。
   - map/battle 关键 `next_route + payload` 键位回归检查。
-- `tools/workflow_check.sh` 已串行执行两个门禁脚本，形成提交前可一键执行的质量门禁入口。
+- `dev/tools/workflow_check.sh` 已串行执行两个门禁脚本，形成提交前可一键执行的质量门禁入口。

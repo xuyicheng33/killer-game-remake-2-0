@@ -28,9 +28,9 @@
 - `scenes/battle/battle.gd`
 - `scenes/ui/battle_over_panel.gd`
 - `project.godot`
-- `tools/workflow_check.sh`
-- `tools/new_task.sh`
-- `tools/install_hooks.sh`
+- `dev/tools/workflow_check.sh`
+- `dev/tools/new_task.sh`
+- `dev/tools/install_hooks.sh`
 - `Makefile`
 - 以及导入的 legacy 目录（`art/`, `characters/`, `custom_resources/`, `effects/`, `enemies/`, `global/`, `scenes/*`）
 

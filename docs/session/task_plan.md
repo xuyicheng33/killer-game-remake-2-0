@@ -57,9 +57,9 @@
 固化 Phase 2~6 关键约束为可脚本化质量门禁，并接入 `workflow-check`，实现“提交前必过”的最小回归集。
 
 ### Scope
-- 新增 `tools/ui_shell_contract_check.sh`。
-- 扩展 `tools/run_flow_contract_check.sh` 的 route 常量与 payload 契约检查。
-- 在 `tools/workflow_check.sh` 中接入上述门禁脚本。
+- 新增 `dev/tools/ui_shell_contract_check.sh`。
+- 扩展 `dev/tools/run_flow_contract_check.sh` 的 route 常量与 payload 契约检查。
+- 在 `dev/tools/workflow_check.sh` 中接入上述门禁脚本。
 - 补齐 phase7 三件套与架构文档同步。
 
 ### Phases

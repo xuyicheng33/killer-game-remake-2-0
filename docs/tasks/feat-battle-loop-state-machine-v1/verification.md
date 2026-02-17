@@ -23,7 +23,7 @@
 ## 可复验步骤（本机）
 
 1. `make workflow-check TASK_ID=feat-battle-loop-state-machine-v1`
-2. 在 Godot 打开 `res://scenes/app/app.tscn`，进入一场战斗。
+2. 在 Godot 打开 `res://runtime/scenes/app/app.tscn`，进入一场战斗。
 3. 观察左上 HUD：阶段日志应出现 `DRAW -> ACTION -> ENEMY -> RESOLVE -> DRAW`。
 4. 在 `ACTION` 阶段不出牌，直接点击“结束回合”，确认仍进入 `ENEMY -> RESOLVE -> DRAW`，且不会卡死。
 5. 敌方回合结束后，确认 HUD 显示回合数自增且敌人意图已刷新（由 `enemy_handler.reset_enemy_actions()` 触发）。

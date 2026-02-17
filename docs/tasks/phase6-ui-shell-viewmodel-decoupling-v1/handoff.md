@@ -56,7 +56,7 @@
 
 ## Phase7 建议（测试门禁固化）
 
-1. 新增 `tools/ui_shell_contract_check.sh`：
+1. 新增 `dev/tools/ui_shell_contract_check.sh`：
    - 校验 `scenes/ui` 中禁止模式（例如直接 `run_state.add_*/set_*/remove_*`）。
    - 校验目标 UI 必须引用 `viewmodel/adapter`。
 2. 在 `workflow-check` 增加可选任务门禁：

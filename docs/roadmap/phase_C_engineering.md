@@ -50,7 +50,7 @@
 - 依赖：C1 + C2
 - 关键改动路径：
   - `modules/content_pipeline/**`
-  - `tools/content_*`
+  - `dev/tools/content_*`
   - `custom_resources/**`
 - 子任务：
   1. 定义卡牌/敌人/遗物/事件数据 schema。

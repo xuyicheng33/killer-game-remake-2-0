@@ -26,18 +26,18 @@
   - `enemies/crab/crab_enemy_ai.tscn`
   - `scenes/ui/intent_ui.tscn`
   - `scenes/ui/stats_ui.tscn`
-- 新增自动生成脚本（`tools/**`），并提供可复跑命令。
+- 新增自动生成脚本（`dev/tools/**`），并提供可复跑命令。
 
 ## 可复跑命令
 
-- `python3 tools/generate_battle_icons.py --output-dir art/ui/icons --size 64 --seed 20260216`
+- `python3 dev/tools/generate_battle_icons.py --output-dir art/ui/icons --size 64 --seed 20260216`
 
 ## 变更文件
 
 - `docs/tasks/art-battle-icons-autogen-v1/plan.md`
 - `docs/tasks/art-battle-icons-autogen-v1/handoff.md`
 - `docs/tasks/art-battle-icons-autogen-v1/verification.md`
-- `tools/generate_battle_icons.py`
+- `dev/tools/generate_battle_icons.py`
 - `art/ui/icons/intent_attack.png`
 - `art/ui/icons/intent_block.png`
 - `art/ui/icons/intent_mega_block.png`

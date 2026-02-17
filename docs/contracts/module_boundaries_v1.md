@@ -43,10 +43,10 @@
 
 ### 2.4 Phase 7 质量门禁（可脚本化）
 
-1. UI 壳层门禁：`tools/ui_shell_contract_check.sh`
+1. UI 壳层门禁：`dev/tools/ui_shell_contract_check.sh`
    - 禁止 `scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
    - 强制 `stats_ui`、`relic_potion_ui` 维持 `scene -> adapter -> viewmodel` 接入链路。
-2. run_flow 契约门禁：`tools/run_flow_contract_check.sh`
+2. run_flow 契约门禁：`dev/tools/run_flow_contract_check.sh`
    - 路由常量 `ROUTE_*` 必须单点定义在 `modules/run_flow/route_dispatcher.gd`。
    - `next_route + payload` 关键键位必须稳定（map_flow/battle_flow 最小回归集）。
 3. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
@@ -73,7 +73,7 @@
 - 允许依赖：`run_meta`、`map_event`、`reward_economy`、`relic_potion`、`persistence`、`ui_shell`。
 - 禁止依赖：战斗细节实现（`card/effect/buff/enemy` 内部细节）、`content_pipeline`。
 - 当前实现度：`部分`（`run_flow_service.gd` + `flow_context.gd` + `route_dispatcher.gd` + `map/shop/event/rest/battle` 命令服务已接入；app 层保留场景接线与页面实例化）。
-- 契约门禁：`tools/run_flow_contract_check.sh`（`ROUTE_*` 单点定义 + 关键 `next_route/payload` 键位）。
+- 契约门禁：`dev/tools/run_flow_contract_check.sh`（`ROUTE_*` 单点定义 + 关键 `next_route/payload` 键位）。
 
 ## `battle_loop`
 
@@ -181,7 +181,7 @@
 - 输入：`modules/content_pipeline/sources/cards/*.json`。
 - 输出：生成卡脚本/资源、起始牌组、导入报告 JSON。
 - 状态所有权：拥有内容 schema 与导入报告格式。
-- 允许依赖：`tools/content_import_cards.py` 与 `modules/content_pipeline/sources/**`。
+- 允许依赖：`dev/tools/content_import_cards.py` 与 `modules/content_pipeline/sources/**`。
 - 禁止依赖：运行时场景、`run_meta` 持久状态。
 - 当前实现度：`部分`（cards 已实现；enemy/relic/event 为占位）。
 
@@ -194,7 +194,7 @@
 - 允许依赖：`run_meta`（只读）、`card_system`、`buff_system`、`relic_potion`。
 - 禁止依赖：直接写战斗规则、直接执行效果结算、直接读写存档、绕过 adapter 直接调用领域写接口。
 - 当前实现度：`部分`（`modules/ui_shell/viewmodel + adapter` 已用于 `stats_ui`、`relic_potion_ui`，其余 UI 仍待迁移）。
-- 契约门禁：`tools/ui_shell_contract_check.sh`（禁止 UI 直写 `run_state.*` 核心入口 + 强制迁移页面 adapter/viewmodel 接线）。
+- 契约门禁：`dev/tools/ui_shell_contract_check.sh`（禁止 UI 直写 `run_state.*` 核心入口 + 强制迁移页面 adapter/viewmodel 接线）。
 
 ## 4. 命名与归属决策（Phase 1 基线）
 

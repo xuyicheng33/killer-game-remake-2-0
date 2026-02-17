@@ -27,14 +27,14 @@
 
 ## 可复跑命令
 
-- `python3 tools/normalize_character_portraits.py --input-dir art/characters --output-dir art/characters/processed --canvas-size 2048 --margin-ratio 0.10`
+- `python3 dev/tools/normalize_character_portraits.py --input-dir art/characters --output-dir art/characters/processed --canvas-size 2048 --margin-ratio 0.10`
 
 ## 变更文件
 
 - `docs/tasks/art-portrait-canvas-normalize-v1/plan.md`
 - `docs/tasks/art-portrait-canvas-normalize-v1/handoff.md`
 - `docs/tasks/art-portrait-canvas-normalize-v1/verification.md`
-- `tools/normalize_character_portraits.py`
+- `dev/tools/normalize_character_portraits.py`
 - `art/characters/processed/霜北刀.png`
 - `art/characters/processed/离恨烟.png`
 - `art/characters/processed/埋骨钱.png`
