@@ -80,7 +80,7 @@
 2. 变更 `RunState` 字段或存档结构必须同步更新：`docs/contracts/run_state.md`。
 3. `runtime/scenes/app` 新增流程逻辑默认应落在 `run_flow`；如临时留在场景层，任务文档必须注明迁移计划。
 
-## 7. 质量门禁（Phase 7/12/13）
+## 7. 质量门禁（Phase 7/12/13/14）
 
 1. UI 壳层契约门禁：`bash dev/tools/ui_shell_contract_check.sh`
    - 拦截 `runtime/scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -99,5 +99,13 @@
    - 校验 `_apply_player_stats` 包含 `statuses` 恢复逻辑（调用 `set_status`）。
    - 校验读取 `statuses` 时对旧存档有默认空字典兜底（兼容 v1）。
    - 目的：防止后续改动破坏 phase10 的"状态层存档兼容"能力。
-5. 聚合入口：`make workflow-check TASK_ID=<task-id>`
+5. seed/RNG 契约门禁（Phase 14 新增）：`bash dev/tools/seed_rng_contract_check.sh`
+   - 校验 `card_pile.gd` 存在 `shuffle_with_rng(stream_key)` 方法。
+   - 校验 `shuffle_with_rng` 内使用 `RunRng.randi_range`（非系统默认 shuffle）。
+   - 校验 `player_handler.gd` 的 `start_battle` 使用 `shuffle_with_rng("battle_start_shuffle")`。
+   - 校验 `player_handler.gd` 的 `reshuffle_deck_from_discard` 使用 `shuffle_with_rng("reshuffle_discard")`。
+   - 校验 `run_lifecycle_service.gd` 存在 `restore_run_state` 逻辑。
+   - 校验 `run_lifecycle_service.gd` 存在 `begin_run` 回退逻辑。
+   - 目的：防止后续改动破坏"确定性洗牌 + 读档随机流连续性"约束。
+6. 聚合入口：`make workflow-check TASK_ID=<task-id>`
    - `workflow_check.sh` 已串行执行上述脚本，作为提交前必过检查。
