@@ -32,6 +32,11 @@ func _ready() -> void:
 	add_child(relic_potion_system)
 	relic_potion_ui.relic_potion_system = relic_potion_system
 
+	_apply_overlay_layout()
+	var viewport := get_viewport()
+	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.connect(_on_viewport_resized)
+
 	Events.battle_finished.connect(_on_battle_finished)
 	restart_button.pressed.connect(_start_new_run)
 	if not _try_load_saved_run():
@@ -242,3 +247,21 @@ func _resolve_run_seed() -> int:
 	if not env_seed.is_empty() and env_seed.is_valid_int():
 		return int(env_seed)
 	return int(Time.get_unix_time_from_system()) % 1000000007
+
+
+func _on_viewport_resized() -> void:
+	_apply_overlay_layout()
+
+
+func _apply_overlay_layout() -> void:
+	if not is_node_ready():
+		return
+
+	var viewport_size := get_viewport_rect().size
+	var panel_width := clampf(viewport_size.x * 0.55, 520.0, 980.0)
+	var panel_height := clampf(viewport_size.y * 0.55, 320.0, 640.0)
+
+	game_over_panel.offset_left = -panel_width * 0.5
+	game_over_panel.offset_top = -panel_height * 0.5
+	game_over_panel.offset_right = panel_width * 0.5
+	game_over_panel.offset_bottom = panel_height * 0.5

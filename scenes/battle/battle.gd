@@ -11,6 +11,9 @@ const PHASE_LOG_LIMIT := 8
 @onready var player_handler: PlayerHandler = $PlayerHandler
 @onready var enemy_handler: EnemyHandler = $EnemyHandler
 @onready var player: Player = $Player
+@onready var hand_container: HBoxContainer = $BattleUI/Hand
+@onready var end_turn_button: Button = $BattleUI/EndTurnButton
+@onready var phase_panel: PanelContainer = $PhaseHUD/Panel
 @onready var current_phase_label: Label = %CurrentPhaseLabel
 @onready var phase_log_label: Label = %PhaseLogLabel
 
@@ -25,6 +28,11 @@ func _ready() -> void:
 	_active_stats = runtime_stats if runtime_stats else char_stats.create_instance()
 	battle_ui.char_stats = _active_stats
 	player.stats = _active_stats
+
+	_apply_responsive_layout()
+	var viewport := get_viewport()
+	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.connect(_on_viewport_resized)
 	
 	_battle_phase_machine = BATTLE_PHASE_STATE_MACHINE_SCRIPT.new()
 	_battle_phase_machine.phase_changed.connect(_on_phase_changed)
@@ -149,3 +157,37 @@ func _update_phase_hud(phase_name: String, turn: int) -> void:
 func _on_player_died() -> void:
 	_battle_ended = true
 	Events.battle_over_screen_requested.emit("Game Over!", BattleOverPanel.Type.LOSE)
+
+
+func _on_viewport_resized() -> void:
+	_apply_responsive_layout()
+
+
+func _apply_responsive_layout() -> void:
+	if not is_node_ready():
+		return
+
+	var viewport_size := get_viewport_rect().size
+
+	var hand_width := clampf(viewport_size.x * 0.62, 680.0, 1180.0)
+	var hand_top := -clampf(viewport_size.y * 0.24, 170.0, 280.0)
+	hand_container.offset_left = -hand_width * 0.5
+	hand_container.offset_right = hand_width * 0.5
+	hand_container.offset_top = hand_top
+
+	var right_margin := clampf(viewport_size.x * 0.02, 18.0, 40.0)
+	var bottom_margin := clampf(viewport_size.y * 0.02, 18.0, 34.0)
+	var button_width := clampf(viewport_size.x * 0.12, 180.0, 280.0)
+	var button_height := clampf(viewport_size.y * 0.09, 58.0, 86.0)
+	end_turn_button.offset_left = -(button_width + right_margin)
+	end_turn_button.offset_top = -(button_height + bottom_margin)
+	end_turn_button.offset_right = -right_margin
+	end_turn_button.offset_bottom = -bottom_margin
+
+	var phase_width := clampf(viewport_size.x * 0.24, 320.0, 520.0)
+	var phase_height := clampf(viewport_size.y * 0.22, 170.0, 280.0)
+	var phase_margin := clampf(viewport_size.x * 0.012, 12.0, 24.0)
+	phase_panel.offset_left = phase_margin
+	phase_panel.offset_top = phase_margin
+	phase_panel.offset_right = phase_margin + phase_width
+	phase_panel.offset_bottom = phase_margin + phase_height

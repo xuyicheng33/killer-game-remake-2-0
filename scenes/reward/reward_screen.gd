@@ -8,6 +8,7 @@ const REWARD_GENERATOR_SCRIPT := preload("res://modules/reward_economy/reward_ge
 @export var run_state: RunState
 @export var reward_gold: int = 0
 
+@onready var frame: PanelContainer = %Frame
 @onready var gold_label: Label = %GoldLabel
 @onready var extra_reward_label: Label = %ExtraRewardLabel
 @onready var cards_container: VBoxContainer = %CardsContainer
@@ -17,6 +18,11 @@ var _bundle: RewardBundle
 
 
 func _ready() -> void:
+	_apply_responsive_layout()
+	var viewport := get_viewport()
+	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.connect(_on_viewport_resized)
+
 	skip_button.pressed.connect(_on_skip_pressed)
 	_refresh()
 
@@ -77,3 +83,26 @@ func _on_card_pressed(card: Card) -> void:
 
 func _on_skip_pressed() -> void:
 	reward_completed.emit(_bundle, null)
+
+
+func _on_viewport_resized() -> void:
+	_apply_responsive_layout()
+
+
+func _apply_responsive_layout() -> void:
+	if not is_node_ready():
+		return
+
+	var viewport_size := get_viewport_rect().size
+	var horizontal_margin := clampf(viewport_size.x * 0.045, 18.0, 150.0)
+	var vertical_margin := clampf(viewport_size.y * 0.05, 16.0, 96.0)
+	var reserved_overlay_width := clampf(viewport_size.x * 0.23, 280.0, 460.0)
+
+	frame.offset_left = horizontal_margin
+	frame.offset_top = vertical_margin
+	frame.offset_right = -(horizontal_margin + reserved_overlay_width)
+	frame.offset_bottom = -vertical_margin
+
+	var content_width := viewport_size.x + frame.offset_right - frame.offset_left
+	if content_width < 720.0:
+		frame.offset_right = -horizontal_margin

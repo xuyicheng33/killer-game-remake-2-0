@@ -8,6 +8,7 @@ const SHOP_FLOW_SERVICE_SCRIPT := preload("res://modules/run_flow/shop_flow_serv
 
 @export var run_state: RunState
 
+@onready var content_margin: MarginContainer = %MarginContainer
 @onready var gold_label: Label = %GoldLabel
 @onready var offers_container: VBoxContainer = %OffersContainer
 @onready var deck_container: VBoxContainer = %DeckContainer
@@ -21,6 +22,11 @@ var flow_service: ShopFlowService
 func _ready() -> void:
 	if flow_service == null:
 		flow_service = SHOP_FLOW_SERVICE_SCRIPT.new() as ShopFlowService
+
+	_apply_responsive_layout()
+	var viewport := get_viewport()
+	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.connect(_on_viewport_resized)
 
 	leave_button.pressed.connect(_on_leave_pressed)
 	_offers = flow_service.generate_offers(run_state)
@@ -110,3 +116,26 @@ func _card_name(card: Card) -> String:
 	if card == null:
 		return "(空卡)"
 	return card.id
+
+
+func _on_viewport_resized() -> void:
+	_apply_responsive_layout()
+
+
+func _apply_responsive_layout() -> void:
+	if not is_node_ready():
+		return
+
+	var viewport_size := get_viewport_rect().size
+	var horizontal_margin := clampf(viewport_size.x * 0.04, 16.0, 120.0)
+	var vertical_margin := clampf(viewport_size.y * 0.05, 14.0, 84.0)
+	var reserved_overlay_width := clampf(viewport_size.x * 0.23, 280.0, 460.0)
+
+	content_margin.offset_left = horizontal_margin
+	content_margin.offset_top = vertical_margin
+	content_margin.offset_right = -(horizontal_margin + reserved_overlay_width)
+	content_margin.offset_bottom = -vertical_margin
+
+	var content_width := viewport_size.x + content_margin.offset_right - content_margin.offset_left
+	if content_width < 760.0:
+		content_margin.offset_right = -horizontal_margin

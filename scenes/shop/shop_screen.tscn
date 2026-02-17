@@ -21,6 +21,7 @@ grow_vertical = 2
 color = Color(0.0745098, 0.0745098, 0.121569, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -76,9 +77,15 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "购买卡牌"
 
-[node name="OffersContainer" type="VBoxContainer" parent="MarginContainer/VBox/Columns/BuyPanel/BuyMargin/BuyVBox"]
+[node name="BuyScroll" type="ScrollContainer" parent="MarginContainer/VBox/Columns/BuyPanel/BuyMargin/BuyVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="OffersContainer" type="VBoxContainer" parent="MarginContainer/VBox/Columns/BuyPanel/BuyMargin/BuyVBox/BuyScroll"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
 [node name="RemovePanel" type="PanelContainer" parent="MarginContainer/VBox/Columns"]
@@ -101,9 +108,15 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "移除卡牌"
 
-[node name="DeckContainer" type="VBoxContainer" parent="MarginContainer/VBox/Columns/RemovePanel/RemoveMargin/RemoveVBox"]
+[node name="RemoveScroll" type="ScrollContainer" parent="MarginContainer/VBox/Columns/RemovePanel/RemoveMargin/RemoveVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="DeckContainer" type="VBoxContainer" parent="MarginContainer/VBox/Columns/RemovePanel/RemoveMargin/RemoveVBox/RemoveScroll"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
 [node name="StatusLabel" type="Label" parent="MarginContainer/VBox"]

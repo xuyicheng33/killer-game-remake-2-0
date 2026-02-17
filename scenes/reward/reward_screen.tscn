@@ -47,6 +47,7 @@ mouse_filter = 2
 color = Color(0.121569, 0.196078, 0.121569, 0.18)
 
 [node name="Frame" type="PanelContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -93,10 +94,15 @@ theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
 text = "选择一张卡加入牌组。"
 
-[node name="CardsContainer" type="VBoxContainer" parent="Frame/MarginContainer/VBox"]
-unique_name_in_owner = true
+[node name="CardsScroll" type="ScrollContainer" parent="Frame/MarginContainer/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="CardsContainer" type="VBoxContainer" parent="Frame/MarginContainer/VBox/CardsScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="SkipButton" type="Button" parent="Frame/MarginContainer/VBox"]

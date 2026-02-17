@@ -28,6 +28,12 @@ func _set_relic_potion_system(value: RelicPotionSystem) -> void:
 func _ready() -> void:
 	if not _adapter.projection_changed.is_connected(_render):
 		_adapter.projection_changed.connect(_render)
+
+	_apply_responsive_layout()
+	var viewport := get_viewport()
+	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.connect(_on_viewport_resized)
+
 	_adapter.refresh()
 
 
@@ -73,3 +79,23 @@ func _render_potions(projection: Dictionary) -> void:
 		var hint := Label.new()
 		hint.text = str(projection.get("empty_potion_hint", "（无可用药水）"))
 		potion_container.add_child(hint)
+
+
+func _on_viewport_resized() -> void:
+	_apply_responsive_layout()
+
+
+func _apply_responsive_layout() -> void:
+	if not is_node_ready():
+		return
+
+	var viewport_size := get_viewport_rect().size
+	var panel_width := clampf(viewport_size.x * 0.23, 300.0, 430.0)
+	var panel_height := clampf(viewport_size.y * 0.44, 260.0, 520.0)
+	var right_margin := 16.0
+	var top_margin := 16.0
+
+	offset_left = -(panel_width + right_margin)
+	offset_top = top_margin
+	offset_right = -right_margin
+	offset_bottom = top_margin + panel_height
