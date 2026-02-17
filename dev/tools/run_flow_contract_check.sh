@@ -7,6 +7,10 @@ cd "$ROOT_DIR"
 MAP_FLOW_FILE="runtime/modules/run_flow/map_flow_service.gd"
 BATTLE_FLOW_FILE="runtime/modules/run_flow/battle_flow_service.gd"
 ROUTE_FILE="runtime/modules/run_flow/route_dispatcher.gd"
+HAS_RG=0
+if command -v rg >/dev/null 2>&1; then
+  HAS_RG=1
+fi
 
 fail() {
   local message="$1"
@@ -14,11 +18,32 @@ fail() {
   exit 1
 }
 
+find_in_file() {
+  local pattern="$1"
+  local file="$2"
+  if [[ "$HAS_RG" -eq 1 ]]; then
+    rg -n "$pattern" "$file" 2>/dev/null || true
+    return
+  fi
+  grep -En "$pattern" "$file" 2>/dev/null || true
+}
+
+find_in_tree() {
+  local pattern="$1"
+  shift
+  local search_roots=("$@")
+  if [[ "$HAS_RG" -eq 1 ]]; then
+    rg -n --glob '*.gd' "$pattern" "${search_roots[@]}" 2>/dev/null || true
+    return
+  fi
+  grep -REn --include='*.gd' "$pattern" "${search_roots[@]}" 2>/dev/null || true
+}
+
 assert_has() {
   local pattern="$1"
   local file="$2"
   local label="$3"
-  if rg -n "$pattern" "$file" >/dev/null; then
+  if [[ -n "$(find_in_file "$pattern" "$file")" ]]; then
     echo "[PASS] $label"
     return
   fi
@@ -32,7 +57,7 @@ assert_unique_route_constant() {
   local route_value="$2"
   local pattern="^const ${const_name}[[:space:]]*:=[[:space:]]*\"${route_value}\"$"
   local matches
-  matches="$(rg -n --glob '*.gd' "$pattern" runtime/modules/run_flow runtime/scenes || true)"
+  matches="$(find_in_tree "$pattern" runtime/modules/run_flow runtime/scenes)"
 
   if [[ -z "$matches" ]]; then
     fail "missing ${const_name} constant definition for value '${route_value}'"
@@ -55,6 +80,11 @@ assert_unique_route_constant() {
 }
 
 echo "[run_flow_contract] checking route constants single-point definition..."
+if [[ "$HAS_RG" -eq 1 ]]; then
+  echo "[run_flow_contract] search backend: rg"
+else
+  echo "[run_flow_contract] search backend: grep fallback (rg not found)"
+fi
 assert_unique_route_constant "ROUTE_MAP" "map"
 assert_unique_route_constant "ROUTE_BATTLE" "battle"
 assert_unique_route_constant "ROUTE_REWARD" "reward"
