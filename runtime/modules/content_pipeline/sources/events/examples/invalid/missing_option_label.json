@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "events": [
+    {
+      "id": "event_missing_label",
+      "title": "缺少标签的事件",
+      "description": "选项缺少 label 字段",
+      "options": [
+        {
+          "effect": "gold",
+          "value": 10
+        }
+      ]
+    }
+  ]
+}

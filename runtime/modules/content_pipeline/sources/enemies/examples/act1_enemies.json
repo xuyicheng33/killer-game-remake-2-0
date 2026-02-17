@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "enemies": [
+    {
+      "id": "crab",
+      "name": "小蟹",
+      "max_health": 10,
+      "art_path": "res://content/art/enemies/crab.png",
+      "ai_scene_path": "res://content/enemies/crab/crab_enemy_ai.tscn",
+      "tags": ["common"],
+      "intents": [
+        {
+          "name": "attack",
+          "type": "chance_based",
+          "weight": 60,
+          "effects": [
+            {"op": "damage", "amount": 7, "target": "player"}
+          ]
+        },
+        {
+          "name": "block",
+          "type": "chance_based",
+          "weight": 40,
+          "effects": [
+            {"op": "block", "amount": 5, "target": "self"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bat",
+      "name": "蝙蝠",
+      "max_health": 12,
+      "art_path": "res://content/art/enemies/bat.png",
+      "ai_scene_path": "res://content/enemies/bat/bat_enemy_ai.tscn",
+      "tags": ["common"],
+      "intents": [
+        {
+          "name": "attack",
+          "type": "chance_based",
+          "weight": 70,
+          "effects": [
+            {"op": "damage", "amount": 5, "target": "player"}
+          ]
+        },
+        {
+          "name": "dodge",
+          "type": "chance_based",
+          "weight": 30,
+          "effects": [
+            {"op": "apply_status", "status_id": "dexterity", "stacks": 1, "target": "self"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slime_boss",
+      "name": "史莱姆王",
+      "max_health": 150,
+      "art_path": "res://content/art/enemies/slime_boss.png",
+      "ai_scene_path": "res://content/enemies/slime/slime_boss_ai.tscn",
+      "tags": ["boss"],
+      "intents": [
+        {
+          "name": "slam",
+          "type": "chance_based",
+          "weight": 50,
+          "effects": [
+            {"op": "damage", "amount": 18, "target": "player"},
+            {"op": "apply_status", "status_id": "vulnerable", "stacks": 2, "target": "player"}
+          ]
+        },
+        {
+          "name": "split",
+          "type": "conditional",
+          "condition": "health_percentage < 0.5",
+          "effects": [
+            {"op": "heal", "amount": 10, "target": "self"}
+          ]
+        }
+      ]
+    }
+  ],
+  "encounters": [
+    {
+      "id": "act1_crab_single",
+      "enemies": ["crab"],
+      "weight": 3,
+      "tags": ["common"],
+      "floor_range": {"min": 0, "max": 5}
+    },
+    {
+      "id": "act1_bat_pair",
+      "enemies": ["bat", "bat"],
+      "weight": 2,
+      "tags": ["common"],
+      "floor_range": {"min": 1, "max": 6}
+    },
+    {
+      "id": "act1_mixed",
+      "enemies": ["crab", "bat"],
+      "weight": 2,
+      "tags": ["common"],
+      "floor_range": {"min": 2, "max": 8}
+    },
+    {
+      "id": "act1_boss_slime",
+      "enemies": ["slime_boss"],
+      "weight": 1,
+      "tags": ["boss"],
+      "floor_range": {"min": 9, "max": 10}
+    }
+  ]
+}

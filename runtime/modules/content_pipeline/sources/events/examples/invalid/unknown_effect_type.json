@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "events": [
+    {
+      "id": "event_invalid",
+      "title": "无效事件",
+      "description": "使用了不存在的效果类型",
+      "options": [
+        {
+          "label": "无效选项",
+          "effect": "unknown_effect_type"
+        }
+      ]
+    }
+  ]
+}

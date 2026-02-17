@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "enemies": [
+    {
+      "name": "无效敌人",
+      "max_health": 10
+    }
+  ]
+}

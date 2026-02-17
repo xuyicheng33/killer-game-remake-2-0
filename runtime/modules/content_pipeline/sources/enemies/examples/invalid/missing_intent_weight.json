@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "enemies": [
+    {
+      "id": "crab",
+      "name": "小蟹",
+      "max_health": 10,
+      "intents": [
+        {
+          "name": "attack",
+          "type": "chance_based",
+          "effects": [
+            {"op": "damage", "amount": 7, "target": "player"}
+          ]
+        }
+      ]
+    }
+  ]
+}

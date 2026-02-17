@@ -1,4 +1,13 @@
-# Relic Source Placeholder
+# Relic Source Files
 
-This directory is reserved for relic content source files in later phases.
-Use schema definitions in `docs/contracts/content_pipeline_schema.md`.
+遗物内容源文件目录。
+
+## Schema
+参考：`runtime/modules/content_pipeline/schemas/relic_schema.json`
+
+## 样例文件
+- `examples/common_relics.json` - 常见遗物配置
+- `examples/invalid/` - 反例（验证错误检测）
+
+## 导入器
+Phase 7 将实现遗物导入器，将 JSON 转换为 RelicData 资源。

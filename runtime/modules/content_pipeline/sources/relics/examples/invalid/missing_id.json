@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "relics": [
+    {
+      "title": "无ID遗物",
+      "description": "缺少必需字段 id"
+    }
+  ]
+}

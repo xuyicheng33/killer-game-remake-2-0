@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Event Data Schema",
+  "description": "事件数据定义 schema",
+  "type": "object",
+  "required": ["schema_version", "events"],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "description": "Schema 版本号",
+      "minimum": 1,
+      "default": 1
+    },
+    "events": {
+      "type": "array",
+      "description": "事件定义列表",
+      "items": {
+        "$ref": "#/definitions/event"
+      },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "event": {
+      "type": "object",
+      "required": ["id", "title", "description", "options"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件唯一标识符",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "title": {
+          "type": "string",
+          "description": "事件标题",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "description": {
+          "type": "string",
+          "description": "事件描述文本",
+          "maxLength": 1024
+        },
+        "art_path": {
+          "type": "string",
+          "description": "事件背景图片资源路径",
+          "pattern": "^res://"
+        },
+        "options": {
+          "type": "array",
+          "description": "事件选项列表",
+          "items": {
+            "$ref": "#/definitions/option"
+          },
+          "minItems": 1,
+          "maxItems": 4
+        },
+        "tags": {
+          "type": "array",
+          "description": "事件标签",
+          "items": {
+            "type": "string",
+            "enum": ["common", "rare", "special"]
+          }
+        },
+        "requires_relic": {
+          "type": "string",
+          "description": "需要特定遗物才能触发"
+        },
+        "excludes_relics": {
+          "type": "array",
+          "description": "拥有这些遗物时不会触发",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "option": {
+      "type": "object",
+      "required": ["label", "effect"],
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "选项显示文本",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "effect": {
+          "type": "string",
+          "description": "效果类型",
+          "enum": [
+            "none",
+            "gold",
+            "heal",
+            "gold_for_hp",
+            "add_card",
+            "add_card_for_hp",
+            "buy_card",
+            "upgrade_card",
+            "upgrade_for_hp",
+            "remove_card",
+            "heal_for_gold",
+            "max_hp",
+            "cards_for_hp"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "description": "数值参数（gold/heal/max_hp 等效果使用）"
+        },
+        "hp": {
+          "type": "integer",
+          "description": "生命值参数（hp 相关效果使用）",
+          "minimum": 0
+        },
+        "gold": {
+          "type": "integer",
+          "description": "金币参数（gold 相关效果使用）"
+        },
+        "cost": {
+          "type": "integer",
+          "description": "消耗金币（buy_card 效果使用）",
+          "minimum": 0
+        },
+        "heal": {
+          "type": "integer",
+          "description": "恢复量（heal_for_gold 效果使用）",
+          "minimum": 0
+        },
+        "count": {
+          "type": "integer",
+          "description": "数量（cards_for_hp 效果使用）",
+          "minimum": 1,
+          "default": 1
+        },
+        "requires_gold": {
+          "type": "integer",
+          "description": "选择此选项需要的金币",
+          "minimum": 0
+        },
+        "requires_hp_percentage": {
+          "type": "number",
+          "description": "选择此选项需要的最低生命百分比",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false,
+      "dependencies": {
+        "value": {
+          "properties": {
+            "effect": {
+              "enum": ["gold", "heal", "max_hp"]
+            }
+          }
+        },
+        "hp": {
+          "properties": {
+            "effect": {
+              "enum": ["gold_for_hp", "add_card_for_hp", "upgrade_for_hp", "cards_for_hp"]
+            }
+          }
+        },
+        "cost": {
+          "properties": {
+            "effect": {
+              "enum": ["buy_card"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

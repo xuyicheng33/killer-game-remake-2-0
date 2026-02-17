@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "enemies": [
+    {
+      "id": "invalid-id-format",
+      "name": "格式错误",
+      "max_health": 10
+    }
+  ]
+}

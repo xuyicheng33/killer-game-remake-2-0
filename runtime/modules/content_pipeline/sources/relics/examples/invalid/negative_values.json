@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "relics": [
+    {
+      "id": "negative_relic",
+      "title": "负面遗物",
+      "effects": {
+        "on_battle_start_heal": -5
+      }
+    }
+  ]
+}

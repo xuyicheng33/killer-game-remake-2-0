@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "relics": [
+    {
+      "id": "burning_blood",
+      "title": "燃烧之血",
+      "description": "战斗结束时，回复 6 点生命。",
+      "art_path": "res://content/art/relics/burning_blood.png",
+      "rarity": "starter",
+      "starter": true,
+      "effects": {
+        "on_battle_start_heal": 0
+      },
+      "tags": ["starter"]
+    },
+    {
+      "id": "red_skull",
+      "title": "红骷髅",
+      "description": "生命值低于 50% 时，获得 3 点力量。",
+      "art_path": "res://content/art/relics/red_skull.png",
+      "rarity": "common",
+      "starter": false,
+      "effects": {
+        "on_battle_start_heal": 0
+      },
+      "tags": ["obtainable"]
+    },
+    {
+      "id": "golden_idol",
+      "title": "黄金神像",
+      "description": "每打出 3 张牌，获得 5 金币。",
+      "art_path": "res://content/art/relics/golden_idol.png",
+      "rarity": "rare",
+      "effects": {
+        "on_card_played_gold": 5,
+        "card_play_interval": 3
+      },
+      "tags": ["obtainable"]
+    },
+    {
+      "id": "thorns_potion",
+      "title": "荆棘护符",
+      "description": "格挡时对攻击者造成 3 点伤害。",
+      "art_path": "res://content/art/relics/thorns_potion.png",
+      "rarity": "uncommon",
+      "effects": {
+        "on_player_hit_block": 3
+      },
+      "tags": ["obtainable"]
+    },
+    {
+      "id": "heart_of_stone",
+      "title": "石之心",
+      "description": "战斗开始时，获得 10 点格挡。",
+      "art_path": "res://content/art/relics/heart_of_stone.png",
+      "rarity": "boss",
+      "effects": {},
+      "tags": ["special"]
+    }
+  ]
+}

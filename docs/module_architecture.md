@@ -27,7 +27,7 @@
 | `relic_potion` | `runtime/modules/relic_potion/relic_potion_system.gd` | 遗物触发与药水使用 | 部分 |
 | `persistence` | `runtime/modules/persistence/save_service.gd` | 存档/读档/版本校验 | 已实现（最小） |
 | `seed_replay` | `runtime/modules/seed_replay/README.md` | 历史命名占位目录 | 占位 |
-| `content_pipeline` | `dev/tools/content_import_cards.py` | 卡牌导入校验与生成 | 部分 |
+| `content_pipeline` | `dev/tools/content_import_cards.py` + `schemas/*.json` | 卡牌导入校验与生成；enemy/relic/event schema 定义 | 部分 |
 | `ui_shell` | `runtime/modules/ui_shell/{viewmodel,adapter}/*.gd` + `runtime/scenes/ui/*.gd` | UI 展示与交互壳层 | 部分 |
 
 ## 3. 依赖方向（当前可见）
