@@ -87,21 +87,49 @@
       "enemies": ["crab"],
       "weight": 3,
       "tags": ["common"],
-      "floor_range": {"min": 0, "max": 5}
+      "floor_range": {"min": 0, "max": 3}
+    },
+    {
+      "id": "act1_bat_single",
+      "enemies": ["bat"],
+      "weight": 2,
+      "tags": ["common"],
+      "floor_range": {"min": 0, "max": 3}
+    },
+    {
+      "id": "act1_crab_pair",
+      "enemies": ["crab", "crab"],
+      "weight": 2,
+      "tags": ["common"],
+      "floor_range": {"min": 2, "max": 5}
     },
     {
       "id": "act1_bat_pair",
       "enemies": ["bat", "bat"],
-      "weight": 2,
+      "weight": 3,
       "tags": ["common"],
       "floor_range": {"min": 1, "max": 6}
     },
     {
       "id": "act1_mixed",
       "enemies": ["crab", "bat"],
-      "weight": 2,
+      "weight": 3,
       "tags": ["common"],
       "floor_range": {"min": 2, "max": 8}
+    },
+    {
+      "id": "act1_triple_bat",
+      "enemies": ["bat", "bat", "bat"],
+      "weight": 1,
+      "tags": ["common"],
+      "floor_range": {"min": 4, "max": 8}
+    },
+    {
+      "id": "act1_crab_bat_crab",
+      "enemies": ["crab", "bat", "crab"],
+      "weight": 1,
+      "tags": ["common"],
+      "floor_range": {"min": 5, "max": 8}
     },
     {
       "id": "act1_boss_slime",

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cahno8aso5net"]
+[gd_scene load_steps=17 format=3 uid="uid://cahno8aso5net"]
 
 [ext_resource type="Script" path="res://runtime/scenes/battle/battle.gd" id="1_4s751"]
 [ext_resource type="Texture2D" uid="uid://cp4iq5fd6j8be" path="res://content/art/background.png" id="1_ybkl6"]
@@ -9,10 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://dwt63vvppukag" path="res://runtime/scenes/card_target_selector/card_target_selector.tscn" id="3_vyv1n"]
 [ext_resource type="Script" path="res://runtime/scenes/enemy/enemy_handler.gd" id="4_41vpn"]
 [ext_resource type="Resource" uid="uid://sbkc4o401k4l" path="res://content/characters/warrior/warrior.tres" id="4_fwb8a"]
-[ext_resource type="Resource" uid="uid://bnmpwl3k8qb8n" path="res://content/enemies/crab/crab_enemy.tres" id="5_5flmk"]
 [ext_resource type="Script" path="res://runtime/scenes/ui/battle_ui.gd" id="7_18vit"]
 [ext_resource type="Script" path="res://runtime/scenes/player/player_handler.gd" id="8_3di7i"]
-[ext_resource type="Resource" uid="uid://bbo24od4aavfj" path="res://content/enemies/bat/bat_enemy.tres" id="8_d4c2d"]
 [ext_resource type="PackedScene" uid="uid://bnbwu7pkbrwox" path="res://runtime/scenes/ui/mana_ui.tscn" id="11_2vu01"]
 [ext_resource type="PackedScene" uid="uid://chry0sgk7t0yf" path="res://runtime/scenes/ui/tooltip.tscn" id="12_qx741"]
 [ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="13_523u4"]
@@ -45,18 +43,6 @@ debug_color = Color(0, 0.6, 0.701961, 0.117647)
 
 [node name="EnemyHandler" type="Node2D" parent="."]
 script = ExtResource("4_41vpn")
-
-[node name="BatEnemy" parent="EnemyHandler" instance=ExtResource("2_02s5s")]
-position = Vector2(1305, 465)
-stats = ExtResource("8_d4c2d")
-
-[node name="CrabEnemy" parent="EnemyHandler" instance=ExtResource("2_02s5s")]
-position = Vector2(1538, 600)
-stats = ExtResource("5_5flmk")
-
-[node name="BatEnemy2" parent="EnemyHandler" instance=ExtResource("2_02s5s")]
-position = Vector2(1755, 465)
-stats = ExtResource("8_d4c2d")
 
 [node name="Player" parent="." instance=ExtResource("3_dpj45")]
 position = Vector2(338, 600)

@@ -88,11 +88,12 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 	_dispatch_next_route(command_result)
 
 
-func _open_battle() -> void:
+func _open_battle(encounter_id: String = "") -> void:
 	_clear_scene_host()
 	relic_potion_system.start_battle()
 	var battle_scene := BATTLE_SCENE.instantiate()
 	battle_scene.set("runtime_stats", run_state.player_stats)
+	battle_scene.set("encounter_id", encounter_id)
 	scene_host.add_child(battle_scene)
 
 
@@ -180,7 +181,8 @@ func _dispatch_next_route(command_result: Dictionary) -> void:
 	run_flow_service.apply_route_context(command_result)
 	match next_route:
 		RunRouteDispatcher.ROUTE_BATTLE:
-			_open_battle()
+			var enc_id := str(command_result.get("encounter_id", ""))
+			_open_battle(enc_id)
 		RunRouteDispatcher.ROUTE_REWARD:
 			_open_reward(run_flow_service.reward_gold_for(command_result))
 		RunRouteDispatcher.ROUTE_REST:

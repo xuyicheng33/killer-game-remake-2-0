@@ -1,11 +1,15 @@
 extends Node2D
 
 const BATTLE_PHASE_STATE_MACHINE_SCRIPT := preload("res://runtime/modules/battle_loop/battle_phase_state_machine.gd")
+const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
+const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
+const ENCOUNTER_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/encounter_registry.gd")
 const PHASE_LOG_LIMIT := 8
 
 @export var char_stats: CharacterStats
 @export var music: AudioStream
 @export var runtime_stats: CharacterStats
+@export var encounter_id: String = ""
 
 @onready var battle_ui: BattleUI = $BattleUI
 @onready var player_handler: PlayerHandler = $PlayerHandler
@@ -54,8 +58,44 @@ func start_battle(stats: CharacterStats) -> void:
 	_battle_ended = false
 	_battle_setup_done = false
 	_phase_logs.clear()
+	_spawn_enemies()
 	enemy_handler.reset_enemy_actions()
 	_battle_phase_machine.start()
+
+
+func _spawn_enemies() -> void:
+	for child in enemy_handler.get_children():
+		child.queue_free()
+	
+	var enemy_ids: Array[String] = []
+	
+	if not encounter_id.is_empty():
+		var encounter := ENCOUNTER_REGISTRY_SCRIPT.get_encounter_by_id(encounter_id)
+		enemy_ids = ENCOUNTER_REGISTRY_SCRIPT.get_enemy_ids_for_encounter(encounter)
+	
+	if enemy_ids.is_empty():
+		enemy_ids = ["crab", "bat"]
+	
+	var enemy_count := enemy_ids.size()
+	var viewport_width := get_viewport_rect().size.x
+	var start_x := viewport_width * 0.6
+	var spacing := viewport_width * 0.12
+	var base_y := 530.0
+	
+	for i in enemy_count:
+		var enemy_id := enemy_ids[i]
+		var enemy_stats: EnemyStats = ENEMY_REGISTRY_SCRIPT.get_enemy_stats(enemy_id)
+		if enemy_stats == null:
+			push_warning("battle.gd: failed to load enemy stats for '%s'" % enemy_id)
+			continue
+		
+		var enemy: Enemy = ENEMY_SCENE.instantiate() as Enemy
+		enemy.stats = enemy_stats
+		
+		var offset_x := (i - (enemy_count - 1) / 2.0) * spacing
+		enemy.position = Vector2(start_x + offset_x, base_y + randf_range(-30, 30))
+		
+		enemy_handler.add_child(enemy)
 
 
 func _on_enemies_child_order_changed() -> void:

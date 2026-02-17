@@ -3,6 +3,8 @@ extends RefCounted
 
 const ROUTE_DISPATCHER_SCRIPT := preload("res://runtime/modules/run_flow/route_dispatcher.gd")
 const REWARD_GENERATOR_SCRIPT := preload("res://runtime/modules/reward_economy/reward_generator.gd")
+const ENCOUNTER_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/encounter_registry.gd")
+const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
 
 var route_dispatcher: RunRouteDispatcher
 
@@ -38,8 +40,13 @@ func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
 		"reward_gold": node.reward_gold,
 	}
 
+	if next_route == RunRouteDispatcher.ROUTE_BATTLE:
+		var tags := ENCOUNTER_REGISTRY_SCRIPT.get_node_type_tags(node.type)
+		var rng_key := "encounter:%s:%s" % [run_state.seed, node.id]
+		var encounter := ENCOUNTER_REGISTRY_SCRIPT.pick_encounter(run_state.floor, tags, rng_key)
+		payload["encounter_id"] = str(encounter.get("id", ""))
+
 	if next_route == RunRouteDispatcher.ROUTE_MAP:
-		# Placeholder/default nodes keep old behavior: advance floor then return map.
 		run_state.next_floor()
 		payload["advanced_floor"] = true
 
