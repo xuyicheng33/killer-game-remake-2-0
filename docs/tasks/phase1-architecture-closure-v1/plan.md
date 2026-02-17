@@ -14,7 +14,7 @@
 
 1. 模块职责与依赖边界清晰可执行。
 2. 文档与代码现状对齐。
-3. 统一命名与目录策略（重点：`persistence / save_seed_replay / run_flow`）。
+3. 统一命名与目录策略（重点：`persistence / seed_replay / run_flow`）。
 4. 输出 Phase 2 前置任务清单。
 
 ## 严格边界
@@ -31,7 +31,7 @@
 ## 代码 vs 文档差异清单（先行盘点）
 
 1. `docs/module_architecture.md` 仍以 `references/tutorial_baseline/` 为描述基线，但当前运行入口在 `scenes/app/app.gd`，并且真实存档实现在 `modules/persistence/save_service.gd`。
-2. `docs/module_architecture.md` 与 `modules/README.md` 均将 `save_seed_replay` 视作存档主模块，但代码中 `save_seed_replay` 无实现，真实能力分布在 `modules/persistence` + `global/run_rng.gd` + `global/repro_log.gd`。
+2. `docs/module_architecture.md` 与 `modules/README.md` 均将 `seed_replay` 视作存档主模块，但代码中 `seed_replay` 无实现，真实能力分布在 `modules/persistence` + `global/run_rng.gd` + `global/repro_log.gd`。
 3. `docs/repo_structure.md` 未体现 `modules/run_flow` 空目录和 `modules/persistence` 已落地状态，目录策略缺少“当前 vs 目标”的分层描述。
 4. `modules/run_meta/README.md` 为 TODO，但 `modules/run_meta/run_state.gd` 已承载核心运行态。
 5. `modules/ui_shell/README.md` 为 TODO，但 `scenes/ui/*.gd` 已实际承接 UI 壳层。
@@ -48,7 +48,7 @@
 - `modules/README.md`
 - `modules/run_meta/README.md`
 - `modules/run_flow/README.md`
-- `modules/save_seed_replay/README.md`
+- `modules/seed_replay/README.md`
 - `modules/ui_shell/README.md`
 
 ## 实施步骤
@@ -73,7 +73,7 @@
 ## 风险与回滚
 
 - 风险：
-  - 命名决策若未冻结，后续任务会重复分叉 `save_seed_replay` 与 `persistence`。
+  - 命名决策若未冻结，后续任务会重复分叉 `seed_replay` 与 `persistence`。
   - 边界规则写得过理想化会与代码脱节，导致任务拆分失真。
 - 回滚：
   - 本任务仅文档变更，可直接回滚对应文档文件。

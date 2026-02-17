@@ -28,7 +28,7 @@
 ## 2026-02-15 结构重构补充
 
 - 目录已重构为 `references/tutorial_baseline` 与 `references/slay_the_spire_cn`，参考资料与运行代码分离更清晰。
-- 当前最大功能缺口仍在 `effect_engine/buff_system/relic_potion/reward_economy/save_seed_replay`。
+- 当前最大功能缺口仍在 `effect_engine/buff_system/relic_potion/reward_economy/seed_replay`。
 - 已新增模块骨架目录，后续任务可按模块独立派发与验收。
 
 ## 2026-02-17 Phase6 UI Shell 化调研

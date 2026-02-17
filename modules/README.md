@@ -17,7 +17,7 @@
 - `reward_economy`：奖励与商店供货规则
 - `relic_potion`：遗物触发与药水入口
 - `persistence`：存档读档（已落地）
-- `save_seed_replay`：历史命名占位（当前无实现）
+- `seed_replay`：历史命名占位（当前无实现）
 - `content_pipeline`：内容导入/校验（cards 最小链路）
 - `ui_shell`：UI 壳层（实现当前在 `scenes/ui`）
 
@@ -30,5 +30,5 @@
 ## 命名收口
 
 1. 存档主模块统一使用 `persistence`。
-2. `save_seed_replay` 不新增实现，等待后续阶段做并入或移除决策。
+2. `seed_replay` 不新增实现，等待后续阶段做并入或移除决策。
 3. `run_flow` 保留为后续流程编排落地目录。

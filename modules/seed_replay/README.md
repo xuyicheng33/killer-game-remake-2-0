@@ -1,4 +1,4 @@
-# save_seed_replay
+# seed_replay
 
 状态：
 - 历史命名占位（当前无 `.gd` 实现）

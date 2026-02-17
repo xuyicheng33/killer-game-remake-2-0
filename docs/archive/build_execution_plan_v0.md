@@ -70,7 +70,7 @@
 - 运行验收：进商店买一张卡，再进战斗确认已加入牌组。
 
 ## T11 `feat-save-seed-v1`
-- 模块：`save_seed_replay`
+- 模块：`seed_replay`
 - 目标：实现存档/读档与固定种子开局。
 - 预期结果：主菜单可“继续游戏”；相同种子生成一致地图与首战敌人。
 - 运行验收：保存后重开恢复进度；输入同种子两次开局对比结果一致。
@@ -88,7 +88,7 @@
 - 运行验收：完整跑通一局 Act1（普通难度）。
 
 ## T14 `feat-regression-tests-v1`
-- 模块：`battle_loop + effect_engine + save_seed_replay`
+- 模块：`battle_loop + effect_engine + seed_replay`
 - 目标：加入关键回归测试（状态叠加、结算顺序、种子复现、存档兼容）。
 - 预期结果：每次改动可快速验证核心机制不回退。
 - 运行验收：执行测试命令全部通过。

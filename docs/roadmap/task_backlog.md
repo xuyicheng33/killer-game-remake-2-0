@@ -20,8 +20,8 @@
 | 7 | `feat-map-graph-progression-v1` | B | `map_event` | `L2` | `blocked` | B1 |
 | 8 | `feat-rest-shop-event-v1` | B | `map_event` | `L2` | `blocked` | B2 |
 | 9 | `feat-relic-potion-core-v1` | B | `relic_potion` | `L2` | `blocked` | A4, B1 |
-| 10 | `feat-save-load-v1` | C | `save_seed_replay` | `L2` | `blocked` | B阶段完成 |
-| 11 | `feat-seed-deterministic-v1` | C | `save_seed_replay` | `L2` | `blocked` | C1 |
+| 10 | `feat-save-load-v1` | C | `seed_replay` | `L2` | `blocked` | B阶段完成 |
+| 11 | `feat-seed-deterministic-v1` | C | `seed_replay` | `L2` | `blocked` | C1 |
 | 12 | `feat-content-pipeline-v1` | C | `content_pipeline` | `L1/L2` | `blocked` | C1, C2 |
 | 13 | `art-ui-theme-rebuild-v1` | D | `ui_shell` | `L1` | `blocked` | C阶段完成 |
 | 14 | `art-character-enemy-pack-v1` | D | `ui_shell` | `L1` | `blocked` | D1 |

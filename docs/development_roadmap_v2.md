@@ -6,7 +6,7 @@
 
 - Phase A：核心规则内核（`battle_loop/card_system/effect_engine/buff_system`）
 - Phase B：一局流程（`run_meta/map_event/reward_economy/relic_potion`）
-- Phase C：可复现工程化（`save_seed_replay/content_pipeline`）
+- Phase C：可复现工程化（`seed_replay/content_pipeline`）
 - Phase D：资源全量替换与UI重构（`ui_shell` + 资源管线）
 
 ---

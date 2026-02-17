@@ -4,7 +4,7 @@
 
 - 任务 ID：`feat-seed-deterministic-v1`
 - 任务级别：`L2`
-- 主模块：`save_seed_replay`（按本任务白名单落地）
+- 主模块：`seed_replay`（按本任务白名单落地）
 - 负责人：Codex
 - 日期：2026-02-16
 

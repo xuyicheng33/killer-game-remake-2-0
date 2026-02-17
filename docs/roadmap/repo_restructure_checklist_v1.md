@@ -21,7 +21,7 @@
 
 ## P2（中风险，需任务化）
 
-- [ ] 命名收口：`modules/save_seed_replay` 并入 `modules/persistence` 或正式改名 `seed_replay`
+- [ ] 命名收口：`modules/seed_replay` 并入 `modules/persistence` 或正式改名 `seed_replay`
 - [ ] `scenes/ui` 持续迁移到 `modules/ui_shell`（先 battle_ui，再 hand/tooltip 等）
 - [ ] 统一内容管线输入/输出目录（sources/reports/generated）
 

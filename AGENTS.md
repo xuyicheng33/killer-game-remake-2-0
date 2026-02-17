@@ -42,7 +42,7 @@
 - `map_event`：地图节点、问号事件、路线推进
 - `reward_economy`：金币/奖励三选一/商店/移卡
 - `relic_potion`：遗物触发与药水使用
-- `save_seed_replay`：存档、随机数、复盘
+- `seed_replay`：存档、随机数、复盘
 - `content_pipeline`：数据表与平衡迭代
 - `ui_shell`：UI 展示层（不承载核心规则）
 

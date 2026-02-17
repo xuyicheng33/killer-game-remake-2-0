@@ -80,7 +80,7 @@
 
 关键动作：
 
-1. 明确 `persistence` 与 `save_seed_replay` 的最终关系（建议合并为一个主模块）。
+1. 明确 `persistence` 与 `seed_replay` 的最终关系（建议合并为一个主模块）。
 2. 给每个模块补充 `Contract`（输入、输出、状态变更责任）。
 3. 清理空壳目录和“临时占位”目录命名。
 
@@ -255,7 +255,7 @@
 | `refactor-runflow-service-v1` | `run_flow` | 抽离节点与楼层推进服务 | 场景不直接调用 `next_floor` |
 | `refactor-shop-service-v1` | `reward_economy` | 商店购买/删卡搬入服务层 | `shop_screen` 无直接金币改写 |
 | `refactor-event-service-v2` | `map_event` | 事件效果改命令执行 | 事件返回结构化结果对象 |
-| `refactor-save-serializer-v1` | `save_seed_replay` | 拆分存档序列化 | 存档往返测试通过 |
+| `refactor-save-serializer-v1` | `seed_replay` | 拆分存档序列化 | 存档往返测试通过 |
 | `unify-card-pool-source-v1` | `content_pipeline` | 奖励池统一数据源 | 硬编码卡池移除 |
 | `battle-context-injection-v1` | `battle_loop` | 弱化静态单例依赖 | 战斗实例化可独立测试 |
 
@@ -289,7 +289,7 @@
 
 ## 8. 需要你拍板的决策
 
-1. `persistence` 与 `save_seed_replay` 最终是合并还是并存？
+1. `persistence` 与 `seed_replay` 最终是合并还是并存？
 2. 前 3 周是否以“结构稳定优先”，暂缓新增玩法需求？
 3. 是否同意先执行 Phase 1 + Phase 2 的任务卡包派发？
 

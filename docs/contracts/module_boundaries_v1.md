@@ -28,7 +28,7 @@
 
 1. `ui_shell` 禁止直接调用 `effect_engine`、`buff_system`、`enemy_intent` 执行规则；允许通过 viewmodel 读取只读投影（如状态徽章）。
 2. 禁止新增模块对 `scenes/*` 的直接依赖（类型或脚本）；存量依赖列入迁移清单，按 Phase 2+ 逐步清理。
-3. 禁止新增 `save_seed_replay` 与 `persistence` 双写存档逻辑。
+3. 禁止新增 `seed_replay` 与 `persistence` 双写存档逻辑。
 4. 禁止在 `run_meta` 之外新增“局内全局状态真源”。
 5. 禁止新增“跨模块随意写 `RunState` 字段”的隐式入口（必须通过模块公开接口）。
 
@@ -61,7 +61,7 @@
 - 输出：`RunState.changed` 事件、可读运行态字段、地图可达状态。
 - 状态所有权：拥有 `RunState` 主状态（唯一真源）。
 - 允许依赖：`map_event`（用于地图初始化）。
-- 禁止依赖：`scenes/*`、`ui_shell`、`save_seed_replay`。
+- 禁止依赖：`scenes/*`、`ui_shell`、`seed_replay`。
 - 当前实现度：`部分`（`run_state.gd` 已可用，但流程编排尚在场景层）。
 
 ## `run_flow`
@@ -162,10 +162,10 @@
 - 输出：`save/load/clear/has_save` 结果字典、恢复后的 `RunState` 与 RNG state。
 - 状态所有权：拥有持久化 schema（`save_version`）与文件格式。
 - 允许依赖：`run_meta`、`map_event`（地图回填）、`global/run_rng.gd`。
-- 禁止依赖：`ui_shell`、`battle_loop`、`save_seed_replay`。
+- 禁止依赖：`ui_shell`、`battle_loop`、`seed_replay`。
 - 当前实现度：`已实现（最小可用）`。
 
-## `save_seed_replay`
+## `seed_replay`
 
 - 职责：命名上意图承载“存档/seed/replay”，但当前无代码实现。
 - 输入：无。
@@ -199,7 +199,7 @@
 ## 4. 命名与归属决策（Phase 1 基线）
 
 1. `persistence`：保留为唯一存档模块名（当前真实实现已在该目录）。
-2. `save_seed_replay`：定义为过渡占位名，Phase 2 前不新增实现；Phase 4 决定是并入 `persistence` 子域还是删除目录。
+2. `seed_replay`：定义为过渡占位名，Phase 2 前不新增实现；Phase 4 决定是并入 `persistence` 子域还是删除目录。
 3. `run_flow`：作为应用编排模块的目标目录名，后续承接 `scenes/app/app.gd` 的流程编排职责。
 
 ## 5. Phase 2 前置清单（可执行）

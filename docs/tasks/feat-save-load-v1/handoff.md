@@ -3,7 +3,7 @@
 ## 基本信息
 
 - 任务 ID：`feat-save-load-v1`
-- 主模块：`save_seed_replay`
+- 主模块：`seed_replay`
 - 提交人：Codex
 - 日期：2026-02-16
 
@@ -54,4 +54,4 @@
 
 ## 建议提交信息（审批后实现完成再用）
 
-- `feat(save_seed_replay): add single-slot local save/load with version guard (feat-save-load-v1)`
+- `feat(seed_replay): add single-slot local save/load with version guard (feat-save-load-v1)`

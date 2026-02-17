@@ -3,7 +3,7 @@
 ## 基本信息
 
 - 任务 ID：`feat-seed-deterministic-v1`
-- 主模块：`save_seed_replay`
+- 主模块：`seed_replay`
 - 提交人：Codex
 - 日期：2026-02-16
 
@@ -68,4 +68,4 @@
 
 ## 建议提交信息
 
-- `feat(save_seed_replay): add deterministic seed flow v1 (feat-seed-deterministic-v1)`
+- `feat(seed_replay): add deterministic seed flow v1 (feat-seed-deterministic-v1)`

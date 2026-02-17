@@ -14,7 +14,7 @@
 未完成（主缺口）：
 - `battle_loop` 仍为 legacy 编排，缺明确阶段状态机。
 - `effect_engine` 未队列化，`buff_system` 基本缺失。
-- `reward_economy`、`relic_potion`、`save_seed_replay`、`content_pipeline` 仍处于骨架阶段。
+- `reward_economy`、`relic_potion`、`seed_replay`、`content_pipeline` 仍处于骨架阶段。
 - `ui_shell` 视觉与资源仍是教程基线。
 
 ## 3. 拆分原则

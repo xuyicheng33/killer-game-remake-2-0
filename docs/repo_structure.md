@@ -12,7 +12,7 @@
 │   ├── persistence/           # SaveService（已实现）
 │   ├── run_flow/              # 应用编排服务目录（map orchestration + route dispatcher + flow_context + shop/event/rest/battle）
 │   ├── ui_shell/              # UI 壳层（viewmodel + adapter）
-│   ├── save_seed_replay/      # 占位目录（无实现）
+│   ├── seed_replay/      # 占位目录（无实现）
 │   └── ...                    # battle/card/effect/buff/enemy/map/reward/relic/content/ui
 ├── global/                    # 全局基础能力（events/run_rng/repro_log 等）
 ├── tools/                     # 工具脚本（workflow/content import/ui_shell + run_flow contract checks）
@@ -52,7 +52,7 @@
 ## 3. 命名与目录决策（本次收口）
 
 1. `persistence`：确定为存档主目录与主命名。
-2. `save_seed_replay`：判定为历史占位名，短期冻结，不再新增业务实现。
+2. `seed_replay`：判定为历史占位名，短期冻结，不再新增业务实现。
 3. `run_flow`：确定为流程编排目标目录，后续从 `scenes/app/app.gd` 迁入。
 
 ## 4. 迁移原则（严格执行）
@@ -61,7 +61,7 @@
 2. 任何迁移先有契约，再做代码移动（Contract First）。
 3. 单次任务最多处理一个主模块 + 少量接线，避免跨域雪崩。
 4. 场景层禁止新增核心规则写入点（旧点位按任务逐步清理）。
-5. `save_seed_replay` 与 `persistence` 禁止双轨并行实现，避免真源分裂。
+5. `seed_replay` 与 `persistence` 禁止双轨并行实现，避免真源分裂。
 
 ## 5. 后续清单（Phase 4 后）
 

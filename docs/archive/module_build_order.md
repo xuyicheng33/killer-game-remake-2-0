@@ -55,7 +55,7 @@
 - 节点推进与分支选择。
 - 事件系统最小子集（先做 10 个高频事件）。
 
-### Phase 6：`save_seed_replay` + `content_pipeline`
+### Phase 6：`seed_replay` + `content_pipeline`
 目标：保证可复现、可迭代、可平衡。
 
 最小验收：

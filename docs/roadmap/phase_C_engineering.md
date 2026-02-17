@@ -14,10 +14,10 @@
 ## C1 `feat-save-load-v1`
 
 - 级别：`L2`
-- 主模块：`save_seed_replay`
+- 主模块：`seed_replay`
 - 依赖：B 阶段完成
 - 关键改动路径：
-  - `modules/save_seed_replay/**`
+  - `modules/seed_replay/**`
   - `global/save_*.gd`（新建）
   - `scenes/menu/**`（新建或扩展）
   - `docs/contracts/run_state.md`
@@ -30,10 +30,10 @@
 ## C2 `feat-seed-deterministic-v1`
 
 - 级别：`L2`
-- 主模块：`save_seed_replay`
+- 主模块：`seed_replay`
 - 依赖：C1
 - 关键改动路径：
-  - `modules/save_seed_replay/**`
+  - `modules/seed_replay/**`
   - `modules/map_event/**`
   - `scenes/battle/**`
   - `global/rng_*.gd`（新建）

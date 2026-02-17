@@ -4,7 +4,7 @@
 
 - 任务 ID：`feat-save-load-v1`
 - 任务级别：`L2`
-- 主模块：`save_seed_replay`（落地白名单按本任务卡执行）
+- 主模块：`seed_replay`（落地白名单按本任务卡执行）
 - 负责人：Codex
 - 日期：2026-02-16
 

@@ -26,7 +26,7 @@
 | `reward_economy` | `modules/reward_economy/*.gd` | 奖励/商店生成与写回 | 部分 |
 | `relic_potion` | `modules/relic_potion/relic_potion_system.gd` | 遗物触发与药水使用 | 部分 |
 | `persistence` | `modules/persistence/save_service.gd` | 存档/读档/版本校验 | 已实现（最小） |
-| `save_seed_replay` | `modules/save_seed_replay/README.md` | 历史命名占位目录 | 占位 |
+| `seed_replay` | `modules/seed_replay/README.md` | 历史命名占位目录 | 占位 |
 | `content_pipeline` | `tools/content_import_cards.py` | 卡牌导入校验与生成 | 部分 |
 | `ui_shell` | `modules/ui_shell/{viewmodel,adapter}/*.gd` + `scenes/ui/*.gd` | UI 展示与交互壳层 | 部分 |
 
@@ -63,14 +63,14 @@
 
 1. `run_flow` 已承接地图节点进入、placeholder 跳转、shop/event/rest/battle/reward 路由决策，且通过 `flow_context` 承接跨页面流程上下文；`scenes/app/app.gd` 保留页面实例化与事件接线。
 2. `ui_shell` 已有首批实现（`viewmodel + adapter`），但 `battle_ui` 等其余 UI 仍在 `scenes/ui` 直连模块阶段。
-3. `save_seed_replay` 与 `persistence` 并存但只有后者有实现。
+3. `seed_replay` 与 `persistence` 并存但只有后者有实现。
 4. `scenes/app/app.gd` 已移除地图主流程写入（`enter_map_node`、占位 `next_floor`）与 `pending_*` 流程上下文字段，后续可继续收口 checkpoint/repro 触发细节。
 5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按“禁止新增、存量待迁移”处理。
 
 ## 5. 命名与归属收口（Phase 1 决议）
 
 1. `persistence` 为唯一存档模块名（当前真实实现目录）。
-2. `save_seed_replay` 仅保留过渡占位，不新增实现。
+2. `seed_replay` 仅保留过渡占位，不新增实现。
 3. `run_flow` 保留目录并定义为“应用服务编排层”的目标归属。
 
 ## 6. 变更规则（从本版本起）
