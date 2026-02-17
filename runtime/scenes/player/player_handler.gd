@@ -16,7 +16,7 @@ func _ready() -> void:
 func start_battle(char_stats: CharacterStats) -> void:
 	character = char_stats
 	character.draw_pile = character.deck.duplicate(true)
-	character.draw_pile.shuffle()
+	character.draw_pile.shuffle_with_rng("battle_start_shuffle")
 	character.discard = CardPile.new()
 	start_turn()
 
@@ -69,7 +69,7 @@ func reshuffle_deck_from_discard() -> void:
 	while not character.discard.empty():
 		character.draw_pile.add_card(character.discard.draw_card())
 
-	character.draw_pile.shuffle()
+	character.draw_pile.shuffle_with_rng("reshuffle_discard")
 
 
 func _on_card_played(card: Card) -> void:

@@ -40,8 +40,23 @@ func size() -> int:
 	return cards.size()
 
 
+## 使用全局随机洗牌（非确定性，不推荐用于局内玩法）
 func shuffle() -> void:
 	cards.shuffle()
+
+
+## 基于 RunRng 的确定性 Fisher-Yates 洗牌
+## stream_key 用于区分不同场景的随机流，避免串流干扰
+func shuffle_with_rng(stream_key: String) -> void:
+	if cards.size() <= 1:
+		return
+
+	# Fisher-Yates 洗牌：从后往前遍历，随机交换
+	for i in range(cards.size() - 1, 0, -1):
+		var j: int = RunRng.randi_range(stream_key, 0, i)
+		var tmp: Card = cards[i]
+		cards[i] = cards[j]
+		cards[j] = tmp
 
 
 func clear() -> void:
