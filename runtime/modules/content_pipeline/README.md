@@ -3,6 +3,8 @@
 Status:
 - C3 minimum usable path is implemented for cards.
 - Schema definitions ready for enemies/relics/events (R2 Phase 6).
+- Importers implemented for all content types (R2 Phase 7).
+- Gate integration ready (R2 Phase 8).
 
 Implemented in `feat-content-pipeline-v1`:
 - Card schema validation (required fields, enums, type checks, duplicate ID checks).
@@ -17,9 +19,40 @@ Added in `r2-phase06-content-schema-expansion-v1`:
 - Example data for all three content types (valid + invalid cases).
 - Unified error report format specification.
 
+Added in `r2-phase07-content-importers-expansion-v1`:
+- Enemy importer: `dev/tools/content_import_enemies.py`
+- Relic importer: `dev/tools/content_import_relics.py`
+- Event importer: `dev/tools/content_import_events.py`
+
+Added in `r2-phase08-content-pipeline-gate-integration-v1`:
+- Aggregate gate script: `dev/tools/content_pipeline_check.sh`
+- Dual-layer gate strategy documented.
+
 Not implemented in this task:
 - Full editor UI.
 - Enemy/relic/event import execution (Phase 7).
+
+## Gate Strategy
+
+### Dual-Layer Execution
+
+| Layer | Command | When | Duration |
+|-------|---------|------|----------|
+| Daily | `make workflow-check` | Every commit | ~2s |
+| Release | `bash dev/tools/content_pipeline_check.sh` | Before release | ~1.4s |
+
+### Content Pipeline Check
+```bash
+bash dev/tools/content_pipeline_check.sh
+```
+
+Runs all four importers:
+1. cards
+2. enemies
+3. relics
+4. events
+
+Reports output to `runtime/modules/content_pipeline/reports/`.
 
 ## Schema Documentation
 
@@ -33,9 +66,9 @@ See `schemas/README.md` for:
 | Type | Schema | Examples | Import Status |
 |------|--------|----------|---------------|
 | Cards | `card_schema.json` | `sources/cards/` | ✅ Implemented |
-| Enemies | `enemy_schema.json` | `sources/enemies/examples/` | ⏳ Phase 7 |
-| Relics | `relic_schema.json` | `sources/relics/examples/` | ⏳ Phase 7 |
-| Events | `event_schema.json` | `sources/events/examples/` | ⏳ Phase 7 |
+| Enemies | `enemy_schema.json` | `sources/enemies/examples/` | ✅ Implemented |
+| Relics | `relic_schema.json` | `sources/relics/examples/` | ✅ Implemented |
+| Events | `event_schema.json` | `sources/events/examples/` | ✅ Implemented |
 
 ## Commands
 
@@ -50,6 +83,29 @@ Default outputs:
 - `content/characters/warrior/cards/generated/*.tres`
 - `content/characters/warrior/warrior_starting_deck.tres`
 - `runtime/modules/content_pipeline/reports/card_import_report.json`
+
+### Enemy Import
+```bash
+python3 dev/tools/content_import_enemies.py \
+  --input runtime/modules/content_pipeline/sources/enemies/examples/act1_enemies.json
+```
+
+### Relic Import
+```bash
+python3 dev/tools/content_import_relics.py \
+  --input runtime/modules/content_pipeline/sources/relics/examples/common_relics.json
+```
+
+### Event Import
+```bash
+python3 dev/tools/content_import_events.py \
+  --input runtime/modules/content_pipeline/sources/events/examples/baseline_events.json
+```
+
+### All Content (Aggregate)
+```bash
+bash dev/tools/content_pipeline_check.sh
+```
 
 ## Error Report Format
 
