@@ -5,7 +5,8 @@ const MAP_GENERATOR_SCRIPT := preload("res://runtime/modules/map_event/map_gener
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
 
 const SAVE_PATH := "user://save_slot_1.json"
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
+const MIN_COMPAT_VERSION := 1  # 最低兼容版本，用于向后兼容读取
 
 
 static func has_save() -> bool:
@@ -51,9 +52,9 @@ static func load_run_state(base_stats: CharacterStats) -> Dictionary:
 
 	var payload: Dictionary = parser.data as Dictionary
 	var file_version: int = int(payload.get("save_version", -1))
-	if file_version != SAVE_VERSION:
+	if file_version < MIN_COMPAT_VERSION or file_version > SAVE_VERSION:
 		return _fail(
-			"存档版本不匹配：当前 %d，文件 %d。" % [SAVE_VERSION, file_version],
+			"存档版本不兼容：当前支持 v%d~v%d，文件 v%d。" % [MIN_COMPAT_VERSION, SAVE_VERSION, file_version],
 			"version_mismatch"
 		)
 
@@ -150,6 +151,7 @@ static func _serialize_player_stats(stats: CharacterStats) -> Dictionary:
 	data["block"] = stats.block
 	data["cards_per_turn"] = stats.cards_per_turn
 	data["deck"] = deck_data
+	data["statuses"] = stats.get_status_snapshot()
 	return data
 
 
@@ -188,6 +190,16 @@ static func _apply_player_stats(restored: RunState, stats_variant: Variant) -> v
 	stats.deck = new_deck
 	stats.draw_pile = CardPile.new()
 	stats.discard = CardPile.new()
+
+	# 恢复状态层（v2 新增字段，v1 存档无此字段时使用空字典默认值）
+	var statuses_variant: Variant = stats_data.get("statuses", {})
+	if typeof(statuses_variant) == TYPE_DICTIONARY:
+		var statuses_data: Dictionary = statuses_variant as Dictionary
+		for status_id: String in statuses_data:
+			var stacks: int = int(statuses_data.get(status_id, 0))
+			if stacks != 0:
+				stats.set_status(status_id, stacks)
+
 	stats.stats_changed.emit()
 
 

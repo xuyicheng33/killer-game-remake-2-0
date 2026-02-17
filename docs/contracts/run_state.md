@@ -1,4 +1,4 @@
-# RunState 契约（v0.3.0）
+# RunState 契约（v0.4.0）
 
 ## 目的
 
@@ -13,6 +13,7 @@
 | `floor` | `int` | 当前层数（从 0 开始） |
 | `gold` | `int` | 金币 |
 | `player_stats` | `CharacterStats` | 运行时玩家状态容器（含 `health/max_health/deck/draw_pile/discard` 等） |
+| `player_stats.statuses` | `Dictionary` | 玩家状态层快照（`strength/dexterity/vulnerable/weak/poison`，Phase 10 新增） |
 | `map_graph` | `MapGraphData` | 当前章节地图图结构（运行时对象） |
 | `map_current_node_id` | `String` | 当前已进入节点 ID |
 | `map_reachable_node_ids` | `PackedStringArray` | 当前可选择节点 ID 集合 |
@@ -49,11 +50,15 @@
 - 存档范围（单槽位最小可用）至少覆盖：
   - `seed` / `act` / `floor` / `gold`
   - `player_stats`：`health` / `max_health` / `deck`
+  - `player_stats.statuses`：状态层快照（`strength/dexterity/vulnerable/weak/poison`，Phase 10 新增）
   - 地图推进：`map_current_node_id` / `map_reachable_node_ids` / `map_visited_node_ids` / `map_graph`
   - `relic_capacity` / `potion_capacity` / `relics` / `potions`
 - 存档文件需包含 `save_version` 字段。
 - 版本不匹配时必须安全失败并给出提示，不允许崩溃或写坏当前运行态。
-- 当前范围不含“战斗中断点恢复”，仅保证恢复后可继续局外流程推进。
+- 当前范围不含"战斗中断点恢复"，仅保证恢复后可继续局外流程推进。
+- 版本兼容策略：
+  - v1 存档读取时，`statuses` 字段缺失则使用空字典默认值，不恢复任何状态层。
+  - v2 存档读取时，按 `statuses` 字典恢复各状态层数值。
 
 ## C2 固定种子约束（feat-seed-deterministic-v1）
 
@@ -67,6 +72,7 @@
 ## 兼容说明
 
 - 本版本新增遗物/药水字段，属于兼容性扩展（MINOR）。
+- Phase 10 新增玩家状态层字段（`player_stats.statuses`），属于兼容性扩展（MINOR）。
 - 旧存档无上述字段时，应使用默认值：
   - `map_current_node_id = ""`
   - `map_reachable_node_ids = []`
@@ -76,6 +82,7 @@
   - `potion_capacity = 2`
   - `relics = []`
   - `potions = []`
+  - `statuses = {}`（状态层为空）
 
 ## 变更规则
 
