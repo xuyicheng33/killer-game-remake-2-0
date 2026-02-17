@@ -41,7 +41,7 @@
    - `buff_system` -> `Enemy` / `Player`（`modules/buff_system/buff_system.gd:21`、`modules/buff_system/buff_system.gd:141`、`modules/buff_system/buff_system.gd:263`）
    - `enemy_intent` -> `EnemyAction`（`modules/enemy_intent/intent_rules.gd:13`）
 
-### 2.4 Phase 7 质量门禁（可脚本化）
+### 2.4 Phase 7/12 质量门禁（可脚本化）
 
 1. UI 壳层门禁：`dev/tools/ui_shell_contract_check.sh`
    - 禁止 `scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -49,8 +49,12 @@
 2. run_flow 契约门禁：`dev/tools/run_flow_contract_check.sh`
    - 路由常量 `ROUTE_*` 必须单点定义在 `modules/run_flow/route_dispatcher.gd`。
    - `next_route + payload` 关键键位必须稳定（map_flow/battle_flow 最小回归集）。
-3. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
-   - 默认串行执行上述两个脚本，作为提交前必过项。
+3. 生命周期契约门禁（Phase 12 新增）：`dev/tools/run_lifecycle_contract_check.sh`
+   - 禁止 `scenes/app/app.gd` 直接 preload/use `persistence/save_service.gd`、`run_rng.gd`、`repro_log.gd`。
+   - 强制 `app.gd` 通过 `run_flow_service.lifecycle_service` 调用 `start_new_run/try_load_saved_run/save_checkpoint`。
+   - 目的：防止后续回归把生命周期逻辑再次耦合到入口场景。
+4. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
+   - 默认串行执行上述三个脚本，作为提交前必过项。
 
 ## 3. 模块边界清单
 

@@ -134,5 +134,6 @@ echo "[workflow-check] running quality gates..."
 bash dev/tools/repo_structure_check.sh
 bash dev/tools/ui_shell_contract_check.sh
 bash dev/tools/run_flow_contract_check.sh
+bash dev/tools/run_lifecycle_contract_check.sh
 
 echo "[workflow-check] passed."

@@ -80,7 +80,7 @@
 2. 变更 `RunState` 字段或存档结构必须同步更新：`docs/contracts/run_state.md`。
 3. `runtime/scenes/app` 新增流程逻辑默认应落在 `run_flow`；如临时留在场景层，任务文档必须注明迁移计划。
 
-## 7. 质量门禁（Phase 7）
+## 7. 质量门禁（Phase 7/12）
 
 1. UI 壳层契约门禁：`bash dev/tools/ui_shell_contract_check.sh`
    - 拦截 `runtime/scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -89,5 +89,9 @@
 2. run_flow 契约门禁：`bash dev/tools/run_flow_contract_check.sh`
    - 校验 `ROUTE_*` 常量单点定义仍在 `route_dispatcher.gd`。
    - 校验 map/battle 关键 `next_route + payload` 键位不回归。
-3. 聚合入口：`make workflow-check TASK_ID=<task-id>`
+3. 生命周期契约门禁（Phase 12 新增）：`bash dev/tools/run_lifecycle_contract_check.sh`
+   - 禁止 `runtime/scenes/app/app.gd` 直接 preload/use `persistence/save_service.gd`、`run_rng.gd`、`repro_log.gd`。
+   - 强制 `app.gd` 通过 `run_flow_service.lifecycle_service` 调用 `start_new_run/try_load_saved_run/save_checkpoint`。
+   - 目的：防止后续回归把生命周期逻辑再次耦合到入口场景。
+4. 聚合入口：`make workflow-check TASK_ID=<task-id>`
    - `workflow_check.sh` 已串行执行上述脚本，作为提交前必过检查。

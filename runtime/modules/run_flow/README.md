@@ -3,6 +3,7 @@
 状态：
 - Phase 7 已落地（route 常量单点定义 + payload 键位门禁）
 - Phase 11 已落地（生命周期服务收口）
+- Phase 12 已落地（生命周期契约门禁）
 
 目标职责：
 - 承接应用服务层流程编排：地图 -> 战斗 -> 奖励 -> 地图，以及 REST/SHOP/EVENT 分支。
@@ -46,5 +47,9 @@
   - 覆盖 `ROUTE_*` 常量单点定义（仅允许 `route_dispatcher.gd` 定义）。
   - 覆盖 `map node type -> next_route` 映射
   - 覆盖 `next_route` 结果键与 map/battle 关键 payload 键位（`accepted/node_id/node_type/reward_gold/bonus_log/game_over_text/reward_log`）
+- `bash dev/tools/run_lifecycle_contract_check.sh`（Phase 12 新增）
+  - 禁止 `app.gd` 直接 preload/use `persistence/save_service.gd`、`run_rng.gd`、`repro_log.gd`。
+  - 强制 `app.gd` 通过 `run_flow_service.lifecycle_service` 调用 `start_new_run/try_load_saved_run/save_checkpoint`。
+  - 目的：防止后续回归把生命周期逻辑再次耦合到入口场景。
 - `make workflow-check TASK_ID=<task-id>`
-  - 默认会串行执行 `run_flow_contract_check.sh`，作为提交流程必过项。
+  - 默认会串行执行 `run_flow_contract_check.sh` 与 `run_lifecycle_contract_check.sh`，作为提交流程必过项。
