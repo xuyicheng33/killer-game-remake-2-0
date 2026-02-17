@@ -41,7 +41,7 @@
    - `buff_system` -> `Enemy` / `Player`（`modules/buff_system/buff_system.gd:21`、`modules/buff_system/buff_system.gd:141`、`modules/buff_system/buff_system.gd:263`）
    - `enemy_intent` -> `EnemyAction`（`modules/enemy_intent/intent_rules.gd:13`）
 
-### 2.4 Phase 7/12/13/14/16 质量门禁（可脚本化）
+### 2.4 Phase 7/12/13/14/16/17 质量门禁（可脚本化）
 
 1. UI 壳层门禁：`dev/tools/ui_shell_contract_check.sh`
    - 禁止 `scenes/ui` 直接调用 `run_state.set_/add_/remove_/clear_/advance_/mark_/apply_`。
@@ -73,7 +73,13 @@
    - 禁止 `runtime/scenes/**/*.gd` 写入 `run_state.player_stats` 嵌套字段。
    - 允许只读访问（如 `run_state.gold`、`run_state.player_stats.health` 读取）。
    - 目的：防止后续回归把状态写入散落回 scenes，保持"场景层只读、模块层写入"的架构约束。
-7. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
+7. 场景层嵌套状态写入门禁（Phase 17 新增）：`dev/tools/scene_nested_state_write_check.sh`
+   - 禁止 `runtime/scenes/**/*.gd` 调用 `run_state.player_stats.(set_|add_|remove_|clear_|apply_|heal|take_damage|gain_block|set_status)` 方法。
+   - 禁止 `runtime/scenes/**/*.gd` 调用 `run_state.map_graph.(set_|add_|remove_|clear_|advance_)` 方法。
+   - 禁止 `runtime/scenes/**/*.gd` 对 `run_state.(relics|potions|deck|discard|exhausted|consumables)` 执行集合操作（append/erase/clear/push_/pop_/insert/remove）。
+   - 禁止 `runtime/scenes/**/*.gd` 对 `run_state.player_stats.(deck|discard|draw_pile|exhausted|consumables)` 执行集合操作。
+   - 目的：防止通过嵌套状态方法调用绕过 Phase 16 门禁，确保所有状态写入必须通过模块层公开接口。
+8. 总门禁入口：`make workflow-check TASK_ID=<task-id>`
    - 默认串行执行上述脚本，作为提交前必过项。
 
 ## 3. 模块边界清单

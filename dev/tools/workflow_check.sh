@@ -138,5 +138,6 @@ bash dev/tools/run_lifecycle_contract_check.sh
 bash dev/tools/persistence_contract_check.sh
 bash dev/tools/seed_rng_contract_check.sh
 bash dev/tools/scene_runstate_write_check.sh
+bash dev/tools/scene_nested_state_write_check.sh
 
 echo "[workflow-check] passed."
