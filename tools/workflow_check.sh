@@ -5,7 +5,11 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 required_paths=(
+  "README.md"
+  "docs/repo_conventions.md"
   "docs/module_architecture.md"
+  "docs/roadmap"
+  "docs/session"
   "docs/work_log.md"
   "docs/work_logs"
   "docs/task_plan_template.md"
@@ -127,6 +131,7 @@ if [[ "${#changed_files[@]}" -gt 0 ]]; then
 fi
 
 echo "[workflow-check] running quality gates..."
+bash tools/repo_structure_check.sh
 bash tools/ui_shell_contract_check.sh
 bash tools/run_flow_contract_check.sh
 

@@ -41,9 +41,9 @@
 - `Makefile`
 - `docs/**`
 - `tools/**`
-- `task_plan.md`
-- `findings.md`
-- `progress.md`
+- `docs/session/task_plan.md`
+- `docs/session/findings.md`
+- `docs/session/progress.md`
 
 ## 实施步骤
 

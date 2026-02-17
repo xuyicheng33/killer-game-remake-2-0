@@ -26,11 +26,11 @@
 
 ## 4. 阶段与文档索引
 
-- Phase A：`plan/phase_A_core_kernel.md`
-- Phase B：`plan/phase_B_run_flow.md`
-- Phase C：`plan/phase_C_engineering.md`
-- Phase D：`plan/phase_D_content_ui.md`
-- 统一任务池与执行顺序：`plan/task_backlog.md`
+- Phase A：`docs/roadmap/phase_A_core_kernel.md`
+- Phase B：`docs/roadmap/phase_B_run_flow.md`
+- Phase C：`docs/roadmap/phase_C_engineering.md`
+- Phase D：`docs/roadmap/phase_D_content_ui.md`
+- 统一任务池与执行顺序：`docs/roadmap/task_backlog.md`
 
 ## 5. 推荐启动顺序（结合当前缺口）
 

@@ -16,7 +16,11 @@
 │   └── ...                    # battle/card/effect/buff/enemy/map/reward/relic/content/ui
 ├── global/                    # 全局基础能力（events/run_rng/repro_log 等）
 ├── tools/                     # 工具脚本（workflow/content import/ui_shell + run_flow contract checks）
-├── docs/                      # 文档、任务三件套、契约
+├── docs/                      # 文档主目录（含 roadmap/session/tasks/contracts）
+│   ├── roadmap/               # 阶段路线图与任务池
+│   ├── session/               # 协作会话记录（task_plan/findings/progress）
+│   ├── tasks/                 # 任务三件套
+│   └── contracts/             # 契约文档
 ├── characters/ effects/ enemies/ custom_resources/
 │                               # 运行时资源与遗留目录
 └── references/                # 只读参考资料
@@ -39,6 +43,8 @@
 ├── global/
 │   └── 仅保留真正全局基础设施（事件总线、可复用工具）
 └── docs/
+    ├── roadmap/               # 路线图与阶段计划
+    ├── session/               # 协作会话记录（可定期归档）
     ├── contracts/             # 契约真源
     └── tasks/                 # 任务三件套
 ```

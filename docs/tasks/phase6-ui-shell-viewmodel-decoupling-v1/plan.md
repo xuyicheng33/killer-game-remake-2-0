@@ -39,9 +39,9 @@
 - `docs/repo_structure.md`
 - `docs/work_logs/2026-02.md`
 - `docs/tasks/phase6-ui-shell-viewmodel-decoupling-v1/`
-- `task_plan.md`
-- `findings.md`
-- `progress.md`
+- `docs/session/task_plan.md`
+- `docs/session/findings.md`
+- `docs/session/progress.md`
 
 ## 实施步骤
 

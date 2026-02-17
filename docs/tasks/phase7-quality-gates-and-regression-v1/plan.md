@@ -39,9 +39,9 @@
 - `docs/work_logs/2026-02.md`
 - `modules/ui_shell/README.md`
 - `modules/run_flow/README.md`
-- `task_plan.md`
-- `findings.md`
-- `progress.md`
+- `docs/session/task_plan.md`
+- `docs/session/findings.md`
+- `docs/session/progress.md`
 
 ## 实施步骤
 
