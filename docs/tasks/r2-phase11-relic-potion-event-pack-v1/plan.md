@@ -72,10 +72,29 @@ L2（需审批）
 - runtime/modules/reward_economy/reward_generator.gd
 - runtime/modules/run_flow/map_flow_service.gd
 - runtime/modules/map_event/event_catalog.gd
+- runtime/modules/run_flow/rest_flow_service.gd
+- runtime/modules/run_flow/shop_flow_service.gd
+- runtime/modules/run_flow/event_flow_service.gd
+- runtime/modules/ui_shell/adapter/rest_ui_adapter.gd
+- runtime/modules/ui_shell/adapter/shop_ui_adapter.gd
+- runtime/modules/ui_shell/adapter/event_ui_adapter.gd
+- runtime/modules/run_flow/README.md
+- dev/tools/run_flow_regression_check.sh
+- dev/tools/save_load_replay_smoke.sh
+- docs/r2_baseline_status.md
+- docs/work_logs/2026-02.md
+- docs/tasks/r2-phase09-character2-scaffold-v1/handoff.md
+- docs/tasks/r2-phase09-character2-scaffold-v1/verification.md
+- docs/tasks/r2-phase10-enemy-pack-v1/handoff.md
+- docs/tasks/r2-phase10-enemy-pack-v1/verification.md
 - content/custom_resources/relics/
 - content/custom_resources/potions/
-- docs/work_logs/2026-02.md
 - docs/tasks/r2-phase11-relic-potion-event-pack-v1/
+- runtime/modules/enemy_intent/encounter_registry.gd.uid
+- runtime/modules/enemy_intent/enemy_registry.gd.uid
+- runtime/modules/relic_potion/potion_catalog.gd.uid
+- runtime/modules/relic_potion/relic_catalog.gd.uid
+- runtime/modules/run_meta/character_registry.gd.uid
 
 ## 验证步骤
 1. 战斗奖励 -> 遗物/药水多样化（手动验证）

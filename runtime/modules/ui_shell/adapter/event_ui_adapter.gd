@@ -40,7 +40,10 @@ func execute_option(option: Dictionary) -> void:
 	if _flow_service == null:
 		return
 
-	_result_text = _flow_service.execute_option(_run_state, option)
+	var result := _flow_service.execute_option(_run_state, option)
+	if not bool(result.get("handled", false)):
+		return
+	_result_text = str(result.get("result_text", ""))
 	_continue_visible = true
 	refresh()
 
@@ -49,5 +52,8 @@ func execute_continue() -> void:
 	if _flow_service == null:
 		return
 
-	_flow_service.execute_continue(_run_state)
-	event_completed.emit()
+	var result := _flow_service.execute_continue(_run_state)
+	if not bool(result.get("completed", false)):
+		return
+	if str(result.get("next_route", "")) == RunRouteDispatcher.ROUTE_MAP:
+		event_completed.emit()

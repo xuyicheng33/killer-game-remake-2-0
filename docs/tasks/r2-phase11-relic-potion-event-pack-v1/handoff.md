@@ -50,7 +50,10 @@
 - event_gambler - 赌徒
 
 ## 验证结果
-- 门禁检查：待执行
+- 门禁检查：已通过（`make workflow-check TASK_ID=r2-phase11-relic-potion-event-pack-v1`）
+- 回归验证：已通过（`bash dev/tools/run_flow_regression_check.sh`）
+- 冒烟验证：已通过（`bash dev/tools/save_load_replay_smoke.sh`）
+- 手动验证：待在 Godot 编辑器中执行内容多样性实测
 
 ## 提交信息
 ```

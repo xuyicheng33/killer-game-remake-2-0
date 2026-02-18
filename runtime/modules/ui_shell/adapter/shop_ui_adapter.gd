@@ -58,5 +58,8 @@ func execute_leave() -> void:
 	if _flow_service == null:
 		_flow_service = SHOP_FLOW_SERVICE_SCRIPT.new() as ShopFlowService
 
-	_flow_service.execute_leave(_run_state)
-	shop_completed.emit()
+	var result := _flow_service.execute_leave(_run_state)
+	if not bool(result.get("handled", false)):
+		return
+	if str(result.get("next_route", "")) == RunRouteDispatcher.ROUTE_MAP:
+		shop_completed.emit()

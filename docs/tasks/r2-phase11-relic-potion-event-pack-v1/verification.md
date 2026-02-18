@@ -12,7 +12,12 @@
 make workflow-check TASK_ID=r2-phase11-relic-potion-event-pack-v1
 ```
 
-**状态**：待执行
+**状态**：已通过
+
+执行结果：
+- `make workflow-check TASK_ID=r2-phase11-relic-potion-event-pack-v1`：通过
+- `bash dev/tools/save_load_replay_smoke.sh`：通过
+- `bash dev/tools/run_flow_regression_check.sh`：通过
 
 ### 2. 手动验证（需在 Godot 编辑器中执行）
 
@@ -41,5 +46,11 @@ ls content/custom_resources/relics/*.tres
 ls content/custom_resources/potions/*.tres
 ```
 
+已执行结果：
+- 遗物资源数量：4
+- 药水资源数量：3
+- 事件模板数量：15（`event_catalog.gd`）
+
 ## 验证结论
-待执行验证后填写。
+- 自动验证通过：门禁、冒烟、回归脚本均通过，资源池规模符合任务目标。
+- 手动验证未执行：需在 Godot 编辑器中完成遗物/药水/事件多样性实机验证。

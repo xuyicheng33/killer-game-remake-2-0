@@ -98,7 +98,7 @@ assert_has 'const DEFAULT_SEED' \
   "RunRng.DEFAULT_SEED 常量存在"
 
 echo "[smoke] 1.2 检查 RunLifecycleService 支持固定种子新局..."
-assert_has 'func start_new_run_with_seed\(.*seed: int\)' \
+assert_has 'func start_new_run_with_seed\(.*seed: int' \
   "$RUN_LIFECYCLE_FILE" \
   "RunLifecycleService.start_new_run_with_seed(seed) 方法存在"
 

@@ -37,6 +37,9 @@
   - `bonus_log`：B3 商店/事件离开后的额外奖励日志。
   - `game_over_text`：失败文案。
   - `reward_log`：奖励写回日志。
+  - `completed`：动作是否完成（rest/event 常用）。
+  - `handled`：命令是否被处理（shop/event 常用）。
+  - `info_text` / `status_text` / `result_text`：页面状态提示文本。
 
 现状说明：
 - `runtime/scenes/shop|events|map/rest` 已改为"收输入 + 调服务 + 刷界面"。
@@ -51,5 +54,9 @@
   - 禁止 `app.gd` 直接 preload/use `persistence/save_service.gd`、`run_rng.gd`、`repro_log.gd`。
   - 强制 `app.gd` 通过 `run_flow_service.lifecycle_service` 调用 `start_new_run/try_load_saved_run/save_checkpoint`。
   - 目的：防止后续回归把生命周期逻辑再次耦合到入口场景。
+- `bash dev/tools/run_flow_regression_check.sh`
+  - 强制 rest/shop/event 返回通过 `route_dispatcher.make_result` 构造（阻塞式门禁）。
+  - 强制 `execute_rest/execute_upgrade/execute_buy_offer/execute_remove_card/execute_leave/execute_option/execute_continue` 返回 `Dictionary`。
+  - 强制非战斗分支携带对应 payload 键位（`completed/handled/info_text/status_text/result_text`）。
 - `make workflow-check TASK_ID=<task-id>`
-  - 默认会串行执行 `run_flow_contract_check.sh` 与 `run_lifecycle_contract_check.sh`，作为提交流程必过项。
+  - 默认会串行执行 `run_flow_contract_check.sh`、`run_flow_payload_contract_check.sh`、`run_flow_result_shape_check.sh`、`run_flow_regression_check.sh` 与 `run_lifecycle_contract_check.sh`，作为提交流程必过项。
