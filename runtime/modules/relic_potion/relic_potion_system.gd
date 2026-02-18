@@ -83,9 +83,29 @@ func end_battle() -> void:
 func use_potion(index: int) -> void:
 	if run_state == null:
 		return
-	var message := run_state.use_potion_at(index)
-	if message.length() > 0:
-		log_updated.emit(message)
+	if index < 0 or index >= run_state.potions.size():
+		return
+	var potion: PotionData = run_state.potions[index]
+	if potion == null:
+		return
+	if effect_stack == null:
+		push_warning("[RelicPotionSystem] effect_stack 未注入，药水效果无法派发")
+		return
+	var player := _find_player()
+	if player == null:
+		push_warning("[RelicPotionSystem] 未找到 player，药水效果无法派发")
+		return
+
+	effect_stack.enqueue_effect(
+		"potion_%s" % potion.id,
+		[player],
+		func(_target: Node) -> void:
+			_apply_potion_effect(index, potion),
+		50,
+		_potion_effect_type(potion),
+		null,
+		potion.value
+	)
 
 
 func push_external_log(text: String) -> void:
@@ -140,14 +160,7 @@ func _dispatch_effect(effect_type: String, value: int, relic: RelicData) -> void
 	if effect_stack == null:
 		push_warning("[RelicPotionSystem] effect_stack 未注入，遗物效果无法派发: %s" % effect_type)
 		return
-	
-	var player: Player = null
-	var players: Array[Node] = []
-	if Engine.get_main_loop() is SceneTree:
-		players = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("player")
-	if not players.is_empty() and players[0] is Player:
-		player = players[0] as Player
-	
+	var player := _find_player()
 	if player == null:
 		push_warning("[RelicPotionSystem] 未找到 player，遗物效果无法派发: %s" % effect_type)
 		return
@@ -176,6 +189,55 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 		"add_block":
 			if run_state.player_stats != null:
 				run_state.player_stats.block += value
+
+
+func _find_player() -> Player:
+	if not (Engine.get_main_loop() is SceneTree):
+		return null
+	var players: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("player")
+	if players.is_empty():
+		return null
+	if players[0] is Player:
+		return players[0] as Player
+	return null
+
+
+func _potion_effect_type(potion: PotionData) -> EffectStackEngine.EffectType:
+	match potion.effect_type:
+		PotionData.EffectType.HEAL:
+			return EffectStackEngine.EffectType.HEAL
+		PotionData.EffectType.BLOCK:
+			return EffectStackEngine.EffectType.BLOCK
+		_:
+			return EffectStackEngine.EffectType.SPECIAL
+
+
+func _apply_potion_effect(index: int, potion: PotionData) -> void:
+	if run_state == null or potion == null:
+		return
+
+	match potion.effect_type:
+		PotionData.EffectType.HEAL:
+			run_state.heal_player(maxi(0, potion.value))
+			log_updated.emit("使用 %s：恢复 %d 生命" % [potion.title, maxi(0, potion.value)])
+		PotionData.EffectType.GOLD:
+			run_state.add_gold(maxi(0, potion.value))
+			log_updated.emit("使用 %s：获得 %d 金币" % [potion.title, maxi(0, potion.value)])
+		PotionData.EffectType.BLOCK:
+			if run_state.player_stats != null:
+				run_state.player_stats.block += maxi(0, potion.value)
+				run_state.emit_changed()
+			log_updated.emit("使用 %s：获得 %d 格挡" % [potion.title, maxi(0, potion.value)])
+		_:
+			log_updated.emit("使用 %s：无效果" % potion.title)
+
+	if index >= 0 and index < run_state.potions.size() and run_state.potions[index] == potion:
+		run_state.potions.remove_at(index)
+	else:
+		var fallback_index := run_state.potions.find(potion)
+		if fallback_index != -1:
+			run_state.potions.remove_at(fallback_index)
+	run_state.emit_changed()
 
 
 func _on_card_played(card: Card) -> void:

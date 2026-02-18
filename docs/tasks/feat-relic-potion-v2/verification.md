@@ -32,6 +32,12 @@
 - `runtime/scenes/app/app.gd` - 添加 "app" 组
 - `runtime/modules/reward_economy/shop_offer_generator.gd` - 修复静态方法调用
 
+### 2026-02-19 复验补强
+
+**改动文件**:
+- `runtime/modules/relic_potion/relic_potion_system.gd` - 药水改为通过 EffectStack 派发
+- `dev/tests/unit/test_relic_potion.gd` - 新增并执行 4 个测试
+
 **白名单扩展** (已更新 master_plan_v3.md):
 - 2-4 白名单扩展为：`runtime/modules/relic_potion/`、`runtime/scenes/app/`、`runtime/scenes/battle/`、`runtime/scenes/enemy/`、`content/custom_resources/relics/`、`runtime/global/`
 - 2-6 白名单扩展为：`runtime/modules/reward_economy/`、`runtime/modules/run_flow/`、`runtime/modules/run_meta/`
@@ -59,3 +65,4 @@ res://dev/tests/unit/test_relic_potion.gd
 2. 修复了 Card.Type 枚举比较错误
 3. 统一了敌人死亡事件发射路径（enemy.gd 现在会发射 enemy_died 信号）
 4. 完成了 EffectStack 注入，移除了 fallback 直接修改 RunState 的路径
+5. 药水效果已通过 EffectStack 派发并由测试覆盖

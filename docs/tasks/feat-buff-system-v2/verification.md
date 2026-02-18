@@ -56,3 +56,5 @@ res://dev/tests/unit/test_buff_system.gd
 **通过** - 2026-02-19 复验
 
 所有测试通过，状态系统实现完整。
+
+补充：已清理 `test_buff_system.gd` 的 orphan 临时节点问题。

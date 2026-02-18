@@ -12,6 +12,7 @@
 |---|---|---|
 | `runtime/modules/reward_economy/shop_offer_generator.gd` | 修改 | 遗物/药水报价 + 购买逻辑 |
 | `runtime/modules/run_meta/run_state.gd` | 修改 | 新增 `card_removal_count` 字段 |
+| `dev/tests/unit/test_reward_economy.gd` | 新增 | 补齐 Phase 2 强制测试点（6个用例） |
 
 ---
 
@@ -42,6 +43,12 @@ static func generate_full_offers(run_state: RunState) -> Dictionary:
 - 药水：50 金币
 - 遗物：150-300 金币（按稀有度）
 - 删卡：75 + 25 * 次数
+
+### 2026-02-19 复验修复
+
+- 修复 `buy_card/remove_card` 误用 `run_state.deck` 的访问错误，改为 `run_state.player_stats.deck`
+- 明确药水背包上限常量（3）
+- 新增完整的 `test_reward_economy.gd` 覆盖
 
 ---
 

@@ -9,6 +9,7 @@ const CARD_BUY_PRICE := 55
 const REMOVE_BASE_PRICE := 75
 const REMOVE_PRICE_INCREASE := 25
 const POTION_BUY_PRICE := 50
+const MAX_POTION_INVENTORY := 3
 const SHOP_CARD_COUNT := 3
 const SHOP_RELIC_COUNT := 1
 const SHOP_POTION_COUNT := 1
@@ -103,8 +104,8 @@ static func _relic_price(relic: RelicData) -> int:
 static func calculate_remove_price(run_state: RunState) -> int:
 	if run_state == null:
 		return REMOVE_BASE_PRICE
-	
-	var remove_count := run_state.card_removal_count if run_state.has_method("get") else 0
+
+	var remove_count := run_state.card_removal_count
 	return REMOVE_BASE_PRICE + (remove_count * REMOVE_PRICE_INCREASE)
 
 
@@ -123,9 +124,12 @@ static func buy_card(run_state: RunState, card: Card, price: int) -> bool:
 		return false
 	if run_state.gold < price:
 		return false
-	
+	if run_state.player_stats == null or run_state.player_stats.deck == null:
+		return false
+
 	run_state.add_gold(-price)
-	run_state.deck.add_card(card)
+	run_state.player_stats.deck.add_card(card.duplicate(true))
+	run_state.emit_changed()
 	return true
 
 
@@ -136,7 +140,8 @@ static func buy_relic(run_state: RunState, relic: RelicData, price: int) -> bool
 		return false
 	
 	run_state.add_gold(-price)
-	run_state.relics.append(relic)
+	run_state.relics.append(relic.duplicate(true))
+	run_state.emit_changed()
 	return true
 
 
@@ -145,11 +150,12 @@ static func buy_potion(run_state: RunState, potion: PotionData, price: int) -> b
 		return false
 	if run_state.gold < price:
 		return false
-	if run_state.potions.size() >= 3:
+	if run_state.potions.size() >= MAX_POTION_INVENTORY:
 		return false
 	
 	run_state.add_gold(-price)
-	run_state.potions.append(potion)
+	run_state.potions.append(potion.duplicate(true))
+	run_state.emit_changed()
 	return true
 
 
@@ -161,15 +167,13 @@ static func remove_card(run_state: RunState, card: Card) -> bool:
 	if run_state.gold < price:
 		return false
 	
-	if run_state.deck == null:
+	if run_state.player_stats == null or run_state.player_stats.deck == null:
 		return false
 	
-	if not run_state.deck.remove_card(card):
+	if not run_state.player_stats.deck.remove_card(card):
 		return false
 	
 	run_state.add_gold(-price)
-	
-	if run_state.has_method("increment_card_removal_count"):
-		run_state.increment_card_removal_count()
+	run_state.increment_card_removal_count()
 	
 	return true

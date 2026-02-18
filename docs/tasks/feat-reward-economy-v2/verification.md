@@ -22,6 +22,12 @@
 - `runtime/modules/reward_economy/shop_offer_generator.gd`
 - `runtime/modules/run_meta/run_state.gd`
 
+### 2026-02-19 复验补强
+
+**改动文件**:
+- `runtime/modules/reward_economy/shop_offer_generator.gd` - 修复 deck 访问路径与药水上限约束
+- `dev/tests/unit/test_reward_economy.gd` - 新增 6 个测试并通过
+
 ---
 
 ## 测试结果
@@ -43,4 +49,4 @@ res://dev/tests/unit/test_reward_economy.gd
 
 **通过** - 2026-02-19 复验
 
-修复了静态方法调用问题（使用类名直接调用而非 preload 脚本常量），所有测试通过。
+修复了静态方法调用与 deck 访问路径问题，并补齐商店经济 6 项测试。

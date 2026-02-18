@@ -39,6 +39,7 @@ func test_poison_decrements_each_turn():
 
 func test_weak_reduces_damage_by_25_percent():
 	var player: Player = partial_double(Player).new()
+	var dummy_target := Node.new()
 	var char_stats: CharacterStats = CharacterStats.new()
 	char_stats.max_health = 50
 	char_stats.health = 50
@@ -48,13 +49,15 @@ func test_weak_reduces_damage_by_25_percent():
 	player.stats.add_status(BuffSystem.STATUS_WEAK, 2)
 	
 	var base_damage := 20
-	var modified := _buff_system.get_modified_damage(base_damage, player, Node.new())
+	var modified := _buff_system.get_modified_damage(base_damage, player, dummy_target)
 	
 	assert_eq(modified, 15, "虚弱应减少 25% 伤害（20 -> 15）")
+	dummy_target.free()
 
 
 func test_vulnerable_increases_received_damage():
 	var enemy: Enemy = partial_double(Enemy).new()
+	var dummy_source := Node.new()
 	var enemy_stats: EnemyStats = EnemyStats.new()
 	enemy_stats.max_health = 30
 	enemy_stats.health = 30
@@ -64,13 +67,15 @@ func test_vulnerable_increases_received_damage():
 	enemy.stats.add_status(BuffSystem.STATUS_VULNERABLE, 1)
 	
 	var base_damage := 20
-	var modified := _buff_system.get_modified_damage(base_damage, Node.new(), enemy)
+	var modified := _buff_system.get_modified_damage(base_damage, dummy_source, enemy)
 	
 	assert_eq(modified, 30, "易伤应增加 50% 受伤（20 -> 30）")
+	dummy_source.free()
 
 
 func test_strength_adds_to_attack_damage():
 	var player: Player = partial_double(Player).new()
+	var dummy_target := Node.new()
 	var char_stats: CharacterStats = CharacterStats.new()
 	char_stats.max_health = 50
 	char_stats.health = 50
@@ -80,9 +85,10 @@ func test_strength_adds_to_attack_damage():
 	player.stats.add_status(BuffSystem.STATUS_STRENGTH, 5)
 	
 	var base_damage := 10
-	var modified := _buff_system.get_modified_damage(base_damage, player, Node.new())
+	var modified := _buff_system.get_modified_damage(base_damage, player, dummy_target)
 	
 	assert_eq(modified, 15, "力量应增加攻击伤害（10 -> 15）")
+	dummy_target.free()
 
 
 func test_metallicize_grants_block_on_turn_end():

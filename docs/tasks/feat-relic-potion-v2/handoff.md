@@ -13,6 +13,7 @@
 | `runtime/modules/relic_potion/relic_potion_system.gd` | 修改 | 触发时机枚举 + 信号扩展 |
 | `content/custom_resources/relics/relic_data.gd` | 修改 | 新增触发字段 |
 | `runtime/global/events.gd` | 修改 | 新增 `enemy_died` 信号 |
+| `dev/tests/unit/test_relic_potion.gd` | 新增 | 补齐 Phase 2 强制测试点（4个用例） |
 
 ---
 
@@ -35,6 +36,11 @@ enum TriggerType {
 - `on_turn_start_block`
 - `on_turn_end_heal`
 - `shop_discount_percent`
+
+### 2026-02-19 补强修复
+
+- `use_potion()` 改为通过 `EffectStack` 派发，不再直接调用 `RunState.use_potion_at`
+- 新增 `_find_player()`、`_apply_potion_effect()`，统一遗物/药水效果派发路径
 
 ---
 
