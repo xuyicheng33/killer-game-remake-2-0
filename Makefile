@@ -1,4 +1,9 @@
-.PHONY: content-index workflow-check repo-structure-check install-hooks new-task migration-draft
+.PHONY: content-index workflow-check repo-structure-check install-hooks new-task migration-draft test
+
+GODOT ?= godot
+
+test:
+	@GODOT="$(GODOT)" bash dev/tools/run_gut_tests.sh 120
 
 content-index:
 	@bash dev/tools/content_index.sh
