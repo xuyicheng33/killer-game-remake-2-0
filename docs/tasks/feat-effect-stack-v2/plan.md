@@ -24,6 +24,12 @@
 - `dev/tests/unit/test_effect_stack.gd`
 - `runtime/global/repro_log.gd`
 
+## 白名单文件
+
+- `runtime/modules/effect_engine/`
+- `runtime/global/repro_log.gd`
+- `dev/tests/unit/test_effect_stack.gd`
+
 **不涉及**:
 - UI 层改动
 - 存档结构变化

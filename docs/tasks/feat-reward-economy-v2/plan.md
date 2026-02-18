@@ -22,6 +22,13 @@
 
 **前置**: feat-relic-potion-v2 完成
 
+## 白名单文件
+
+- `runtime/modules/reward_economy/`
+- `runtime/modules/run_flow/`
+- `runtime/modules/run_meta/`
+- `dev/tests/unit/test_reward_economy.gd`
+
 ---
 
 ## 新增功能

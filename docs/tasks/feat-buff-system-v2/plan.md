@@ -21,6 +21,11 @@
 
 **前置**: feat-effect-stack-v2 完成
 
+## 白名单文件
+
+- `runtime/modules/buff_system/`
+- `dev/tests/unit/test_buff_system.gd`
+
 ---
 
 ## 状态扩展计划

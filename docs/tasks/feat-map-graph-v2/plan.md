@@ -24,6 +24,11 @@
 - 存档结构变化
 - 节点类型定义
 
+## 白名单文件
+
+- `runtime/modules/map_event/`
+- `dev/tests/unit/test_map_generator.gd`
+
 ---
 
 ## 修改内容

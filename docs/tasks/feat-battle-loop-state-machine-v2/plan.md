@@ -24,6 +24,11 @@
 
 **前置**: feat-buff-system-v2 完成
 
+## 白名单文件
+
+- `runtime/modules/battle_loop/`
+- `dev/tests/unit/test_battle_context.gd`
+
 ---
 
 ## 阶段定义

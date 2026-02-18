@@ -22,6 +22,16 @@
 
 **前置**: feat-buff-system-v2 完成
 
+## 白名单文件
+
+- `runtime/modules/relic_potion/`
+- `runtime/scenes/app/`
+- `runtime/scenes/battle/`
+- `runtime/scenes/enemy/`
+- `content/custom_resources/relics/`
+- `runtime/global/`
+- `dev/tests/unit/test_relic_potion.gd`
+
 ---
 
 ## 遗物触发时机枚举
