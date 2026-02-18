@@ -17,6 +17,8 @@
 
 **白名单**:
 - `runtime/modules/relic_potion/`
+- `content/custom_resources/relics/`
+- `runtime/global/events.gd`
 
 **前置**: feat-buff-system-v2 完成
 

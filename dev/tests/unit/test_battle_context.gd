@@ -57,3 +57,54 @@ func test_context_can_be_garbage_collected() -> void:
 	_context = null
 	
 	assert_null(weak_ref.get_ref(), "context 被置空后应该可以被 GC 回收")
+
+
+func test_phase_machine_exists() -> void:
+	var phase_machine = _context.get("phase_machine")
+	assert_not_null(phase_machine, "phase_machine 应该被初始化")
+
+
+func test_phase_machine_has_required_methods() -> void:
+	var phase_machine = _context.get("phase_machine")
+	assert_true(phase_machine.has_method("get_phase"), "应有 get_phase 方法")
+	assert_true(phase_machine.has_method("get_turn"), "应有 get_turn 方法")
+	assert_true(phase_machine.has_method("start"), "应有 start 方法")
+	assert_true(phase_machine.has_method("transition_to"), "应有 transition_to 方法")
+	assert_true(phase_machine.has_method("check_battle_end"), "应有 check_battle_end 方法")
+
+
+func test_phase_transitions_in_correct_order() -> void:
+	var phase_machine = _context.get("phase_machine") as BattlePhaseStateMachine
+	assert_not_null(phase_machine, "phase_machine 不应为空")
+	
+	assert_eq(phase_machine.get_phase(), BattlePhaseStateMachine.Phase.INVALID, "初始状态应为 INVALID")
+	
+	phase_machine.start()
+	assert_eq(phase_machine.get_phase(), BattlePhaseStateMachine.Phase.ACTION, "start() 后应自动到达 ACTION（DRAW 自动跳转）")
+	
+	var transitions := phase_machine.can_transition(BattlePhaseStateMachine.Phase.ENEMY)
+	assert_true(transitions, "ACTION -> ENEMY 应允许")
+	
+	phase_machine.transition_to(BattlePhaseStateMachine.Phase.ENEMY)
+	assert_eq(phase_machine.get_phase(), BattlePhaseStateMachine.Phase.RESOLVE, "ENEMY 应自动跳转到 RESOLVE")
+
+
+func test_buffs_triggered_at_correct_phase() -> void:
+	var phase_machine = _context.get("phase_machine") as BattlePhaseStateMachine
+	assert_not_null(phase_machine, "phase_machine 不应为空")
+	
+	assert_true(phase_machine.has_method("_enter_draw_phase"), "应有 _enter_draw_phase 方法")
+	assert_true(phase_machine.has_method("_enter_resolve_phase"), "应有 _enter_resolve_phase 方法")
+
+
+func test_battle_ends_when_player_hp_reaches_zero() -> void:
+	var phase_machine = _context.get("phase_machine") as BattlePhaseStateMachine
+	assert_not_null(phase_machine, "phase_machine 不应为空")
+	
+	var result := phase_machine.check_battle_end()
+	assert_true(result is Dictionary, "check_battle_end 应返回 Dictionary")
+	assert_true(result.has("ended"), "结果应包含 ended 字段")
+	assert_true(result.has("result"), "结果应包含 result 字段")
+	
+	assert_true(result.ended, "无 player 时应结束战斗")
+	assert_eq(result.result, "defeat", "结果应为 defeat")

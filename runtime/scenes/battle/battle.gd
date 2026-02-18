@@ -102,7 +102,26 @@ func start_battle(stats: CharacterStats) -> void:
 	_battle_context.bind_battle_context(_active_stats, battle_ui.hand_container)
 	_spawn_enemies()
 	enemy_handler.reset_enemy_actions()
+	_inject_effect_stack_to_relic_system()
 	_battle_phase_machine.start()
+
+
+func _inject_effect_stack_to_relic_system() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	var app_nodes := tree.get_nodes_in_group("app")
+	if app_nodes.is_empty():
+		return
+	var app_node := app_nodes[0]
+	if app_node == null or not is_instance_valid(app_node):
+		return
+	if not "relic_potion_system" in app_node:
+		return
+	var rps = app_node.get("relic_potion_system")
+	if rps == null:
+		return
+	rps.effect_stack = _battle_context.effect_stack
 
 
 func _spawn_enemies() -> void:

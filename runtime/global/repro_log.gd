@@ -31,6 +31,27 @@ static func log_event(tag: String, detail: String) -> void:
 	_emit(normalized_tag, "-", detail)
 
 
+static func log_effect(
+	type: String,
+	effect_name: String,
+	source: String,
+	target: String,
+	value: int,
+	turn: int
+) -> void:
+	var line := "[effect] type=%s name=%s src=%s tgt=%s val=%d turn=%d seed=%d floor=%d" % [
+		type,
+		effect_name,
+		source,
+		target,
+		value,
+		turn,
+		_seed,
+		_floor,
+	]
+	push_warning(line)
+
+
 static func get_current_node_id() -> String:
 	return _node
 

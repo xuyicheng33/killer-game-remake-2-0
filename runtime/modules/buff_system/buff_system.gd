@@ -6,6 +6,11 @@ const STATUS_DEXTERITY := "dexterity"
 const STATUS_VULNERABLE := "vulnerable"
 const STATUS_WEAK := "weak"
 const STATUS_POISON := "poison"
+const STATUS_BURN := "burn"
+const STATUS_CONSTRICTED := "constricted"
+const STATUS_METALLICIZE := "metallicize"
+const STATUS_RITUAL := "ritual"
+const STATUS_REGENERATE := "regenerate"
 
 const STATUS_ORDER: Array[String] = [
 	STATUS_STRENGTH,
@@ -13,6 +18,11 @@ const STATUS_ORDER: Array[String] = [
 	STATUS_VULNERABLE,
 	STATUS_WEAK,
 	STATUS_POISON,
+	STATUS_BURN,
+	STATUS_CONSTRICTED,
+	STATUS_METALLICIZE,
+	STATUS_RITUAL,
+	STATUS_REGENERATE,
 ]
 
 var _events_connected := false
@@ -90,10 +100,6 @@ func resolve_damage_source(target: Node) -> Node:
 func on_entity_hit(target: Node, _source: Node, _final_damage: int) -> void:
 	if target == null:
 		return
-
-	# A4 phase keeps hit hook minimal: status pipeline is now wired for later expansion.
-	# Current five statuses do not consume stacks on hit.
-	pass
 
 
 func get_status_badges(stats: Stats) -> Array[Dictionary]:
@@ -204,26 +210,7 @@ func _run_turn_start_hooks(target: Node) -> void:
 	if stats == null:
 		return
 	
-	var status_dict: Dictionary = stats.get_status_snapshot()
-	for status_id: String in status_dict.keys():
-		var stacks_variant: Variant = status_dict[status_id]
-		if not (stacks_variant is int):
-			continue
-		var stacks: int = stacks_variant
-		if stacks <= 0:
-			continue
-		
-		match status_id:
-			STATUS_STRENGTH, STATUS_DEXTERITY, STATUS_VULNERABLE, STATUS_WEAK, STATUS_POISON:
-				pass
-			_:
-				pass
-	
-	# 扩展规则：新增回合开始触发的状态（如 regenerate 回血），
-	# 在上方 match 分支中添加对应处理逻辑。
-	# 示例：
-	# if get_status_stack(stats, "regenerate") > 0:
-	#     _trigger_regenerate(target, stats, get_status_stack(stats, "regenerate"))
+	_trigger_poison(target, stats)
 
 
 func _run_turn_end_hooks(target: Node) -> void:
@@ -231,7 +218,11 @@ func _run_turn_end_hooks(target: Node) -> void:
 	if stats == null:
 		return
 
-	_trigger_poison(target, stats)
+	_trigger_burn(target, stats)
+	_trigger_constricted(target, stats)
+	_trigger_metallicize(target, stats)
+	_trigger_ritual(target, stats)
+	_trigger_regenerate(target, stats)
 	_decay_status(stats, STATUS_WEAK)
 	_decay_status(stats, STATUS_VULNERABLE)
 
@@ -253,11 +244,10 @@ func _run_after_card_played_hooks(target: Node) -> void:
 		match status_id:
 			STATUS_STRENGTH, STATUS_DEXTERITY, STATUS_VULNERABLE, STATUS_WEAK, STATUS_POISON:
 				pass
+			STATUS_BURN, STATUS_CONSTRICTED, STATUS_METALLICIZE, STATUS_RITUAL, STATUS_REGENERATE:
+				pass
 			_:
 				pass
-	
-	# 扩展规则：新增出牌后触发的状态（如"每打出一张攻击牌+1力量"），
-	# 在上方 match 分支中添加对应处理逻辑。
 
 
 func _trigger_poison(target: Node, stats: Stats) -> void:
@@ -273,6 +263,63 @@ func _trigger_poison(target: Node, stats: Stats) -> void:
 
 	if stats.health <= 0:
 		_handle_death(target)
+
+
+func _trigger_burn(target: Node, stats: Stats) -> void:
+	var burn_stacks := get_status_stack(stats, STATUS_BURN)
+	if burn_stacks <= 0:
+		return
+
+	stats.health -= 2
+	stats.set_status(STATUS_BURN, 0)
+
+	if target.is_in_group("player"):
+		Events.player_hit.emit()
+
+	if stats.health <= 0:
+		_handle_death(target)
+
+
+func _trigger_constricted(target: Node, stats: Stats) -> void:
+	var constricted_stacks := get_status_stack(stats, STATUS_CONSTRICTED)
+	if constricted_stacks <= 0:
+		return
+
+	stats.health -= constricted_stacks
+
+	if target.is_in_group("player"):
+		Events.player_hit.emit()
+
+	if stats.health <= 0:
+		_handle_death(target)
+
+
+func _trigger_metallicize(_target: Node, stats: Stats) -> void:
+	var metallicize_stacks := get_status_stack(stats, STATUS_METALLICIZE)
+	if metallicize_stacks <= 0:
+		return
+
+	stats.block += metallicize_stacks
+
+
+func _trigger_ritual(_target: Node, stats: Stats) -> void:
+	var ritual_stacks := get_status_stack(stats, STATUS_RITUAL)
+	if ritual_stacks <= 0:
+		return
+
+	stats.add_status(STATUS_STRENGTH, ritual_stacks)
+
+
+func _trigger_regenerate(target: Node, stats: Stats) -> void:
+	var regen_stacks := get_status_stack(stats, STATUS_REGENERATE)
+	if regen_stacks <= 0:
+		return
+
+	var heal_amount := mini(regen_stacks, stats.max_health - stats.health)
+	if heal_amount > 0:
+		stats.health += heal_amount
+	
+	_decay_status(stats, STATUS_REGENERATE)
 
 
 func _decay_status(stats: Stats, status_id: String) -> void:
@@ -292,6 +339,8 @@ func _handle_death(target: Node) -> void:
 		return
 
 	if target.is_in_group("enemies"):
+		var enemy := target as Enemy
+		Events.enemy_died.emit(enemy)
 		target.queue_free()
 
 
@@ -371,5 +420,15 @@ func _get_status_label(status_id: String) -> String:
 			return "弱"
 		STATUS_POISON:
 			return "毒"
+		STATUS_BURN:
+			return "燃"
+		STATUS_CONSTRICTED:
+			return "缚"
+		STATUS_METALLICIZE:
+			return "金"
+		STATUS_RITUAL:
+			return "怒"
+		STATUS_REGENERATE:
+			return "再"
 		_:
 			return "?"

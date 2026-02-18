@@ -3,8 +3,9 @@ extends RefCounted
 
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
 
-const NORMAL_FLOOR_COUNT := 5
+const NORMAL_FLOOR_COUNT := 14
 const LANE_COUNT := 3
+const ELITE_FLOOR_START := 7
 
 
 static func create_act1_seed_graph(seed: int) -> MapGraphData:
@@ -24,7 +25,6 @@ static func create_act1_seed_graph(seed: int) -> MapGraphData:
 			graph.nodes.append(node)
 		lane_nodes_by_floor.append(floor_nodes)
 
-	# Final floor: boss.
 	var boss_node := _create_node(
 		"boss_f%02d" % NORMAL_FLOOR_COUNT,
 		MapNodeData.NodeType.BOSS,
@@ -33,7 +33,6 @@ static func create_act1_seed_graph(seed: int) -> MapGraphData:
 	)
 	graph.nodes.append(boss_node)
 
-	# Connect normal floors.
 	for floor_index in range(NORMAL_FLOOR_COUNT - 1):
 		var current_floor: Array = lane_nodes_by_floor[floor_index]
 		var next_floor: Array = lane_nodes_by_floor[floor_index + 1]
@@ -48,14 +47,12 @@ static func create_act1_seed_graph(seed: int) -> MapGraphData:
 			if lane_index < LANE_COUNT - 1 and rng.randf() < 0.5:
 				targets.append((next_floor[lane_index + 1] as MapNodeData).id)
 
-			# Ensure uniqueness.
 			var unique_targets := PackedStringArray()
 			for target_id in targets:
 				if not unique_targets.has(target_id):
 					unique_targets.append(target_id)
 			from_node.next_node_ids = unique_targets
 
-	# Last normal floor connects to boss.
 	var last_floor: Array = lane_nodes_by_floor[NORMAL_FLOOR_COUNT - 1]
 	for node in last_floor:
 		var map_node := node as MapNodeData
@@ -66,7 +63,6 @@ static func create_act1_seed_graph(seed: int) -> MapGraphData:
 
 
 static func create_act1_seed_map(seed: int, floor: int) -> Array[MapNodeData]:
-	# Compatibility helper for old call sites.
 	var graph := create_act1_seed_graph(seed)
 	var clamped_floor := clampi(floor, 0, graph.floor_count - 1)
 	return graph.get_nodes_for_floor(clamped_floor)
@@ -86,6 +82,7 @@ static func _create_node(id: String, type: MapNodeData.NodeType, floor_index: in
 
 static func _roll_node_type(rng: RandomNumberGenerator, floor_index: int) -> MapNodeData.NodeType:
 	var roll := rng.randf()
+	var is_elite_floor := floor_index >= ELITE_FLOOR_START
 
 	if floor_index <= 1:
 		if roll < 0.6:
@@ -96,15 +93,26 @@ static func _roll_node_type(rng: RandomNumberGenerator, floor_index: int) -> Map
 			return MapNodeData.NodeType.REST
 		return MapNodeData.NodeType.SHOP
 
-	if roll < 0.45:
-		return MapNodeData.NodeType.BATTLE
-	if roll < 0.62:
-		return MapNodeData.NodeType.EVENT
-	if roll < 0.76:
-		return MapNodeData.NodeType.REST
-	if roll < 0.88:
-		return MapNodeData.NodeType.SHOP
-	return MapNodeData.NodeType.ELITE
+	if is_elite_floor:
+		if roll < 0.35:
+			return MapNodeData.NodeType.BATTLE
+		if roll < 0.63:
+			return MapNodeData.NodeType.EVENT
+		if roll < 0.75:
+			return MapNodeData.NodeType.REST
+		if roll < 0.80:
+			return MapNodeData.NodeType.SHOP
+		return MapNodeData.NodeType.ELITE
+	else:
+		if roll < 0.45:
+			return MapNodeData.NodeType.BATTLE
+		if roll < 0.72:
+			return MapNodeData.NodeType.EVENT
+		if roll < 0.87:
+			return MapNodeData.NodeType.REST
+		if roll < 0.95:
+			return MapNodeData.NodeType.SHOP
+		return MapNodeData.NodeType.ELITE
 
 
 static func _title_for_type(type: MapNodeData.NodeType) -> String:
@@ -155,3 +163,50 @@ static func _reward_for_type(type: MapNodeData.NodeType) -> int:
 			return 80
 		_:
 			return 0
+
+
+static func has_multiple_paths_to_boss(graph: MapGraphData) -> bool:
+	if graph == null or graph.nodes.is_empty():
+		return false
+	
+	var start_nodes: Array[MapNodeData] = []
+	for node in graph.nodes:
+		if node.floor_index == 0:
+			start_nodes.append(node)
+	
+	if start_nodes.size() < 2:
+		return false
+	
+	var boss_node: MapNodeData = null
+	for node in graph.nodes:
+		if node.type == MapNodeData.NodeType.BOSS:
+			boss_node = node
+			break
+	
+	if boss_node == null:
+		return false
+	
+	var paths_to_boss: int = 0
+	for start_node in start_nodes:
+		if _can_reach_node(start_node, boss_node.id, graph, {}):
+			paths_to_boss += 1
+	
+	return paths_to_boss >= 2
+
+
+static func _can_reach_node(from: MapNodeData, target_id: String, graph: MapGraphData, visited: Dictionary) -> bool:
+	if from == null:
+		return false
+	if from.id == target_id:
+		return true
+	if visited.has(from.id):
+		return false
+	
+	visited[from.id] = true
+	
+	for next_id in from.next_node_ids:
+		var next_node: MapNodeData = graph.get_node(next_id)
+		if next_node != null and _can_reach_node(next_node, target_id, graph, visited):
+			return true
+	
+	return false

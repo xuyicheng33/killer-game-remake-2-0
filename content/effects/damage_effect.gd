@@ -24,8 +24,8 @@ func _apply_damage_to_target(target: Node, battle_context: RefCounted) -> void:
 	var buff_system = battle_context.get("buff_system")
 	if buff_system == null:
 		return
-	var source := buff_system.resolve_damage_source(target)
-	var final_damage := buff_system.get_modified_damage(amount, source, target)
+	var source: Node = buff_system.resolve_damage_source(target)
+	var final_damage: int = buff_system.get_modified_damage(amount, source, target)
 
 	target.take_damage(final_damage)
 	buff_system.on_entity_hit(target, source, final_damage)

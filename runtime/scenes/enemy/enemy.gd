@@ -160,6 +160,7 @@ func take_damage(damage: int) -> void:
 			sprite_2d.material = null
 			
 			if stats.health <= 0:
+				Events.enemy_died.emit(self)
 				queue_free()
 	)
 

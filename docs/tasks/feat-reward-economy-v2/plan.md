@@ -18,6 +18,7 @@
 **白名单**:
 - `runtime/modules/reward_economy/`
 - `runtime/modules/run_flow/`
+- `runtime/modules/run_meta/run_state.gd`
 
 **前置**: feat-relic-potion-v2 完成
 

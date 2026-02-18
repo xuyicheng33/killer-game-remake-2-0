@@ -23,6 +23,7 @@ var run_flow_service: RunFlowService
 
 
 func _ready() -> void:
+	add_to_group("app")
 	run_flow_service = RUN_FLOW_SERVICE_SCRIPT.new() as RunFlowService
 
 	relic_potion_system = RELIC_POTION_SYSTEM_SCRIPT.new() as RelicPotionSystem

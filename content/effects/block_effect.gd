@@ -24,6 +24,6 @@ func _apply_block_to_target(target: Node, battle_context: RefCounted) -> void:
 	var buff_system = battle_context.get("buff_system")
 	if buff_system == null:
 		return
-	var final_block := buff_system.get_modified_block(amount, target)
+	var final_block: int = buff_system.get_modified_block(amount, target)
 	target.stats.block += final_block
 	SFXPlayer.play(sound)

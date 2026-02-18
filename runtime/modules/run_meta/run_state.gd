@@ -15,6 +15,7 @@ const MAP_GENERATOR_SCRIPT := preload("res://runtime/modules/map_event/map_gener
 @export var map_visited_node_ids: PackedStringArray = PackedStringArray()
 @export var relics: Array[RelicData] = []
 @export var potions: Array[PotionData] = []
+@export var card_removal_count: int = 0
 
 var player_stats: CharacterStats
 var map_graph: MapGraphData
@@ -179,6 +180,11 @@ func upgrade_card_in_deck_at(index: int) -> bool:
 	player_stats.deck.card_pile_size_changed.emit(cards.size())
 	emit_changed()
 	return true
+
+
+func increment_card_removal_count() -> void:
+	card_removal_count += 1
+	emit_changed()
 
 
 func heal_player(amount: int) -> void:

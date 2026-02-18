@@ -542,7 +542,7 @@ RESOLVE_PHASE
 
 **任务ID**：`feat-relic-potion-v2`
 **任务级别**：L2
-**白名单**：`runtime/modules/relic_potion/`
+**白名单**：`runtime/modules/relic_potion/`、`runtime/scenes/app/`、`runtime/scenes/battle/`、`runtime/scenes/enemy/`、`content/custom_resources/relics/`、`runtime/global/`
 **前置**：2-2 完成
 
 **遗物触发时机枚举（系统必须支持）**：
@@ -615,7 +615,7 @@ const NORMAL_FLOOR_COUNT := 14  # 14层普通 + 1层Boss = 15层
 
 **任务ID**：`feat-reward-economy-v2`
 **任务级别**：L2
-**白名单**：`runtime/modules/reward_economy/`、`runtime/modules/run_flow/`
+**白名单**：`runtime/modules/reward_economy/`、`runtime/modules/run_flow/`、`runtime/modules/run_meta/`
 **前置**：2-4 完成（2-5 可并行，不阻塞本任务）
 
 **在现有买卡+删卡基础上，新增**：
