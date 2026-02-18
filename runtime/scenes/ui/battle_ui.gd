@@ -8,17 +8,52 @@ const BATTLE_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapte
 @onready var hand: Hand = $Hand
 @onready var mana_ui: ManaUI = $ManaUI
 @onready var end_turn_button: Button = %EndTurnButton
+@onready var hand_container: HBoxContainer = $Hand
 
 var _adapter: BattleUIAdapter
 var _zone_counts_label: Label
+var _battle_context: RefCounted
 
 
 func _ready() -> void:
 	_adapter = BATTLE_UI_ADAPTER_SCRIPT.new() as BattleUIAdapter
-	_adapter.projection_changed.connect(_on_projection_changed)
-	_adapter.end_turn_button_enabled_changed.connect(_on_end_turn_button_enabled_changed)
-	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
+	_connect_signals()
 	_setup_zone_counts_ui()
+	_bind_context()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+	if _adapter != null:
+		_adapter.dispose()
+		_adapter = null
+
+
+func _connect_signals() -> void:
+	if _adapter != null:
+		if not _adapter.projection_changed.is_connected(_on_projection_changed):
+			_adapter.projection_changed.connect(_on_projection_changed)
+		if not _adapter.end_turn_button_enabled_changed.is_connected(_on_end_turn_button_enabled_changed):
+			_adapter.end_turn_button_enabled_changed.connect(_on_end_turn_button_enabled_changed)
+	if not end_turn_button.pressed.is_connected(_on_end_turn_button_pressed):
+		end_turn_button.pressed.connect(_on_end_turn_button_pressed)
+
+
+func _disconnect_signals() -> void:
+	if _adapter != null:
+		if _adapter.projection_changed.is_connected(_on_projection_changed):
+			_adapter.projection_changed.disconnect(_on_projection_changed)
+		if _adapter.end_turn_button_enabled_changed.is_connected(_on_end_turn_button_enabled_changed):
+			_adapter.end_turn_button_enabled_changed.disconnect(_on_end_turn_button_enabled_changed)
+	if end_turn_button.pressed.is_connected(_on_end_turn_button_pressed):
+		end_turn_button.pressed.disconnect(_on_end_turn_button_pressed)
+
+
+func bind_battle_context(battle_context: BattleContext) -> void:
+	_battle_context = battle_context
+	hand.battle_context = battle_context
+	if _adapter != null:
+		_adapter.bind_battle_context(battle_context)
 	_bind_context()
 
 
@@ -71,6 +106,8 @@ func _bind_context() -> void:
 	if char_stats == null:
 		return
 	if _adapter == null:
+		return
+	if _battle_context == null:
 		return
 
 	_adapter.bind_context(char_stats, hand)

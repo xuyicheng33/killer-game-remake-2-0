@@ -17,19 +17,44 @@ var _adapter: RestUIAdapter = REST_UI_ADAPTER_SCRIPT.new() as RestUIAdapter
 
 
 func _ready() -> void:
+	_connect_signals()
+	_adapter.refresh()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
 	if not _adapter.projection_changed.is_connected(_render):
 		_adapter.projection_changed.connect(_render)
 	if not _adapter.rest_completed.is_connected(_on_rest_completed):
 		_adapter.rest_completed.connect(_on_rest_completed)
 
-	_apply_responsive_layout()
 	var viewport := get_viewport()
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
-	rest_button.pressed.connect(_on_rest_pressed)
-	upgrade_button.pressed.connect(_on_upgrade_pressed)
-	_adapter.refresh()
+	if not rest_button.pressed.is_connected(_on_rest_pressed):
+		rest_button.pressed.connect(_on_rest_pressed)
+	if not upgrade_button.pressed.is_connected(_on_upgrade_pressed):
+		upgrade_button.pressed.connect(_on_upgrade_pressed)
+
+
+func _disconnect_signals() -> void:
+	if _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.disconnect(_render)
+	if _adapter.rest_completed.is_connected(_on_rest_completed):
+		_adapter.rest_completed.disconnect(_on_rest_completed)
+
+	var viewport := get_viewport()
+	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.disconnect(_on_viewport_resized)
+
+	if rest_button.pressed.is_connected(_on_rest_pressed):
+		rest_button.pressed.disconnect(_on_rest_pressed)
+	if upgrade_button.pressed.is_connected(_on_upgrade_pressed):
+		upgrade_button.pressed.disconnect(_on_upgrade_pressed)
 
 
 func _set_run_state(value: RunState) -> void:

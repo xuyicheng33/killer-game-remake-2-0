@@ -20,6 +20,16 @@ var _adapter: MapUIAdapter = MAP_UI_ADAPTER_SCRIPT.new() as MapUIAdapter
 
 
 func _ready() -> void:
+	_connect_signals()
+	# 触发初始渲染（run_state 可能在 _ready 之前通过 @export 设置）
+	_adapter.refresh()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
 	if not _adapter.node_selected.is_connected(_on_adapter_node_selected):
 		_adapter.node_selected.connect(_on_adapter_node_selected)
 	if not _adapter.restart_requested.is_connected(_on_adapter_restart_requested):
@@ -30,13 +40,25 @@ func _ready() -> void:
 	if not restart_run_button.pressed.is_connected(_adapter.request_restart):
 		restart_run_button.pressed.connect(_adapter.request_restart)
 
-	_apply_responsive_layout()
 	var viewport := get_viewport()
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
-	# 触发初始渲染（run_state 可能在 _ready 之前通过 @export 设置）
-	_adapter.refresh()
+
+func _disconnect_signals() -> void:
+	if _adapter.node_selected.is_connected(_on_adapter_node_selected):
+		_adapter.node_selected.disconnect(_on_adapter_node_selected)
+	if _adapter.restart_requested.is_connected(_on_adapter_restart_requested):
+		_adapter.restart_requested.disconnect(_on_adapter_restart_requested)
+	if _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.disconnect(_render)
+
+	if restart_run_button.pressed.is_connected(_adapter.request_restart):
+		restart_run_button.pressed.disconnect(_adapter.request_restart)
+
+	var viewport := get_viewport()
+	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.disconnect(_on_viewport_resized)
 
 
 func _set_run_state(value: RunState) -> void:

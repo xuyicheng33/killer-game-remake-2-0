@@ -15,18 +15,9 @@ const STATUS_ORDER: Array[String] = [
 	STATUS_POISON,
 ]
 
-static var _instance: BuffSystem
-
 var _events_connected := false
 var _enemy_turn_queue: Array[Enemy] = []
 var _active_enemy: Enemy = null
-
-
-static func get_instance() -> BuffSystem:
-	if _instance == null:
-		_instance = BuffSystem.new()
-		_instance._connect_events()
-	return _instance
 
 
 func apply_status_to_target(target: Node, status_id: String, stacks: int) -> void:
@@ -124,7 +115,7 @@ func get_status_badges(stats: Stats) -> Array[Dictionary]:
 	return badges
 
 
-func _connect_events() -> void:
+func connect_events() -> void:
 	if _events_connected:
 		return
 
@@ -135,6 +126,25 @@ func _connect_events() -> void:
 	Events.enemy_turn_ended.connect(_on_enemy_turn_end)
 	Events.enemy_action_completed.connect(_on_enemy_action_completed)
 	Events.card_played.connect(_on_card_played)
+
+
+func disconnect_events() -> void:
+	if not _events_connected:
+		return
+
+	_events_connected = false
+	if Events.player_hand_drawn.is_connected(_on_player_turn_start):
+		Events.player_hand_drawn.disconnect(_on_player_turn_start)
+	if Events.player_turn_ended.is_connected(_on_player_turn_end):
+		Events.player_turn_ended.disconnect(_on_player_turn_end)
+	if Events.player_hand_discarded.is_connected(_on_enemy_turn_start):
+		Events.player_hand_discarded.disconnect(_on_enemy_turn_start)
+	if Events.enemy_turn_ended.is_connected(_on_enemy_turn_end):
+		Events.enemy_turn_ended.disconnect(_on_enemy_turn_end)
+	if Events.enemy_action_completed.is_connected(_on_enemy_action_completed):
+		Events.enemy_action_completed.disconnect(_on_enemy_action_completed)
+	if Events.card_played.is_connected(_on_card_played):
+		Events.card_played.disconnect(_on_card_played)
 
 
 func _on_player_turn_start() -> void:

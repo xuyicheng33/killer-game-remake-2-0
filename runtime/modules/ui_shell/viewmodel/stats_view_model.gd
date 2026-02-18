@@ -1,10 +1,8 @@
 class_name StatsViewModel
 extends RefCounted
 
-const BUFF_SYSTEM_SCRIPT := preload("res://runtime/modules/buff_system/buff_system.gd")
 
-
-func project(stats: Stats) -> Dictionary:
+func project(stats: Stats, buff_system: BuffSystem = null) -> Dictionary:
 	var projection := {
 		"block_text": "0",
 		"health_text": "0",
@@ -17,7 +15,8 @@ func project(stats: Stats) -> Dictionary:
 		return projection
 
 	var status_badges: Array[String] = []
-	var buff_system := BUFF_SYSTEM_SCRIPT.get_instance()
+	if buff_system == null:
+		buff_system = BuffSystem.new()
 	var badges := buff_system.get_status_badges(stats)
 	for badge_variant in badges:
 		if not (badge_variant is Dictionary):

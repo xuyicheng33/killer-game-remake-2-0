@@ -46,4 +46,4 @@ static func _emit(tag: String, enemy: String, detail: String) -> void:
 	]
 	if detail.length() > 0:
 		line += " %s" % detail
-	print(line)
+	push_warning(line)

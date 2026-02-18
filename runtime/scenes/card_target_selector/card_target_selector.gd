@@ -10,8 +10,25 @@ var targeting := false
 
 
 func _ready() -> void:
-	Events.card_aim_started.connect(_on_card_aim_started)
-	Events.card_aim_ended.connect(_on_card_aim_ended)
+	_connect_signals()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
+	if not Events.card_aim_started.is_connected(_on_card_aim_started):
+		Events.card_aim_started.connect(_on_card_aim_started)
+	if not Events.card_aim_ended.is_connected(_on_card_aim_ended):
+		Events.card_aim_ended.connect(_on_card_aim_ended)
+
+
+func _disconnect_signals() -> void:
+	if Events.card_aim_started.is_connected(_on_card_aim_started):
+		Events.card_aim_started.disconnect(_on_card_aim_started)
+	if Events.card_aim_ended.is_connected(_on_card_aim_ended):
+		Events.card_aim_ended.disconnect(_on_card_aim_ended)
 
 
 func _process(_delta: float) -> void:

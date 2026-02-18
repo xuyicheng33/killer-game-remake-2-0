@@ -46,10 +46,10 @@ func _get_targets(targets: Array[Node]) -> Array[Node]:
 			return []
 
 
-func play(targets: Array[Node], char_stats: CharacterStats) -> void:
+func play(targets: Array[Node], char_stats: CharacterStats, battle_context: RefCounted = null) -> void:
 	if char_stats == null:
 		return
-	if not can_play(char_stats):
+	if not can_play(char_stats, battle_context):
 		return
 
 	Events.card_played.emit(self)
@@ -63,16 +63,17 @@ func play(targets: Array[Node], char_stats: CharacterStats) -> void:
 	char_stats.mana = maxi(char_stats.mana - mana_to_spend, 0)
 	
 	if is_single_targeted():
-		apply_effects(targets)
+		apply_effects(targets, battle_context)
 	else:
-		apply_effects(_get_targets(targets))
+		apply_effects(_get_targets(targets), battle_context)
 
 
-func can_play(char_stats: CharacterStats) -> bool:
+func can_play(char_stats: CharacterStats, battle_context: RefCounted = null) -> bool:
 	if char_stats == null:
 		return false
-	if not CardZonesModel.get_instance().is_player_action_window_open():
-		return false
+	if battle_context != null and battle_context.has_method("is_player_action_window_open"):
+		if not battle_context.is_player_action_window_open():
+			return false
 	if keyword_x_cost:
 		return char_stats.mana > 0
 	return char_stats.can_play_card(self)
@@ -88,6 +89,5 @@ func is_ethereal_card() -> bool:
 	return keyword_ethereal or keyword_void
 
 
-func apply_effects(_targets: Array[Node]) -> void:
+func apply_effects(_targets: Array[Node], _battle_context: RefCounted = null) -> void:
 	pass
-	

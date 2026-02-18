@@ -1,6 +1,7 @@
 extends Node2D
 
 const BATTLE_PHASE_STATE_MACHINE_SCRIPT := preload("res://runtime/modules/battle_loop/battle_phase_state_machine.gd")
+const BATTLE_CONTEXT_SCRIPT := preload("res://runtime/modules/battle_loop/battle_context.gd")
 const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
 const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
 const ENCOUNTER_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/encounter_registry.gd")
@@ -22,6 +23,7 @@ const PHASE_LOG_LIMIT := 8
 @onready var phase_log_label: Label = %PhaseLogLabel
 
 var _battle_phase_machine: BattlePhaseStateMachine
+var _battle_context: BattleContext
 var _phase_logs: Array[String] = []
 var _battle_ended := false
 var _battle_setup_done := false
@@ -33,22 +35,61 @@ func _ready() -> void:
 	battle_ui.char_stats = _active_stats
 	player.stats = _active_stats
 
+	_battle_context = BATTLE_CONTEXT_SCRIPT.new()
+	battle_ui.bind_battle_context(_battle_context)
+
 	_apply_responsive_layout()
-	var viewport := get_viewport()
-	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
-		viewport.size_changed.connect(_on_viewport_resized)
+	_connect_signals()
 	
 	_battle_phase_machine = BATTLE_PHASE_STATE_MACHINE_SCRIPT.new()
 	_battle_phase_machine.phase_changed.connect(_on_phase_changed)
 
-	enemy_handler.child_order_changed.connect(_on_enemies_child_order_changed)
-	Events.player_hand_drawn.connect(_on_player_hand_drawn)
-	Events.player_turn_ended.connect(_on_player_turn_ended)
-	Events.player_hand_discarded.connect(_on_player_hand_discarded)
-	Events.enemy_turn_ended.connect(_on_enemy_turn_ended)
-	Events.player_died.connect(_on_player_died)
-	
 	start_battle(_active_stats)
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+	if _battle_context != null:
+		_battle_context.unbind_battle_context()
+		_battle_context = null
+
+
+func _connect_signals() -> void:
+	var viewport := get_viewport()
+	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.connect(_on_viewport_resized)
+
+	if not enemy_handler.child_order_changed.is_connected(_on_enemies_child_order_changed):
+		enemy_handler.child_order_changed.connect(_on_enemies_child_order_changed)
+	if not Events.player_hand_drawn.is_connected(_on_player_hand_drawn):
+		Events.player_hand_drawn.connect(_on_player_hand_drawn)
+	if not Events.player_turn_ended.is_connected(_on_player_turn_ended):
+		Events.player_turn_ended.connect(_on_player_turn_ended)
+	if not Events.player_hand_discarded.is_connected(_on_player_hand_discarded):
+		Events.player_hand_discarded.connect(_on_player_hand_discarded)
+	if not Events.enemy_turn_ended.is_connected(_on_enemy_turn_ended):
+		Events.enemy_turn_ended.connect(_on_enemy_turn_ended)
+	if not Events.player_died.is_connected(_on_player_died):
+		Events.player_died.connect(_on_player_died)
+
+
+func _disconnect_signals() -> void:
+	var viewport := get_viewport()
+	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.disconnect(_on_viewport_resized)
+
+	if enemy_handler.child_order_changed.is_connected(_on_enemies_child_order_changed):
+		enemy_handler.child_order_changed.disconnect(_on_enemies_child_order_changed)
+	if Events.player_hand_drawn.is_connected(_on_player_hand_drawn):
+		Events.player_hand_drawn.disconnect(_on_player_hand_drawn)
+	if Events.player_turn_ended.is_connected(_on_player_turn_ended):
+		Events.player_turn_ended.disconnect(_on_player_turn_ended)
+	if Events.player_hand_discarded.is_connected(_on_player_hand_discarded):
+		Events.player_hand_discarded.disconnect(_on_player_hand_discarded)
+	if Events.enemy_turn_ended.is_connected(_on_enemy_turn_ended):
+		Events.enemy_turn_ended.disconnect(_on_enemy_turn_ended)
+	if Events.player_died.is_connected(_on_player_died):
+		Events.player_died.disconnect(_on_player_died)
 
 
 func start_battle(stats: CharacterStats) -> void:
@@ -58,6 +99,7 @@ func start_battle(stats: CharacterStats) -> void:
 	_battle_ended = false
 	_battle_setup_done = false
 	_phase_logs.clear()
+	_battle_context.bind_battle_context(_active_stats, battle_ui.hand_container)
 	_spawn_enemies()
 	enemy_handler.reset_enemy_actions()
 	_battle_phase_machine.start()
@@ -93,6 +135,7 @@ func _spawn_enemies() -> void:
 		enemy.stats = enemy_stats
 		
 		var offset_x := (i - (enemy_count - 1) / 2.0) * spacing
+		# 视觉布局随机抖动，不影响游戏逻辑或种子一致性
 		enemy.position = Vector2(start_x + offset_x, base_y + randf_range(-30, 30))
 		
 		enemy_handler.add_child(enemy)

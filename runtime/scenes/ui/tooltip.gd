@@ -11,10 +11,27 @@ var is_visible_now := false
 
 
 func _ready() -> void:
-	Events.card_tooltip_requested.connect(show_tooltip)
-	Events.tooltip_hide_requested.connect(hide_tooltip)
+	_connect_signals()
 	modulate = Color.TRANSPARENT
 	hide()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
+	if not Events.card_tooltip_requested.is_connected(show_tooltip):
+		Events.card_tooltip_requested.connect(show_tooltip)
+	if not Events.tooltip_hide_requested.is_connected(hide_tooltip):
+		Events.tooltip_hide_requested.connect(hide_tooltip)
+
+
+func _disconnect_signals() -> void:
+	if Events.card_tooltip_requested.is_connected(show_tooltip):
+		Events.card_tooltip_requested.disconnect(show_tooltip)
+	if Events.tooltip_hide_requested.is_connected(hide_tooltip):
+		Events.tooltip_hide_requested.disconnect(hide_tooltip)
 
 
 func show_tooltip(icon: Texture, text: String) -> void:

@@ -18,18 +18,40 @@ var _adapter: RewardUIAdapter = REWARD_UI_ADAPTER_SCRIPT.new() as RewardUIAdapte
 
 
 func _ready() -> void:
+	_connect_signals()
+	_adapter.generate_bundle()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
 	if not _adapter.projection_changed.is_connected(_render):
 		_adapter.projection_changed.connect(_render)
 	if not _adapter.reward_completed.is_connected(_on_adapter_reward_completed):
 		_adapter.reward_completed.connect(_on_adapter_reward_completed)
 
-	_apply_responsive_layout()
 	var viewport := get_viewport()
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
-	skip_button.pressed.connect(_on_skip_pressed)
-	_adapter.generate_bundle()
+	if not skip_button.pressed.is_connected(_on_skip_pressed):
+		skip_button.pressed.connect(_on_skip_pressed)
+
+
+func _disconnect_signals() -> void:
+	if _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.disconnect(_render)
+	if _adapter.reward_completed.is_connected(_on_adapter_reward_completed):
+		_adapter.reward_completed.disconnect(_on_adapter_reward_completed)
+
+	var viewport := get_viewport()
+	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.disconnect(_on_viewport_resized)
+
+	if skip_button.pressed.is_connected(_on_skip_pressed):
+		skip_button.pressed.disconnect(_on_skip_pressed)
 
 
 func _set_run_state(value: RunState) -> void:

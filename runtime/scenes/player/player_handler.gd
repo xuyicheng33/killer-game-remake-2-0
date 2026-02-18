@@ -10,7 +10,21 @@ var character: CharacterStats
 
 
 func _ready() -> void:
-	Events.card_played.connect(_on_card_played)
+	_connect_signals()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
+	if not Events.card_played.is_connected(_on_card_played):
+		Events.card_played.connect(_on_card_played)
+
+
+func _disconnect_signals() -> void:
+	if Events.card_played.is_connected(_on_card_played):
+		Events.card_played.disconnect(_on_card_played)
 
 
 func start_battle(char_stats: CharacterStats) -> void:

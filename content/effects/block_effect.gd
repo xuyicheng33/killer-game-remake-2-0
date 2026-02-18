@@ -1,22 +1,29 @@
 class_name BlockEffect
 extends Effect
 
-const EFFECT_STACK_ENGINE := preload("res://runtime/modules/effect_engine/effect_stack_engine.gd")
-const BUFF_SYSTEM := preload("res://runtime/modules/buff_system/buff_system.gd")
-
 var amount := 0
 
 
-func execute(targets: Array[Node]) -> void:
+func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 	var effect_name := "Block(%d)" % amount
-	EFFECT_STACK_ENGINE.get_instance().enqueue_effect(effect_name, targets, _apply_block_to_target)
+	if battle_context != null and battle_context.has_method("get"):
+		var es = battle_context.get("effect_stack")
+		if es != null:
+			es.enqueue_effect(effect_name, targets, _apply_block_to_target.bind(battle_context))
+			return
+	push_warning("BlockEffect: BattleContext is null or invalid, effect may not apply correctly")
 
 
-func _apply_block_to_target(target: Node) -> void:
+func _apply_block_to_target(target: Node, battle_context: RefCounted) -> void:
 	if not (target is Enemy or target is Player):
 		return
 
-	var buff_system := BUFF_SYSTEM.get_instance()
+	if battle_context == null:
+		return
+
+	var buff_system = battle_context.get("buff_system")
+	if buff_system == null:
+		return
 	var final_block := buff_system.get_modified_block(amount, target)
 	target.stats.block += final_block
 	SFXPlayer.play(sound)

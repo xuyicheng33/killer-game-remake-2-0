@@ -4,17 +4,22 @@
 **任务级别**: L2（跨模块，影响战斗结算链路）
 **执行人**: 程序员
 **创建日期**: 2026-02-18
+**更新日期**: 2026-02-18（扩展至包含 Phase 1 全部修复）
 
 ---
 
 ## 1. 目标
 
-修复 BuffSystem 中的两个空钩子（P0 级别阻断问题），使战斗系统状态结算链路完整可用。
+完成 Phase 1 全部 P0/P1 修复：
 
-### P0 问题定位
-
+### P0 问题（已完成）
 1. **Fix 1-A-1**: `buff_system.gd:192` `_run_turn_start_hooks` 为空函数
 2. **Fix 1-A-2**: `buff_system.gd:207` `_run_after_card_played_hooks` 为空函数
+
+### P1 问题（本次执行）
+1. **Fix 1-B-1**: 领域层手动单例改为依赖注入
+2. **Fix 1-B-2**: 信号生命周期规范
+3. **Fix 1-B-3**: unsafe 类型转换
 
 ---
 
@@ -23,13 +28,49 @@
 ## 白名单文件
 
 - `runtime/modules/buff_system/buff_system.gd`
+- `runtime/modules/battle_loop/battle_context.gd`
+- `runtime/modules/effect_engine/effect_stack_engine.gd`
+- `runtime/modules/card_system/card_zones_model.gd`
+- `runtime/modules/ui_shell/adapter/battle_ui_adapter.gd`
+- `runtime/modules/ui_shell/viewmodel/stats_view_model.gd`
+- `runtime/scenes/battle/battle.gd`
+- `runtime/scenes/ui/battle_ui.gd`
+- `runtime/scenes/ui/hand.gd`
+- `runtime/scenes/ui/stats_ui.gd`
+- `runtime/scenes/ui/mana_ui.gd`
+- `runtime/scenes/ui/relic_potion_ui.gd`
+- `runtime/scenes/ui/battle_over_panel.gd`
+- `runtime/scenes/ui/red_flash.gd`
+- `runtime/scenes/ui/tooltip.gd`
+- `runtime/scenes/card_ui/card_ui.gd`
+- `runtime/scenes/card_target_selector/card_target_selector.gd`
+- `runtime/scenes/app/app.gd`
+- `runtime/scenes/enemy/enemy.gd`
+- `runtime/scenes/enemy/enemy_handler.gd`
+- `runtime/scenes/player/player.gd`
+- `runtime/scenes/player/player_handler.gd`
+- `runtime/scenes/map/map_screen.gd`
+- `runtime/scenes/map/rest_screen.gd`
+- `runtime/scenes/reward/reward_screen.gd`
+- `runtime/scenes/shop/shop_screen.gd`
+- `runtime/scenes/events/event_screen.gd`
+- `runtime/global/repro_log.gd`
+- `content/effects/damage_effect.gd`
+- `content/effects/block_effect.gd`
+- `content/effects/apply_status_effect.gd`
+- `content/custom_resources/card.gd`
+- `content/custom_resources/effect.gd`
+- `content/characters/warrior/cards/generated/warrior_slash.gd`
+- `content/characters/warrior/cards/generated/warrior_block.gd`
+- `content/characters/warrior/cards/generated/warrior_axe_attack.gd`
+- `content/characters/warrior/cards/generated/warrior_pipeline_bash.gd`
+- `runtime/modules/relic_potion/relic_potion_system.gd`
 - `dev/tests/unit/test_buff_system.gd`
+- `dev/tests/unit/test_battle_context.gd`
 - `docs/tasks/fix-p0-battle-core-v1/**`
 
 ### 不在本任务范围
 
-- P1 重构（领域层单例改依赖注入）
-- P2 修复（视觉层随机调用）
 - 新增状态类型（Phase 2 任务）
 
 ---

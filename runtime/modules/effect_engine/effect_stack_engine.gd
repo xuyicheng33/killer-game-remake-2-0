@@ -3,18 +3,10 @@ extends RefCounted
 
 signal debug_state_changed(queue_size: int, current_item: String)
 
-static var _instance: EffectStackEngine
-
 var _queue: Array[Dictionary] = []
 var _is_processing := false
 var _current_item := "idle"
 var _next_entry_id := 1
-
-
-static func get_instance() -> EffectStackEngine:
-	if _instance == null:
-		_instance = EffectStackEngine.new()
-	return _instance
 
 
 func enqueue_effect(effect_name: String, targets: Array[Node], apply_callable: Callable) -> void:
@@ -110,4 +102,4 @@ func _emit_debug_state() -> void:
 
 func _print_debug(event: String, detail: String) -> void:
 	_emit_debug_state()
-	print("[EffectStack] %s | %s | queue=%d current=%s" % [event, detail, _queue.size(), _current_item])
+	push_warning("[EffectStack] %s | %s | queue=%d current=%s" % [event, detail, _queue.size(), _current_item])

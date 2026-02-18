@@ -4,21 +4,52 @@ extends RefCounted
 signal projection_changed(projection: Dictionary)
 signal end_turn_button_enabled_changed(enabled: bool)
 
-const CARD_ZONES_MODEL_SCRIPT := preload("res://runtime/modules/card_system/card_zones_model.gd")
 const BATTLE_UI_VIEW_MODEL_SCRIPT := preload("res://runtime/modules/ui_shell/viewmodel/battle_ui_view_model.gd")
 
 var _card_zones_model: CardZonesModel
 var _view_model: BattleUIViewModel = BATTLE_UI_VIEW_MODEL_SCRIPT.new() as BattleUIViewModel
+var _signals_connected := false
 
 
 func _init() -> void:
-	_card_zones_model = CARD_ZONES_MODEL_SCRIPT.get_instance()
-	if not _card_zones_model.zone_counts_changed.is_connected(_on_zone_counts_changed):
+	_connect_signals()
+
+
+func dispose() -> void:
+	_disconnect_signals()
+	if _card_zones_model != null and _card_zones_model.zone_counts_changed.is_connected(_on_zone_counts_changed):
+		_card_zones_model.zone_counts_changed.disconnect(_on_zone_counts_changed)
+	_card_zones_model = null
+
+
+func _connect_signals() -> void:
+	if _signals_connected:
+		return
+	_signals_connected = true
+	if not Events.player_hand_drawn.is_connected(_on_player_hand_drawn):
+		Events.player_hand_drawn.connect(_on_player_hand_drawn)
+
+
+func _disconnect_signals() -> void:
+	if not _signals_connected:
+		return
+	_signals_connected = false
+	if Events.player_hand_drawn.is_connected(_on_player_hand_drawn):
+		Events.player_hand_drawn.disconnect(_on_player_hand_drawn)
+
+
+func bind_battle_context(battle_context: BattleContext) -> void:
+	if _card_zones_model != null and _card_zones_model.zone_counts_changed.is_connected(_on_zone_counts_changed):
+		_card_zones_model.zone_counts_changed.disconnect(_on_zone_counts_changed)
+	
+	_card_zones_model = battle_context.card_zones
+	if _card_zones_model != null and not _card_zones_model.zone_counts_changed.is_connected(_on_zone_counts_changed):
 		_card_zones_model.zone_counts_changed.connect(_on_zone_counts_changed)
-	Events.player_hand_drawn.connect(_on_player_hand_drawn)
 
 
 func bind_context(char_stats: CharacterStats, hand: Hand) -> void:
+	if _card_zones_model == null:
+		return
 	_card_zones_model.bind_context(char_stats, hand)
 	var counts: Dictionary = _card_zones_model.get_zone_counts()
 	var projection := _view_model.project_zone_counts(

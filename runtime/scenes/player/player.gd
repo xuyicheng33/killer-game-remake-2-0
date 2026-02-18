@@ -20,10 +20,17 @@ func _ready() -> void:
 	_default_sprite_scale = sprite_2d.scale
 
 
+func _exit_tree() -> void:
+	if stats != null and stats.stats_changed.is_connected(update_stats):
+		stats.stats_changed.disconnect(update_stats)
+
+
 func set_character_stats(value: CharacterStats) -> void:
+	if stats != null and stats.stats_changed.is_connected(update_stats):
+		stats.stats_changed.disconnect(update_stats)
 	stats = value
 	
-	if not stats.stats_changed.is_connected(update_stats):
+	if stats != null and not stats.stats_changed.is_connected(update_stats):
 		stats.stats_changed.connect(update_stats)
 
 	update_player()

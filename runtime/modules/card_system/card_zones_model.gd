@@ -3,8 +3,6 @@ extends RefCounted
 
 signal zone_counts_changed(draw_count: int, hand_count: int, discard_count: int, exhaust_count: int)
 
-static var _instance: CardZonesModel
-
 var _events_connected := false
 var _character: CharacterStats = null
 var _hand: Hand = null
@@ -15,16 +13,10 @@ var _turn_end_hand_snapshot: Array[Card] = []
 var _player_action_window_open := false
 
 
-static func get_instance() -> CardZonesModel:
-	if _instance == null:
-		_instance = CardZonesModel.new()
-		_instance._connect_events()
-	return _instance
-
-
 func bind_context(character: CharacterStats, hand: Hand) -> void:
 	_disconnect_pile_signals()
 	_disconnect_hand_signals()
+	_disconnect_events()
 
 	_character = character
 	_hand = hand
@@ -32,9 +24,21 @@ func bind_context(character: CharacterStats, hand: Hand) -> void:
 	_turn_end_hand_snapshot.clear()
 	_player_action_window_open = false
 
+	_connect_events()
 	_connect_pile_signals()
 	_connect_hand_signals()
 	_emit_zone_counts()
+
+
+func unbind_context() -> void:
+	_disconnect_pile_signals()
+	_disconnect_hand_signals()
+	_disconnect_events()
+	_character = null
+	_hand = null
+	_exhaust_pile = CardPile.new()
+	_turn_end_hand_snapshot.clear()
+	_player_action_window_open = false
 
 
 func is_player_action_window_open() -> bool:
@@ -72,6 +76,14 @@ func get_zone_counts() -> Dictionary:
 	}
 
 
+func connect_events() -> void:
+	_connect_events()
+
+
+func disconnect_events() -> void:
+	_disconnect_events()
+
+
 func _connect_events() -> void:
 	if _events_connected:
 		return
@@ -81,6 +93,21 @@ func _connect_events() -> void:
 	Events.player_turn_ended.connect(_on_player_turn_ended)
 	Events.player_hand_discarded.connect(_on_player_hand_discarded)
 	Events.player_hand_drawn.connect(_on_player_hand_drawn)
+
+
+func _disconnect_events() -> void:
+	if not _events_connected:
+		return
+
+	_events_connected = false
+	if Events.card_played.is_connected(_on_card_played):
+		Events.card_played.disconnect(_on_card_played)
+	if Events.player_turn_ended.is_connected(_on_player_turn_ended):
+		Events.player_turn_ended.disconnect(_on_player_turn_ended)
+	if Events.player_hand_discarded.is_connected(_on_player_hand_discarded):
+		Events.player_hand_discarded.disconnect(_on_player_hand_discarded)
+	if Events.player_hand_drawn.is_connected(_on_player_hand_drawn):
+		Events.player_hand_drawn.disconnect(_on_player_hand_drawn)
 
 
 func _on_card_played(card: Card) -> void:

@@ -5,6 +5,8 @@ const CARD_UI_SCENE := preload("res://runtime/scenes/card_ui/card_ui.tscn")
 
 @export var char_stats: CharacterStats
 
+var battle_context: RefCounted
+
 
 func add_card(card: Card) -> void:
 	if card == null:
@@ -16,6 +18,7 @@ func add_card(card: Card) -> void:
 	new_card_ui.card = card
 	new_card_ui.parent = self
 	new_card_ui.char_stats = char_stats
+	new_card_ui.battle_context = battle_context
 
 
 func discard_card(card: CardUI) -> void:

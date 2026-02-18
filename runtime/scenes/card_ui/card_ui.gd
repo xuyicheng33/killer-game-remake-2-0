@@ -22,17 +22,52 @@ var parent: Control
 var tween: Tween
 var playable := true : set = _set_playable
 var disabled := false
+var battle_context: RefCounted
 
 
 func _ready() -> void:
-	Events.card_aim_started.connect(_on_card_drag_or_aiming_started)
-	Events.card_drag_started.connect(_on_card_drag_or_aiming_started)
-	Events.card_drag_ended.connect(_on_card_drag_or_aim_ended)
-	Events.card_aim_ended.connect(_on_card_drag_or_aim_ended)
-	Events.player_hand_drawn.connect(_refresh_playable_state)
-	Events.player_turn_ended.connect(_refresh_playable_state)
-	Events.player_hand_discarded.connect(_refresh_playable_state)
+	_connect_signals()
 	card_state_machine.init(self)
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+	if char_stats != null and char_stats.stats_changed.is_connected(_on_char_stats_changed):
+		char_stats.stats_changed.disconnect(_on_char_stats_changed)
+
+
+func _connect_signals() -> void:
+	if not Events.card_aim_started.is_connected(_on_card_drag_or_aiming_started):
+		Events.card_aim_started.connect(_on_card_drag_or_aiming_started)
+	if not Events.card_drag_started.is_connected(_on_card_drag_or_aiming_started):
+		Events.card_drag_started.connect(_on_card_drag_or_aiming_started)
+	if not Events.card_drag_ended.is_connected(_on_card_drag_or_aim_ended):
+		Events.card_drag_ended.connect(_on_card_drag_or_aim_ended)
+	if not Events.card_aim_ended.is_connected(_on_card_drag_or_aim_ended):
+		Events.card_aim_ended.connect(_on_card_drag_or_aim_ended)
+	if not Events.player_hand_drawn.is_connected(_refresh_playable_state):
+		Events.player_hand_drawn.connect(_refresh_playable_state)
+	if not Events.player_turn_ended.is_connected(_refresh_playable_state):
+		Events.player_turn_ended.connect(_refresh_playable_state)
+	if not Events.player_hand_discarded.is_connected(_refresh_playable_state):
+		Events.player_hand_discarded.connect(_refresh_playable_state)
+
+
+func _disconnect_signals() -> void:
+	if Events.card_aim_started.is_connected(_on_card_drag_or_aiming_started):
+		Events.card_aim_started.disconnect(_on_card_drag_or_aiming_started)
+	if Events.card_drag_started.is_connected(_on_card_drag_or_aiming_started):
+		Events.card_drag_started.disconnect(_on_card_drag_or_aiming_started)
+	if Events.card_drag_ended.is_connected(_on_card_drag_or_aim_ended):
+		Events.card_drag_ended.disconnect(_on_card_drag_or_aim_ended)
+	if Events.card_aim_ended.is_connected(_on_card_drag_or_aim_ended):
+		Events.card_aim_ended.disconnect(_on_card_drag_or_aim_ended)
+	if Events.player_hand_drawn.is_connected(_refresh_playable_state):
+		Events.player_hand_drawn.disconnect(_refresh_playable_state)
+	if Events.player_turn_ended.is_connected(_refresh_playable_state):
+		Events.player_turn_ended.disconnect(_refresh_playable_state)
+	if Events.player_hand_discarded.is_connected(_refresh_playable_state):
+		Events.player_hand_discarded.disconnect(_refresh_playable_state)
 
 
 func _input(event: InputEvent) -> void:
@@ -49,10 +84,10 @@ func play() -> void:
 		return
 	if char_stats == null:
 		return
-	if not card.can_play(char_stats):
+	if not card.can_play(char_stats, battle_context):
 		return
 	
-	card.play(targets, char_stats)
+	card.play(targets, char_stats, battle_context)
 	queue_free()
 
 
@@ -89,8 +124,10 @@ func _set_playable(value: bool) -> void:
 
 
 func _set_char_stats(value: CharacterStats) -> void:
+	if char_stats != null and char_stats.stats_changed.is_connected(_on_char_stats_changed):
+		char_stats.stats_changed.disconnect(_on_char_stats_changed)
 	char_stats = value
-	if not char_stats.stats_changed.is_connected(_on_char_stats_changed):
+	if char_stats != null and not char_stats.stats_changed.is_connected(_on_char_stats_changed):
 		char_stats.stats_changed.connect(_on_char_stats_changed)
 	_refresh_playable_state()
 
@@ -125,4 +162,4 @@ func _refresh_playable_state() -> void:
 		return
 	if char_stats == null:
 		return
-	self.playable = card.can_play(char_stats)
+	self.playable = card.can_play(char_stats, battle_context)

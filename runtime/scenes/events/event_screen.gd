@@ -18,21 +18,42 @@ var _adapter: EventUIAdapter = EVENT_UI_ADAPTER_SCRIPT.new() as EventUIAdapter
 
 
 func _ready() -> void:
+	_connect_signals()
+	continue_button.hide()
+	# 触发初始渲染
+	_adapter.refresh()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
 	if not _adapter.projection_changed.is_connected(_render):
 		_adapter.projection_changed.connect(_render)
 	if not _adapter.event_completed.is_connected(_on_event_completed):
 		_adapter.event_completed.connect(_on_event_completed)
 
-	_apply_responsive_layout()
 	var viewport := get_viewport()
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
-	continue_button.pressed.connect(_on_continue_pressed)
-	continue_button.hide()
+	if not continue_button.pressed.is_connected(_on_continue_pressed):
+		continue_button.pressed.connect(_on_continue_pressed)
 
-	# 触发初始渲染
-	_adapter.refresh()
+
+func _disconnect_signals() -> void:
+	if _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.disconnect(_render)
+	if _adapter.event_completed.is_connected(_on_event_completed):
+		_adapter.event_completed.disconnect(_on_event_completed)
+
+	var viewport := get_viewport()
+	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.disconnect(_on_viewport_resized)
+
+	if continue_button.pressed.is_connected(_on_continue_pressed):
+		continue_button.pressed.disconnect(_on_continue_pressed)
 
 
 func _set_run_state(value: RunState) -> void:

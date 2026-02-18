@@ -26,15 +26,30 @@ func _set_relic_potion_system(value: RelicPotionSystem) -> void:
 
 
 func _ready() -> void:
+	_connect_signals()
+	_adapter.refresh()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
 	if not _adapter.projection_changed.is_connected(_render):
 		_adapter.projection_changed.connect(_render)
 
-	_apply_responsive_layout()
 	var viewport := get_viewport()
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
-	_adapter.refresh()
+
+func _disconnect_signals() -> void:
+	if _adapter.projection_changed.is_connected(_render):
+		_adapter.projection_changed.disconnect(_render)
+
+	var viewport := get_viewport()
+	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.disconnect(_on_viewport_resized)
 
 
 func _on_use_potion(index: int) -> void:

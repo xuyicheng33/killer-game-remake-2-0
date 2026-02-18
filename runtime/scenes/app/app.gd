@@ -29,15 +29,35 @@ func _ready() -> void:
 	add_child(relic_potion_system)
 	relic_potion_ui.relic_potion_system = relic_potion_system
 
-	_apply_overlay_layout()
+	_connect_signals()
+	if not _try_load_saved_run():
+		_start_new_run()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
 	var viewport := get_viewport()
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
-	Events.battle_finished.connect(_on_battle_finished)
-	restart_button.pressed.connect(_start_new_run)
-	if not _try_load_saved_run():
-		_start_new_run()
+	if not Events.battle_finished.is_connected(_on_battle_finished):
+		Events.battle_finished.connect(_on_battle_finished)
+	if not restart_button.pressed.is_connected(_start_new_run):
+		restart_button.pressed.connect(_start_new_run)
+
+
+func _disconnect_signals() -> void:
+	var viewport := get_viewport()
+	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.disconnect(_on_viewport_resized)
+
+	if Events.battle_finished.is_connected(_on_battle_finished):
+		Events.battle_finished.disconnect(_on_battle_finished)
+	if restart_button.pressed.is_connected(_start_new_run):
+		restart_button.pressed.disconnect(_start_new_run)
 
 
 func _start_new_run() -> void:
@@ -208,7 +228,7 @@ func _try_load_saved_run() -> bool:
 
 	var result := run_flow_service.lifecycle_service.try_load_saved_run(hero_template)
 	if not bool(result.get("ok", false)):
-		print("[save] %s" % str(result.get("message", "读档失败。")))
+		push_warning("[save] %s" % str(result.get("message", "读档失败。")))
 		return false
 
 	_clear_scene_host()
@@ -227,11 +247,11 @@ func _try_load_saved_run() -> bool:
 func _save_checkpoint(tag: String) -> void:
 	var result := run_flow_service.lifecycle_service.save_checkpoint(run_state, tag)
 	if not bool(result.get("ok", false)):
-		print("[save] %s" % str(result.get("message", "存档失败。")))
+		push_warning("[save] %s" % str(result.get("message", "存档失败。")))
 		return
 
 	if tag.length() > 0:
-		print("[save] checkpoint: %s" % tag)
+		push_warning("[save] checkpoint: %s" % tag)
 
 
 func _on_viewport_resized() -> void:

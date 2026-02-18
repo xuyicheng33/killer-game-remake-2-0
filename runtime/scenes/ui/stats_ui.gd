@@ -12,9 +12,22 @@ const STATS_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter
 var _adapter: StatsUIAdapter = STATS_UI_ADAPTER_SCRIPT.new() as StatsUIAdapter
 
 func _ready() -> void:
+	_connect_signals()
+	_adapter.refresh()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
 	if not _adapter.projection_changed.is_connected(_apply_projection):
 		_adapter.projection_changed.connect(_apply_projection)
-	_adapter.refresh()
+
+
+func _disconnect_signals() -> void:
+	if _adapter.projection_changed.is_connected(_apply_projection):
+		_adapter.projection_changed.disconnect(_apply_projection)
 
 
 func update_stats(stats: Stats) -> void:

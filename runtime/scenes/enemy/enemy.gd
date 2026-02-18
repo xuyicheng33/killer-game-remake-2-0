@@ -31,6 +31,10 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if Events.enemy_action_completed.is_connected(_on_enemy_action_completed):
 		Events.enemy_action_completed.disconnect(_on_enemy_action_completed)
+	if stats != null and stats.stats_changed.is_connected(update_stats):
+		stats.stats_changed.disconnect(update_stats)
+		if stats.stats_changed.is_connected(update_action):
+			stats.stats_changed.disconnect(update_action)
 
 
 func set_current_action(value: EnemyAction) -> void:

@@ -1,17 +1,23 @@
 class_name ApplyStatusEffect
 extends Effect
 
-const BUFF_SYSTEM := preload("res://runtime/modules/buff_system/buff_system.gd")
-
-@export var status_id := BUFF_SYSTEM.STATUS_WEAK
-@export var stacks := 1
+var status_id := "weak"
+var stacks := 1
 
 
-func execute(targets: Array[Node]) -> void:
+func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 	if stacks == 0:
 		return
 
-	var buff_system := BUFF_SYSTEM.get_instance()
+	if battle_context == null:
+		push_warning("ApplyStatusEffect: BattleContext is null, cannot apply status")
+		return
+
+	var buff_system = battle_context.get("buff_system")
+	if buff_system == null:
+		push_warning("ApplyStatusEffect: buff_system is null, cannot apply status")
+		return
+
 	for target in targets:
 		if target == null or not is_instance_valid(target):
 			continue

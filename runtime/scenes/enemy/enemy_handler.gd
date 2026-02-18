@@ -3,7 +3,21 @@ extends Node2D
 
 
 func _ready() -> void:
-	Events.enemy_action_completed.connect(_on_enemy_action_completed)
+	_connect_signals()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
+	if not Events.enemy_action_completed.is_connected(_on_enemy_action_completed):
+		Events.enemy_action_completed.connect(_on_enemy_action_completed)
+
+
+func _disconnect_signals() -> void:
+	if Events.enemy_action_completed.is_connected(_on_enemy_action_completed):
+		Events.enemy_action_completed.disconnect(_on_enemy_action_completed)
 
 
 func reset_enemy_actions() -> void:

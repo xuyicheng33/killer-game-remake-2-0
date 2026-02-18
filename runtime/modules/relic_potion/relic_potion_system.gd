@@ -9,10 +9,25 @@ var _cards_played_in_battle := 0
 
 
 func _ready() -> void:
+	_connect_signals()
+
+
+func _exit_tree() -> void:
+	_disconnect_signals()
+
+
+func _connect_signals() -> void:
 	if not Events.card_played.is_connected(_on_card_played):
 		Events.card_played.connect(_on_card_played)
 	if not Events.player_hit.is_connected(_on_player_hit):
 		Events.player_hit.connect(_on_player_hit)
+
+
+func _disconnect_signals() -> void:
+	if Events.card_played.is_connected(_on_card_played):
+		Events.card_played.disconnect(_on_card_played)
+	if Events.player_hit.is_connected(_on_player_hit):
+		Events.player_hit.disconnect(_on_player_hit)
 
 
 func bind_run_state(value: RunState) -> void:
@@ -51,9 +66,9 @@ func _trigger_battle_start() -> void:
 		return
 
 	for relic in run_state.relics:
-		var relic_data := relic as RelicData
-		if relic_data == null:
+		if not (relic is RelicData):
 			continue
+		var relic_data: RelicData = relic
 		if relic_data.on_battle_start_heal <= 0:
 			continue
 
@@ -67,9 +82,9 @@ func _on_card_played(_card: Card) -> void:
 
 	_cards_played_in_battle += 1
 	for relic in run_state.relics:
-		var relic_data := relic as RelicData
-		if relic_data == null:
+		if not (relic is RelicData):
 			continue
+		var relic_data: RelicData = relic
 		if relic_data.on_card_played_gold <= 0:
 			continue
 
@@ -88,9 +103,9 @@ func _on_player_hit() -> void:
 		return
 
 	for relic in run_state.relics:
-		var relic_data := relic as RelicData
-		if relic_data == null:
+		if not (relic is RelicData):
 			continue
+		var relic_data: RelicData = relic
 		if relic_data.on_player_hit_block <= 0:
 			continue
 
