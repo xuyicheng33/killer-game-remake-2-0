@@ -28,6 +28,17 @@
 - `runtime/modules/reward_economy/shop_offer_generator.gd` - 修复 deck 访问路径与药水上限约束
 - `dev/tests/unit/test_reward_economy.gd` - 新增 6 个测试并通过
 
+### 2026-02-18 商店编译兼容修复
+
+**改动文件**:
+- `runtime/modules/reward_economy/shop_offer_generator.gd` - 增加 `BUY_PRICE/REMOVE_PRICE` 兼容别名
+- `runtime/modules/ui_shell/viewmodel/shop_ui_view_model.gd` - 切换到 `CARD_BUY_PRICE`，删卡价格改为动态计算
+- `runtime/modules/run_flow/shop_flow_service.gd` - 删卡改为统一走 `ShopOfferGenerator.remove_card()`
+
+**修复问题**:
+- 解决 Godot 解析报错：`Cannot find member "BUY_PRICE"/"REMOVE_PRICE" in base "ShopOfferGenerator"`
+- 避免删卡扣费与 `card_removal_count` 价格增长逻辑分叉
+
 ---
 
 ## 测试结果
@@ -49,4 +60,4 @@ res://dev/tests/unit/test_reward_economy.gd
 
 **通过** - 2026-02-19 复验
 
-修复了静态方法调用与 deck 访问路径问题，并补齐商店经济 6 项测试。
+修复了静态方法调用、deck 访问路径与商店常量兼容问题，补齐商店经济 6 项测试；`make test` 58/58 通过。

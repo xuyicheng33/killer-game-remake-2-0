@@ -50,6 +50,12 @@ static func generate_full_offers(run_state: RunState) -> Dictionary:
 - 明确药水背包上限常量（3）
 - 新增完整的 `test_reward_economy.gd` 覆盖
 
+### 2026-02-18 商店编译兼容修复
+
+- `shop_offer_generator.gd` 增加旧常量兼容别名（`BUY_PRICE`、`REMOVE_PRICE`）。
+- `shop_ui_view_model.gd` 与 `shop_flow_service.gd` 切换到新常量（`CARD_BUY_PRICE`）与动态删卡价格接口。
+- 删卡执行统一走 `ShopOfferGenerator.remove_card()`，确保与 `card_removal_count` 递增规则一致。
+
 ---
 
 ## 已知问题
