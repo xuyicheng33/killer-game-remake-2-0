@@ -13,6 +13,8 @@ const MAX_POTION_INVENTORY := 3
 const SHOP_CARD_COUNT := 3
 const SHOP_RELIC_COUNT := 1
 const SHOP_POTION_COUNT := 1
+const BUY_PRICE := CARD_BUY_PRICE
+const REMOVE_PRICE := REMOVE_BASE_PRICE
 
 
 static func generate_offers(run_state: RunState) -> Array[Dictionary]:

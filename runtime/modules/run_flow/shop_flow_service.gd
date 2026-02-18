@@ -23,7 +23,7 @@ func execute_buy_offer(run_state: RunState, offers: Array[Dictionary], index: in
 
 	var offer := offers[index]
 	var card := offer.get("card") as Card
-	var price := int(offer.get("price", SHOP_OFFER_GENERATOR_SCRIPT.BUY_PRICE))
+	var price := int(offer.get("price", SHOP_OFFER_GENERATOR_SCRIPT.CARD_BUY_PRICE))
 
 	if not run_state.spend_gold(price):
 		return _result(RunRouteDispatcher.ROUTE_SHOP, true, "金币不足，无法购买。")
@@ -40,17 +40,18 @@ func execute_buy_offer(run_state: RunState, offers: Array[Dictionary], index: in
 func execute_remove_card(run_state: RunState, index: int) -> Dictionary:
 	if run_state == null:
 		return _result(RunRouteDispatcher.ROUTE_SHOP, false, "")
-
-	if not run_state.spend_gold(SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE):
-		return _result(RunRouteDispatcher.ROUTE_SHOP, true, "金币不足，无法移除卡牌。")
-
-	var removed := run_state.remove_card_from_deck_at(index)
-	if removed == null:
-		# Keep old behavior: refund if remove fails.
-		run_state.add_gold(SHOP_OFFER_GENERATOR_SCRIPT.REMOVE_PRICE)
+	var cards := run_state.get_deck_cards()
+	if index < 0 or index >= cards.size():
 		return _result(RunRouteDispatcher.ROUTE_SHOP, true, "移除卡牌失败。")
 
-	return _result(RunRouteDispatcher.ROUTE_SHOP, true, "已移除：%s" % _card_name(removed))
+	var card := cards[index] as Card
+	var remove_price := SHOP_OFFER_GENERATOR_SCRIPT.calculate_remove_price(run_state)
+	if not SHOP_OFFER_GENERATOR_SCRIPT.remove_card(run_state, card):
+		if run_state.gold < remove_price:
+			return _result(RunRouteDispatcher.ROUTE_SHOP, true, "金币不足，无法移除卡牌。")
+		return _result(RunRouteDispatcher.ROUTE_SHOP, true, "移除卡牌失败。")
+
+	return _result(RunRouteDispatcher.ROUTE_SHOP, true, "已移除：%s" % _card_name(card))
 
 
 func execute_leave(run_state: RunState) -> Dictionary:
