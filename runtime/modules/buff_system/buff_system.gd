@@ -189,9 +189,31 @@ func _on_card_played(_card: Card) -> void:
 	_run_after_card_played_hooks(player)
 
 
-func _run_turn_start_hooks(_target: Node) -> void:
-	# Hook point reserved for statuses with turn-start behavior.
-	pass
+func _run_turn_start_hooks(target: Node) -> void:
+	var stats: Stats = _extract_stats(target)
+	if stats == null:
+		return
+	
+	var status_dict: Dictionary = stats.get_status_snapshot()
+	for status_id: String in status_dict.keys():
+		var stacks_variant: Variant = status_dict[status_id]
+		if not (stacks_variant is int):
+			continue
+		var stacks: int = stacks_variant
+		if stacks <= 0:
+			continue
+		
+		match status_id:
+			STATUS_STRENGTH, STATUS_DEXTERITY, STATUS_VULNERABLE, STATUS_WEAK, STATUS_POISON:
+				pass
+			_:
+				pass
+	
+	# 扩展规则：新增回合开始触发的状态（如 regenerate 回血），
+	# 在上方 match 分支中添加对应处理逻辑。
+	# 示例：
+	# if get_status_stack(stats, "regenerate") > 0:
+	#     _trigger_regenerate(target, stats, get_status_stack(stats, "regenerate"))
 
 
 func _run_turn_end_hooks(target: Node) -> void:
@@ -204,9 +226,28 @@ func _run_turn_end_hooks(target: Node) -> void:
 	_decay_status(stats, STATUS_VULNERABLE)
 
 
-func _run_after_card_played_hooks(_target: Node) -> void:
-	# Hook point reserved for statuses with post-card behavior.
-	pass
+func _run_after_card_played_hooks(target: Node) -> void:
+	var stats: Stats = _extract_stats(target)
+	if stats == null:
+		return
+	
+	var status_dict: Dictionary = stats.get_status_snapshot()
+	for status_id: String in status_dict.keys():
+		var stacks_variant: Variant = status_dict[status_id]
+		if not (stacks_variant is int):
+			continue
+		var stacks: int = stacks_variant
+		if stacks <= 0:
+			continue
+		
+		match status_id:
+			STATUS_STRENGTH, STATUS_DEXTERITY, STATUS_VULNERABLE, STATUS_WEAK, STATUS_POISON:
+				pass
+			_:
+				pass
+	
+	# 扩展规则：新增出牌后触发的状态（如"每打出一张攻击牌+1力量"），
+	# 在上方 match 分支中添加对应处理逻辑。
 
 
 func _trigger_poison(target: Node, stats: Stats) -> void:
