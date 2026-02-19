@@ -135,3 +135,17 @@
 - Phase 1 的 P0/P1 修复项已闭环，未发现阻断问题。
 - `runtime/scenes/` 下 `_ready()` 中的 `connect` 已完成对应 `_exit_tree()` 断开（全局扫描通过）。
 - `make test` 与 `make workflow-check TASK_ID=fix-p0-battle-core-v1` 复跑通过。
+
+---
+
+## 追加记录（事后迁移自 master_plan_v3.md）
+
+> 说明：本段为**事后追记**。原记录曾误写入 `docs/master_plan_v3.md`，现按流程迁移回任务验证文档。
+
+### Phase 2 执行状态（原记录日期：2026-02-18）
+
+- [x] `make test` 通过（58/58）
+- [x] 手动验证：完整战斗流程，Buff 与效果栈触发正常
+- [x] 手动验证：地图为 15 层，存在分支路径
+- [x] 手动验证：商店买卡/删卡可用；遗物/药水购买后端接口与 GUT 验证通过，UI 对接归入 Phase 6
+- 原结论：Phase 2 已审结通过，可进入 Phase 3a（内容最小集）与 Phase 4（存档/种子）阶段
