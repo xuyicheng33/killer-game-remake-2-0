@@ -38,12 +38,9 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "遗物 0/0"
 
-[node name="RelicListLabel" type="Label" parent="MarginContainer/ContentScroll/VBox"]
+[node name="RelicListLabel" type="VBoxContainer" parent="MarginContainer/ContentScroll/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-autowrap_mode = 3
-text = "（无）"
 
 [node name="PotionLabel" type="Label" parent="MarginContainer/ContentScroll/VBox"]
 unique_name_in_owner = true

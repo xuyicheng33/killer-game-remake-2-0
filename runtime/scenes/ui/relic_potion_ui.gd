@@ -6,7 +6,7 @@ const RELIC_POTION_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/
 @export var run_state: RunState : set = _set_run_state
 
 @onready var relic_label: Label = %RelicLabel
-@onready var relic_list_label: Label = %RelicListLabel
+@onready var relic_list_label: VBoxContainer = %RelicListLabel
 @onready var potion_label: Label = %PotionLabel
 @onready var potion_container: VBoxContainer = %PotionContainer
 @onready var log_label: Label = %LogLabel
@@ -69,10 +69,49 @@ func _render(projection: Dictionary) -> void:
 		return
 
 	relic_label.text = str(projection.get("relic_title", "遗物 0/0"))
-	relic_list_label.text = str(projection.get("relic_list_text", "（无）"))
+	_render_relics(projection)
 	potion_label.text = str(projection.get("potion_title", "药水 0/0"))
 	log_label.text = str(projection.get("log_text", ""))
 	_render_potions(projection)
+
+
+func _render_relics(projection: Dictionary) -> void:
+	for child in relic_list_label.get_children():
+		child.queue_free()
+
+	var relic_items: Variant = projection.get("relic_items", [])
+	if not (relic_items is Array) or relic_items.is_empty():
+		var hint := Label.new()
+		hint.text = "（无）"
+		hint.add_theme_font_size_override("font_size", 18)
+		relic_list_label.add_child(hint)
+		return
+
+	for item_variant in relic_items:
+		if not (item_variant is Dictionary):
+			continue
+		var item_data: Dictionary = item_variant
+
+		var btn := Button.new()
+		btn.text = str(item_data.get("title", "遗物"))
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.flat = true
+
+		var tooltip_text: String = str(item_data.get("tooltip_text", ""))
+		var tooltip_icon: Texture = item_data.get("tooltip_icon")
+		if tooltip_text.length() > 0:
+			btn.mouse_entered.connect(_on_relic_button_mouse_entered.bind(tooltip_icon, tooltip_text))
+			btn.mouse_exited.connect(_on_relic_button_mouse_exited)
+
+		relic_list_label.add_child(btn)
+
+
+func _on_relic_button_mouse_entered(icon: Texture, text: String) -> void:
+	Events.relic_tooltip_requested.emit(icon, text)
+
+
+func _on_relic_button_mouse_exited() -> void:
+	Events.tooltip_hide_requested.emit()
 
 
 func _render_potions(projection: Dictionary) -> void:

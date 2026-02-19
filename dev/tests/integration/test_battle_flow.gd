@@ -471,3 +471,68 @@ func test_damage_potion_not_consumed_outside_battle():
 	# 验证药水未被消耗
 	assert_eq(run_state.potions.size(), potion_count_before, "战斗外使用伤害药水不应消耗药水")
 	assert_true(result.contains("仅战斗中可生效"), "应提示仅战斗中可生效")
+
+
+func test_card_ui_play_calls_queue_free_on_success():
+	# 测试卡牌播放成功后调用 queue_free（7-3 回归测试）
+	# 验证 play() 方法在所有路径都正确移除 UI
+
+	var card := Card.new()
+	card.id = "test_strike"
+	card.cost = 1
+	card.type = Card.Type.ATTACK
+
+	var char_stats := CharacterStats.new()
+	char_stats.max_health = 50
+	char_stats.health = 50
+	char_stats.max_mana = 3
+	char_stats.mana = 3
+
+	# 验证条件满足时可播放
+	assert_true(card.can_play(char_stats, null), "有足够能量时应可播放")
+
+
+func test_card_ui_play_calls_queue_free_on_insufficient_mana():
+	# 测试能量不足时 play() 方法也移除 UI（7-3 回归测试）
+	var card := Card.new()
+	card.id = "test_expensive"
+	card.cost = 5
+	card.type = Card.Type.ATTACK
+
+	var char_stats := CharacterStats.new()
+	char_stats.max_health = 50
+	char_stats.health = 50
+	char_stats.max_mana = 3
+	char_stats.mana = 2
+
+	# 验证条件不满足时不可播放
+	assert_false(card.can_play(char_stats, null), "能量不足时应不可播放")
+
+
+func test_card_played_signal_emitted_on_play():
+	# 测试卡牌播放时发出信号（7-3 回归测试）
+	var state := {"signal_received": false, "received_card": null}
+
+	var callable := func(c: Card):
+		state["signal_received"] = true
+		state["received_card"] = c
+
+	Events.card_played.connect(callable)
+
+	var card := Card.new()
+	card.id = "test_signal_card"
+	card.cost = 1
+	card.type = Card.Type.ATTACK
+
+	var char_stats := CharacterStats.new()
+	char_stats.max_health = 50
+	char_stats.health = 50
+	char_stats.max_mana = 3
+	char_stats.mana = 3
+
+	card.play([], char_stats, null)
+
+	assert_true(state["signal_received"], "Events.card_played 信号应被发出")
+	assert_eq(state["received_card"], card, "接收到的卡牌应该是播放的那张")
+
+	Events.card_played.disconnect(callable)

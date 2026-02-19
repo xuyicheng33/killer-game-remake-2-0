@@ -249,9 +249,6 @@ func _update_phase_hud(phase_name: String, turn: int) -> void:
 func _on_player_died() -> void:
 	if _battle_ended:
 		return
-	if _battle_phase_machine != null and _battle_phase_machine.get_phase() == BattlePhaseStateMachine.Phase.ENEMY:
-		_battle_phase_machine.transition_to(BattlePhaseStateMachine.Phase.RESOLVE)
-		return
 	_on_battle_ended("defeat")
 
 
@@ -267,6 +264,12 @@ func _on_enemy_died(enemy: Enemy) -> void:
 	if enemy != null and is_instance_valid(enemy):
 		enemy.get_parent().remove_child(enemy)
 		enemy.queue_free()
+
+	# 立即检查战斗是否结束（DOT击杀或普通击杀都应触发）
+	if _battle_phase_machine != null:
+		var battle_result := _battle_phase_machine.check_battle_end()
+		if battle_result.ended:
+			_on_battle_ended(battle_result.result)
 
 
 func _on_battle_ended(result: String) -> void:

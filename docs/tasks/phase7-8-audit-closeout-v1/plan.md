@@ -20,9 +20,11 @@
 - `content/`
 - `runtime/`
 - `dev/tools/`
-- `dev/tests/perf/`
+- `dev/tests/`
 - `docs/tasks/`
 - `docs/work_logs/2026-02.md`
+- `docs/后续开发规划v1.0.md`
+- `docs/phase7_review_prompt.md`
 - `.gitignore`
 
 ## 实施步骤

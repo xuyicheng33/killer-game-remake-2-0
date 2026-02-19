@@ -519,3 +519,43 @@ func test_battle_start_triggers_when_context_ready() -> void:
 
 	# 验证成功触发
 	assert_eq(_system._pending_battle_start_trigger, false, "成功触发后应清除待触发标志")
+
+
+func test_relic_view_model_produces_tooltip_data() -> void:
+	# 测试遗物 viewmodel 生成正确的 tooltip 数据（7-2 回归测试）
+	var view_model_script := preload("res://runtime/modules/ui_shell/viewmodel/relic_potion_view_model.gd")
+	var view_model := view_model_script.new()
+
+	var relic := RelicData.new()
+	relic.id = "test_relic_tooltip"
+	relic.title = "测试遗物"
+	relic.description = "测试效果描述"
+
+	var run_state := _create_run_state()
+	run_state.relics = [relic]
+
+	var projection: Dictionary = view_model.project(run_state, "")
+
+	assert_true(projection.has("relic_items"), "projection 应包含 relic_items")
+	var relic_items: Array = projection.get("relic_items", [])
+	assert_eq(relic_items.size(), 1, "应有一个遗物项")
+
+	var item: Dictionary = relic_items[0]
+	assert_eq(item.get("title", ""), "测试遗物", "遗物标题应正确")
+	assert_true(item.get("tooltip_text", "").contains("测试遗物"), "tooltip 应包含遗物标题")
+	assert_true(item.get("tooltip_text", "").contains("测试效果描述"), "tooltip 应包含遗物描述")
+
+
+func test_relic_view_model_handles_empty_relics() -> void:
+	# 测试空遗物列表的处理（7-2 回归测试）
+	var view_model_script := preload("res://runtime/modules/ui_shell/viewmodel/relic_potion_view_model.gd")
+	var view_model := view_model_script.new()
+
+	var run_state := _create_run_state()
+	run_state.relics = []
+
+	var projection: Dictionary = view_model.project(run_state, "")
+
+	assert_true(projection.has("relic_items"), "projection 应包含 relic_items")
+	var relic_items: Array = projection.get("relic_items", [])
+	assert_eq(relic_items.size(), 0, "无遗物时应为空数组")

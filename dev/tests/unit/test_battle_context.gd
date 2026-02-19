@@ -258,3 +258,81 @@ func _get_events_singleton() -> Node:
 		return null
 	var tree := Engine.get_main_loop() as SceneTree
 	return tree.root.get_node_or_null("Events")
+
+
+func test_killing_all_enemies_triggers_immediate_victory() -> void:
+	var phase_machine = _context.get("phase_machine") as BattlePhaseStateMachine
+	assert_not_null(phase_machine, "phase_machine 不应为空")
+	
+	var player := DummyPlayer.new()
+	var player_stats := CharacterStats.new()
+	player_stats.max_health = 50
+	player_stats.health = 50
+	player.stats = player_stats
+
+	var enemy := DummyEnemy.new()
+	var enemy_stats := EnemyStats.new()
+	enemy_stats.max_health = 20
+	enemy_stats.health = 0
+	enemy.stats = enemy_stats
+
+	phase_machine.bind_context(player, [enemy], _context)
+	
+	var result := phase_machine.check_battle_end()
+	assert_true(result.ended, "所有敌人HP为0时应结束战斗")
+	assert_eq(result.result, "victory", "结果应为 victory")
+
+	player.free()
+	enemy.free()
+
+
+func test_player_death_triggers_immediate_defeat() -> void:
+	var phase_machine = _context.get("phase_machine") as BattlePhaseStateMachine
+	assert_not_null(phase_machine, "phase_machine 不应为空")
+	
+	var player := DummyPlayer.new()
+	var player_stats := CharacterStats.new()
+	player_stats.max_health = 50
+	player_stats.health = 0
+	player.stats = player_stats
+
+	var enemy := DummyEnemy.new()
+	var enemy_stats := EnemyStats.new()
+	enemy_stats.max_health = 20
+	enemy_stats.health = 20
+	enemy.stats = enemy_stats
+
+	phase_machine.bind_context(player, [enemy], _context)
+	
+	var result := phase_machine.check_battle_end()
+	assert_true(result.ended, "玩家HP为0时应结束战斗")
+	assert_eq(result.result, "defeat", "结果应为 defeat")
+
+	player.free()
+	enemy.free()
+
+
+func test_battle_continues_when_enemies_alive() -> void:
+	var phase_machine = _context.get("phase_machine") as BattlePhaseStateMachine
+	assert_not_null(phase_machine, "phase_machine 不应为空")
+	
+	var player := DummyPlayer.new()
+	var player_stats := CharacterStats.new()
+	player_stats.max_health = 50
+	player_stats.health = 50
+	player.stats = player_stats
+
+	var enemy := DummyEnemy.new()
+	var enemy_stats := EnemyStats.new()
+	enemy_stats.max_health = 20
+	enemy_stats.health = 20
+	enemy.stats = enemy_stats
+
+	phase_machine.bind_context(player, [enemy], _context)
+	
+	var result := phase_machine.check_battle_end()
+	assert_false(result.ended, "敌人存活时战斗不应结束")
+
+	player.free()
+	enemy.free()
+
