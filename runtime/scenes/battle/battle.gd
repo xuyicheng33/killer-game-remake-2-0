@@ -259,9 +259,9 @@ func _on_enemy_died(enemy: Enemy) -> void:
 	if _battle_ended:
 		return
 
-	# 从战斗状态机中移除敌人
-	if _battle_phase_machine != null:
-		_battle_phase_machine.remove_enemy(enemy)
+	# 使用 BattleContext 统一入口移除敌人（同步 BuffSystem 敌人列表）
+	if _battle_context != null:
+		_battle_context.remove_enemy(enemy)
 
 	# 从敌人处理器中移除并释放节点
 	if enemy != null and is_instance_valid(enemy):

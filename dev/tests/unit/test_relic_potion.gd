@@ -327,6 +327,120 @@ func test_max_battle_start_retries_constant_exists() -> void:
 	assert_eq(RelicPotionSystem.MAX_BATTLE_START_RETRIES, 100, "MAX_BATTLE_START_RETRIES 应为 100")
 
 
+func test_relic_runtime_cache_reuses_same_instance() -> void:
+	# 测试遗物运行时缓存：相同 ID 的遗物应复用同一个运行时实例
+	# 避免每次触发都创建新对象
+
+	# 创建一个带状态的遗物运行时类
+	RELIC_REGISTRY_SCRIPT.register_factory(
+		"stateful_relic",
+		func(relic_data: RelicData):
+			return StatefulTestRelic.new(relic_data)
+	)
+
+	# 添加遗物
+	var relic := RelicData.new()
+	relic.id = "stateful_relic"
+	relic.title = "有状态遗物"
+	_run_state.relics = [relic]
+
+	# 绑定 RunState 会重建缓存
+	_system.bind_run_state(_run_state)
+
+	# 第一次触发
+	_system.start_battle()
+	var first_runtime: Variant = _system._relic_runtimes.get("stateful_relic", null)
+	assert_not_null(first_runtime, "首次触发后应有缓存")
+
+	# 结束战斗并开始新战斗
+	_system.end_battle()
+	_system.start_battle()
+
+	# 第二次触发：应复用同一个实例
+	var second_runtime: Variant = _system._relic_runtimes.get("stateful_relic", null)
+	assert_not_null(second_runtime, "二次触发后应有缓存")
+	assert_eq(first_runtime, second_runtime, "相同 ID 应复用同一运行时实例")
+
+	RELIC_REGISTRY_SCRIPT.clear_factories()
+
+
+func test_relic_runtime_cache_duplicate_id_shares_state() -> void:
+	# 测试重复 relic id 的行为：共享同一运行时实例（可能导致状态共享歧义）
+	# 这是预期行为的文档化测试，开发者应避免使用重复 ID
+
+	RELIC_REGISTRY_SCRIPT.register_factory(
+		"dup_id_relic",
+		func(relic_data: RelicData):
+			return StatefulTestRelic.new(relic_data)
+	)
+
+	# 创建两个相同 ID 的遗物数据
+	var relic1 := RelicData.new()
+	relic1.id = "dup_id_relic"
+	relic1.title = "重复遗物1"
+
+	var relic2 := RelicData.new()
+	relic2.id = "dup_id_relic"
+	relic2.title = "重复遗物2"  # 不同的 title，但相同 ID
+
+	_run_state.relics = [relic1, relic2]
+
+	# 绑定 RunState 会重建缓存
+	_system.bind_run_state(_run_state)
+
+	# 缓存中应只有一个实例（因为 ID 相同）
+	var cached_runtime: Variant = _system._relic_runtimes.get("dup_id_relic", null)
+	assert_not_null(cached_runtime, "应有缓存")
+
+	# 缓存大小应为 1（而不是 2）
+	assert_eq(_system._relic_runtimes.size(), 1, "重复 ID 应只缓存一个实例")
+
+	# 重要：如果两个遗物数据有不同的属性，后加载的会覆盖缓存
+	# 这意味着两个遗物将共享同一个运行时实例，可能导致状态混淆
+	# 建议：遗物 ID 应唯一，或在添加遗物时检查重复
+
+	RELIC_REGISTRY_SCRIPT.clear_factories()
+
+
+func test_relic_runtime_cache_clears_on_rebind() -> void:
+	# 测试重新绑定 RunState 时缓存被清除
+
+	RELIC_REGISTRY_SCRIPT.register_factory(
+		"temp_relic",
+		func(relic_data: RelicData):
+			return StatefulTestRelic.new(relic_data)
+	)
+
+	var relic := RelicData.new()
+	relic.id = "temp_relic"
+	_run_state.relics = [relic]
+
+	_system.bind_run_state(_run_state)
+	assert_true(_system._relic_runtimes.has("temp_relic"), "绑定后应有缓存")
+
+	# 创建新的 RunState 并重新绑定
+	var new_run_state := _create_run_state()
+	_system.bind_run_state(new_run_state)
+
+	# 缓存应被清除（因为新的 RunState 没有这个遗物）
+	assert_false(_system._relic_runtimes.has("temp_relic"), "重新绑定后旧缓存应被清除")
+
+	RELIC_REGISTRY_SCRIPT.clear_factories()
+
+
+# 带状态的测试遗物类
+class StatefulTestRelic:
+	extends RefCounted
+	var data: RelicData
+	var trigger_count := 0
+
+	func _init(relic_data: RelicData) -> void:
+		data = relic_data
+
+	func handle_trigger(trigger_type: int, _context: Dictionary, _system: Object) -> void:
+		trigger_count += 1
+
+
 func test_battle_start_retry_count_increments_on_context_not_ready() -> void:
 	# 测试当上下文未就绪时，重试计数器会增加
 	var system := RelicPotionSystem.new()

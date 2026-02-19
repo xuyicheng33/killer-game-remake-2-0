@@ -2,10 +2,42 @@ extends GutTest
 
 const BATTLE_SCENE := preload("res://runtime/scenes/battle/battle.tscn")
 const APP_SCENE := preload("res://runtime/scenes/app/app.tscn")
+const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
+const PLAYER_SCENE := preload("res://runtime/scenes/player/player.tscn")
+const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
 
 
 func before_all():
 	gut.p("BattleFlow 集成测试套件初始化")
+
+
+func test_events_signal_mechanism():
+	# 基础测试：验证 Events 信号机制正常工作
+	# 使用字典作为可变引用类型（GDScript 闭包捕获问题）
+	var state := {"signal_received": false, "received_enemy": null}
+
+	var callable := func(e: Enemy):
+		state["signal_received"] = true
+		state["received_enemy"] = e
+
+	Events.enemy_died.connect(callable)
+
+	# 创建一个 Enemy 节点用于测试
+	var enemy := ENEMY_SCENE.instantiate()
+	get_tree().root.add_child(enemy)
+	await get_tree().process_frame
+
+	# 直接发射信号
+	Events.enemy_died.emit(enemy)
+
+	# 验证信号被接收
+	assert_true(state["signal_received"], "Events.enemy_died 信号应被接收")
+	assert_eq(state["received_enemy"], enemy, "接收到的 enemy 应该是发射的那个")
+
+	# 清理
+	Events.enemy_died.disconnect(callable)
+	if is_instance_valid(enemy):
+		enemy.free()
 
 
 func test_boss_encounter_spawns_boss_enemy():
@@ -88,23 +120,264 @@ func test_on_battle_start_relic_fires_after_battle_scene_ready():
 
 
 func test_dot_death_triggers_battle_end_correctly():
-	# 测试 DOT 效果杀死敌人后战斗正确结束
-	# 这是单元测试的补充，验证 BuffSystem 死亡处理不导致竞态
-	var buff_system := BuffSystem.new()
+	# DOT 死亡战斗链路集成测试：使用真实战斗场景验证毒效果杀死敌人
+	# 完整链路：BattleContext -> BuffSystem._trigger_poison -> _handle_death -> Events.enemy_died
 
-	# 创建模拟的 stats
-	var stats := Stats.new()
-	stats.max_health = 10
-	stats.health = 5
+	# === 1. 创建战斗场景 ===
+	var battle := BATTLE_SCENE.instantiate()
+	battle.set("encounter_id", "act1_crab_single")  # 单敌人遭遇
+	get_tree().root.add_child(battle)
+	await get_tree().process_frame
+	await get_tree().create_timer(0.1).timeout
 
-	# 模拟 DOT 伤害导致死亡
-	stats.health = 0
+	# === 2. 获取战斗中的敌人 ===
+	var enemy_handler := battle.get_node_or_null("EnemyHandler")
+	assert_not_null(enemy_handler, "战斗场景应包含 EnemyHandler")
+	if enemy_handler == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
 
-	# 验证死亡判定
-	assert_true(stats.health <= 0, "HP <= 0 应判定死亡")
+	var enemies := enemy_handler.get_children()
+	assert_true(enemies.size() > 0, "应有敌人")
+	var enemy: Enemy = enemies[0]
 
-	# 清理
-	buff_system = null
+	# === 3. 修改敌人血量为低值（便于毒死）===
+	enemy.stats.health = 5
+	enemy.stats.max_health = 5
+
+	# === 4. 获取 BuffSystem ===
+	var battle_context: BattleContext = battle.get("_battle_context")
+	assert_not_null(battle_context, "应有 BattleContext")
+	if battle_context == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
+
+	# === 5. 给敌人施加毒状态（足以杀死）===
+	battle_context.buff_system.apply_status_to_target(enemy, BuffSystem.STATUS_POISON, 5)
+	assert_eq(battle_context.buff_system.get_status_stack(enemy.stats, BuffSystem.STATUS_POISON), 5, "敌人应有 5 层毒")
+
+	# === 6. 监听 enemy_died 信号 ===
+	# 使用字典作为可变引用类型（GDScript 闭包捕获问题）
+	var signal_state := {"received": false}
+	Events.enemy_died.connect(func(_e: Enemy):
+		signal_state["received"] = true
+	, CONNECT_ONE_SHOT)
+
+	# === 7. 触发回合开始钩子（毒伤害触发）===
+	var health_before := enemy.stats.health
+	battle_context.buff_system._run_turn_start_hooks(enemy)
+	var health_after := enemy.stats.health
+
+	# === 8. 验证毒伤害生效 ===
+	assert_eq(health_after, health_before - 5, "敌人应受到 5 点毒伤害，HP 从 %d 变为 %d" % [health_before, health_after])
+
+	# === 9. 验证敌人血量 <= 0 ===
+	assert_true(enemy.stats.health <= 0, "敌人 HP 应 <= 0，实际为 %d" % enemy.stats.health)
+
+	# === 10. 验证敌人死亡信号 ===
+	assert_true(signal_state["received"], "敌人死于毒时应发射 enemy_died 信号")
+
+	# === 11. 验证运行时死亡链路触发移除并结束战斗（核心断言）===
+	# 这里不手动 remove_enemy，必须通过 battle.gd 的 enemy_died 回调完成移除
+	await get_tree().process_frame
+	assert_eq(enemy_handler.get_child_count(), 0, "enemy_died 后应从 EnemyHandler 移除敌人")
+	var battle_result := battle_context.phase_machine.check_battle_end()
+	assert_true(battle_result.ended, "敌人死亡后战斗应结束")
+	assert_eq(battle_result.result, "victory", "敌人死亡后应判定胜利")
+
+	# === 清理 ===
+	if is_instance_valid(battle):
+		battle.queue_free()
+		await get_tree().process_frame
+
+
+func test_dot_damage_and_death_logic_via_trigger_poison():
+	# 测试 DOT 伤害逻辑：验证 _trigger_poison 到信号发射的完整链路
+
+	# === 1. 创建战斗场景 ===
+	var battle := BATTLE_SCENE.instantiate()
+	battle.set("encounter_id", "act1_crab_single")
+	get_tree().root.add_child(battle)
+	await get_tree().process_frame
+	await get_tree().create_timer(0.1).timeout
+
+	# === 2. 获取战斗中的敌人 ===
+	var enemy_handler := battle.get_node_or_null("EnemyHandler")
+	assert_not_null(enemy_handler, "战斗场景应包含 EnemyHandler")
+	if enemy_handler == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
+
+	var enemy: Enemy = enemy_handler.get_child(0)
+	enemy.stats.health = 10
+	enemy.stats.max_health = 10
+
+	# === 3. 获取 BuffSystem ===
+	var battle_context: BattleContext = battle.get("_battle_context")
+	assert_not_null(battle_context, "应有 BattleContext")
+	if battle_context == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
+
+	# === 4. 应用毒状态 ===
+	battle_context.buff_system.apply_status_to_target(enemy, BuffSystem.STATUS_POISON, 10)
+	assert_eq(battle_context.buff_system.get_status_stack(enemy.stats, BuffSystem.STATUS_POISON), 10, "应有 10 层毒")
+
+	# === 5. 监听 enemy_died 信号 ===
+	# 使用字典作为可变引用类型（GDScript 闭包捕获问题）
+	var signal_state := {"received": false}
+	Events.enemy_died.connect(func(_e: Enemy):
+		signal_state["received"] = true
+	, CONNECT_ONE_SHOT)
+
+	# === 6. 调用 _trigger_poison（核心链路）===
+	battle_context.buff_system._trigger_poison(enemy, enemy.stats)
+
+	# === 7. 验证血量减少 ===
+	assert_eq(enemy.stats.health, 0, "应受到 10 点毒伤害")
+
+	# === 8. 验证死亡信号 ===
+	assert_true(signal_state["received"], "毒伤害致死应触发 enemy_died 信号")
+
+	# === 9. 验证毒层递减 ===
+	assert_eq(battle_context.buff_system.get_status_stack(enemy.stats, BuffSystem.STATUS_POISON), 9, "毒应递减到 9")
+
+	# === 清理 ===
+	if is_instance_valid(battle):
+		battle.queue_free()
+		await get_tree().process_frame
+
+
+func test_battle_phase_machine_empty_enemies_victory():
+	# 测试战斗状态机：绑定有效玩家且空敌人列表时判定胜利
+
+	# === 1. 创建战斗场景 ===
+	var battle := BATTLE_SCENE.instantiate()
+	battle.set("encounter_id", "act1_crab_single")
+	get_tree().root.add_child(battle)
+	await get_tree().process_frame
+	await get_tree().create_timer(0.1).timeout
+
+	# === 2. 获取战斗上下文 ===
+	var battle_context: BattleContext = battle.get("_battle_context")
+	assert_not_null(battle_context, "应有 BattleContext")
+	if battle_context == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
+
+	# === 3. 获取 Player ===
+	var player: Player = battle.get("player")
+	assert_not_null(player, "应有 Player")
+
+	# === 4. 移除所有敌人（模拟战斗胜利）===
+	var enemy_handler := battle.get_node_or_null("EnemyHandler")
+	if enemy_handler != null:
+		for child in enemy_handler.get_children():
+			if child is Enemy:
+				battle_context.remove_enemy(child)
+
+	# === 5. 验证战斗结束判定 ===
+	var battle_result := battle_context.phase_machine.check_battle_end()
+	assert_true(battle_result.ended, "空敌人列表时战斗应结束")
+	assert_eq(battle_result.result, "victory", "空敌人列表应判定胜利")
+
+	# === 清理 ===
+	if is_instance_valid(battle):
+		battle.free()
+
+
+func test_battle_phase_machine_with_dead_enemy():
+	# 测试战斗状态机：敌人 HP <= 0 时判定胜利
+
+	# === 1. 创建战斗场景 ===
+	var battle := BATTLE_SCENE.instantiate()
+	battle.set("encounter_id", "act1_crab_single")
+	get_tree().root.add_child(battle)
+	await get_tree().process_frame
+	await get_tree().create_timer(0.1).timeout
+
+	# === 2. 获取战斗上下文和敌人 ===
+	var battle_context: BattleContext = battle.get("_battle_context")
+	assert_not_null(battle_context, "应有 BattleContext")
+	if battle_context == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
+
+	var enemy_handler := battle.get_node_or_null("EnemyHandler")
+	assert_not_null(enemy_handler, "应有 EnemyHandler")
+	if enemy_handler == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
+
+	var enemy: Enemy = enemy_handler.get_child(0)
+
+	# === 3. 将敌人 HP 设为 0（模拟已死亡）===
+	enemy.stats.health = 0
+
+	# === 4. 验证战斗结束判定 ===
+	var battle_result := battle_context.phase_machine.check_battle_end()
+	assert_true(battle_result.ended, "敌人 HP=0 时战斗应结束")
+	assert_eq(battle_result.result, "victory", "敌人死亡应判定胜利")
+
+	# === 清理 ===
+	if is_instance_valid(battle):
+		battle.free()
+
+
+func test_handle_death_signal_for_enemies_group():
+	# 测试 _handle_death 对真实 Enemy 的信号发射
+
+	# === 1. 创建战斗场景 ===
+	var battle := BATTLE_SCENE.instantiate()
+	battle.set("encounter_id", "act1_crab_single")
+	get_tree().root.add_child(battle)
+	await get_tree().process_frame
+	await get_tree().create_timer(0.1).timeout
+
+	# === 2. 获取战斗上下文和敌人 ===
+	var battle_context: BattleContext = battle.get("_battle_context")
+	assert_not_null(battle_context, "应有 BattleContext")
+	if battle_context == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
+
+	var enemy_handler := battle.get_node_or_null("EnemyHandler")
+	assert_not_null(enemy_handler, "应有 EnemyHandler")
+	if enemy_handler == null:
+		if is_instance_valid(battle):
+			battle.free()
+		return
+
+	var enemy: Enemy = enemy_handler.get_child(0)
+
+	# === 3. 验证敌人已在 enemies 组中 ===
+	assert_true(enemy.is_in_group("enemies"), "Enemy 应在 enemies 组中")
+
+	# === 4. 监听 enemy_died 信号 ===
+	# 使用字典作为可变引用类型（GDScript 闭包捕获问题）
+	var signal_state := {"received": false}
+	Events.enemy_died.connect(func(_e: Enemy):
+		signal_state["received"] = true
+	, CONNECT_ONE_SHOT)
+
+	# === 5. 调用 _handle_death ===
+	battle_context.buff_system._handle_death(enemy)
+
+	# === 6. 验证信号发射 ===
+	assert_true(signal_state["received"], "真实 Enemy 应触发 enemy_died 信号")
+
+	# === 清理 ===
+	if is_instance_valid(battle):
+		battle.queue_free()
+		await get_tree().process_frame
 
 
 func test_rest_screen_upgrade_uses_upgrade_to_field():
