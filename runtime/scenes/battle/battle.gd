@@ -1,6 +1,5 @@
 extends Node2D
 
-const BATTLE_PHASE_STATE_MACHINE_SCRIPT := preload("res://runtime/modules/battle_loop/battle_phase_state_machine.gd")
 const BATTLE_CONTEXT_SCRIPT := preload("res://runtime/modules/battle_loop/battle_context.gd")
 const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
 const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
@@ -40,9 +39,10 @@ func _ready() -> void:
 
 	_apply_responsive_layout()
 	_connect_signals()
-	
-	_battle_phase_machine = BATTLE_PHASE_STATE_MACHINE_SCRIPT.new()
-	_battle_phase_machine.phase_changed.connect(_on_phase_changed)
+
+	_battle_phase_machine = _battle_context.phase_machine
+	if _battle_phase_machine != null and not _battle_phase_machine.phase_changed.is_connected(_on_phase_changed):
+		_battle_phase_machine.phase_changed.connect(_on_phase_changed)
 
 	start_battle(_active_stats)
 
@@ -101,9 +101,10 @@ func start_battle(stats: CharacterStats) -> void:
 	_phase_logs.clear()
 	_battle_context.bind_battle_context(_active_stats, battle_ui.hand_container)
 	_spawn_enemies()
+	_battle_context.bind_combatants(player, _get_battle_enemies())
 	enemy_handler.reset_enemy_actions()
 	_inject_effect_stack_to_relic_system()
-	_battle_phase_machine.start()
+	_battle_context.start_battle()
 
 
 func _inject_effect_stack_to_relic_system() -> void:
@@ -239,6 +240,14 @@ func _enter_enemy_phase() -> void:
 func _enter_resolve_phase() -> void:
 	enemy_handler.reset_enemy_actions()
 	_battle_phase_machine.transition_to(BattlePhaseStateMachine.Phase.DRAW)
+
+
+func _get_battle_enemies() -> Array[Enemy]:
+	var enemies: Array[Enemy] = []
+	for child in enemy_handler.get_children():
+		if child is Enemy:
+			enemies.append(child)
+	return enemies
 
 
 func _append_phase_log(text: String) -> void:

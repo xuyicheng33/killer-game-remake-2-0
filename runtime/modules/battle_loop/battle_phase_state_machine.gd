@@ -113,16 +113,7 @@ func _exit_phase(phase: Phase) -> void:
 
 
 func _enter_draw_phase() -> void:
-	if _battle_context != null:
-		_battle_context.card_zones.unbind_context()
-		_battle_context.card_zones.bind_context(_player.stats, _player.hand)
-	
-	Events.player_hand_drawn.emit()
-	
-	if _battle_context != null and _battle_context.buff_system != null:
-		_battle_context.buff_system._run_turn_start_hooks(_player)
-	
-	transition_to(Phase.ACTION)
+	pass
 
 
 func _exit_draw_phase() -> void:
@@ -134,21 +125,11 @@ func _enter_action_phase() -> void:
 
 
 func _exit_action_phase() -> void:
-	Events.player_turn_ended.emit()
+	pass
 
 
 func _enter_enemy_phase() -> void:
-	Events.player_hand_discarded.emit()
-	
-	for enemy in _enemies:
-		if enemy != null and is_instance_valid(enemy):
-			if _battle_context != null and _battle_context.buff_system != null:
-				_battle_context.buff_system._run_turn_start_hooks(enemy)
-			enemy.take_turn()
-	
-	Events.enemy_turn_ended.emit()
-	
-	transition_to(Phase.RESOLVE)
+	pass
 
 
 func _exit_enemy_phase() -> void:
@@ -156,18 +137,9 @@ func _exit_enemy_phase() -> void:
 
 
 func _enter_resolve_phase() -> void:
-	if _battle_context != null and _battle_context.buff_system != null:
-		_battle_context.buff_system._run_turn_end_hooks(_player)
-		for enemy in _enemies:
-			if enemy != null and is_instance_valid(enemy):
-				_battle_context.buff_system._run_turn_end_hooks(enemy)
-	
 	var battle_result := check_battle_end()
 	if battle_result.ended:
 		battle_ended.emit(battle_result.result)
-		return
-	
-	transition_to(Phase.DRAW)
 
 
 func _exit_resolve_phase() -> void:
