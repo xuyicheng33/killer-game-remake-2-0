@@ -21,9 +21,18 @@ func _ready() -> void:
 	_setup_zone_counts_ui()
 	_bind_context()
 
+	var viewport := get_viewport()
+	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.connect(_on_viewport_resized)
+
 
 func _exit_tree() -> void:
 	_disconnect_signals()
+
+	var viewport := get_viewport()
+	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
+		viewport.size_changed.disconnect(_on_viewport_resized)
+
 	if _adapter != null:
 		_adapter.dispose()
 		_adapter = null
@@ -88,16 +97,31 @@ func _setup_zone_counts_ui() -> void:
 	_zone_counts_label.anchor_top = 0.0
 	_zone_counts_label.anchor_right = 1.0
 	_zone_counts_label.anchor_bottom = 0.0
-	_zone_counts_label.offset_left = -520.0
-	_zone_counts_label.offset_top = 26.0
-	_zone_counts_label.offset_right = -20.0
-	_zone_counts_label.offset_bottom = 94.0
 	_zone_counts_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_zone_counts_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_zone_counts_label.add_theme_font_size_override("font_size", 20)
 	_zone_counts_label.add_theme_color_override("font_color", Color("dbe3f2"))
 	_zone_counts_label.text = "抽牌堆：0  手牌：0\n弃牌堆：0  消耗堆：0"
 	add_child(_zone_counts_label)
+	_apply_zone_counts_responsive_layout()
+
+
+func _apply_zone_counts_responsive_layout() -> void:
+	if _zone_counts_label == null or not is_instance_valid(_zone_counts_label):
+		return
+
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	var viewport_size := viewport.get_visible_rect().size
+	var label_width := clampf(viewport_size.x * 0.35, 280.0, 520.0)
+	var right_margin := clampf(viewport_size.x * 0.02, 16.0, 24.0)
+	var top_margin := clampf(viewport_size.y * 0.03, 20.0, 32.0)
+
+	_zone_counts_label.offset_left = -(label_width + right_margin)
+	_zone_counts_label.offset_top = top_margin
+	_zone_counts_label.offset_right = -right_margin
+	_zone_counts_label.offset_bottom = top_margin + 68.0
 
 
 func _bind_context() -> void:
@@ -118,3 +142,7 @@ func _update_zone_counts_text(text: String) -> void:
 		return
 
 	_zone_counts_label.text = text
+
+
+func _on_viewport_resized() -> void:
+	_apply_zone_counts_responsive_layout()

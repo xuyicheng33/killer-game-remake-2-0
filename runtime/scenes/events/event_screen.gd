@@ -69,6 +69,12 @@ func _render(projection: Dictionary) -> void:
 	desc_label.text = str(projection.get("description", "没有描述。"))
 	result_label.text = str(projection.get("result_text", ""))
 
+	# Ensure labels have autowrap for long text
+	if desc_label.autowrap_mode != TextServer.AUTOWRAP_WORD_SMART:
+		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if result_label.autowrap_mode != TextServer.AUTOWRAP_WORD_SMART:
+		result_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
 	var continue_visible := bool(projection.get("continue_visible", false))
 	continue_button.visible = continue_visible
 

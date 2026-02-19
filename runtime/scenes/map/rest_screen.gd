@@ -70,6 +70,10 @@ func _render(projection: Dictionary) -> void:
 	rest_button.disabled = bool(projection.get("rest_button_disabled", true))
 	upgrade_button.disabled = bool(projection.get("upgrade_button_disabled", true))
 
+	# Ensure info_label has autowrap for long text
+	if info_label.autowrap_mode != TextServer.AUTOWRAP_WORD_SMART:
+		info_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
 
 func _on_rest_pressed() -> void:
 	_adapter.execute_rest()
