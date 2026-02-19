@@ -137,6 +137,16 @@ func _process_relic_trigger(relic: RelicData, trigger_type: TriggerType, context
 			if relic.on_battle_start_heal > 0:
 				_dispatch_effect("heal", relic.on_battle_start_heal, relic)
 				log_updated.emit("%s 触发：战斗开始恢复 %d 生命" % [relic.title, relic.on_battle_start_heal])
+
+		TriggerType.ON_TURN_START:
+			if relic.on_turn_start_block > 0:
+				_dispatch_effect("add_block", relic.on_turn_start_block, relic)
+				log_updated.emit("%s 触发：回合开始获得 %d 格挡" % [relic.title, relic.on_turn_start_block])
+
+		TriggerType.ON_TURN_END:
+			if relic.on_turn_end_heal > 0:
+				_dispatch_effect("heal", relic.on_turn_end_heal, relic)
+				log_updated.emit("%s 触发：回合结束恢复 %d 生命" % [relic.title, relic.on_turn_end_heal])
 		
 		TriggerType.ON_CARD_PLAYED:
 			if relic.on_card_played_gold > 0:
@@ -154,6 +164,10 @@ func _process_relic_trigger(relic: RelicData, trigger_type: TriggerType, context
 			if relic.on_enemy_killed_gold > 0:
 				_dispatch_effect("add_gold", relic.on_enemy_killed_gold, relic)
 				log_updated.emit("%s 触发：击杀敌人获得 %d 金币" % [relic.title, relic.on_enemy_killed_gold])
+
+		TriggerType.ON_SHOP_ENTER:
+			if relic.shop_discount_percent > 0:
+				log_updated.emit("%s 生效：商店折扣 %d%%" % [relic.title, relic.shop_discount_percent])
 
 
 func _dispatch_effect(effect_type: String, value: int, relic: RelicData) -> void:

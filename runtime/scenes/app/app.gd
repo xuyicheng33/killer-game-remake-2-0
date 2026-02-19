@@ -161,6 +161,7 @@ func _on_rest_completed() -> void:
 
 func _open_shop_screen() -> void:
 	_clear_scene_host()
+	relic_potion_system.on_shop_enter()
 	var shop_screen := SHOP_SCREEN_SCENE.instantiate() as ShopScreen
 	shop_screen.run_state = run_state
 	shop_screen.shop_completed.connect(_on_shop_completed)

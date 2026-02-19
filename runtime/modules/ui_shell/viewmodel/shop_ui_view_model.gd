@@ -41,7 +41,7 @@ func _project_offers(run_state: RunState, offers: Array[Dictionary]) -> Array[Di
 func _project_deck(run_state: RunState) -> Array[Dictionary]:
 	var buttons: Array[Dictionary] = []
 	var cards := run_state.get_deck_cards()
-	var remove_price := SHOP_OFFER_GENERATOR_SCRIPT.calculate_remove_price(run_state)
+	var remove_price := SHOP_OFFER_GENERATOR_SCRIPT.calculate_remove_price_for_shop(run_state)
 	for i in range(cards.size()):
 		var card := cards[i] as Card
 		buttons.append({

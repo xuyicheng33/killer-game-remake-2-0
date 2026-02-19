@@ -13,6 +13,7 @@ const MAX_POTION_INVENTORY := 3
 const SHOP_CARD_COUNT := 3
 const SHOP_RELIC_COUNT := 1
 const SHOP_POTION_COUNT := 1
+const MAX_SHOP_DISCOUNT_PERCENT := 90
 const BUY_PRICE := CARD_BUY_PRICE
 const REMOVE_PRICE := REMOVE_BASE_PRICE
 
@@ -20,38 +21,42 @@ const REMOVE_PRICE := REMOVE_BASE_PRICE
 static func generate_offers(run_state: RunState) -> Array[Dictionary]:
 	var pool := RewardGenerator.get_card_pool_for_run(run_state)
 	var stream_key: String = _shop_stream_key(run_state)
+	var discount_percent := calculate_shop_discount_percent(run_state)
 	var cards := RewardGenerator.pick_random_cards(pool, SHOP_CARD_COUNT, stream_key)
 	var offers: Array[Dictionary] = []
 	for card in cards:
+		var discounted_price := _apply_discount(CARD_BUY_PRICE, discount_percent)
 		offers.append({
 			"card": card,
-			"price": CARD_BUY_PRICE,
+			"price": discounted_price,
 		})
 	return offers
 
 
 static func generate_full_offers(run_state: RunState) -> Dictionary:
 	var stream_key := _shop_stream_key(run_state)
+	var discount_percent := calculate_shop_discount_percent(run_state)
 	
-	var card_offers := _generate_card_offers(run_state, stream_key)
-	var relic_offers := _generate_relic_offers(run_state, stream_key)
-	var potion_offers := _generate_potion_offers(run_state, stream_key)
-	var remove_price := calculate_remove_price(run_state)
+	var card_offers := _generate_card_offers(run_state, stream_key, discount_percent)
+	var relic_offers := _generate_relic_offers(run_state, stream_key, discount_percent)
+	var potion_offers := _generate_potion_offers(run_state, stream_key, discount_percent)
+	var remove_price := _apply_discount(calculate_remove_price(run_state), discount_percent)
 	
 	return {
 		"cards": card_offers,
 		"relics": relic_offers,
 		"potions": potion_offers,
 		"remove_price": remove_price,
+		"discount_percent": discount_percent,
 	}
 
 
-static func _generate_card_offers(run_state: RunState, stream_key: String) -> Array[Dictionary]:
+static func _generate_card_offers(run_state: RunState, stream_key: String, discount_percent: int) -> Array[Dictionary]:
 	var pool := RewardGenerator.get_card_pool_for_run(run_state)
 	var cards := RewardGenerator.pick_random_cards(pool, SHOP_CARD_COUNT, stream_key + ":cards")
 	var offers: Array[Dictionary] = []
 	for card in cards:
-		var price := _card_price(card)
+		var price := _apply_discount(_card_price(card), discount_percent)
 		offers.append({
 			"card": card,
 			"price": price,
@@ -59,13 +64,13 @@ static func _generate_card_offers(run_state: RunState, stream_key: String) -> Ar
 	return offers
 
 
-static func _generate_relic_offers(run_state: RunState, stream_key: String) -> Array[Dictionary]:
+static func _generate_relic_offers(run_state: RunState, stream_key: String, discount_percent: int) -> Array[Dictionary]:
 	var offers: Array[Dictionary] = []
 	
 	for i in range(SHOP_RELIC_COUNT):
 		var relic := RELIC_CATALOG_SCRIPT.pick_random(stream_key + ":relic:%d" % i)
 		if relic != null:
-			var price := _relic_price(relic)
+			var price := _apply_discount(_relic_price(relic), discount_percent)
 			offers.append({
 				"relic": relic,
 				"price": price,
@@ -74,7 +79,7 @@ static func _generate_relic_offers(run_state: RunState, stream_key: String) -> A
 	return offers
 
 
-static func _generate_potion_offers(run_state: RunState, stream_key: String) -> Array[Dictionary]:
+static func _generate_potion_offers(run_state: RunState, stream_key: String, discount_percent: int) -> Array[Dictionary]:
 	var offers: Array[Dictionary] = []
 	
 	for i in range(SHOP_POTION_COUNT):
@@ -82,7 +87,7 @@ static func _generate_potion_offers(run_state: RunState, stream_key: String) -> 
 		if potion != null:
 			offers.append({
 				"potion": potion,
-				"price": POTION_BUY_PRICE,
+				"price": _apply_discount(POTION_BUY_PRICE, discount_percent),
 			})
 	
 	return offers
@@ -109,6 +114,26 @@ static func calculate_remove_price(run_state: RunState) -> int:
 
 	var remove_count := run_state.card_removal_count
 	return REMOVE_BASE_PRICE + (remove_count * REMOVE_PRICE_INCREASE)
+
+
+static func calculate_remove_price_for_shop(run_state: RunState) -> int:
+	var base_price := calculate_remove_price(run_state)
+	var discount_percent := calculate_shop_discount_percent(run_state)
+	return _apply_discount(base_price, discount_percent)
+
+
+static func calculate_shop_discount_percent(run_state: RunState) -> int:
+	if run_state == null:
+		return 0
+
+	var total := 0
+	for relic_variant in run_state.relics:
+		if not (relic_variant is RelicData):
+			continue
+		var relic: RelicData = relic_variant
+		total += maxi(0, relic.shop_discount_percent)
+
+	return clampi(total, 0, MAX_SHOP_DISCOUNT_PERCENT)
 
 
 static func _shop_stream_key(run_state: RunState) -> String:
@@ -165,7 +190,7 @@ static func remove_card(run_state: RunState, card: Card) -> bool:
 	if run_state == null or card == null:
 		return false
 	
-	var price := calculate_remove_price(run_state)
+	var price := calculate_remove_price_for_shop(run_state)
 	if run_state.gold < price:
 		return false
 	
@@ -179,3 +204,14 @@ static func remove_card(run_state: RunState, card: Card) -> bool:
 	run_state.increment_card_removal_count()
 	
 	return true
+
+
+static func _apply_discount(price: int, discount_percent: int) -> int:
+	var clamped_price := maxi(0, price)
+	var clamped_discount := clampi(discount_percent, 0, MAX_SHOP_DISCOUNT_PERCENT)
+	if clamped_discount == 0:
+		return clamped_price
+	var discounted := int(round(float(clamped_price) * float(100 - clamped_discount) / 100.0))
+	if clamped_price > 0:
+		return maxi(1, discounted)
+	return 0

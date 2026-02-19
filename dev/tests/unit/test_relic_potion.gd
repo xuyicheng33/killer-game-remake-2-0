@@ -1,9 +1,6 @@
 extends GutTest
 
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://runtime/modules/relic_potion/relic_potion_system.gd")
-const PLAYER_SCENE := preload("res://runtime/scenes/player/player.tscn")
-
-
 class SpyEffectStack extends EffectStackEngine:
 	var enqueue_calls := 0
 
@@ -37,7 +34,8 @@ func before_each() -> void:
 	_system.effect_stack = _effect_stack
 	_run_state = _create_run_state()
 	_system.bind_run_state(_run_state)
-	_player = PLAYER_SCENE.instantiate() as Player
+	_player = partial_double(Player).new()
+	stub(_player, "update_stats").to_do_nothing()
 	_player.stats = _run_state.player_stats
 	if not _player.is_in_group("player"):
 		_player.add_to_group("player")
@@ -131,3 +129,52 @@ func test_potion_applies_effect_via_effect_stack() -> void:
 	assert_eq(_effect_stack.enqueue_calls, 1, "药水效果应通过 EffectStack 派发")
 	assert_eq(_run_state.player_stats.health, 39, "药水应正确生效")
 	assert_eq(_run_state.potions.size(), 0, "药水使用后应从背包移除")
+
+
+func test_turn_start_relic_grants_block() -> void:
+	var relic := RelicData.new()
+	relic.id = "turn_start_block"
+	relic.title = "开场护甲"
+	relic.on_turn_start_block = 3
+	_run_state.relics = [relic]
+	_run_state.player_stats.block = 0
+	_effect_stack.enqueue_calls = 0
+
+	_system.start_battle()
+	_system._on_player_turn_start()
+
+	assert_eq(_run_state.player_stats.block, 3, "ON_TURN_START 遗物应在回合开始增加格挡")
+	assert_eq(_effect_stack.enqueue_calls, 1, "ON_TURN_START 遗物应通过 EffectStack 派发")
+
+
+func test_turn_end_relic_heals_player() -> void:
+	var relic := RelicData.new()
+	relic.id = "turn_end_heal"
+	relic.title = "回合回复"
+	relic.on_turn_end_heal = 4
+	_run_state.relics = [relic]
+	_run_state.player_stats.health = 30
+	_effect_stack.enqueue_calls = 0
+
+	_system.start_battle()
+	_system._on_player_turn_end()
+
+	assert_eq(_run_state.player_stats.health, 34, "ON_TURN_END 遗物应在回合结束恢复生命")
+	assert_eq(_effect_stack.enqueue_calls, 1, "ON_TURN_END 遗物应通过 EffectStack 派发")
+
+
+func test_shop_enter_trigger_is_emitted() -> void:
+	var trigger_history: Array[int] = []
+	_system.trigger_fired.connect(func(trigger_type: RelicPotionSystem.TriggerType, _context: Dictionary) -> void:
+		trigger_history.append(int(trigger_type))
+	)
+
+	var relic := RelicData.new()
+	relic.id = "shop_discount"
+	relic.title = "店铺折扣"
+	relic.shop_discount_percent = 20
+	_run_state.relics = [relic]
+
+	_system.on_shop_enter()
+
+	assert_true(trigger_history.has(int(RelicPotionSystem.TriggerType.ON_SHOP_ENTER)), "进入商店应触发 ON_SHOP_ENTER")

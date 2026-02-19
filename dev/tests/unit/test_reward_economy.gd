@@ -118,3 +118,18 @@ func test_relic_price_by_rarity() -> void:
 	assert_eq(ShopOfferGenerator._relic_price(common), 150, "common 遗物应为 150")
 	assert_eq(ShopOfferGenerator._relic_price(uncommon), 200, "uncommon 遗物应为 200")
 	assert_eq(ShopOfferGenerator._relic_price(rare), 300, "rare 遗物应为 300")
+
+
+func test_shop_discount_applies_to_card_and_remove_prices() -> void:
+	var run_state := _create_run_state(500)
+	var relic := RelicData.new()
+	relic.id = "discount_relic"
+	relic.shop_discount_percent = 20
+	run_state.relics = [relic]
+
+	var offers := ShopOfferGenerator.generate_offers(run_state)
+	assert_false(offers.is_empty(), "商店报价不应为空")
+	assert_eq(int(offers[0].get("price", -1)), 44, "20% 折扣应将 55 金币卡牌降到 44")
+
+	var remove_price := ShopOfferGenerator.calculate_remove_price_for_shop(run_state)
+	assert_eq(remove_price, 60, "20% 折扣应将 75 金币删卡降到 60")
