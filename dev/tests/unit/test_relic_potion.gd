@@ -319,3 +319,89 @@ func test_custom_relic_callback_invoked_via_registry() -> void:
 	if holder.runtime_relic != null:
 		assert_eq(holder.runtime_relic.invoke_count, 1, "自定义遗物回调应在 ON_BATTLE_START 触发")
 	assert_eq(_run_state.gold, 117, "自定义遗物回调应生效并修改战斗收益")
+
+
+# 测试重试上限常量存在
+func test_max_battle_start_retries_constant_exists() -> void:
+	# 验证 MAX_BATTLE_START_RETRIES 常量存在且为合理值
+	assert_eq(RelicPotionSystem.MAX_BATTLE_START_RETRIES, 100, "MAX_BATTLE_START_RETRIES 应为 100")
+
+
+func test_battle_start_retry_count_increments_on_context_not_ready() -> void:
+	# 测试当上下文未就绪时，重试计数器会增加
+	var system := RelicPotionSystem.new()
+	get_tree().root.add_child(system)
+
+	var run_state := _create_run_state()
+	system.bind_run_state(run_state)
+
+	# effect_stack 为 null 时，_is_battle_start_context_ready() 返回 false
+	system.effect_stack = null
+
+	# 初始状态
+	assert_eq(system._battle_start_retry_count, 0, "初始重试计数应为 0")
+
+	# 设置战斗状态
+	system._battle_active = true
+	system._pending_battle_start_trigger = true
+
+	# 调用重试方法
+	system._deferred_try_fire_battle_start_trigger()
+
+	# 验证重试计数增加了
+	assert_eq(system._battle_start_retry_count, 1, "上下文未就绪时重试计数应增加")
+
+	# 清理
+	system.free()
+
+
+func test_battle_start_gives_up_after_max_retries() -> void:
+	# 测试重试次数超过上限后放弃
+	var system := RelicPotionSystem.new()
+	get_tree().root.add_child(system)
+
+	var run_state := _create_run_state()
+	system.bind_run_state(run_state)
+
+	# effect_stack 为 null 时，_is_battle_start_context_ready() 返回 false
+	system.effect_stack = null
+
+	# 模拟重试计数器已经达到上限
+	system._battle_start_retry_count = 100
+
+	# 设置战斗状态
+	system._battle_active = true
+	system._pending_battle_start_trigger = true
+
+	# 调用重试方法（应该放弃）
+	system._deferred_try_fire_battle_start_trigger()
+
+	# 验证已放弃触发
+	assert_eq(system._pending_battle_start_trigger, false, "重试次数超限后应放弃触发")
+	assert_eq(system._battle_start_retry_count, 101, "重试计数应为 101")
+
+	# 清理
+	system.free()
+
+
+func test_battle_start_triggers_when_context_ready() -> void:
+	# 测试上下文就绪时正常触发（使用已有的测试子类）
+	# 使用 _system（RelicPotionSystemForTest），它已经设置了 fake_player
+
+	# 设置遗物
+	var relic := RelicData.new()
+	relic.id = "test_relic"
+	relic.on_battle_start_heal = 5
+	_run_state.relics = [relic]
+	_run_state.player_stats.health = 40
+
+	# 设置战斗状态
+	_system._battle_active = true
+	_system._pending_battle_start_trigger = true
+	_system._battle_start_retry_count = 0
+
+	# 调用重试方法
+	_system._deferred_try_fire_battle_start_trigger()
+
+	# 验证成功触发
+	assert_eq(_system._pending_battle_start_trigger, false, "成功触发后应清除待触发标志")

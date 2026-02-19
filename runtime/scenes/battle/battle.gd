@@ -77,6 +77,8 @@ func _connect_signals() -> void:
 		Events.enemy_turn_ended.connect(_on_enemy_turn_ended)
 	if not Events.player_died.is_connected(_on_player_died):
 		Events.player_died.connect(_on_player_died)
+	if not Events.enemy_died.is_connected(_on_enemy_died):
+		Events.enemy_died.connect(_on_enemy_died)
 
 
 func _disconnect_signals() -> void:
@@ -94,6 +96,8 @@ func _disconnect_signals() -> void:
 		Events.enemy_turn_ended.disconnect(_on_enemy_turn_ended)
 	if Events.player_died.is_connected(_on_player_died):
 		Events.player_died.disconnect(_on_player_died)
+	if Events.enemy_died.is_connected(_on_enemy_died):
+		Events.enemy_died.disconnect(_on_enemy_died)
 
 
 func start_battle(stats: CharacterStats) -> void:
@@ -249,6 +253,20 @@ func _on_player_died() -> void:
 		_battle_phase_machine.transition_to(BattlePhaseStateMachine.Phase.RESOLVE)
 		return
 	_on_battle_ended("defeat")
+
+
+func _on_enemy_died(enemy: Enemy) -> void:
+	if _battle_ended:
+		return
+
+	# 从战斗状态机中移除敌人
+	if _battle_phase_machine != null:
+		_battle_phase_machine.remove_enemy(enemy)
+
+	# 从敌人处理器中移除并释放节点
+	if enemy != null and is_instance_valid(enemy):
+		enemy.get_parent().remove_child(enemy)
+		enemy.queue_free()
 
 
 func _on_battle_ended(result: String) -> void:

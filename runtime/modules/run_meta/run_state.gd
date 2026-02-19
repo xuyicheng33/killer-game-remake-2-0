@@ -86,6 +86,12 @@ func use_potion_at(index: int) -> String:
 		return "药水使用失败：无效药水。"
 
 	var result := _apply_potion_effect(potion)
+
+	# 仅对战斗中效果（如伤害药水）不消耗
+	if potion.effect_type == PotionData.EffectType.DAMAGE_ALL_ENEMIES:
+		# 战斗外无法使用伤害药水，不消耗
+		return result
+
 	potions.remove_at(index)
 	emit_changed()
 	return result
@@ -170,7 +176,15 @@ func upgrade_card_in_deck_at(index: int) -> bool:
 	if upgraded == null:
 		return false
 
-	upgraded.id = "%s+" % upgraded.id
+	# 优先使用 upgrade_to 字段（数据驱动）
+	var target_id := base_card.upgrade_to.strip_edges()
+	if not target_id.is_empty():
+		upgraded.id = target_id
+		upgraded.upgrade_to = ""
+	else:
+		# 回退到硬编码行为（向后兼容）
+		upgraded.id = "%s+" % upgraded.id
+
 	if upgraded.cost > 0:
 		upgraded.cost -= 1
 	if upgraded.tooltip_text.length() > 0:

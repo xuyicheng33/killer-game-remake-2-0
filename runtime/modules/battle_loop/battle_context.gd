@@ -30,11 +30,14 @@ func bind_combatants(player: Player, enemies: Array[Enemy]) -> void:
 	_enemies = enemies.duplicate()
 	if phase_machine != null:
 		phase_machine.bind_context(player, _enemies, self)
+	if buff_system != null:
+		buff_system.bind_combatants(player, _enemies)
 
 
 func unbind_battle_context() -> void:
 	phase_machine.unbind_context()
 	buff_system.disconnect_events()
+	buff_system.unbind_combatants()
 	card_zones.unbind_context()
 	_character = null
 	_hand = null
@@ -65,6 +68,9 @@ func end_player_turn() -> bool:
 func remove_enemy(enemy: Enemy) -> void:
 	_enemies.erase(enemy)
 	phase_machine.remove_enemy(enemy)
+	# 同步更新 BuffSystem 的敌人列表
+	if buff_system != null:
+		buff_system.remove_enemy(enemy)
 
 
 func draw_cards(amount: int) -> int:

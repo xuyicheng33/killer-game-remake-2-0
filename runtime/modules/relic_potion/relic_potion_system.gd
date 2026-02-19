@@ -28,6 +28,7 @@ var _pending_battle_start_trigger := false
 var _cards_played_in_battle := 0
 var _enemies_killed_in_battle := 0
 var _battle_start_retry_count := 0
+var _relic_runtimes: Dictionary = {}  # 遗物ID -> 运行时对象缓存
 const MAX_BATTLE_START_RETRIES := 100
 
 
@@ -75,6 +76,7 @@ func bind_run_state(value: RunState) -> void:
 	_pending_battle_start_trigger = false
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
+	_rebuild_relic_runtime_cache()
 	_apply_run_start_relics_once()
 	log_updated.emit("遗物/药水系统已就绪。")
 
@@ -188,14 +190,16 @@ func dispatch_relic_effect(effect_type: String, value: int, relic: RelicData) ->
 func _fire_trigger(trigger_type: TriggerType, context: Dictionary) -> void:
 	if run_state == null:
 		return
-	
+
 	trigger_fired.emit(trigger_type, context)
-	
+
 	for relic in run_state.relics:
 		if not (relic is RelicData):
 			continue
 		var relic_data: RelicData = relic
-		var relic_runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic_data)
+
+		# 使用缓存的运行时对象，避免每次触发都实例化
+		var relic_runtime: Variant = _get_or_create_relic_runtime(relic_data)
 		if relic_runtime == null:
 			continue
 		if not relic_runtime.has_method("handle_trigger"):
@@ -362,6 +366,55 @@ func on_boss_killed() -> void:
 		return
 	
 	_fire_trigger(TriggerType.ON_BOSS_KILLED, {})
+
+
+func _rebuild_relic_runtime_cache() -> void:
+	_relic_runtimes.clear()
+	if run_state == null:
+		return
+	for relic in run_state.relics:
+		if not (relic is RelicData):
+			continue
+		var relic_data: RelicData = relic
+		if relic_data.id.is_empty():
+			continue
+		var runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic_data)
+		if runtime != null:
+			_relic_runtimes[relic_data.id] = runtime
+
+
+func _get_or_create_relic_runtime(relic_data: RelicData) -> Variant:
+	if relic_data == null or relic_data.id.is_empty():
+		return null
+	if _relic_runtimes.has(relic_data.id):
+		return _relic_runtimes[relic_data.id]
+	var runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic_data)
+	if runtime != null:
+		_relic_runtimes[relic_data.id] = runtime
+	return runtime
+
+
+func add_relic(relic: RelicData) -> void:
+	if relic == null or relic.id.is_empty():
+		return
+	if run_state == null:
+		return
+	if run_state.add_relic(relic):
+		var runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic)
+		if runtime != null:
+			_relic_runtimes[relic.id] = runtime
+
+
+func remove_relic(relic_id: String) -> bool:
+	if relic_id.is_empty() or run_state == null:
+		return false
+	_relic_runtimes.erase(relic_id)
+	for i in run_state.relics.size():
+		if run_state.relics[i].id == relic_id:
+			run_state.relics.remove_at(i)
+			run_state.emit_changed()
+			return true
+	return false
 
 
 func _apply_run_start_relics_once() -> void:

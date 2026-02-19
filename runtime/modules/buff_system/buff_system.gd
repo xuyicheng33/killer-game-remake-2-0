@@ -28,6 +28,25 @@ const STATUS_ORDER: Array[String] = [
 var _events_connected := false
 var _enemy_turn_queue: Array[Enemy] = []
 var _active_enemy: Enemy = null
+var _player: Player = null
+var _enemies: Array[Enemy] = []
+
+
+func bind_combatants(player: Player, enemies: Array[Enemy]) -> void:
+	_player = player
+	_enemies = enemies.duplicate()
+
+
+func unbind_combatants() -> void:
+	_player = null
+	_enemies.clear()
+
+
+func remove_enemy(enemy: Enemy) -> void:
+	_enemies.erase(enemy)
+	if _active_enemy == enemy:
+		_active_enemy = null
+	_enemy_turn_queue.erase(enemy)
 
 
 func apply_status_to_target(target: Node, status_id: String, stacks: int) -> void:
@@ -335,15 +354,16 @@ func _handle_death(target: Node) -> void:
 	if target == null or not is_instance_valid(target):
 		return
 
+	# BuffSystem 是域服务，不应该直接操作场景节点
+	# 只发射死亡信号，让场景层（如 battle.gd）处理节点释放
 	if target.is_in_group("player"):
 		Events.player_died.emit()
-		target.queue_free()
 		return
 
 	if target.is_in_group("enemies"):
 		var enemy := target as Enemy
 		Events.enemy_died.emit(enemy)
-		target.queue_free()
+		return
 
 
 func _rebuild_enemy_turn_queue() -> void:
@@ -374,6 +394,11 @@ func _extract_stats(target: Node) -> Stats:
 
 
 func _get_player_node() -> Player:
+	# 优先使用依赖注入的实体
+	if _player != null and is_instance_valid(_player):
+		return _player
+
+	# 回退到场景树查找（用于向后兼容）
 	var tree := _get_tree()
 	if tree == null:
 		return null
@@ -390,6 +415,16 @@ func _get_player_node() -> Player:
 
 
 func _get_enemy_nodes() -> Array[Enemy]:
+	# 优先使用依赖注入的实体
+	if not _enemies.is_empty():
+		var valid_enemies: Array[Enemy] = []
+		for enemy in _enemies:
+			if enemy != null and is_instance_valid(enemy):
+				valid_enemies.append(enemy)
+		if not valid_enemies.is_empty():
+			return valid_enemies
+
+	# 回退到场景树查找（用于向后兼容）
 	var enemies: Array[Enemy] = []
 	var tree := _get_tree()
 	if tree == null:

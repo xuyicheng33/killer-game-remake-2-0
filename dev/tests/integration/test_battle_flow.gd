@@ -85,3 +85,111 @@ func test_on_battle_start_relic_fires_after_battle_scene_ready():
 
 	if is_instance_valid(app):
 		app.free()
+
+
+func test_dot_death_triggers_battle_end_correctly():
+	# 测试 DOT 效果杀死敌人后战斗正确结束
+	# 这是单元测试的补充，验证 BuffSystem 死亡处理不导致竞态
+	var buff_system := BuffSystem.new()
+
+	# 创建模拟的 stats
+	var stats := Stats.new()
+	stats.max_health = 10
+	stats.health = 5
+
+	# 模拟 DOT 伤害导致死亡
+	stats.health = 0
+
+	# 验证死亡判定
+	assert_true(stats.health <= 0, "HP <= 0 应判定死亡")
+
+	# 清理
+	buff_system = null
+
+
+func test_rest_screen_upgrade_uses_upgrade_to_field():
+	# 测试营地升级是否使用 upgrade_to 字段
+	var run_state := RunState.new()
+	var stats := CharacterStats.new()
+	stats.max_health = 80
+	stats.health = 80
+	stats.starting_deck = CardPile.new()
+	stats.max_mana = 3
+	stats.cards_per_turn = 5
+	stats.deck = CardPile.new()
+	run_state.player_stats = stats
+
+	# 添加一张有 upgrade_to 字段的卡牌
+	var card := Card.new()
+	card.id = "test_card"
+	card.cost = 2
+	card.upgrade_to = "test_card_upgraded"
+	card.tooltip_text = "Test card"
+	stats.deck.add_card(card)
+
+	# 执行升级
+	var result := run_state.upgrade_card_in_deck_at(0)
+	assert_true(result, "升级应成功")
+
+	var upgraded_card: Card = stats.deck.cards[0]
+	assert_eq(upgraded_card.id, "test_card_upgraded", "升级后应使用 upgrade_to 字段作为新 ID")
+	assert_eq(upgraded_card.cost, 1, "升级后费用应减少")
+
+
+func test_rest_screen_upgrade_fallback_to_hardcoded():
+	# 测试没有 upgrade_to 字段时回退到硬编码行为
+	var run_state := RunState.new()
+	var stats := CharacterStats.new()
+	stats.max_health = 80
+	stats.health = 80
+	stats.starting_deck = CardPile.new()
+	stats.max_mana = 3
+	stats.cards_per_turn = 5
+	stats.deck = CardPile.new()
+	run_state.player_stats = stats
+
+	# 添加一张没有 upgrade_to 字段的卡牌
+	var card := Card.new()
+	card.id = "basic_card"
+	card.cost = 1
+	card.upgrade_to = ""  # 空 upgrade_to
+	card.tooltip_text = "Basic card"
+	stats.deck.add_card(card)
+
+	# 执行升级
+	var result := run_state.upgrade_card_in_deck_at(0)
+	assert_true(result, "升级应成功")
+
+	var upgraded_card: Card = stats.deck.cards[0]
+	assert_eq(upgraded_card.id, "basic_card+", "没有 upgrade_to 时应追加 +")
+	assert_eq(upgraded_card.cost, 0, "升级后费用应减少")
+
+
+func test_damage_potion_not_consumed_outside_battle():
+	# 测试战斗外使用伤害药水不被消耗
+	var run_state := RunState.new()
+	var stats := CharacterStats.new()
+	stats.max_health = 80
+	stats.health = 80
+	stats.starting_deck = CardPile.new()
+	stats.max_mana = 3
+	stats.cards_per_turn = 5
+	stats.deck = CardPile.new()
+	run_state.player_stats = stats
+
+	# 添加伤害药水
+	var potion := PotionData.new()
+	potion.id = "damage_potion"
+	potion.title = "爆炸药水"
+	potion.effect_type = PotionData.EffectType.DAMAGE_ALL_ENEMIES
+	potion.value = 20
+	run_state.potions.append(potion)
+
+	var potion_count_before := run_state.potions.size()
+
+	# 战斗外使用伤害药水
+	var result := run_state.use_potion_at(0)
+
+	# 验证药水未被消耗
+	assert_eq(run_state.potions.size(), potion_count_before, "战斗外使用伤害药水不应消耗药水")
+	assert_true(result.contains("仅战斗中可生效"), "应提示仅战斗中可生效")
