@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_last_stand"
+display_name = "背水一战"
 type = 0
 target = 1
 cost = 1
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Last Stand\\nDeal 10 damage. Exhaust.[/center]"
+tooltip_text = "[center]背水一战\\n造成 10 点伤害。消耗。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

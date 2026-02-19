@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_finisher_attack"
+display_name = "处决劈砍"
 type = 0
 target = 1
 cost = 2
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = "warrior_finisher_attack_plus"
-tooltip_text = "[center]Execution Cleave\\nIf target is Vulnerable, deal extra damage. Exhaust. When exhausted, add an upgraded copy to discard.[/center]"
+tooltip_text = "[center]处决劈砍\\n若目标有易伤，造成额外伤害。消耗。消耗时，将一张升级版加入弃牌堆。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

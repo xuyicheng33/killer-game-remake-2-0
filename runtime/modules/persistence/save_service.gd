@@ -232,6 +232,7 @@ static func _serialize_card(card: Card) -> Dictionary:
 	var data: Dictionary = {}
 	data["script_path"] = script_path
 	data["id"] = card.id
+	data["display_name"] = card.display_name
 	data["type"] = int(card.type)
 	data["target"] = int(card.target)
 	data["cost"] = card.cost
@@ -263,6 +264,7 @@ static func _deserialize_card(data: Dictionary) -> Card:
 		card = Card.new()
 
 	card.id = str(data.get("id", ""))
+	card.display_name = str(data.get("display_name", ""))
 	card.type = int(data.get("type", int(Card.Type.ATTACK)))
 	card.target = int(data.get("target", int(Card.Target.SELF)))
 	card.cost = int(data.get("cost", 0))

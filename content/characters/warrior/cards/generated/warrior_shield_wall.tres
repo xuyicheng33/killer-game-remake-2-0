@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_shield_wall"
+display_name = "盾墙"
 type = 1
 target = 0
 cost = 2
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Shield Wall\\nGain 12 Block.[/center]"
+tooltip_text = "[center]盾墙\\n获得 12 点格挡。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

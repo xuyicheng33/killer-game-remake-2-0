@@ -23,6 +23,10 @@ func _exit_tree() -> void:
 func _connect_signals() -> void:
 	if not Events.card_tooltip_requested.is_connected(show_tooltip):
 		Events.card_tooltip_requested.connect(show_tooltip)
+	if not Events.relic_tooltip_requested.is_connected(show_tooltip):
+		Events.relic_tooltip_requested.connect(show_tooltip)
+	if not Events.potion_tooltip_requested.is_connected(show_tooltip):
+		Events.potion_tooltip_requested.connect(show_tooltip)
 	if not Events.tooltip_hide_requested.is_connected(hide_tooltip):
 		Events.tooltip_hide_requested.connect(hide_tooltip)
 
@@ -30,6 +34,10 @@ func _connect_signals() -> void:
 func _disconnect_signals() -> void:
 	if Events.card_tooltip_requested.is_connected(show_tooltip):
 		Events.card_tooltip_requested.disconnect(show_tooltip)
+	if Events.relic_tooltip_requested.is_connected(show_tooltip):
+		Events.relic_tooltip_requested.disconnect(show_tooltip)
+	if Events.potion_tooltip_requested.is_connected(show_tooltip):
+		Events.potion_tooltip_requested.disconnect(show_tooltip)
 	if Events.tooltip_hide_requested.is_connected(hide_tooltip):
 		Events.tooltip_hide_requested.disconnect(hide_tooltip)
 

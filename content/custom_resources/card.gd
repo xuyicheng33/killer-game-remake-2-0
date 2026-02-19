@@ -6,6 +6,7 @@ enum Target {SELF, SINGLE_ENEMY, ALL_ENEMIES, EVERYONE}
 
 @export_group("Card Attributes")
 @export var id: String
+@export var display_name: String = ""
 @export var type: Type
 @export var target: Target
 @export var cost: int
@@ -24,6 +25,10 @@ enum Target {SELF, SINGLE_ENEMY, ALL_ENEMIES, EVERYONE}
 @export var sound: AudioStream
 
 var last_x_value := 0
+
+
+func get_display_name() -> String:
+	return display_name if not display_name.is_empty() else id
 
 
 func is_single_targeted() -> bool:

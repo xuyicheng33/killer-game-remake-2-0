@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_whirlwind_x"
+display_name = "旋风斩"
 type = 0
 target = 2
 cost = -1
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = true
 upgrade_to = ""
-tooltip_text = "[center]Whirlwind X\\nX Cost. Deal 2 damage to all enemies.[/center]"
+tooltip_text = "[center]旋风斩\\nX费。对所有敌人造成 2 点伤害。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

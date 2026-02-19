@@ -103,9 +103,14 @@ func _render_cards(projection: Dictionary) -> void:
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.add_theme_font_size_override("font_size", 24)
 
+		# Connect tooltip hover signals
 		var tooltip := str(card_data.get("tooltip", ""))
+		var card_icon: Texture = null
+		if card is Card and card.icon != null:
+			card_icon = card.icon
 		if tooltip.length() > 0:
-			btn.tooltip_text = tooltip
+			btn.mouse_entered.connect(_on_card_button_mouse_entered.bind(card_icon, tooltip))
+			btn.mouse_exited.connect(_on_card_button_mouse_exited)
 
 		btn.pressed.connect(_on_card_pressed.bind(card))
 		cards_container.add_child(btn)
@@ -113,6 +118,14 @@ func _render_cards(projection: Dictionary) -> void:
 
 func _on_card_pressed(card: Card) -> void:
 	_adapter.select_card(card)
+
+
+func _on_card_button_mouse_entered(icon: Texture, text: String) -> void:
+	Events.card_tooltip_requested.emit(icon, text)
+
+
+func _on_card_button_mouse_exited() -> void:
+	Events.tooltip_hide_requested.emit()
 
 
 func _on_skip_pressed() -> void:

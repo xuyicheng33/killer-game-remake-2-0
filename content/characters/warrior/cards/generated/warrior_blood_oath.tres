@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_blood_oath"
+display_name = "鲜血誓言"
 type = 2
 target = 0
 cost = 2
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Blood Oath\\nSpecial: Gain 2 Strength and 1 Dexterity.[/center]"
+tooltip_text = "[center]鲜血誓言\\n特殊：获得 2 点力量和 1 点敏捷。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

@@ -63,6 +63,8 @@ func _project_offers(run_state: RunState, offers: Array[Dictionary]) -> Array[Di
 			"index": i,
 			"text": label,
 			"disabled": disabled,
+			"tooltip_icon": _tooltip_icon_for_offer(offer),
+			"tooltip_text": _tooltip_text_for_offer(offer),
 		})
 
 	return buttons
@@ -89,7 +91,7 @@ func _project_deck(run_state: RunState) -> Array[Dictionary]:
 func _card_name(card: Card) -> String:
 	if card == null:
 		return "(空卡)"
-	return card.id
+	return card.get_display_name()
 
 
 func _relic_name(relic: RelicData) -> String:
@@ -113,3 +115,31 @@ func _is_potion_inventory_full(run_state: RunState) -> bool:
 	if capacity <= 0:
 		capacity = SHOP_OFFER_GENERATOR_SCRIPT.MAX_POTION_INVENTORY
 	return run_state.potions.size() >= capacity
+
+
+func _tooltip_icon_for_offer(offer: Dictionary) -> Texture:
+	var card_variant: Variant = offer.get("card")
+	if card_variant is Card and card_variant.icon != null:
+		return card_variant.icon
+	# Note: RelicData and PotionData do not have art/icon fields yet
+	# When icon support is added, uncomment the following:
+	# var relic_variant: Variant = offer.get("relic")
+	# if relic_variant is RelicData and relic_variant.icon != null:
+	# 	return relic_variant.icon
+	# var potion_variant: Variant = offer.get("potion")
+	# if potion_variant is PotionData and potion_variant.icon != null:
+	# 	return potion_variant.icon
+	return null
+
+
+func _tooltip_text_for_offer(offer: Dictionary) -> String:
+	var card_variant: Variant = offer.get("card")
+	if card_variant is Card:
+		return card_variant.tooltip_text
+	var relic_variant: Variant = offer.get("relic")
+	if relic_variant is RelicData:
+		return "[center]%s\\n%s[/center]" % [relic_variant.title, relic_variant.description]
+	var potion_variant: Variant = offer.get("potion")
+	if potion_variant is PotionData:
+		return "[center]%s\\n%s[/center]" % [potion_variant.title, potion_variant.description]
+	return ""

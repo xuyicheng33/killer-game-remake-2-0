@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_iron_will"
+display_name = "钢铁意志"
 type = 2
 target = 0
 cost = 2
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Iron Will\\nGain 2 Dexterity.[/center]"
+tooltip_text = "[center]钢铁意志\\n获得 2 点敏捷。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

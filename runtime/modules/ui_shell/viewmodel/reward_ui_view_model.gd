@@ -58,4 +58,4 @@ func _project_card_choices(bundle: RewardBundle) -> Array[Dictionary]:
 func _format_card_label(card: Card) -> String:
 	if card == null:
 		return "(null card)"
-	return "%s  [费:%s]" % [card.id, card.get_cost_label()]
+	return "%s  [费:%s]" % [card.get_display_name(), card.get_cost_label()]

@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_intimidate"
+display_name = "威吓"
 type = 1
 target = 1
 cost = 1
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Intimidate\\nApply 2 Weak.[/center]"
+tooltip_text = "[center]威吓\\n施加 2 层虚弱。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_berserker_form"
+display_name = "狂战士形态"
 type = 2
 target = 0
 cost = 1
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Berserker Form\\nGain 1 Strength.[/center]"
+tooltip_text = "[center]狂战士形态\\n获得 1 点力量。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

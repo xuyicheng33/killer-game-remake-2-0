@@ -95,6 +95,14 @@ func _render_offers(projection: Dictionary) -> void:
 		btn.custom_minimum_size = Vector2(0, 64)
 		btn.disabled = bool(button_data.get("disabled", true))
 		btn.pressed.connect(_on_buy_offer.bind(index))
+
+		# Connect tooltip hover signals
+		var tooltip_icon: Texture = button_data.get("tooltip_icon")
+		var tooltip_text: String = str(button_data.get("tooltip_text", ""))
+		if tooltip_text.length() > 0:
+			btn.mouse_entered.connect(_on_offer_button_mouse_entered.bind(tooltip_icon, tooltip_text))
+			btn.mouse_exited.connect(_on_offer_button_mouse_exited)
+
 		offers_container.add_child(btn)
 
 
@@ -127,6 +135,14 @@ func _render_deck(projection: Dictionary) -> void:
 
 func _on_buy_offer(index: int) -> void:
 	_adapter.execute_buy_offer(index)
+
+
+func _on_offer_button_mouse_entered(icon: Texture, text: String) -> void:
+	Events.card_tooltip_requested.emit(icon, text)
+
+
+func _on_offer_button_mouse_exited() -> void:
+	Events.tooltip_hide_requested.emit()
 
 
 func _on_remove_card(index: int) -> void:

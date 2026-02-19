@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_condition_rend"
+display_name = "撕裂斩"
 type = 0
 target = 1
 cost = 1
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Rend Slash\\nIf target is Weak, deal extra damage. Apply 1 Vulnerable.[/center]"
+tooltip_text = "[center]撕裂斩\\n若目标有虚弱，造成额外伤害。施加 1 层易伤。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

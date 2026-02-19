@@ -4,12 +4,12 @@
   "cards": [
     {
       "id": "warrior_axe_attack",
-      "name": "Axe Attack",
+      "name": "斧击",
       "type": "attack",
       "rarity": "common",
       "cost": 1,
       "target": "enemy",
-      "text": "Deal 6 damage.",
+      "text": "造成 6 点伤害。",
       "icon": "res://content/art/tile_0119.png",
       "sound": "res://content/art/axe.ogg",
       "effects": [
@@ -20,12 +20,12 @@
     },
     {
       "id": "warrior_block",
-      "name": "Defend",
+      "name": "防御",
       "type": "skill",
       "rarity": "common",
       "cost": 1,
       "target": "self",
-      "text": "Gain 5 Block.",
+      "text": "获得 5 点格挡。",
       "icon": "res://content/art/tile_0102.png",
       "sound": "res://content/art/block.ogg",
       "effects": [
@@ -36,12 +36,12 @@
     },
     {
       "id": "warrior_slash",
-      "name": "Whirl Slash",
+      "name": "回旋斩",
       "type": "attack",
       "rarity": "common",
       "cost": 2,
       "target": "all_enemies",
-      "text": "Deal 4 damage to all enemies.",
+      "text": "对所有敌人造成 4 点伤害。",
       "icon": "res://content/art/tile_0118.png",
       "sound": "res://content/art/slash.ogg",
       "effects": [
@@ -52,12 +52,12 @@
     },
     {
       "id": "warrior_pipeline_bash",
-      "name": "Pipeline Bash",
+      "name": "管道猛击",
       "type": "attack",
       "rarity": "common",
       "cost": 2,
       "target": "enemy",
-      "text": "Deal 5 damage. Apply 1 Vulnerable.",
+      "text": "造成 5 点伤害。施加 1 层易伤。",
       "icon": "res://content/art/tile_0119.png",
       "sound": "res://content/art/axe.ogg",
       "effects": [
@@ -69,12 +69,12 @@
     },
     {
       "id": "warrior_guard_stance",
-      "name": "Guard Stance",
+      "name": "防御姿态",
       "type": "skill",
       "rarity": "common",
       "cost": 1,
       "target": "self",
-      "text": "Gain 8 Block.",
+      "text": "获得 8 点格挡。",
       "icon": "res://content/art/tile_0102.png",
       "sound": "res://content/art/block.ogg",
       "effects": [
@@ -83,12 +83,12 @@
     },
     {
       "id": "warrior_berserker_form",
-      "name": "Berserker Form",
+      "name": "狂战士形态",
       "type": "power",
       "rarity": "uncommon",
       "cost": 1,
       "target": "self",
-      "text": "Gain 1 Strength.",
+      "text": "获得 1 点力量。",
       "icon": "res://content/art/muscle.png",
       "sound": "res://content/art/true_strength.ogg",
       "effects": [
@@ -97,12 +97,12 @@
     },
     {
       "id": "warrior_last_stand",
-      "name": "Last Stand",
+      "name": "背水一战",
       "type": "attack",
       "rarity": "uncommon",
       "cost": 1,
       "target": "enemy",
-      "text": "Deal 10 damage. Exhaust.",
+      "text": "造成 10 点伤害。消耗。",
       "icon": "res://content/art/tile_0119.png",
       "sound": "res://content/art/axe.ogg",
       "effects": [
@@ -112,12 +112,12 @@
     },
     {
       "id": "warrior_whirlwind_x",
-      "name": "Whirlwind X",
+      "name": "旋风斩",
       "type": "attack",
       "rarity": "rare",
       "cost": -1,
       "target": "all_enemies",
-      "text": "X Cost. Deal 2 damage to all enemies.",
+      "text": "X费。对所有敌人造成 2 点伤害。",
       "icon": "res://content/art/tile_0118.png",
       "sound": "res://content/art/slash.ogg",
       "effects": [
@@ -127,12 +127,12 @@
     },
     {
       "id": "warrior_quick_cut",
-      "name": "Quick Cut",
+      "name": "快斩",
       "type": "attack",
       "rarity": "common",
       "cost": 0,
       "target": "enemy",
-      "text": "Deal 4 damage.",
+      "text": "造成 4 点伤害。",
       "icon": "res://content/art/tile_0119.png",
       "sound": "res://content/art/slash.ogg",
       "effects": [
@@ -141,12 +141,12 @@
     },
     {
       "id": "warrior_heavy_chop",
-      "name": "Heavy Chop",
+      "name": "重劈",
       "type": "attack",
       "rarity": "common",
       "cost": 1,
       "target": "enemy",
-      "text": "Deal 8 damage.",
+      "text": "造成 8 点伤害。",
       "icon": "res://content/art/tile_0119.png",
       "sound": "res://content/art/axe.ogg",
       "effects": [
@@ -155,12 +155,12 @@
     },
     {
       "id": "warrior_twin_strike",
-      "name": "Twin Strike",
+      "name": "双击",
       "type": "attack",
       "rarity": "common",
       "cost": 1,
       "target": "enemy",
-      "text": "Deal 3 damage twice.",
+      "text": "造成 3 点伤害两次。",
       "icon": "res://content/art/tile_0118.png",
       "sound": "res://content/art/slash.ogg",
       "effects": [
@@ -170,12 +170,12 @@
     },
     {
       "id": "warrior_condition_rend",
-      "name": "Rend Slash",
+      "name": "撕裂斩",
       "type": "attack",
       "rarity": "uncommon",
       "cost": 1,
       "target": "enemy",
-      "text": "If target is Weak, deal extra damage. Apply 1 Vulnerable.",
+      "text": "若目标有虚弱，造成额外伤害。施加 1 层易伤。",
       "icon": "res://content/art/tile_0118.png",
       "sound": "res://content/art/slash.ogg",
       "effects": [
@@ -185,12 +185,12 @@
     },
     {
       "id": "warrior_finisher_attack",
-      "name": "Execution Cleave",
+      "name": "处决劈砍",
       "type": "attack",
       "rarity": "rare",
       "cost": 2,
       "target": "enemy",
-      "text": "If target is Vulnerable, deal extra damage. Exhaust. When exhausted, add an upgraded copy to discard.",
+      "text": "若目标有易伤，造成额外伤害。消耗。消耗时，将一张升级版加入弃牌堆。",
       "icon": "res://content/art/tile_0119.png",
       "sound": "res://content/art/axe.ogg",
       "effects": [
@@ -201,12 +201,12 @@
     },
     {
       "id": "warrior_shield_wall",
-      "name": "Shield Wall",
+      "name": "盾墙",
       "type": "skill",
       "rarity": "uncommon",
       "cost": 2,
       "target": "self",
-      "text": "Gain 12 Block.",
+      "text": "获得 12 点格挡。",
       "icon": "res://content/art/tile_0102.png",
       "sound": "res://content/art/block.ogg",
       "effects": [
@@ -215,12 +215,12 @@
     },
     {
       "id": "warrior_tactical_breath",
-      "name": "Tactical Breath",
+      "name": "战术呼吸",
       "type": "skill",
       "rarity": "uncommon",
       "cost": 1,
       "target": "self",
-      "text": "Draw 1 card.",
+      "text": "抽 1 张牌。",
       "icon": "res://content/art/draw.png",
       "sound": "res://content/art/true_strength.ogg",
       "effects": [
@@ -229,12 +229,12 @@
     },
     {
       "id": "warrior_battle_focus",
-      "name": "Battle Focus",
+      "name": "战斗专注",
       "type": "skill",
       "rarity": "uncommon",
       "cost": 1,
       "target": "self",
-      "text": "Gain 1 Energy.",
+      "text": "获得 1 点能量。",
       "icon": "res://content/art/draw.png",
       "sound": "res://content/art/true_strength.ogg",
       "effects": [
@@ -243,12 +243,12 @@
     },
     {
       "id": "warrior_intimidate",
-      "name": "Intimidate",
+      "name": "威吓",
       "type": "skill",
       "rarity": "common",
       "cost": 1,
       "target": "enemy",
-      "text": "Apply 2 Weak.",
+      "text": "施加 2 层虚弱。",
       "icon": "res://content/art/expose.png",
       "sound": "res://content/art/block.ogg",
       "effects": [
@@ -257,12 +257,12 @@
     },
     {
       "id": "warrior_crush_armor",
-      "name": "Crush Armor",
+      "name": "破甲",
       "type": "skill",
       "rarity": "common",
       "cost": 1,
       "target": "enemy",
-      "text": "Apply 2 Vulnerable.",
+      "text": "施加 2 层易伤。",
       "icon": "res://content/art/expose.png",
       "sound": "res://content/art/axe.ogg",
       "effects": [
@@ -271,12 +271,12 @@
     },
     {
       "id": "warrior_iron_will",
-      "name": "Iron Will",
+      "name": "钢铁意志",
       "type": "power",
       "rarity": "rare",
       "cost": 2,
       "target": "self",
-      "text": "Gain 2 Dexterity.",
+      "text": "获得 2 点敏捷。",
       "icon": "res://content/art/muscle.png",
       "sound": "res://content/art/true_strength.ogg",
       "effects": [
@@ -285,12 +285,12 @@
     },
     {
       "id": "warrior_blood_oath",
-      "name": "Blood Oath",
+      "name": "鲜血誓言",
       "type": "power",
       "rarity": "rare",
       "cost": 2,
       "target": "self",
-      "text": "Special: Gain 2 Strength and 1 Dexterity.",
+      "text": "特殊：获得 2 点力量和 1 点敏捷。",
       "icon": "res://content/art/muscle.png",
       "sound": "res://content/art/true_strength.ogg",
       "effects": [

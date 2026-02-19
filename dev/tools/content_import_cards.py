@@ -602,6 +602,7 @@ def _generate_card_tres(card: dict[str, Any], script_res_path: str) -> str:
     lines.append("[resource]")
     lines.append("script = ExtResource(\"1_card_script\")")
     lines.append(f"id = {_json_string(card['id'])}")
+    lines.append(f"display_name = {_json_string(card.get('name', ''))}")
     lines.append(f"type = {TYPE_TO_RUNTIME[card['runtime_type']]}")
     lines.append(f"target = {TARGET_TO_RUNTIME[card['target']]}")
     lines.append(f"cost = {card['cost']}")

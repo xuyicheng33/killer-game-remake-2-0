@@ -56,6 +56,14 @@ func _on_use_potion(index: int) -> void:
 	_adapter.use_potion(index)
 
 
+func _on_potion_button_mouse_entered(icon: Texture, text: String) -> void:
+	Events.potion_tooltip_requested.emit(icon, text)
+
+
+func _on_potion_button_mouse_exited() -> void:
+	Events.tooltip_hide_requested.emit()
+
+
 func _render(projection: Dictionary) -> void:
 	if not is_node_ready():
 		return
@@ -88,6 +96,14 @@ func _render_potions(projection: Dictionary) -> void:
 			btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			btn.disabled = not bool(button_data.get("enabled", true))
 			btn.pressed.connect(_on_use_potion.bind(index))
+
+			# Connect tooltip hover signals
+			var tooltip_icon: Texture = button_data.get("tooltip_icon")
+			var tooltip_text: String = str(button_data.get("tooltip_text", ""))
+			if tooltip_text.length() > 0:
+				btn.mouse_entered.connect(_on_potion_button_mouse_entered.bind(tooltip_icon, tooltip_text))
+				btn.mouse_exited.connect(_on_potion_button_mouse_exited)
+
 			potion_container.add_child(btn)
 
 	if bool(projection.get("show_empty_potion_hint", false)):

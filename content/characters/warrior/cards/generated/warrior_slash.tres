@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_slash"
+display_name = "回旋斩"
 type = 0
 target = 2
 cost = 2
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Whirl Slash\\nDeal 4 damage to all enemies.[/center]"
+tooltip_text = "[center]回旋斩\\n对所有敌人造成 4 点伤害。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

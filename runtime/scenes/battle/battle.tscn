@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cahno8aso5net"]
+[gd_scene load_steps=16 format=3 uid="uid://cahno8aso5net"]
 
 [ext_resource type="Script" path="res://runtime/scenes/battle/battle.gd" id="1_4s751"]
 [ext_resource type="Texture2D" uid="uid://cp4iq5fd6j8be" path="res://content/art/background.png" id="1_ybkl6"]
@@ -12,7 +12,6 @@
 [ext_resource type="Script" path="res://runtime/scenes/ui/battle_ui.gd" id="7_18vit"]
 [ext_resource type="Script" path="res://runtime/scenes/player/player_handler.gd" id="8_3di7i"]
 [ext_resource type="PackedScene" uid="uid://bnbwu7pkbrwox" path="res://runtime/scenes/ui/mana_ui.tscn" id="11_2vu01"]
-[ext_resource type="PackedScene" uid="uid://chry0sgk7t0yf" path="res://runtime/scenes/ui/tooltip.tscn" id="12_qx741"]
 [ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="13_523u4"]
 [ext_resource type="Script" path="res://runtime/scenes/ui/red_flash.gd" id="15_qvh8t"]
 [ext_resource type="PackedScene" uid="uid://dfig8d63ggof1" path="res://runtime/scenes/ui/battle_over_panel.tscn" id="17_xrby7"]
@@ -74,10 +73,6 @@ alignment = 1
 script = ExtResource("2_uaw60")
 
 [node name="ManaUI" parent="BattleUI" instance=ExtResource("11_2vu01")]
-
-[node name="Tooltip" parent="BattleUI" instance=ExtResource("12_qx741")]
-offset_top = 24.0
-offset_bottom = 190.0
 
 [node name="EndTurnButton" type="Button" parent="BattleUI"]
 unique_name_in_owner = true

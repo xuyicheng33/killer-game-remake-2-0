@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_card_script")
 id = "warrior_tactical_breath"
+display_name = "战术呼吸"
 type = 1
 target = 0
 cost = 1
@@ -16,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]Tactical Breath\\nDraw 1 card.[/center]"
+tooltip_text = "[center]战术呼吸\\n抽 1 张牌。[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

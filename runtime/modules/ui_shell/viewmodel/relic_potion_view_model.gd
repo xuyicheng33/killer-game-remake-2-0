@@ -33,6 +33,8 @@ func project(run_state: RunState, latest_log: String) -> Dictionary:
 			{
 				"index": i,
 				"text": "使用：%s" % _potion_name(potion),
+				"tooltip_text": "[center]%s\\n%s[/center]" % [_potion_name(potion), _potion_desc(potion)],
+				"tooltip_icon": _potion_icon(potion),
 			}
 		)
 
@@ -45,3 +47,15 @@ func _potion_name(potion: PotionData) -> String:
 	if potion == null:
 		return "(无效药水)"
 	return potion.title
+
+
+func _potion_desc(potion: PotionData) -> String:
+	if potion == null:
+		return ""
+	return potion.description
+
+
+func _potion_icon(_potion: PotionData) -> Texture:
+	# Note: PotionData does not have art/icon field yet
+	# When icon support is added, return potion.icon here
+	return null
