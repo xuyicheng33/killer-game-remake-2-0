@@ -10,7 +10,7 @@ func perform_action() -> void:
 	var block_effect := BlockEffect.new()
 	block_effect.amount = block
 	block_effect.sound = sound
-	block_effect.execute([enemy])
+	block_effect.execute([enemy], battle_context)
 	
 	get_tree().create_timer(0.6, false).timeout.connect(
 		func():

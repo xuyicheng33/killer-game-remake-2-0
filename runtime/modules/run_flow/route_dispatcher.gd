@@ -8,6 +8,7 @@ const ROUTE_REST := "rest"
 const ROUTE_SHOP := "shop"
 const ROUTE_EVENT := "event"
 const ROUTE_GAME_OVER := "game_over"
+const ROUTE_RUN_COMPLETE := "run_complete"
 
 
 func route_for_map_node_type(node_type: MapNodeData.NodeType) -> String:

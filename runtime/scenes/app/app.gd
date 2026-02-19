@@ -114,21 +114,26 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 
 func _open_battle(encounter_id: String = "") -> void:
 	_clear_scene_host()
-	relic_potion_system.start_battle()
 	var battle_scene := BATTLE_SCENE.instantiate()
 	battle_scene.set("runtime_stats", run_state.player_stats)
 	battle_scene.set("encounter_id", encounter_id)
 	scene_host.add_child(battle_scene)
+	relic_potion_system.start_battle()
 
 
 func _on_battle_finished(result: int) -> void:
+	var is_win := result == BattleOverPanel.Type.WIN
+	var is_boss := run_flow_service.get_pending_node_type() == MapNodeData.NodeType.BOSS
+	if is_win and is_boss:
+		relic_potion_system.on_boss_killed()
 	relic_potion_system.end_battle()
 	_clear_scene_host()
 
 	var command_result := run_flow_service.battle_flow_service.resolve_battle_completion(
 		run_state,
-		result == BattleOverPanel.Type.WIN,
-		run_flow_service.get_pending_reward_gold()
+		is_win,
+		run_flow_service.get_pending_reward_gold(),
+		is_boss
 	)
 	_dispatch_next_route(command_result)
 
@@ -216,6 +221,9 @@ func _dispatch_next_route(command_result: Dictionary) -> void:
 		RunRouteDispatcher.ROUTE_GAME_OVER:
 			game_over_panel.show()
 			game_over_text.text = str(command_result.get("game_over_text", "本次远征失败"))
+		RunRouteDispatcher.ROUTE_RUN_COMPLETE:
+			game_over_panel.show()
+			game_over_text.text = str(command_result.get("run_complete_text", "恭喜通关！"))
 		_:
 			_open_map()
 

@@ -1,6 +1,8 @@
 class_name RelicPotionSystem
 extends Node
 
+const RELIC_REGISTRY_SCRIPT := preload("res://runtime/modules/relic_potion/relic_registry.gd")
+
 enum TriggerType {
 	ON_BATTLE_START,
 	ON_TURN_START,
@@ -22,6 +24,7 @@ signal trigger_fired(trigger_type: TriggerType, context: Dictionary)
 var run_state: RunState
 var effect_stack: EffectStackEngine = null
 var _battle_active := false
+var _pending_battle_start_trigger := false
 var _cards_played_in_battle := 0
 var _enemies_killed_in_battle := 0
 
@@ -39,10 +42,12 @@ func _connect_signals() -> void:
 		Events.card_played.connect(_on_card_played)
 	if not Events.player_hit.is_connected(_on_player_hit):
 		Events.player_hit.connect(_on_player_hit)
+	if not Events.player_block_applied.is_connected(_on_player_block_applied):
+		Events.player_block_applied.connect(_on_player_block_applied)
 	if not Events.enemy_died.is_connected(_on_enemy_died):
 		Events.enemy_died.connect(_on_enemy_died)
-	if not Events.player_turn_ended.is_connected(_on_player_turn_end):
-		Events.player_turn_ended.connect(_on_player_turn_end)
+	if not Events.player_hand_discarded.is_connected(_on_player_turn_end):
+		Events.player_hand_discarded.connect(_on_player_turn_end)
 	if not Events.player_hand_drawn.is_connected(_on_player_turn_start):
 		Events.player_hand_drawn.connect(_on_player_turn_start)
 
@@ -52,10 +57,12 @@ func _disconnect_signals() -> void:
 		Events.card_played.disconnect(_on_card_played)
 	if Events.player_hit.is_connected(_on_player_hit):
 		Events.player_hit.disconnect(_on_player_hit)
+	if Events.player_block_applied.is_connected(_on_player_block_applied):
+		Events.player_block_applied.disconnect(_on_player_block_applied)
 	if Events.enemy_died.is_connected(_on_enemy_died):
 		Events.enemy_died.disconnect(_on_enemy_died)
-	if Events.player_turn_ended.is_connected(_on_player_turn_end):
-		Events.player_turn_ended.disconnect(_on_player_turn_end)
+	if Events.player_hand_discarded.is_connected(_on_player_turn_end):
+		Events.player_hand_discarded.disconnect(_on_player_turn_end)
 	if Events.player_hand_drawn.is_connected(_on_player_turn_start):
 		Events.player_hand_drawn.disconnect(_on_player_turn_start)
 
@@ -63,6 +70,7 @@ func _disconnect_signals() -> void:
 func bind_run_state(value: RunState) -> void:
 	run_state = value
 	_battle_active = false
+	_pending_battle_start_trigger = false
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
 	_apply_run_start_relics_once()
@@ -73,11 +81,50 @@ func start_battle() -> void:
 	_battle_active = true
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
-	_fire_trigger(TriggerType.ON_BATTLE_START, {})
+	_pending_battle_start_trigger = true
+	_try_fire_battle_start_trigger()
 
 
 func end_battle() -> void:
 	_battle_active = false
+	_pending_battle_start_trigger = false
+
+
+func _try_fire_battle_start_trigger() -> void:
+	if not _pending_battle_start_trigger:
+		return
+	if not _battle_active:
+		_pending_battle_start_trigger = false
+		return
+	if not _is_battle_start_context_ready():
+		call_deferred("_deferred_try_fire_battle_start_trigger")
+		return
+
+	_pending_battle_start_trigger = false
+	_fire_trigger(TriggerType.ON_BATTLE_START, {})
+
+
+func _deferred_try_fire_battle_start_trigger() -> void:
+	if not _pending_battle_start_trigger:
+		return
+	if not _battle_active:
+		_pending_battle_start_trigger = false
+		return
+	if _is_battle_start_context_ready():
+		_pending_battle_start_trigger = false
+		_fire_trigger(TriggerType.ON_BATTLE_START, {})
+		return
+
+	var tree := get_tree()
+	if tree == null:
+		return
+	tree.create_timer(0.01, false).timeout.connect(_try_fire_battle_start_trigger, CONNECT_ONE_SHOT)
+
+
+func _is_battle_start_context_ready() -> bool:
+	if effect_stack == null:
+		return false
+	return _find_player() != null
 
 
 func use_potion(index: int) -> void:
@@ -121,6 +168,14 @@ func fire_trigger(trigger_type: TriggerType, context: Dictionary) -> void:
 	_fire_trigger(trigger_type, context)
 
 
+func get_cards_played_in_battle() -> int:
+	return _cards_played_in_battle
+
+
+func dispatch_relic_effect(effect_type: String, value: int, relic: RelicData) -> void:
+	_dispatch_effect(effect_type, value, relic)
+
+
 func _fire_trigger(trigger_type: TriggerType, context: Dictionary) -> void:
 	if run_state == null:
 		return
@@ -131,54 +186,12 @@ func _fire_trigger(trigger_type: TriggerType, context: Dictionary) -> void:
 		if not (relic is RelicData):
 			continue
 		var relic_data: RelicData = relic
-		_process_relic_trigger(relic_data, trigger_type, context)
-
-
-func _process_relic_trigger(relic: RelicData, trigger_type: TriggerType, context: Dictionary) -> void:
-	match trigger_type:
-		TriggerType.ON_BATTLE_START:
-			if relic.on_battle_start_heal > 0:
-				_dispatch_effect("heal", relic.on_battle_start_heal, relic)
-				log_updated.emit("%s 触发：战斗开始恢复 %d 生命" % [relic.title, relic.on_battle_start_heal])
-
-		TriggerType.ON_TURN_START:
-			if relic.on_turn_start_block > 0:
-				_dispatch_effect("add_block", relic.on_turn_start_block, relic)
-				log_updated.emit("%s 触发：回合开始获得 %d 格挡" % [relic.title, relic.on_turn_start_block])
-
-		TriggerType.ON_TURN_END:
-			if relic.on_turn_end_heal > 0:
-				_dispatch_effect("heal", relic.on_turn_end_heal, relic)
-				log_updated.emit("%s 触发：回合结束恢复 %d 生命" % [relic.title, relic.on_turn_end_heal])
-		
-		TriggerType.ON_CARD_PLAYED:
-			if relic.on_card_played_gold > 0:
-				var interval := maxi(1, relic.card_play_interval)
-				if _cards_played_in_battle % interval == 0:
-					_dispatch_effect("add_gold", relic.on_card_played_gold, relic)
-					log_updated.emit("%s 触发：出牌后获得 %d 金币" % [relic.title, relic.on_card_played_gold])
-		
-		TriggerType.ON_DAMAGE_TAKEN:
-			if relic.on_player_hit_block > 0:
-				_dispatch_effect("add_block", relic.on_player_hit_block, relic)
-				log_updated.emit("%s 触发：受击后获得 %d 格挡" % [relic.title, relic.on_player_hit_block])
-		
-		TriggerType.ON_ENEMY_KILLED:
-			if relic.on_enemy_killed_gold > 0:
-				_dispatch_effect("add_gold", relic.on_enemy_killed_gold, relic)
-				log_updated.emit("%s 触发：击杀敌人获得 %d 金币" % [relic.title, relic.on_enemy_killed_gold])
-
-		TriggerType.ON_SHOP_ENTER:
-			if relic.shop_discount_percent > 0:
-				log_updated.emit("%s 生效：商店折扣 %d%%" % [relic.title, relic.shop_discount_percent])
-
-		TriggerType.ON_RUN_START:
-			if relic.on_run_start_gold > 0:
-				_dispatch_effect("add_gold", relic.on_run_start_gold, relic)
-				log_updated.emit("%s 触发：开局获得 %d 金币" % [relic.title, relic.on_run_start_gold])
-			if relic.on_run_start_max_health > 0:
-				_dispatch_effect("increase_max_health", relic.on_run_start_max_health, relic)
-				log_updated.emit("%s 触发：开局最大生命 +%d" % [relic.title, relic.on_run_start_max_health])
+		var relic_runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic_data)
+		if relic_runtime == null:
+			continue
+		if not relic_runtime.has_method("handle_trigger"):
+			continue
+		relic_runtime.call("handle_trigger", int(trigger_type), context, self)
 
 
 func _dispatch_effect(effect_type: String, value: int, relic: RelicData) -> void:
@@ -216,7 +229,10 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 			run_state.add_gold(value)
 		"add_block":
 			if run_state.player_stats != null:
-				run_state.player_stats.block += value
+				var block_gain := maxi(0, value)
+				run_state.player_stats.block += block_gain
+				if block_gain > 0:
+					Events.player_block_applied.emit(block_gain, "relic")
 		"increase_max_health":
 			run_state.increase_max_health(value)
 
@@ -257,7 +273,10 @@ func _apply_potion_effect(index: int, potion: PotionData) -> void:
 			log_updated.emit("使用 %s：获得 %d 金币" % [potion.title, maxi(0, potion.value)])
 		PotionData.EffectType.BLOCK:
 			if run_state.player_stats != null:
-				run_state.player_stats.block += maxi(0, potion.value)
+				var block_gain := maxi(0, potion.value)
+				run_state.player_stats.block += block_gain
+				if block_gain > 0:
+					Events.player_block_applied.emit(block_gain, "potion")
 				run_state.emit_changed()
 			log_updated.emit("使用 %s：获得 %d 格挡" % [potion.title, maxi(0, potion.value)])
 		PotionData.EffectType.DAMAGE_ALL_ENEMIES:
@@ -289,6 +308,15 @@ func _on_player_hit() -> void:
 		return
 	
 	_fire_trigger(TriggerType.ON_DAMAGE_TAKEN, {})
+
+
+func _on_player_block_applied(amount: int, source: String) -> void:
+	if not _battle_active or run_state == null:
+		return
+	_fire_trigger(TriggerType.ON_BLOCK_APPLIED, {
+		"amount": maxi(0, amount),
+		"source": source,
+	})
 
 
 func _on_enemy_died(_enemy: Enemy) -> void:

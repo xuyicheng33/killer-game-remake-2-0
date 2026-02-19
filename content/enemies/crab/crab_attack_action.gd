@@ -16,7 +16,7 @@ func perform_action() -> void:
 	damage_effect.sound = sound
 	
 	tween.tween_property(enemy, "global_position", end, 0.4)
-	tween.tween_callback(damage_effect.execute.bind(target_array))
+	tween.tween_callback(damage_effect.execute.bind(target_array, battle_context))
 	tween.tween_interval(0.25)
 	tween.tween_property(enemy, "global_position", start, 0.4)
 	

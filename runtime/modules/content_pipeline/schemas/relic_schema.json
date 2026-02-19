@@ -51,7 +51,7 @@
         "rarity": {
           "type": "string",
           "description": "稀有度",
-          "enum": ["common", "uncommon", "rare", "boss", "special"],
+          "enum": ["common", "uncommon", "rare", "boss", "special", "starter"],
           "default": "common"
         },
         "effects": {
@@ -79,6 +79,43 @@
             "on_player_hit_block": {
               "type": "integer",
               "description": "格挡时对攻击者造成的伤害",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_enemy_killed_gold": {
+              "type": "integer",
+              "description": "击杀敌人时获得的金币",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_turn_start_block": {
+              "type": "integer",
+              "description": "每回合开始时获得的格挡值",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_turn_end_heal": {
+              "type": "integer",
+              "description": "每回合结束时恢复的生命值",
+              "minimum": 0,
+              "default": 0
+            },
+            "shop_discount_percent": {
+              "type": "integer",
+              "description": "商店折扣百分比（0-90）",
+              "minimum": 0,
+              "maximum": 90,
+              "default": 0
+            },
+            "on_run_start_gold": {
+              "type": "integer",
+              "description": "游戏开始时获得的金币",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_run_start_max_health": {
+              "type": "integer",
+              "description": "游戏开始时提升的最大生命值",
               "minimum": 0,
               "default": 0
             }

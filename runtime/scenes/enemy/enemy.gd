@@ -18,6 +18,7 @@ const MAX_PORTRAIT_SCALE := 6.0
 
 var enemy_action_picker: EnemyActionPicker
 var current_action: EnemyAction : set = set_current_action
+var battle_context: RefCounted : set = set_battle_context
 var _default_sprite_scale := Vector2.ONE
 var _display_half_width := 0.0
 
@@ -43,6 +44,12 @@ func set_current_action(value: EnemyAction) -> void:
 		intent_ui.update_intent(current_action.intent)
 
 
+func set_battle_context(value: RefCounted) -> void:
+	battle_context = value
+	if enemy_action_picker:
+		enemy_action_picker.battle_context = battle_context
+
+
 func set_enemy_stats(value: EnemyStats) -> void:
 	stats = value.create_instance()
 	
@@ -61,6 +68,7 @@ func setup_ai() -> void:
 	add_child(new_action_picker)
 	enemy_action_picker = new_action_picker
 	enemy_action_picker.enemy = self
+	enemy_action_picker.battle_context = battle_context
 
 
 func update_stats() -> void:

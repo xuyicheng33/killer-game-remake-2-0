@@ -1,0 +1,36 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://runtime/scenes/enemy/enemy_action_picker.gd" id="1_picker"]
+[ext_resource type="Script" path="res://content/enemies/slime/slime_boss_slam_action.gd" id="2_slam"]
+[ext_resource type="Script" path="res://content/enemies/slime/slime_boss_split_action.gd" id="3_split"]
+[ext_resource type="Texture2D" path="res://content/art/ui/icons/intent_attack.png" id="4_attack_icon"]
+[ext_resource type="Script" path="res://content/custom_resources/intent.gd" id="5_intent_script"]
+[ext_resource type="AudioStream" uid="uid://de2ryat1pxq6" path="res://content/art/enemy_attack.ogg" id="6_attack_sound"]
+[ext_resource type="Texture2D" path="res://content/art/ui/icons/status_health.png" id="7_split_icon"]
+[ext_resource type="AudioStream" uid="uid://k8m4o3hlwm7l" path="res://content/art/enemy_block.ogg" id="8_split_sound"]
+
+[sub_resource type="Resource" id="Intent_slam"]
+script = ExtResource("5_intent_script")
+number = "18+易2"
+icon = ExtResource("4_attack_icon")
+
+[sub_resource type="Resource" id="Intent_split"]
+script = ExtResource("5_intent_script")
+number = "+10"
+icon = ExtResource("7_split_icon")
+
+[node name="SlimeBossAI" type="Node"]
+script = ExtResource("1_picker")
+
+[node name="SlimeBossSlamAction" type="Node" parent="."]
+script = ExtResource("2_slam")
+intent = SubResource("Intent_slam")
+sound = ExtResource("6_attack_sound")
+type = 1
+chance_weight = 4.0
+
+[node name="SlimeBossSplitAction" type="Node" parent="."]
+script = ExtResource("3_split")
+intent = SubResource("Intent_split")
+sound = ExtResource("8_split_sound")
+type = 0

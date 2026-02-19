@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-02-19T06:31:37.068201+00:00",
+  "generated_at": "2026-02-19T09:23:25.712582+00:00",
   "source": "runtime/modules/content_pipeline/sources/enemies/examples/act1_enemies.json",
   "summary": {
     "total_enemies": 4,
     "valid_enemies": 4,
-    "total_encounters": 11,
-    "valid_encounters": 11,
+    "total_encounters": 13,
+    "valid_encounters": 13,
     "error_count": 0
   },
   "errors": []

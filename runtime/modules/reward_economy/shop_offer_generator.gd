@@ -165,11 +165,14 @@ static func buy_relic(run_state: RunState, relic: RelicData, price: int) -> bool
 		return false
 	if run_state.gold < price:
 		return false
-	
+
 	run_state.add_gold(-price)
-	run_state.relics.append(relic.duplicate(true))
-	run_state.emit_changed()
-	return true
+	if run_state.add_relic(relic):
+		return true
+
+	# add_relic 失败时退款，避免吞金币。
+	run_state.add_gold(price)
+	return false
 
 
 static func buy_potion(run_state: RunState, potion: PotionData, price: int) -> bool:
@@ -177,13 +180,19 @@ static func buy_potion(run_state: RunState, potion: PotionData, price: int) -> b
 		return false
 	if run_state.gold < price:
 		return false
-	if run_state.potions.size() >= MAX_POTION_INVENTORY:
+	var potion_capacity := run_state.potion_capacity
+	if potion_capacity <= 0:
+		potion_capacity = MAX_POTION_INVENTORY
+	if run_state.potions.size() >= potion_capacity:
 		return false
-	
+
 	run_state.add_gold(-price)
-	run_state.potions.append(potion.duplicate(true))
-	run_state.emit_changed()
-	return true
+	if run_state.add_potion(potion):
+		return true
+
+	# add_potion 失败时退款，避免吞金币。
+	run_state.add_gold(price)
+	return false
 
 
 static func remove_card(run_state: RunState, card: Card) -> bool:

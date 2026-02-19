@@ -25,7 +25,6 @@ var _battle_phase_machine: BattlePhaseStateMachine
 var _battle_context: BattleContext
 var _phase_logs: Array[String] = []
 var _battle_ended := false
-var _battle_setup_done := false
 var _active_stats: CharacterStats
 
 
@@ -43,12 +42,21 @@ func _ready() -> void:
 	_battle_phase_machine = _battle_context.phase_machine
 	if _battle_phase_machine != null and not _battle_phase_machine.phase_changed.is_connected(_on_phase_changed):
 		_battle_phase_machine.phase_changed.connect(_on_phase_changed)
+	if _battle_phase_machine != null and not _battle_phase_machine.battle_ended.is_connected(_on_battle_ended):
+		_battle_phase_machine.battle_ended.connect(_on_battle_ended)
+	if _battle_phase_machine != null:
+		_battle_phase_machine.bind_turn_handlers(player_handler, enemy_handler)
 
 	start_battle(_active_stats)
 
 
 func _exit_tree() -> void:
+	MusicPlayer.stop()
 	_disconnect_signals()
+	if _battle_phase_machine != null and _battle_phase_machine.phase_changed.is_connected(_on_phase_changed):
+		_battle_phase_machine.phase_changed.disconnect(_on_phase_changed)
+	if _battle_phase_machine != null and _battle_phase_machine.battle_ended.is_connected(_on_battle_ended):
+		_battle_phase_machine.battle_ended.disconnect(_on_battle_ended)
 	if _battle_context != null:
 		_battle_context.unbind_battle_context()
 		_battle_context = null
@@ -59,8 +67,6 @@ func _connect_signals() -> void:
 	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.connect(_on_viewport_resized)
 
-	if not enemy_handler.child_order_changed.is_connected(_on_enemies_child_order_changed):
-		enemy_handler.child_order_changed.connect(_on_enemies_child_order_changed)
 	if not Events.player_hand_drawn.is_connected(_on_player_hand_drawn):
 		Events.player_hand_drawn.connect(_on_player_hand_drawn)
 	if not Events.player_turn_ended.is_connected(_on_player_turn_ended):
@@ -78,8 +84,6 @@ func _disconnect_signals() -> void:
 	if viewport != null and viewport.size_changed.is_connected(_on_viewport_resized):
 		viewport.size_changed.disconnect(_on_viewport_resized)
 
-	if enemy_handler.child_order_changed.is_connected(_on_enemies_child_order_changed):
-		enemy_handler.child_order_changed.disconnect(_on_enemies_child_order_changed)
 	if Events.player_hand_drawn.is_connected(_on_player_hand_drawn):
 		Events.player_hand_drawn.disconnect(_on_player_hand_drawn)
 	if Events.player_turn_ended.is_connected(_on_player_turn_ended):
@@ -97,11 +101,15 @@ func start_battle(stats: CharacterStats) -> void:
 	MusicPlayer.play(music, true)
 	_active_stats = stats
 	_battle_ended = false
-	_battle_setup_done = false
 	_phase_logs.clear()
 	_battle_context.bind_battle_context(_active_stats, battle_ui.hand_container)
 	_spawn_enemies()
-	_battle_context.bind_combatants(player, _get_battle_enemies())
+	var enemies := _get_battle_enemies()
+	if enemies.is_empty():
+		push_error("battle.gd: battle setup aborted, no valid enemies were spawned")
+		_on_battle_ended("defeat")
+		return
+	_battle_context.bind_combatants(player, enemies)
 	enemy_handler.reset_enemy_actions()
 	_inject_effect_stack_to_relic_system()
 	_battle_context.start_battle()
@@ -148,11 +156,12 @@ func _spawn_enemies() -> void:
 		var enemy_id := enemy_ids[i]
 		var enemy_stats: EnemyStats = ENEMY_REGISTRY_SCRIPT.get_enemy_stats(enemy_id)
 		if enemy_stats == null:
-			push_warning("battle.gd: failed to load enemy stats for '%s'" % enemy_id)
+			push_error("battle.gd: failed to load enemy stats for '%s'" % enemy_id)
 			continue
 		
 		var enemy: Enemy = ENEMY_SCENE.instantiate() as Enemy
 		enemy.stats = enemy_stats
+		enemy.battle_context = _battle_context
 		
 		var offset_x := (i - (enemy_count - 1) / 2.0) * spacing
 		# 视觉布局随机抖动，不影响游戏逻辑或种子一致性
@@ -162,9 +171,7 @@ func _spawn_enemies() -> void:
 
 
 func _on_enemies_child_order_changed() -> void:
-	if enemy_handler.get_child_count() == 0:
-		_battle_ended = true
-		Events.battle_over_screen_requested.emit("Victorious!", BattleOverPanel.Type.WIN)
+	pass
 
 
 func _on_player_hand_drawn() -> void:
@@ -180,14 +187,15 @@ func _on_player_turn_ended() -> void:
 	if _battle_phase_machine.get_phase() != BattlePhaseStateMachine.Phase.ACTION:
 		return
 
-	player_handler.end_turn()
+	_battle_phase_machine.transition_to(BattlePhaseStateMachine.Phase.ENEMY)
 
 
 func _on_player_hand_discarded() -> void:
 	if _battle_ended:
 		return
-
-	_battle_phase_machine.transition_to(BattlePhaseStateMachine.Phase.ENEMY)
+	if _battle_phase_machine.get_phase() != BattlePhaseStateMachine.Phase.RESOLVE:
+		return
+	_battle_phase_machine.on_resolve_discard_completed()
 
 
 func _on_enemy_turn_ended() -> void:
@@ -209,37 +217,6 @@ func _on_phase_changed(from_phase: BattlePhaseStateMachine.Phase, to_phase: Batt
 
 	if _battle_ended:
 		return
-
-	match to_phase:
-		BattlePhaseStateMachine.Phase.DRAW:
-			_enter_draw_phase()
-		BattlePhaseStateMachine.Phase.ENEMY:
-			_enter_enemy_phase()
-		BattlePhaseStateMachine.Phase.RESOLVE:
-			_enter_resolve_phase()
-
-
-func _enter_draw_phase() -> void:
-	if _battle_setup_done:
-		player_handler.start_turn()
-		return
-
-	player_handler.start_battle(_active_stats)
-	_battle_setup_done = true
-
-
-func _enter_enemy_phase() -> void:
-	if enemy_handler.get_child_count() == 0:
-		_battle_ended = true
-		Events.battle_over_screen_requested.emit("Victorious!", BattleOverPanel.Type.WIN)
-		return
-
-	enemy_handler.start_turn()
-
-
-func _enter_resolve_phase() -> void:
-	enemy_handler.reset_enemy_actions()
-	_battle_phase_machine.transition_to(BattlePhaseStateMachine.Phase.DRAW)
 
 
 func _get_battle_enemies() -> Array[Enemy]:
@@ -266,8 +243,25 @@ func _update_phase_hud(phase_name: String, turn: int) -> void:
 
 
 func _on_player_died() -> void:
+	if _battle_ended:
+		return
+	if _battle_phase_machine != null and _battle_phase_machine.get_phase() == BattlePhaseStateMachine.Phase.ENEMY:
+		_battle_phase_machine.transition_to(BattlePhaseStateMachine.Phase.RESOLVE)
+		return
+	_on_battle_ended("defeat")
+
+
+func _on_battle_ended(result: String) -> void:
+	if _battle_ended:
+		return
 	_battle_ended = true
-	Events.battle_over_screen_requested.emit("Game Over!", BattleOverPanel.Type.LOSE)
+	MusicPlayer.stop()
+	var panel_type := BattleOverPanel.Type.WIN
+	var text := "Victorious!"
+	if result != "victory":
+		panel_type = BattleOverPanel.Type.LOSE
+		text = "Game Over!"
+	Events.battle_over_screen_requested.emit(text, panel_type)
 
 
 func _on_viewport_resized() -> void:

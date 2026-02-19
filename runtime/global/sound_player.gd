@@ -1,6 +1,10 @@
 extends Node
 
 
+func _exit_tree() -> void:
+	stop()
+
+
 func play(audio: AudioStream, single=false) -> void:
 	if not audio:
 		return
@@ -18,3 +22,4 @@ func play(audio: AudioStream, single=false) -> void:
 func stop() -> void:
 	for player: AudioStreamPlayer in get_children():
 		player.stop()
+		player.stream = null

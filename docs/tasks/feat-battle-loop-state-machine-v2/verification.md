@@ -39,8 +39,23 @@ res://dev/tests/unit/test_battle_context.gd
 * test_phase_transitions_in_correct_order
 * test_buffs_triggered_at_correct_phase
 * test_battle_ends_when_player_hp_reaches_zero
-11/11 passed.
+* test_phase_machine_does_not_emit_turn_events_directly
+12/12 passed.
+
+make test (2026-02-19)
+Totals
+------
+Scripts              13
+Tests                89
+Passing Tests        89
+Failing Tests         0
 ```
+
+---
+
+## 最近门禁失败根因（已处理）
+
+- 本任务关联测试在本轮复验中无新增失败；`make test` 全量通过（89/89）。
 
 ---
 
@@ -48,4 +63,4 @@ res://dev/tests/unit/test_battle_context.gd
 
 **通过** - 2026-02-19 复验
 
-补齐了 Phase 2 要求的三个测试：`test_phase_transitions_in_correct_order`、`test_buffs_triggered_at_correct_phase`、`test_battle_ends_when_player_hp_reaches_zero`。所有测试通过。
+`dev/tests/unit/test_battle_context.gd` 中“存在性测试”已替换为行为断言（相位顺序、触发语义与事件边界），并在全量门禁下通过。

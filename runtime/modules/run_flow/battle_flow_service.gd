@@ -14,11 +14,19 @@ func _init(dispatcher: RunRouteDispatcher = null) -> void:
 		route_dispatcher = ROUTE_DISPATCHER_SCRIPT.new() as RunRouteDispatcher
 
 
-func resolve_battle_completion(run_state: RunState, is_win: bool, reward_gold: int) -> Dictionary:
+func resolve_battle_completion(run_state: RunState, is_win: bool, reward_gold: int, is_boss: bool = false) -> Dictionary:
 	if run_state == null:
 		return _result(RunRouteDispatcher.ROUTE_MAP)
 
 	if is_win:
+		if is_boss:
+			SAVE_SERVICE_SCRIPT.clear_save()
+			return _result(
+				RunRouteDispatcher.ROUTE_RUN_COMPLETE,
+				{
+					"run_complete_text": "恭喜通关！\n到达层数：%d\n最终金币：%d" % [run_state.floor + 1, run_state.gold],
+				}
+			)
 		return _result(
 			RunRouteDispatcher.ROUTE_REWARD,
 			{

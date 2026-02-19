@@ -26,4 +26,6 @@ func _apply_block_to_target(target: Node, battle_context: RefCounted) -> void:
 		return
 	var final_block: int = buff_system.get_modified_block(amount, target)
 	target.stats.block += final_block
+	if final_block > 0 and target.is_in_group("player"):
+		Events.player_block_applied.emit(final_block, "effect:block")
 	SFXPlayer.play(sound)

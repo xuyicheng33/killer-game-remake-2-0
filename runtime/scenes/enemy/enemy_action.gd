@@ -12,6 +12,7 @@ enum Type {CONDITIONAL, CHANCE_BASED}
 
 var enemy: Enemy
 var target: Node2D
+var battle_context: RefCounted
 
 
 func is_performable() -> bool:

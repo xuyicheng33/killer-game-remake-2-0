@@ -4,24 +4,24 @@
     {
       "id": "burning_blood",
       "title": "燃烧之血",
-      "description": "战斗结束时，回复 6 点生命。",
+      "description": "战斗开始时，回复 6 点生命。",
       "art_path": "res://content/art/relics/burning_blood.png",
       "rarity": "starter",
       "starter": true,
       "effects": {
-        "on_battle_start_heal": 0
+        "on_battle_start_heal": 6
       },
       "tags": ["starter"]
     },
     {
       "id": "red_skull",
       "title": "红骷髅",
-      "description": "生命值低于 50% 时，获得 3 点力量。",
+      "description": "战斗开始时，回复 2 点生命。",
       "art_path": "res://content/art/relics/red_skull.png",
       "rarity": "common",
       "starter": false,
       "effects": {
-        "on_battle_start_heal": 0
+        "on_battle_start_heal": 2
       },
       "tags": ["obtainable"]
     },
@@ -31,6 +31,7 @@
       "description": "每打出 3 张牌，获得 5 金币。",
       "art_path": "res://content/art/relics/golden_idol.png",
       "rarity": "rare",
+      "starter": false,
       "effects": {
         "on_card_played_gold": 5,
         "card_play_interval": 3
@@ -43,6 +44,7 @@
       "description": "格挡时对攻击者造成 3 点伤害。",
       "art_path": "res://content/art/relics/thorns_potion.png",
       "rarity": "uncommon",
+      "starter": false,
       "effects": {
         "on_player_hit_block": 3
       },
@@ -51,11 +53,78 @@
     {
       "id": "heart_of_stone",
       "title": "石之心",
-      "description": "战斗开始时，获得 10 点格挡。",
+      "description": "每回合开始时，获得 4 点格挡。",
       "art_path": "res://content/art/relics/heart_of_stone.png",
       "rarity": "boss",
-      "effects": {},
+      "starter": false,
+      "effects": {
+        "on_turn_start_block": 4
+      },
       "tags": ["special"]
+    },
+    {
+      "id": "dawn_bulwark",
+      "title": "晨曦壁垒",
+      "description": "每回合开始时，获得 3 点格挡。",
+      "art_path": "res://content/art/relics/dawn_bulwark.png",
+      "rarity": "common",
+      "starter": false,
+      "effects": {
+        "on_turn_start_block": 3
+      },
+      "tags": ["obtainable"]
+    },
+    {
+      "id": "bounty_emblem",
+      "title": "赏金纹章",
+      "description": "每当击杀一名敌人，获得 6 金币。",
+      "art_path": "res://content/art/relics/bounty_emblem.png",
+      "rarity": "uncommon",
+      "starter": false,
+      "effects": {
+        "on_enemy_killed_gold": 6
+      },
+      "tags": ["obtainable"]
+    },
+    {
+      "id": "merchant_seal",
+      "title": "商贾印记",
+      "description": "进入商店时，所有商品享受 20% 折扣。",
+      "art_path": "res://content/art/relics/merchant_seal.png",
+      "rarity": "uncommon",
+      "starter": false,
+      "effects": {
+        "shop_discount_percent": 20
+      },
+      "tags": ["obtainable"]
+    },
+    {
+      "id": "trailblazer_emblem",
+      "title": "开拓者纹章",
+      "description": "开局获得 25 金币，并提升 5 点最大生命。",
+      "art_path": "res://content/art/relics/trailblazer_emblem.png",
+      "rarity": "rare",
+      "starter": false,
+      "effects": {
+        "on_run_start_gold": 25,
+        "on_run_start_max_health": 5
+      },
+      "tags": ["obtainable"]
+    },
+    {
+      "id": "ember_ring",
+      "title": "余烬指环",
+      "description": "战斗开始时回复 3 点生命；每打出 3 张牌获得 1 金币；受击后获得 2 点格挡。",
+      "art_path": "res://content/art/relics/ember_ring.png",
+      "rarity": "rare",
+      "starter": false,
+      "effects": {
+        "on_battle_start_heal": 3,
+        "on_card_played_gold": 1,
+        "card_play_interval": 3,
+        "on_player_hit_block": 2
+      },
+      "tags": ["obtainable"]
     }
   ]
 }

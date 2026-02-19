@@ -4,6 +4,7 @@ var _engine: EffectStackEngine
 var _test_executed: bool = false
 var _chain_main_count: int = 0
 var _chain_count: int = 0
+var _recursive_executed: int = 0
 
 
 func before_all():
@@ -15,6 +16,7 @@ func before_each():
 	_test_executed = false
 	_chain_main_count = 0
 	_chain_count = 0
+	_recursive_executed = 0
 
 
 func after_each():
@@ -43,6 +45,21 @@ func _on_chain_main_executed(_target: Node) -> Dictionary:
 
 func _on_chain_executed(_target: Node) -> void:
 	_chain_count += 1
+
+
+func _on_recursive_chain_executed(target: Node) -> Dictionary:
+	_recursive_executed += 1
+	return {
+		"chain_effects": [
+			{
+				"effect": "loop_effect",
+				"targets": [target],
+				"apply": Callable(self, "_on_recursive_chain_executed"),
+				"priority": 50,
+				"effect_type": EffectStackEngine.EffectType.SPECIAL,
+			}
+		]
+	}
 
 
 func test_effect_executes_in_priority_order():
@@ -120,23 +137,18 @@ func test_effect_chain_triggers_correctly():
 
 func test_effect_chain_depth_limit_prevents_infinite_loop():
 	var target := Node.new()
-	var executed := false
-	
-	_engine._chain_depth = 11
-	
+
 	_engine.enqueue_effect(
 		"test_effect",
 		[target],
-		func(_t: Node) -> void: executed = true,
+		Callable(self, "_on_recursive_chain_executed"),
 		50,
 		EffectStackEngine.EffectType.SPECIAL
 	)
-	
 	assert_push_error("链式递归深度超过限制", "超过深度限制应输出 push_error")
-	assert_false(executed, "超过深度限制时应跳过执行")
+
+	assert_eq(_recursive_executed, EffectStackEngine.MAX_CHAIN_DEPTH + 1, "应在达到最大链深后停止继续链式入队")
 	assert_eq(_engine.get_queue_size(), 0, "队列应为空")
-	
-	_engine._chain_depth = 0
 	target.free()
 
 

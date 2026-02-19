@@ -44,7 +44,13 @@ func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
 		var tags := ENCOUNTER_REGISTRY_SCRIPT.get_node_type_tags(node.type)
 		var rng_key := "encounter:%s:%s" % [run_state.seed, node.id]
 		var encounter := ENCOUNTER_REGISTRY_SCRIPT.pick_encounter(run_state.floor, tags, rng_key)
-		payload["encounter_id"] = str(encounter.get("id", ""))
+		if encounter.is_empty():
+			var fallback := ENCOUNTER_REGISTRY_SCRIPT.pick_fallback_encounter(tags)
+			payload["encounter_id"] = str(fallback.get("id", ""))
+			if payload["encounter_id"] == "":
+				push_warning("MapFlowService: no encounter available for node_type=%s tags=%s" % [str(node.type), str(tags)])
+		else:
+			payload["encounter_id"] = str(encounter.get("id", ""))
 
 	if next_route == RunRouteDispatcher.ROUTE_MAP:
 		run_state.next_floor()

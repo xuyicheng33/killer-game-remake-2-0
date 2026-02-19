@@ -1,6 +1,7 @@
 extends GutTest
 
-const RELIC_POTION_SYSTEM_SCRIPT := preload("res://runtime/modules/relic_potion/relic_potion_system.gd")
+const RELIC_REGISTRY_SCRIPT := preload("res://runtime/modules/relic_potion/relic_registry.gd")
+
 class SpyEffectStack extends EffectStackEngine:
 	var enqueue_calls := 0
 
@@ -11,10 +12,11 @@ class SpyEffectStack extends EffectStackEngine:
 		priority: int = 50,
 		effect_type: EffectType = EffectType.SPECIAL,
 		source: Node = null,
-		value: int = 0
+		value: int = 0,
+		chain_depth: int = 0
 	) -> void:
 		enqueue_calls += 1
-		super.enqueue_effect(effect_name, targets, apply_callable, priority, effect_type, source, value)
+		super.enqueue_effect(effect_name, targets, apply_callable, priority, effect_type, source, value, chain_depth)
 
 
 class DummyEnemy:
@@ -25,7 +27,38 @@ class DummyEnemy:
 		damage_taken += amount
 
 
-var _system: RelicPotionSystem
+class FakePlayer extends Player:
+	func update_player() -> void:
+		pass
+
+	func update_stats() -> void:
+		pass
+
+
+class RelicPotionSystemForTest:
+	extends RelicPotionSystem
+	var fake_player: Player = null
+
+	func _find_player() -> Player:
+		return fake_player
+
+
+class CustomRegistryRelic:
+	extends "res://runtime/modules/relic_potion/relic_base.gd"
+
+	var invoke_count := 0
+
+	func on_battle_start(system: Object, _context: Dictionary) -> void:
+		invoke_count += 1
+		system.dispatch_relic_effect("add_gold", 17, data)
+
+
+class RuntimeRelicHolder:
+	extends RefCounted
+	var runtime_relic: CustomRegistryRelic = null
+
+
+var _system: RelicPotionSystemForTest
 var _effect_stack: SpyEffectStack
 var _player: Player
 var _run_state: RunState
@@ -36,25 +69,25 @@ func before_all() -> void:
 
 
 func before_each() -> void:
-	_system = RELIC_POTION_SYSTEM_SCRIPT.new()
+	RELIC_REGISTRY_SCRIPT.clear_factories()
+	_system = RelicPotionSystemForTest.new()
 	get_tree().root.add_child(_system)
 	_effect_stack = SpyEffectStack.new()
 	_system.effect_stack = _effect_stack
 	_run_state = _create_run_state()
 	_system.bind_run_state(_run_state)
-	_player = partial_double(Player).new()
-	stub(_player, "update_stats").to_do_nothing()
+	_player = FakePlayer.new()
 	_player.stats = _run_state.player_stats
-	if not _player.is_in_group("player"):
-		_player.add_to_group("player")
-	get_tree().root.add_child(_player)
+	_system.fake_player = _player
 
 
 func after_each() -> void:
+	RELIC_REGISTRY_SCRIPT.clear_factories()
 	if _player != null and is_instance_valid(_player):
 		_player.free()
 	_player = null
 	if _system != null and is_instance_valid(_system):
+		_system.fake_player = null
 		_system.free()
 	_system = null
 	_effect_stack = null
@@ -188,6 +221,37 @@ func test_shop_enter_trigger_is_emitted() -> void:
 	assert_true(trigger_history.has(int(RelicPotionSystem.TriggerType.ON_SHOP_ENTER)), "进入商店应触发 ON_SHOP_ENTER")
 
 
+func test_block_applied_trigger_is_emitted() -> void:
+	var trigger_history: Array[int] = []
+	_system.trigger_fired.connect(func(trigger_type: RelicPotionSystem.TriggerType, _context: Dictionary) -> void:
+		trigger_history.append(int(trigger_type))
+	)
+
+	_system.start_battle()
+	Events.player_block_applied.emit(6, "test")
+
+	assert_true(trigger_history.has(int(RelicPotionSystem.TriggerType.ON_BLOCK_APPLIED)), "获得格挡时应触发 ON_BLOCK_APPLIED")
+
+
+func test_boss_killed_trigger_is_emitted() -> void:
+	var trigger_history: Array[int] = []
+	_system.trigger_fired.connect(func(trigger_type: RelicPotionSystem.TriggerType, _context: Dictionary) -> void:
+		trigger_history.append(int(trigger_type))
+	)
+
+	var relic := RelicData.new()
+	relic.id = "boss_bonus"
+	relic.title = "屠龙奖赏"
+	relic.on_enemy_killed_gold = 15
+	_run_state.relics = [relic]
+	_run_state.gold = 100
+
+	_system.on_boss_killed()
+
+	assert_true(trigger_history.has(int(RelicPotionSystem.TriggerType.ON_BOSS_KILLED)), "击败 Boss 时应触发 ON_BOSS_KILLED")
+	assert_eq(_run_state.gold, 115, "Boss 击杀触发应能派发生命期内的遗物收益")
+
+
 func test_run_start_relic_applies_once() -> void:
 	var relic := RelicData.new()
 	relic.id = "run_start_bonus"
@@ -232,3 +296,26 @@ func test_damage_all_enemies_potion_hits_all_targets() -> void:
 		enemy_a.free()
 	if is_instance_valid(enemy_b):
 		enemy_b.free()
+
+
+func test_custom_relic_callback_invoked_via_registry() -> void:
+	var holder := RuntimeRelicHolder.new()
+	RELIC_REGISTRY_SCRIPT.register_factory(
+		"registry_custom",
+		func(relic_data: RelicData):
+			holder.runtime_relic = CustomRegistryRelic.new(relic_data)
+			return holder.runtime_relic
+	)
+
+	var relic := RelicData.new()
+	relic.id = "registry_custom"
+	relic.title = "注册回调遗物"
+	_run_state.relics = [relic]
+	_run_state.gold = 100
+
+	_system.start_battle()
+
+	assert_not_null(holder.runtime_relic, "应通过 RelicRegistry 创建自定义遗物回调对象")
+	if holder.runtime_relic != null:
+		assert_eq(holder.runtime_relic.invoke_count, 1, "自定义遗物回调应在 ON_BATTLE_START 触发")
+	assert_eq(_run_state.gold, 117, "自定义遗物回调应生效并修改战斗收益")

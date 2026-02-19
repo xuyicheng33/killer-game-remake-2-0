@@ -28,6 +28,17 @@
    - `make test`
    - 结果：通过（70/70）。
 
+## 设计变更记录（补录）
+
+- 记录日期：2026-02-19
+- 变更对象：`fire_potion`
+- 变更前：`effect_type = BLOCK`（与“火焰伤害药水”语义不一致）
+- 变更后：`effect_type = DAMAGE_ALL_ENEMIES`
+- 变更原因：与 `storm_bomb_potion` 统一为“群体伤害药水”语义，避免内容层与运行时行为割裂。
+- 影响评估：
+  - 运行时：由 `RelicPotionSystem` 的 AoE 分支统一处理，支持空目标安全返回。
+  - 存档/随机：不新增随机路径，不影响种子一致性；仅内容语义修正。
+
 ## 分支门禁复验（阻断问题修复）
 
 - 执行分支：`feat/runtime-feat-potion-direct-damage-effect-v1`

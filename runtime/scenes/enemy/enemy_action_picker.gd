@@ -6,6 +6,7 @@ const REPRO_LOG_SCRIPT := preload("res://runtime/global/repro_log.gd")
 
 @export var enemy: Enemy: set = _set_enemy
 @export var target: Node2D: set = _set_target
+var battle_context: RefCounted: set = _set_battle_context
 
 @export_range(0, 20, 1) var ascension_level := 0
 @export var disallow_consecutive := true
@@ -60,6 +61,13 @@ func _set_target(value: Node2D) -> void:
 	
 	for action: EnemyAction in get_children():
 		action.target = target
+
+
+func _set_battle_context(value: RefCounted) -> void:
+	battle_context = value
+
+	for action: EnemyAction in get_children():
+		action.battle_context = battle_context
 
 
 func _get_actions() -> Array[EnemyAction]:

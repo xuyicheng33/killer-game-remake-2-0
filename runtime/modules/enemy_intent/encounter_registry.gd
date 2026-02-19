@@ -1,13 +1,12 @@
 class_name EncounterRegistry
 extends RefCounted
 
-const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
+const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
 
 const ENCOUNTER_DATA_PATH := "res://runtime/modules/content_pipeline/sources/enemies/examples/act1_enemies.json"
 
 static var _encounters_cache: Array[Dictionary] = []
-static var _enemies_cache: Array[Dictionary] = []
 
 
 static func _load_encounter_data() -> void:
@@ -33,13 +32,6 @@ static func _load_encounter_data() -> void:
 	
 	var data: Dictionary = parser.data as Dictionary
 	
-	var enemies_variant: Variant = data.get("enemies", [])
-	if typeof(enemies_variant) == TYPE_ARRAY:
-		_enemies_cache.clear()
-		for e in enemies_variant:
-			if typeof(e) == TYPE_DICTIONARY:
-				_enemies_cache.append(e as Dictionary)
-	
 	var encounters_variant: Variant = data.get("encounters", [])
 	if typeof(encounters_variant) == TYPE_ARRAY:
 		_encounters_cache.clear()
@@ -53,7 +45,6 @@ static func get_encounters_for_floor(floor: int, tags: Array[String] = []) -> Ar
 	
 	var result: Array[Dictionary] = []
 	for encounter in _encounters_cache:
-		var enc_tags: Variant = encounter.get("tags", [])
 		var floor_range: Variant = encounter.get("floor_range", {})
 		
 		var min_floor := 0
@@ -65,15 +56,11 @@ static func get_encounters_for_floor(floor: int, tags: Array[String] = []) -> Ar
 		if floor < min_floor or floor > max_floor:
 			continue
 		
-		if not tags.is_empty():
-			var has_tag := false
-			if typeof(enc_tags) == TYPE_ARRAY:
-				for tag in tags:
-					if tag in enc_tags:
-						has_tag = true
-						break
-			if not has_tag:
-				continue
+		if not _encounter_matches_tags(encounter, tags):
+			continue
+
+		if not _is_encounter_enemy_ids_valid(encounter):
+			continue
 		
 		result.append(encounter)
 	
@@ -84,10 +71,7 @@ static func pick_encounter(floor: int, tags: Array[String] = [], rng_stream_key:
 	var candidates := get_encounters_for_floor(floor, tags)
 	
 	if candidates.is_empty():
-		_load_encounter_data()
-		if not _encounters_cache.is_empty():
-			push_warning("EncounterRegistry: no encounters for floor=%d tags=%s, using fallback" % [floor, tags])
-			return _encounters_cache[0]
+		push_warning("EncounterRegistry: no encounters for floor=%d tags=%s" % [floor, tags])
 		return {}
 	
 	if candidates.size() == 1:
@@ -113,6 +97,17 @@ static func pick_encounter(floor: int, tags: Array[String] = [], rng_stream_key:
 	return candidates[candidates.size() - 1]
 
 
+static func pick_fallback_encounter(tags: Array[String] = []) -> Dictionary:
+	_load_encounter_data()
+	for encounter in _encounters_cache:
+		if not _encounter_matches_tags(encounter, tags):
+			continue
+		if not _is_encounter_enemy_ids_valid(encounter):
+			continue
+		return encounter
+	return {}
+
+
 static func get_encounter_by_id(encounter_id: String) -> Dictionary:
 	_load_encounter_data()
 	
@@ -133,9 +128,36 @@ static func get_enemy_ids_for_encounter(encounter: Dictionary) -> Array[String]:
 	var enemies: Array = enemies_variant as Array
 	for e in enemies:
 		if typeof(e) == TYPE_STRING:
-			result.append(e as String)
+			var enemy_id := e as String
+			if ENEMY_REGISTRY_SCRIPT.has_enemy(enemy_id):
+				result.append(enemy_id)
+			else:
+				push_warning("EncounterRegistry: encounter contains unknown enemy '%s'" % enemy_id)
 	
 	return result
+
+
+static func _is_encounter_enemy_ids_valid(encounter: Dictionary) -> bool:
+	var enemy_ids := get_enemy_ids_for_encounter(encounter)
+	if enemy_ids.is_empty():
+		var encounter_id := str(encounter.get("id", "unknown_encounter"))
+		push_warning("EncounterRegistry: encounter '%s' has no resolvable enemies" % encounter_id)
+		return false
+	return true
+
+
+static func _encounter_matches_tags(encounter: Dictionary, tags: Array[String]) -> bool:
+	if tags.is_empty():
+		return true
+
+	var enc_tags_variant: Variant = encounter.get("tags", [])
+	if typeof(enc_tags_variant) != TYPE_ARRAY:
+		return false
+	var enc_tags: Array = enc_tags_variant
+	for tag in tags:
+		if tag in enc_tags:
+			return true
+	return false
 
 
 static func get_node_type_tags(node_type: int) -> Array[String]:

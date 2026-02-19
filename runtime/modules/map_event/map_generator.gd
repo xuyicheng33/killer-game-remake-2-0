@@ -39,19 +39,7 @@ static func create_act1_seed_graph(seed: int) -> MapGraphData:
 
 		for lane_index in range(LANE_COUNT):
 			var from_node := current_floor[lane_index] as MapNodeData
-			var targets := PackedStringArray()
-			targets.append((next_floor[lane_index] as MapNodeData).id)
-
-			if lane_index > 0 and rng.randf() < 0.5:
-				targets.append((next_floor[lane_index - 1] as MapNodeData).id)
-			if lane_index < LANE_COUNT - 1 and rng.randf() < 0.5:
-				targets.append((next_floor[lane_index + 1] as MapNodeData).id)
-
-			var unique_targets := PackedStringArray()
-			for target_id in targets:
-				if not unique_targets.has(target_id):
-					unique_targets.append(target_id)
-			from_node.next_node_ids = unique_targets
+			from_node.next_node_ids = _pick_next_targets(next_floor, lane_index, rng)
 
 	var last_floor: Array = lane_nodes_by_floor[NORMAL_FLOOR_COUNT - 1]
 	for node in last_floor:
@@ -84,15 +72,6 @@ static func _roll_node_type(rng: RandomNumberGenerator, floor_index: int) -> Map
 	var roll := rng.randf()
 	var is_elite_floor := floor_index >= ELITE_FLOOR_START
 
-	if floor_index <= 1:
-		if roll < 0.6:
-			return MapNodeData.NodeType.BATTLE
-		if roll < 0.8:
-			return MapNodeData.NodeType.EVENT
-		if roll < 0.92:
-			return MapNodeData.NodeType.REST
-		return MapNodeData.NodeType.SHOP
-
 	if is_elite_floor:
 		if roll < 0.35:
 			return MapNodeData.NodeType.BATTLE
@@ -106,13 +85,13 @@ static func _roll_node_type(rng: RandomNumberGenerator, floor_index: int) -> Map
 	else:
 		if roll < 0.45:
 			return MapNodeData.NodeType.BATTLE
-		if roll < 0.72:
-			return MapNodeData.NodeType.EVENT
-		if roll < 0.87:
+		if roll < 0.53:
+			return MapNodeData.NodeType.ELITE
+		if roll < 0.68:
 			return MapNodeData.NodeType.REST
-		if roll < 0.95:
+		if roll < 0.73:
 			return MapNodeData.NodeType.SHOP
-		return MapNodeData.NodeType.ELITE
+		return MapNodeData.NodeType.EVENT
 
 
 static func _title_for_type(type: MapNodeData.NodeType) -> String:
@@ -165,6 +144,34 @@ static func _reward_for_type(type: MapNodeData.NodeType) -> int:
 			return 0
 
 
+static func _pick_next_targets(next_floor: Array, lane_index: int, rng: RandomNumberGenerator) -> PackedStringArray:
+	var targets := PackedStringArray()
+	var same_lane_node := next_floor[lane_index] as MapNodeData
+	if same_lane_node == null:
+		return targets
+
+	targets.append(same_lane_node.id)
+
+	var side_candidates: Array[String] = []
+	if lane_index > 0:
+		var left_node := next_floor[lane_index - 1] as MapNodeData
+		if left_node != null:
+			side_candidates.append(left_node.id)
+	if lane_index < LANE_COUNT - 1:
+		var right_node := next_floor[lane_index + 1] as MapNodeData
+		if right_node != null:
+			side_candidates.append(right_node.id)
+
+	# 每节点最多 2 条出边，满足“下一层 1-2 个节点”的规划约束。
+	if not side_candidates.is_empty() and rng.randf() < 0.55:
+		var side_index := rng.randi_range(0, side_candidates.size() - 1)
+		var side_id := side_candidates[side_index]
+		if not targets.has(side_id):
+			targets.append(side_id)
+
+	return targets
+
+
 static func has_multiple_paths_to_boss(graph: MapGraphData) -> bool:
 	if graph == null or graph.nodes.is_empty():
 		return false
@@ -185,13 +192,19 @@ static func has_multiple_paths_to_boss(graph: MapGraphData) -> bool:
 	
 	if boss_node == null:
 		return false
-	
-	var paths_to_boss: int = 0
+
+	var all_paths: Array[PackedStringArray] = []
 	for start_node in start_nodes:
-		if _can_reach_node(start_node, boss_node.id, graph, {}):
-			paths_to_boss += 1
-	
-	return paths_to_boss >= 2
+		_collect_paths_to_target(start_node, boss_node.id, graph, PackedStringArray(), all_paths)
+
+	if all_paths.size() < 2:
+		return false
+
+	for i in range(all_paths.size()):
+		for j in range(i + 1, all_paths.size()):
+			if _are_paths_node_disjoint(all_paths[i], all_paths[j], boss_node.id):
+				return true
+	return false
 
 
 static func _can_reach_node(from: MapNodeData, target_id: String, graph: MapGraphData, visited: Dictionary) -> bool:
@@ -210,3 +223,48 @@ static func _can_reach_node(from: MapNodeData, target_id: String, graph: MapGrap
 			return true
 	
 	return false
+
+
+static func _collect_paths_to_target(
+	current: MapNodeData,
+	target_id: String,
+	graph: MapGraphData,
+	path: PackedStringArray,
+	out_paths: Array[PackedStringArray]
+) -> void:
+	if current == null:
+		return
+
+	var next_path := path.duplicate()
+	next_path.append(current.id)
+	if current.id == target_id:
+		out_paths.append(next_path)
+		return
+
+	for next_id in current.next_node_ids:
+		var next_node: MapNodeData = graph.get_node(next_id)
+		if next_node == null:
+			continue
+		_collect_paths_to_target(next_node, target_id, graph, next_path, out_paths)
+
+
+static func _are_paths_node_disjoint(path_a: PackedStringArray, path_b: PackedStringArray, boss_id: String) -> bool:
+	var intermediates_a := _intermediate_node_set(path_a, boss_id)
+	var intermediates_b := _intermediate_node_set(path_b, boss_id)
+	for node_id in intermediates_a.keys():
+		if intermediates_b.has(node_id):
+			return false
+	return true
+
+
+static func _intermediate_node_set(path: PackedStringArray, boss_id: String) -> Dictionary:
+	var out := {}
+	if path.size() <= 2:
+		return out
+
+	for index in range(1, path.size() - 1):
+		var node_id := String(path[index])
+		if node_id == boss_id:
+			continue
+		out[node_id] = true
+	return out

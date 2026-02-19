@@ -133,3 +133,56 @@ func test_shop_discount_applies_to_card_and_remove_prices() -> void:
 
 	var remove_price := ShopOfferGenerator.calculate_remove_price_for_shop(run_state)
 	assert_eq(remove_price, 60, "20% 折扣应将 75 金币删卡降到 60")
+
+
+func test_shop_flow_generate_offers_contains_card_relic_potion() -> void:
+	var run_state := _create_run_state(500)
+	var flow := ShopFlowService.new()
+	var offers := flow.generate_offers(run_state)
+
+	var type_set := {}
+	for offer in offers:
+		type_set[str(offer.get("offer_type", ""))] = true
+
+	assert_true(type_set.has("card"), "商店报价应包含卡牌")
+	assert_true(type_set.has("relic"), "商店报价应包含遗物")
+	assert_true(type_set.has("potion"), "商店报价应包含药水")
+
+
+func test_shop_flow_can_buy_relic_and_potion() -> void:
+	var run_state := _create_run_state(999)
+	var flow := ShopFlowService.new()
+	var offers := flow.generate_offers(run_state)
+
+	var relic_index := -1
+	var potion_index := -1
+	for i in range(offers.size()):
+		var offer := offers[i]
+		var offer_type := str(offer.get("offer_type", ""))
+		if offer_type == "relic" and relic_index == -1:
+			relic_index = i
+		elif offer_type == "potion" and potion_index == -1:
+			potion_index = i
+
+	assert_true(relic_index >= 0, "测试前提：应能找到遗物报价")
+	assert_true(potion_index >= 0, "测试前提：应能找到药水报价")
+	if relic_index < 0 or potion_index < 0:
+		return
+
+	var relic_result := flow.execute_buy_offer(run_state, offers, relic_index)
+	assert_true(bool(relic_result.get("handled", false)), "购买遗物命令应被处理")
+	assert_eq(run_state.relics.size(), 1, "购买遗物后应写入 RunState.relics")
+
+	var refreshed_potion_index := -1
+	for i in range(offers.size()):
+		if str(offers[i].get("offer_type", "")) == "potion":
+			refreshed_potion_index = i
+			break
+
+	assert_true(refreshed_potion_index >= 0, "购买遗物后仍应存在药水报价")
+	if refreshed_potion_index < 0:
+		return
+
+	var potion_result := flow.execute_buy_offer(run_state, offers, refreshed_potion_index)
+	assert_true(bool(potion_result.get("handled", false)), "购买药水命令应被处理")
+	assert_eq(run_state.potions.size(), 1, "购买药水后应写入 RunState.potions")

@@ -32,7 +32,8 @@ func enqueue_effect(
 	priority: int = 50,
 	effect_type: EffectType = EffectType.SPECIAL,
 	source: Node = null,
-	value: int = 0
+	value: int = 0,
+	chain_depth: int = 0
 ) -> void:
 	if not apply_callable.is_valid():
 		return
@@ -55,6 +56,7 @@ func enqueue_effect(
 				"priority": priority,
 				"source": source,
 				"value": value,
+				"chain_depth": maxi(0, chain_depth),
 			}
 		)
 		_next_entry_id += 1
@@ -90,18 +92,26 @@ func _process_queue() -> void:
 		return
 
 	_is_processing = true
-	_sort_by_priority()
 
 	while not _queue.is_empty():
+		_sort_by_priority()
 		var entry: Dictionary = _queue.pop_front()
+		var entry_chain_depth := int(entry.get("chain_depth", 0))
+		if entry_chain_depth > MAX_CHAIN_DEPTH:
+			push_error("[EffectStack] 链式递归深度超过限制 (>%d)，中止执行" % MAX_CHAIN_DEPTH)
+			continue
+		_chain_depth = entry_chain_depth
+
 		var target_variant: Variant = entry.get("target")
 		if not (target_variant is Node):
 			_print_debug("process_skip_invalid_target", _entry_label(entry))
+			_chain_depth = 0
 			continue
 
 		var target: Node = target_variant
 		if target == null or not is_instance_valid(target):
 			_print_debug("process_skip_invalid_target", _entry_label(entry))
+			_chain_depth = 0
 			continue
 
 		_current_item = _entry_label(entry)
@@ -110,24 +120,20 @@ func _process_queue() -> void:
 		var apply_variant: Variant = entry.get("apply")
 		if not (apply_variant is Callable):
 			_print_debug("process_skip_invalid_apply", _current_item)
+			_chain_depth = 0
 			continue
 
 		var apply_callable: Callable = apply_variant
 		if apply_callable.is_valid():
-			_chain_depth += 1
-			if _chain_depth > MAX_CHAIN_DEPTH:
-				push_error("[EffectStack] 链式递归深度超过限制 (>%d)，中止执行" % MAX_CHAIN_DEPTH)
-				_chain_depth -= 1
-				continue
-
 			var result = apply_callable.call(target)
 			_log_effect(entry, target)
 			_handle_chain_result(result, entry)
-			_chain_depth -= 1
 
 		_print_debug("process_done", _current_item)
+		_chain_depth = 0
 
 	_current_item = "idle"
+	_chain_depth = 0
 	_is_processing = false
 	_emit_debug_state()
 	_print_debug("process_idle", _current_item)
@@ -163,7 +169,7 @@ func _log_effect(entry: Dictionary, target: Node) -> void:
 	)
 
 
-func _handle_chain_result(result: Variant, _entry: Dictionary) -> void:
+func _handle_chain_result(result: Variant, entry: Dictionary) -> void:
 	if not (result is Dictionary):
 		return
 
@@ -176,13 +182,14 @@ func _handle_chain_result(result: Variant, _entry: Dictionary) -> void:
 		return
 
 	var chain_effects: Array = chain_effects_variant
+	var parent_depth := int(entry.get("chain_depth", 0))
 	for chain_effect in chain_effects:
 		if not (chain_effect is Dictionary):
 			continue
-		_enqueue_chain_effect(chain_effect as Dictionary)
+		_enqueue_chain_effect(chain_effect as Dictionary, parent_depth)
 
 
-func _enqueue_chain_effect(chain_effect: Dictionary) -> void:
+func _enqueue_chain_effect(chain_effect: Dictionary, parent_depth: int) -> void:
 	var effect_name: String = chain_effect.get("effect", "chain_effect")
 	var targets: Array = chain_effect.get("targets", [])
 	var apply_callable: Callable = chain_effect.get("apply", Callable())
@@ -202,7 +209,12 @@ func _enqueue_chain_effect(chain_effect: Dictionary) -> void:
 	if typed_targets.is_empty():
 		return
 
-	enqueue_effect(effect_name, typed_targets, apply_callable, priority, effect_type, source, value)
+	var next_depth := parent_depth + 1
+	if next_depth > MAX_CHAIN_DEPTH:
+		push_error("[EffectStack] 链式递归深度超过限制 (>%d)，中止执行" % MAX_CHAIN_DEPTH)
+		return
+
+	enqueue_effect(effect_name, typed_targets, apply_callable, priority, effect_type, source, value, next_depth)
 
 
 func _entry_label(entry: Dictionary) -> String:

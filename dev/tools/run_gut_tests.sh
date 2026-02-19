@@ -9,6 +9,8 @@ cd "$ROOT_DIR"
 
 GODOT="${GODOT:-godot}"
 TIMEOUT="${1:-60}"
+LOG_FILE="$(mktemp -t gut_test_log.XXXXXX)"
+trap 'rm -f "$LOG_FILE"' EXIT
 
 echo "[GUT] Running tests (timeout: ${TIMEOUT}s)..."
 
@@ -21,7 +23,7 @@ $GODOT \
     -s addons/gut/gut_cmdln.gd \
     -gdir=res://dev/tests \
     -ginclude_subdirs \
-    -gexit 2>&1 &
+    -gexit >"$LOG_FILE" 2>&1 &
 GODOT_PID=$!
 
 # 等待并检查超时
@@ -40,5 +42,23 @@ while kill -0 $GODOT_PID 2>/dev/null; do
 done
 
 # 等待进程结束并获取退出码
+set +e
 wait $GODOT_PID
+GODOT_EXIT=$?
+set -e
+
+cat "$LOG_FILE"
+
+if [ $GODOT_EXIT -ne 0 ]; then
+    echo "[GUT] FAILED: Godot exited with code ${GODOT_EXIT}"
+    exit $GODOT_EXIT
+fi
+
+RUNTIME_ERROR_PATTERN='SCRIPT ERROR:|Node not found:|FreeType: Error loading font|ObjectDB instances leaked at exit|resources still in use at exit|Resource still in use'
+if grep -E "$RUNTIME_ERROR_PATTERN" "$LOG_FILE" >/dev/null 2>&1; then
+    echo "[GUT] FAILED: runtime errors detected in test log"
+    grep -nE "$RUNTIME_ERROR_PATTERN" "$LOG_FILE" | head -50
+    exit 1
+fi
+
 echo "[GUT] Tests completed"

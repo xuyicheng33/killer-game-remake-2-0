@@ -12,7 +12,7 @@ func perform_action() -> void:
 	var damage_effect := DamageEffect.new()
 	damage_effect.amount = chip_damage
 	damage_effect.sound = sound
-	damage_effect.execute(target_array)
+	damage_effect.execute(target_array, battle_context)
 
 	if target is Player:
 		var player := target as Player

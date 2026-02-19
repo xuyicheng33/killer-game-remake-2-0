@@ -2,6 +2,51 @@ extends GutTest
 
 const BATTLE_CONTEXT_SCRIPT := preload("res://runtime/modules/battle_loop/battle_context.gd")
 
+
+class SpyPlayerHandler:
+	extends PlayerHandler
+
+	var start_battle_calls := 0
+	var start_turn_calls := 0
+	var end_turn_calls := 0
+
+	func start_battle(_char_stats: CharacterStats) -> void:
+		start_battle_calls += 1
+
+	func start_turn() -> void:
+		start_turn_calls += 1
+
+	func end_turn() -> void:
+		end_turn_calls += 1
+
+
+class SpyEnemyHandler:
+	extends EnemyHandler
+
+	var start_turn_calls := 0
+	var reset_enemy_actions_calls := 0
+
+	func start_turn() -> void:
+		start_turn_calls += 1
+
+	func reset_enemy_actions() -> void:
+		reset_enemy_actions_calls += 1
+
+
+class DummyPlayer:
+	extends Player
+
+	func set_character_stats(value: CharacterStats) -> void:
+		stats = value
+
+
+class DummyEnemy:
+	extends Enemy
+
+	func set_enemy_stats(value: EnemyStats) -> void:
+		stats = value
+
+
 var _context: RefCounted
 
 
@@ -102,9 +147,50 @@ func test_phase_transitions_in_correct_order() -> void:
 func test_buffs_triggered_at_correct_phase() -> void:
 	var phase_machine = _context.get("phase_machine") as BattlePhaseStateMachine
 	assert_not_null(phase_machine, "phase_machine 不应为空")
-	
-	assert_true(phase_machine.has_method("_enter_draw_phase"), "应有 _enter_draw_phase 方法")
-	assert_true(phase_machine.has_method("_enter_resolve_phase"), "应有 _enter_resolve_phase 方法")
+
+	var player_handler := SpyPlayerHandler.new()
+	var enemy_handler := SpyEnemyHandler.new()
+	var player := DummyPlayer.new()
+	var player_stats := CharacterStats.new()
+	player_stats.max_health = 50
+	player_stats.health = 50
+	player.stats = player_stats
+
+	var enemy := DummyEnemy.new()
+	var enemy_stats := EnemyStats.new()
+	enemy_stats.max_health = 20
+	enemy_stats.health = 20
+	enemy.stats = enemy_stats
+
+	phase_machine.bind_turn_handlers(player_handler, enemy_handler)
+	phase_machine.bind_context(player, [enemy], _context)
+
+	var events = _get_events_singleton()
+	assert_not_null(events, "应能获取 Events 单例")
+	if events == null:
+		return
+	assert_true(events.has_signal("enemy_turn_started"), "应提供 enemy_turn_started 事件")
+
+	phase_machine.start()
+	assert_eq(phase_machine.get_phase(), BattlePhaseStateMachine.Phase.DRAW, "start() 后应进入 DRAW")
+	assert_eq(player_handler.start_battle_calls, 1, "DRAW 阶段应触发玩家开局抽牌流程")
+
+	phase_machine.transition_to(BattlePhaseStateMachine.Phase.ACTION)
+	phase_machine.transition_to(BattlePhaseStateMachine.Phase.ENEMY)
+	assert_eq(enemy_handler.start_turn_calls, 1, "ENEMY 阶段应驱动敌方行动")
+
+	phase_machine.transition_to(BattlePhaseStateMachine.Phase.RESOLVE)
+	assert_eq(player_handler.end_turn_calls, 1, "RESOLVE 阶段应触发弃牌流程")
+	assert_eq(enemy_handler.reset_enemy_actions_calls, 0, "弃牌完成前不应重置敌人意图")
+
+	phase_machine.on_resolve_discard_completed()
+	assert_eq(enemy_handler.reset_enemy_actions_calls, 1, "弃牌完成后应重置敌人意图")
+	assert_eq(phase_machine.get_phase(), BattlePhaseStateMachine.Phase.DRAW, "RESOLVE 完成后应回到 DRAW")
+
+	player.free()
+	enemy.free()
+	player_handler.free()
+	enemy_handler.free()
 
 
 func test_battle_ends_when_player_hp_reaches_zero() -> void:

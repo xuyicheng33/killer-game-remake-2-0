@@ -5,7 +5,7 @@
       "id": "crab",
       "name": "小蟹",
       "max_health": 10,
-      "art_path": "res://content/art/enemies/crab.png",
+      "art_path": "res://content/art/characters/埋骨钱.png",
       "ai_scene_path": "res://content/enemies/crab/crab_enemy_ai.tscn",
       "tags": ["common"],
       "intents": [
@@ -31,7 +31,7 @@
       "id": "bat",
       "name": "蝙蝠",
       "max_health": 12,
-      "art_path": "res://content/art/enemies/bat.png",
+      "art_path": "res://content/art/characters/离恨烟.png",
       "ai_scene_path": "res://content/enemies/bat/bat_enemy_ai.tscn",
       "tags": ["common"],
       "intents": [
@@ -178,6 +178,20 @@
       "weight": 1,
       "tags": ["common"],
       "floor_range": {"min": 6, "max": 11}
+    },
+    {
+      "id": "act1_elite_viper_pair",
+      "enemies": ["viper", "viper"],
+      "weight": 2,
+      "tags": ["elite"],
+      "floor_range": {"min": 7, "max": 13}
+    },
+    {
+      "id": "act1_elite_viper_bat",
+      "enemies": ["viper", "bat", "bat"],
+      "weight": 1,
+      "tags": ["elite"],
+      "floor_range": {"min": 8, "max": 13}
     },
     {
       "id": "act1_boss_slime",

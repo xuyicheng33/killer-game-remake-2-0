@@ -35,8 +35,13 @@
 ### 2026-02-19 复验补强
 
 **改动文件**:
-- `runtime/modules/relic_potion/relic_potion_system.gd` - 药水改为通过 EffectStack 派发
-- `dev/tests/unit/test_relic_potion.gd` - 新增并执行 4 个测试
+- `runtime/modules/relic_potion/relic_potion_system.gd` - 迁移到 RelicRegistry 回调分发；补 battle-start 就绪延迟保护
+- `runtime/modules/relic_potion/relic_catalog.gd` - 改为从 content pipeline JSON 动态加载
+- `runtime/modules/relic_potion/relic_base.gd` - 新增遗物回调基类
+- `runtime/modules/relic_potion/relic_registry.gd` - 新增遗物注册/实例化入口
+- `runtime/modules/relic_potion/data_driven_relic.gd` - 新增数据驱动默认遗物实现
+- `dev/tests/unit/test_relic_potion.gd` - 扩充到 12 个行为测试（含 registry 自定义回调）
+- `dev/tests/unit/test_content_pipeline_catalogs.gd` - 新增数据源加载测试
 
 **白名单扩展** (已更新 master_plan_v3.md):
 - 2-4 白名单扩展为：`runtime/modules/relic_potion/`、`runtime/scenes/app/`、`runtime/scenes/battle/`、`runtime/scenes/enemy/`、`content/custom_resources/relics/`、`runtime/global/`
@@ -52,8 +57,38 @@ res://dev/tests/unit/test_relic_potion.gd
 * test_trigger_types_defined
 * test_relic_fires_on_correct_trigger_event
 * test_potion_applies_effect_via_effect_stack
-4/4 passed.
+* test_turn_start_relic_grants_block
+* test_turn_end_relic_heals_player
+* test_shop_enter_trigger_is_emitted
+* test_block_applied_trigger_is_emitted
+* test_boss_killed_trigger_is_emitted
+* test_run_start_relic_applies_once
+* test_damage_all_enemies_potion_hits_all_targets
+* test_custom_relic_callback_invoked_via_registry
+12/12 passed.
+
+res://dev/tests/unit/test_content_pipeline_catalogs.gd
+* test_event_templates_loaded_from_pipeline_source
+* test_relic_pool_loaded_from_pipeline_source
+2/2 passed.
+
+make test (2026-02-19)
+Totals
+------
+Scripts              13
+Tests                89
+Passing Tests        89
+Failing Tests         0
 ```
+
+---
+
+## 最近门禁失败根因（已修复）
+
+- 失败时间：2026-02-19
+- 失败用例：`test_custom_relic_callback_invoked_via_registry`
+- 根因：GDScript 匿名函数对局部变量按值捕获，测试中 `runtime_relic = ...` 不会回写到外层变量，导致假阴性。
+- 修复：测试改为通过 `RuntimeRelicHolder` 引用对象记录创建实例，回调触发与收益断言均通过。
 
 ---
 
@@ -61,8 +96,6 @@ res://dev/tests/unit/test_relic_potion.gd
 
 **通过** - 2026-02-19 复验
 
-1. 补齐了 Phase 2 要求的两个功能测试
-2. 修复了 Card.Type 枚举比较错误
-3. 统一了敌人死亡事件发射路径（enemy.gd 现在会发射 enemy_died 信号）
-4. 完成了 EffectStack 注入，移除了 fallback 直接修改 RunState 的路径
-5. 药水效果已通过 EffectStack 派发并由测试覆盖
+1. 遗物架构已对齐为 `RelicBase + RelicRegistry` 回调分发，新增遗物无需改系统主干。
+2. 遗物池与事件模板均改为 content pipeline 数据源驱动，改 JSON 可直接影响运行时。
+3. `make test` 全量 89/89 通过，文档结论与当前门禁状态一致。

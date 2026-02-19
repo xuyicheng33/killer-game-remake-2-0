@@ -24,6 +24,11 @@ func test_map_has_multiple_paths_to_boss():
 	assert_true(MapGenerator.has_multiple_paths_to_boss(graph), "应存在多条路径可达Boss")
 
 
+func test_map_has_two_node_disjoint_paths_to_boss():
+	var graph := MapGenerator.create_act1_seed_graph(12345)
+	assert_true(MapGenerator.has_multiple_paths_to_boss(graph), "应存在至少两条中间节点不重叠的 Boss 路径")
+
+
 func test_same_seed_produces_same_map():
 	var graph1 := MapGenerator.create_act1_seed_graph(99999)
 	var graph2 := MapGenerator.create_act1_seed_graph(99999)
@@ -102,5 +107,63 @@ func test_create_act1_seed_map_returns_floor_nodes():
 		assert_eq(node.floor_index, 0, "所有节点应在指定楼层")
 
 
+func test_each_node_connects_to_1_or_2_next_nodes():
+	var graph := MapGenerator.create_act1_seed_graph(54321)
+	for node in graph.nodes:
+		if node.type == MapNodeData.NodeType.BOSS:
+			continue
+		var edge_count := node.next_node_ids.size()
+		assert_true(edge_count >= 1 and edge_count <= 2, "每个非 Boss 节点应连接到下一层 1-2 个节点")
+
+
 func test_normal_floor_count_constant():
 	assert_eq(MapGenerator.NORMAL_FLOOR_COUNT, 14, "NORMAL_FLOOR_COUNT 应为 14")
+
+
+func test_normal_floor_node_type_distribution_matches_plan():
+	var counts := {
+		"battle": 0,
+		"elite": 0,
+		"rest": 0,
+		"shop": 0,
+		"event": 0,
+	}
+	var sample_total := 0
+
+	for test_seed in range(2000, 2400):
+		var graph := MapGenerator.create_act1_seed_graph(test_seed)
+		var nodes := graph.get_nodes_for_floor(3)
+		for node in nodes:
+			sample_total += 1
+			match node.type:
+				MapNodeData.NodeType.BATTLE:
+					counts["battle"] += 1
+				MapNodeData.NodeType.ELITE:
+					counts["elite"] += 1
+				MapNodeData.NodeType.REST:
+					counts["rest"] += 1
+				MapNodeData.NodeType.SHOP:
+					counts["shop"] += 1
+				MapNodeData.NodeType.EVENT:
+					counts["event"] += 1
+
+	assert_true(sample_total > 0, "应采样到普通层节点")
+	if sample_total <= 0:
+		return
+
+	var expected := {
+		"battle": 0.45,
+		"elite": 0.08,
+		"rest": 0.15,
+		"shop": 0.05,
+		"event": 0.27,
+	}
+	var tolerance := 0.06
+
+	for key in expected.keys():
+		var actual := float(counts[key]) / float(sample_total)
+		var delta := absf(actual - float(expected[key]))
+		assert_true(
+			delta <= tolerance,
+			"%s 分布应接近计划值，actual=%.3f expected=%.3f tolerance=%.3f" % [key, actual, expected[key], tolerance]
+		)

@@ -500,6 +500,7 @@ def _validate_card(
 
 
 def _generate_card_script(card: dict[str, Any]) -> str:
+    is_x_cost = card.get("cost") == -1 or "x_cost" in card.get("tags", [])
     lines: list[str] = [
         "extends Card",
         "",
@@ -512,19 +513,23 @@ def _generate_card_script(card: dict[str, Any]) -> str:
         op = effect["op"]
         suffix = idx + 1
         if op == "damage":
+            amount = effect["amount"]
+            amount_expr = f"{amount} * last_x_value" if is_x_cost else str(amount)
             lines.extend(
                 [
                     f"\tvar damage_effect_{suffix} := DamageEffect.new()",
-                    f"\tdamage_effect_{suffix}.amount = {effect['amount']}",
+                    f"\tdamage_effect_{suffix}.amount = {amount_expr}",
                     f"\tdamage_effect_{suffix}.sound = sound",
                     f"\tdamage_effect_{suffix}.execute(_targets, _battle_context)",
                 ]
             )
         elif op == "block":
+            amount = effect["amount"]
+            amount_expr = f"{amount} * last_x_value" if is_x_cost else str(amount)
             lines.extend(
                 [
                     f"\tvar block_effect_{suffix} := BlockEffect.new()",
-                    f"\tblock_effect_{suffix}.amount = {effect['amount']}",
+                    f"\tblock_effect_{suffix}.amount = {amount_expr}",
                     f"\tblock_effect_{suffix}.sound = sound",
                     f"\tblock_effect_{suffix}.execute(_targets, _battle_context)",
                 ]

@@ -1,7 +1,6 @@
 [gd_resource type="Theme" load_steps=9 format=3 uid="uid://c8cqncsqlplyu"]
 
-[sub_resource type="SystemFont" id="SystemFont_ui"]
-font_names = PackedStringArray("PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", "Arial Unicode MS")
+[ext_resource type="FontFile" uid="uid://dskmdk146n4rq" path="res://content/art/pixel_rpg.ttf" id="1_font_file"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
 bg_color = Color(0.164706, 0.184314, 0.231373, 0.94)
@@ -110,7 +109,7 @@ content_margin_right = 16.0
 content_margin_bottom = 14.0
 
 [resource]
-default_font = SubResource("SystemFont_ui")
+default_font = ExtResource("1_font_file")
 default_font_size = 22
 Button/colors/font_color = Color(0.952941, 0.945098, 0.866667, 1)
 Button/colors/font_disabled_color = Color(0.666667, 0.682353, 0.721569, 0.8)

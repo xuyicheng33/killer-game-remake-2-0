@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REQUIRED_ENEMY_FIELDS = ["id", "max_health"]
+REQUIRED_ENEMY_FIELDS = ["id", "max_health", "art_path", "ai_scene_path"]
 REQUIRED_ENCOUNTER_FIELDS = ["id", "enemies"]
 REQUIRED_INTENT_FIELDS = ["name", "type"]
 REQUIRED_EFFECT_FIELDS = ["op"]
@@ -70,6 +70,70 @@ def _append_error(
             message=message,
         )
     )
+
+
+def _validate_resource_path(
+    value: Any,
+    field: str,
+    code_prefix: str,
+    errors: list[ValidationError],
+    source_file: str,
+    item_index: int,
+    item_id: str,
+    root: Path,
+    expected_suffix: str | None = None,
+) -> str | None:
+    if not isinstance(value, str) or not value.strip():
+        _append_error(
+            errors,
+            source_file,
+            item_index,
+            item_id,
+            field,
+            f"{code_prefix}_INVALID_PATH",
+            "path must be a non-empty string",
+        )
+        return None
+
+    path_value = value.strip()
+    if not path_value.startswith("res://"):
+        _append_error(
+            errors,
+            source_file,
+            item_index,
+            item_id,
+            field,
+            f"{code_prefix}_INVALID_PATH",
+            "path must start with 'res://'",
+        )
+        return None
+
+    resolved_path = root / path_value.removeprefix("res://")
+    if not resolved_path.exists():
+        _append_error(
+            errors,
+            source_file,
+            item_index,
+            item_id,
+            field,
+            f"{code_prefix}_MISSING_RESOURCE",
+            f"resource not found: {path_value}",
+        )
+        return None
+
+    if expected_suffix and resolved_path.suffix.lower() != expected_suffix.lower():
+        _append_error(
+            errors,
+            source_file,
+            item_index,
+            item_id,
+            field,
+            f"{code_prefix}_INVALID_PATH",
+            f"path must end with '{expected_suffix}'",
+        )
+        return None
+
+    return path_value
 
 
 def _validate_id_format(
@@ -307,6 +371,7 @@ def _validate_enemy(
     enemy: Any,
     index: int,
     source_file: str,
+    root: Path,
     seen_ids: set[str],
     errors: list[ValidationError],
 ) -> dict[str, Any] | None:
@@ -418,11 +483,30 @@ def _validate_enemy(
                 )
         normalized["tags"] = tags
 
-    art_path = enemy.get("art_path")
+    art_path = _validate_resource_path(
+        enemy.get("art_path"),
+        f"enemies[{index}].art_path",
+        "ENEMY_ART",
+        errors,
+        source_file,
+        index,
+        enemy_id,
+        root,
+    )
     if art_path is not None:
         normalized["art_path"] = art_path
 
-    ai_scene_path = enemy.get("ai_scene_path")
+    ai_scene_path = _validate_resource_path(
+        enemy.get("ai_scene_path"),
+        f"enemies[{index}].ai_scene_path",
+        "ENEMY_AI_SCENE",
+        errors,
+        source_file,
+        index,
+        enemy_id,
+        root,
+        ".tscn",
+    )
     if ai_scene_path is not None:
         normalized["ai_scene_path"] = ai_scene_path
 
@@ -678,7 +762,7 @@ def main() -> int:
 
     for index, raw_enemy in enumerate(enemies_raw):
         normalized = _validate_enemy(
-            raw_enemy, index, source_file, seen_enemy_ids, errors
+            raw_enemy, index, source_file, root, seen_enemy_ids, errors
         )
         if normalized is not None:
             normalized_enemies.append(normalized)

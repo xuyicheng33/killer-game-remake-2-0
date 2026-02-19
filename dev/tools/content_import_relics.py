@@ -205,6 +205,12 @@ def _validate_relic(
                 "on_card_played_gold": (int, 0, 9999),
                 "card_play_interval": (int, 1, 99),
                 "on_player_hit_block": (int, 0, 9999),
+                "on_enemy_killed_gold": (int, 0, 9999),
+                "on_turn_start_block": (int, 0, 9999),
+                "on_turn_end_heal": (int, 0, 9999),
+                "shop_discount_percent": (int, 0, 90),
+                "on_run_start_gold": (int, 0, 9999),
+                "on_run_start_max_health": (int, 0, 9999),
             }
             for eff_field, (eff_type, min_val, max_val) in valid_effect_fields.items():
                 if eff_field in effects:
@@ -231,6 +237,17 @@ def _validate_relic(
                         )
                     else:
                         normalized_effects[eff_field] = val
+            for eff_field in effects:
+                if eff_field not in valid_effect_fields:
+                    _append_error(
+                        errors,
+                        source_file,
+                        index,
+                        relic_id,
+                        f"relics[{index}].effects.{eff_field}",
+                        "RELIC_UNKNOWN_EFFECT_FIELD",
+                        f"unknown effect field '{eff_field}'; valid fields: {sorted(valid_effect_fields)}",
+                    )
             normalized["effects"] = normalized_effects
 
     tags = relic.get("tags", [])

@@ -21,6 +21,7 @@
 - `runtime/`
 - `dev/`
 - `docs/`
+- `main_theme.tres`
 
 ## 验证
 
