@@ -14,6 +14,8 @@ enum EffectType {
 }
 
 const MAX_CHAIN_DEPTH := 10
+const DEBUG_SETTING_PATH := "sts/debug/effect_stack_verbose"
+const DEBUG_ENV_KEY := "STS_EFFECT_STACK_DEBUG"
 
 var _queue: Array[Dictionary] = []
 var _is_processing := false
@@ -233,6 +235,15 @@ func _emit_debug_state() -> void:
 
 func _print_debug(event: String, detail: String) -> void:
 	_emit_debug_state()
+	if not _is_debug_logging_enabled():
+		return
 	push_warning("[EffectStack] %s | %s | queue=%d current=%s chain=%d" % [
 		event, detail, _queue.size(), _current_item, _chain_depth
 	])
+
+
+func _is_debug_logging_enabled() -> bool:
+	if ProjectSettings.has_setting(DEBUG_SETTING_PATH):
+		return bool(ProjectSettings.get_setting(DEBUG_SETTING_PATH))
+	var env_value := OS.get_environment(DEBUG_ENV_KEY).strip_edges().to_lower()
+	return env_value == "1" or env_value == "true" or env_value == "yes" or env_value == "on"
