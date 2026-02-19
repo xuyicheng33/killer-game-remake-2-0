@@ -23,7 +23,10 @@ static func get_character_template(character_id: String) -> CharacterStats:
 		push_error("CharacterRegistry: template not found at '%s'" % path)
 		return null
 	
-	return load(path) as CharacterStats
+	var stats_variant: Variant = load(path)
+	if stats_variant is CharacterStats:
+		return stats_variant
+	return null
 
 
 static func get_selected_character_id() -> String:

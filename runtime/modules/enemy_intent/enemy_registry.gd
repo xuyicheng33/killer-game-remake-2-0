@@ -17,7 +17,10 @@ static func get_enemy_stats(enemy_id: String) -> EnemyStats:
 		push_warning("EnemyRegistry: enemy resource not found at '%s'" % path)
 		return null
 	
-	return load(path) as EnemyStats
+	var stats_variant: Variant = load(path)
+	if stats_variant is EnemyStats:
+		return stats_variant
+	return null
 
 
 static func get_enemy_ids() -> Array[String]:

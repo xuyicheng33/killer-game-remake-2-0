@@ -26,7 +26,10 @@ func _project_offers(run_state: RunState, offers: Array[Dictionary]) -> Array[Di
 
 	for i in range(offers.size()):
 		var offer := offers[i]
-		var card := offer.get("card") as Card
+		var card: Card = null
+		var card_variant: Variant = offer.get("card")
+		if card_variant is Card:
+			card = card_variant
 		var price := int(offer.get("price", SHOP_OFFER_GENERATOR_SCRIPT.CARD_BUY_PRICE))
 
 		buttons.append({
@@ -43,7 +46,10 @@ func _project_deck(run_state: RunState) -> Array[Dictionary]:
 	var cards := run_state.get_deck_cards()
 	var remove_price := SHOP_OFFER_GENERATOR_SCRIPT.calculate_remove_price_for_shop(run_state)
 	for i in range(cards.size()):
-		var card := cards[i] as Card
+		var card: Card = null
+		var card_variant: Variant = cards[i]
+		if card_variant is Card:
+			card = card_variant
 		buttons.append({
 			"index": i,
 			"text": "移除卡牌：%s（%d 金币）" % [_card_name(card), remove_price],

@@ -20,9 +20,9 @@ static func _load_pool() -> void:
 	_cache.clear()
 	for path in RELIC_POOL:
 		if ResourceLoader.exists(path):
-			var relic: RelicData = load(path) as RelicData
-			if relic != null:
-				_cache.append(relic)
+			var relic_variant: Variant = load(path)
+			if relic_variant is RelicData:
+				_cache.append(relic_variant)
 
 
 static func get_all() -> Array[RelicData]:

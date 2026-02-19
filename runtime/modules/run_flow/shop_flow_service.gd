@@ -22,7 +22,12 @@ func execute_buy_offer(run_state: RunState, offers: Array[Dictionary], index: in
 		return _result(RunRouteDispatcher.ROUTE_SHOP, false, "")
 
 	var offer := offers[index]
-	var card := offer.get("card") as Card
+	var card: Card = null
+	var card_variant: Variant = offer.get("card")
+	if card_variant is Card:
+		card = card_variant
+	if card == null:
+		return _result(RunRouteDispatcher.ROUTE_SHOP, true, "购买失败：卡牌数据无效。")
 	var price := int(offer.get("price", SHOP_OFFER_GENERATOR_SCRIPT.CARD_BUY_PRICE))
 
 	if not run_state.spend_gold(price):
@@ -44,8 +49,13 @@ func execute_remove_card(run_state: RunState, index: int) -> Dictionary:
 	if index < 0 or index >= cards.size():
 		return _result(RunRouteDispatcher.ROUTE_SHOP, true, "移除卡牌失败。")
 
-	var card := cards[index] as Card
-	var remove_price := SHOP_OFFER_GENERATOR_SCRIPT.calculate_remove_price(run_state)
+	var card: Card = null
+	var card_variant: Variant = cards[index]
+	if card_variant is Card:
+		card = card_variant
+	if card == null:
+		return _result(RunRouteDispatcher.ROUTE_SHOP, true, "移除卡牌失败：卡牌数据无效。")
+	var remove_price := SHOP_OFFER_GENERATOR_SCRIPT.calculate_remove_price_for_shop(run_state)
 	if not SHOP_OFFER_GENERATOR_SCRIPT.remove_card(run_state, card):
 		if run_state.gold < remove_price:
 			return _result(RunRouteDispatcher.ROUTE_SHOP, true, "金币不足，无法移除卡牌。")

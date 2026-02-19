@@ -18,7 +18,10 @@ func rebuild_index() -> void:
 func get_node(node_id: String) -> MapNodeData:
 	if _node_by_id.is_empty():
 		rebuild_index()
-	return _node_by_id.get(node_id) as MapNodeData
+	var node_variant: Variant = _node_by_id.get(node_id)
+	if node_variant is MapNodeData:
+		return node_variant
+	return null
 
 
 func get_nodes_for_floor(floor_index: int) -> Array[MapNodeData]:
@@ -37,4 +40,3 @@ func get_start_node_ids() -> PackedStringArray:
 	for node in get_nodes_for_floor(0):
 		ids.append(node.id)
 	return ids
-

@@ -30,7 +30,10 @@ func start_turn() -> void:
 	if get_child_count() == 0:
 		return
 	
-	var first_enemy := get_child(0) as Enemy
+	var first_child: Node = get_child(0)
+	if not (first_child is Enemy):
+		return
+	var first_enemy: Enemy = first_child
 	first_enemy.do_turn()
 
 
@@ -39,5 +42,13 @@ func _on_enemy_action_completed(enemy: Enemy) -> void:
 		Events.enemy_turn_ended.emit()
 		return
 
-	var next_enemy := get_child(enemy.get_index() + 1) as Enemy
+	var next_index := enemy.get_index() + 1
+	if next_index < 0 or next_index >= get_child_count():
+		Events.enemy_turn_ended.emit()
+		return
+	var next_child: Node = get_child(next_index)
+	if not (next_child is Enemy):
+		Events.enemy_turn_ended.emit()
+		return
+	var next_enemy: Enemy = next_child
 	next_enemy.do_turn()

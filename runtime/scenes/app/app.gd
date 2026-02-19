@@ -76,7 +76,10 @@ func _start_new_run() -> void:
 		push_error("新局初始化失败")
 		return
 
-	run_state = result.get("run_state") as RunState
+	run_state = _extract_run_state(result)
+	if run_state == null:
+		push_error("新局初始化失败：返回结果中缺少有效的 RunState")
+		return
 	run_flow_service.reset_flow_context()
 	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
@@ -237,7 +240,10 @@ func _try_load_saved_run() -> bool:
 	game_over_panel.hide()
 	get_tree().paused = false
 
-	run_state = result.get("run_state") as RunState
+	run_state = _extract_run_state(result)
+	if run_state == null:
+		push_warning("[save] 读档失败：返回结果中缺少有效的 RunState。")
+		return false
 	run_flow_service.reset_flow_context()
 	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
@@ -254,6 +260,13 @@ func _save_checkpoint(tag: String) -> void:
 
 	if tag.length() > 0:
 		push_warning("[save] checkpoint: %s" % tag)
+
+
+func _extract_run_state(result: Dictionary) -> RunState:
+	var run_state_variant: Variant = result.get("run_state")
+	if run_state_variant is RunState:
+		return run_state_variant
+	return null
 
 
 func _on_viewport_resized() -> void:

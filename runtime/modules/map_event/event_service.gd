@@ -18,7 +18,10 @@ static func pick_event_template(run_state: RunState) -> Dictionary:
 	var rng: RandomNumberGenerator = RUN_RNG_SCRIPT.create_seeded_rng(seed_value, stream_key)
 
 	var index := rng.randi_range(0, templates.size() - 1)
-	return (templates[index] as Dictionary).duplicate(true)
+	var template_variant: Variant = templates[index]
+	if template_variant is Dictionary:
+		return (template_variant as Dictionary).duplicate(true)
+	return {}
 
 
 static func apply_option(run_state: RunState, option: Dictionary) -> String:
@@ -116,7 +119,10 @@ static func _upgrade_first_card(run_state: RunState) -> String:
 	var success := run_state.upgrade_card_in_deck_at(0)
 	if not success:
 		return "(升级失败)"
-	var first_card := run_state.get_deck_cards()[0] as Card
+	var first_card: Card = null
+	var first_card_variant: Variant = run_state.get_deck_cards()[0]
+	if first_card_variant is Card:
+		first_card = first_card_variant
 	return first_card.id if first_card else "(升级完成)"
 
 

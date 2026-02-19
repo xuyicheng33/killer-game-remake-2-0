@@ -19,9 +19,9 @@ static func _load_pool() -> void:
 	_cache.clear()
 	for path in POTION_POOL:
 		if ResourceLoader.exists(path):
-			var potion: PotionData = load(path) as PotionData
-			if potion != null:
-				_cache.append(potion)
+			var potion_variant: Variant = load(path)
+			if potion_variant is PotionData:
+				_cache.append(potion_variant)
 
 
 static func get_all() -> Array[PotionData]:

@@ -36,7 +36,10 @@ func try_load_saved_run(hero_template: CharacterStats) -> Dictionary:
 			"message": str(load_result.get("message", "读档失败。")),
 		}
 
-	var loaded_run_state: RunState = load_result.get("run_state") as RunState
+	var loaded_run_state: RunState = null
+	var run_state_variant: Variant = load_result.get("run_state")
+	if run_state_variant is RunState:
+		loaded_run_state = run_state_variant
 	if loaded_run_state == null:
 		return {
 			"ok": false,

@@ -114,7 +114,10 @@ static func _deserialize_run_state(payload: Dictionary, base_stats: CharacterSta
 
 	_apply_player_stats(restored, payload.get("player_stats", {}))
 
-	var map_graph_data: Dictionary = payload.get("map_graph", {}) as Dictionary
+	var map_graph_data: Dictionary = {}
+	var map_graph_variant: Variant = payload.get("map_graph", {})
+	if map_graph_variant is Dictionary:
+		map_graph_data = map_graph_variant
 	var deserialized_graph: MapGraphData = _deserialize_map_graph(map_graph_data)
 	if deserialized_graph != null:
 		restored.map_graph = deserialized_graph
@@ -187,7 +190,9 @@ static func _apply_player_stats(restored: RunState, stats_variant: Variant) -> v
 			new_deck.add_card(card)
 
 	if new_deck.cards.is_empty() and stats.deck != null:
-		new_deck = stats.deck.duplicate(true) as CardPile
+		var duplicated_deck: Variant = stats.deck.duplicate(true)
+		if duplicated_deck is CardPile:
+			new_deck = duplicated_deck
 
 	stats.deck = new_deck
 	stats.draw_pile = CardPile.new()
@@ -207,8 +212,9 @@ static func _apply_player_stats(restored: RunState, stats_variant: Variant) -> v
 
 static func _serialize_card(card: Card) -> Dictionary:
 	var script_path: String = ""
-	var card_script: Script = card.get_script() as Script
-	if card_script != null:
+	var script_variant: Variant = card.get_script()
+	if script_variant is Script:
+		var card_script: Script = script_variant
 		script_path = card_script.resource_path
 
 	var icon_path: String = ""
@@ -241,10 +247,12 @@ static func _deserialize_card(data: Dictionary) -> Card:
 	var card: Card = null
 
 	if not script_path.is_empty() and ResourceLoader.exists(script_path):
-		var card_script: Script = load(script_path) as Script
-		if card_script != null:
+		var card_script_variant: Variant = load(script_path)
+		if card_script_variant is Script:
+			var card_script: Script = card_script_variant
 			var script_instance: Variant = card_script.new()
-			card = script_instance as Card
+			if script_instance is Card:
+				card = script_instance
 
 	if card == null:
 		card = Card.new()
@@ -262,15 +270,15 @@ static func _deserialize_card(data: Dictionary) -> Card:
 
 	var icon_path: String = str(data.get("icon_path", ""))
 	if not icon_path.is_empty() and ResourceLoader.exists(icon_path):
-		var icon: Texture2D = load(icon_path) as Texture2D
-		if icon != null:
-			card.icon = icon
+		var icon_variant: Variant = load(icon_path)
+		if icon_variant is Texture2D:
+			card.icon = icon_variant
 
 	var sound_path: String = str(data.get("sound_path", ""))
 	if not sound_path.is_empty() and ResourceLoader.exists(sound_path):
-		var audio: AudioStream = load(sound_path) as AudioStream
-		if audio != null:
-			card.sound = audio
+		var audio_variant: Variant = load(sound_path)
+		if audio_variant is AudioStream:
+			card.sound = audio_variant
 
 	return card
 

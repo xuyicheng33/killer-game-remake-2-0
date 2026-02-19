@@ -91,8 +91,14 @@ static func apply_b3_bonus(run_state: RunState, bonus: Dictionary) -> String:
 		return ""
 
 	var logs: PackedStringArray = []
-	var relic := bonus.get("relic") as RelicData
-	var potion := bonus.get("potion") as PotionData
+	var relic: RelicData = null
+	var relic_variant: Variant = bonus.get("relic")
+	if relic_variant is RelicData:
+		relic = relic_variant
+	var potion: PotionData = null
+	var potion_variant: Variant = bonus.get("potion")
+	if potion_variant is PotionData:
+		potion = potion_variant
 
 	if relic != null:
 		if run_state.add_relic(relic):

@@ -1,4 +1,4 @@
-.PHONY: content-index workflow-check repo-structure-check install-hooks new-task migration-draft test
+.PHONY: content-index workflow-check repo-structure-check install-hooks new-task migration-draft test type-safety-check
 
 GODOT ?= godot
 
@@ -24,3 +24,6 @@ new-task:
 
 migration-draft:
 	@bash dev/tools/restructure_migration_draft.sh
+
+type-safety-check:
+	@bash dev/tools/type_safety_check.sh

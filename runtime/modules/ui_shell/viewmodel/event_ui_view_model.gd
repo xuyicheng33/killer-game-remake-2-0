@@ -14,10 +14,15 @@ func project(template: Dictionary, result_text: String, continue_visible: bool) 
 
 func _project_options(template: Dictionary) -> Array[Dictionary]:
 	var options: Array[Dictionary] = []
-	var raw_options := template.get("options", []) as Array
+	var raw_options: Array = []
+	var options_variant: Variant = template.get("options", [])
+	if options_variant is Array:
+		raw_options = options_variant
 
 	for option in raw_options:
-		var option_dict := option as Dictionary
+		if not (option is Dictionary):
+			continue
+		var option_dict: Dictionary = option
 		options.append({
 			"label": str(option_dict.get("label", "选项")),
 			"option_data": option_dict,

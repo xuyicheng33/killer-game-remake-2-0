@@ -28,9 +28,10 @@ static func export_run_state() -> Dictionary:
 	var stream_states: Dictionary = {}
 	for key_variant in _streams.keys():
 		var key: String = str(key_variant)
-		var rng := _streams.get(key_variant) as RandomNumberGenerator
-		if rng == null:
+		var rng_variant: Variant = _streams.get(key_variant)
+		if not (rng_variant is RandomNumberGenerator):
 			continue
+		var rng: RandomNumberGenerator = rng_variant
 		stream_states[key] = rng.state
 
 	return {
@@ -87,9 +88,9 @@ static func _get_stream_rng(stream_key: String) -> RandomNumberGenerator:
 	_ensure_initialized()
 
 	var key: String = stream_key if not stream_key.is_empty() else "default"
-	var existing := _streams.get(key) as RandomNumberGenerator
-	if existing != null:
-		return existing
+	var existing_variant: Variant = _streams.get(key)
+	if existing_variant is RandomNumberGenerator:
+		return existing_variant
 
 	var rng := RandomNumberGenerator.new()
 	rng.seed = _compose_seed(_run_seed, key)
