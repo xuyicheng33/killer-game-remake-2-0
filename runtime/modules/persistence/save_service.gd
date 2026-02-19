@@ -362,6 +362,10 @@ static func _serialize_relics(relics: Array[RelicData]) -> Array[Dictionary]:
 		item["on_card_played_gold"] = relic.on_card_played_gold
 		item["card_play_interval"] = relic.card_play_interval
 		item["on_player_hit_block"] = relic.on_player_hit_block
+		item["on_enemy_killed_gold"] = relic.on_enemy_killed_gold
+		item["on_turn_start_block"] = relic.on_turn_start_block
+		item["on_turn_end_heal"] = relic.on_turn_end_heal
+		item["shop_discount_percent"] = relic.shop_discount_percent
 		out.append(item)
 	return out
 
@@ -384,6 +388,10 @@ static func _deserialize_relics(relics_variant: Variant) -> Array[RelicData]:
 		relic.on_card_played_gold = int(dict_entry.get("on_card_played_gold", 0))
 		relic.card_play_interval = maxi(1, int(dict_entry.get("card_play_interval", 1)))
 		relic.on_player_hit_block = int(dict_entry.get("on_player_hit_block", 0))
+		relic.on_enemy_killed_gold = int(dict_entry.get("on_enemy_killed_gold", 0))
+		relic.on_turn_start_block = int(dict_entry.get("on_turn_start_block", 0))
+		relic.on_turn_end_heal = int(dict_entry.get("on_turn_end_heal", 0))
+		relic.shop_discount_percent = int(dict_entry.get("shop_discount_percent", 0))
 		out.append(relic)
 	return out
 
