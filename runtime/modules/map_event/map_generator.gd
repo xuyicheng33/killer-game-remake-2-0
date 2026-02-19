@@ -121,7 +121,7 @@ static func _description_for_type(type: MapNodeData.NodeType) -> String:
 		MapNodeData.NodeType.REST:
 			return "回复生命值并推进楼层。"
 		MapNodeData.NodeType.SHOP:
-			return "商店占位节点（B3 再实现交易流程）。"
+			return "购买卡牌、遗物或药水，或支付金币删除卡牌。"
 		MapNodeData.NodeType.EVENT:
 			return "基础版问号事件占位。"
 		MapNodeData.NodeType.BOSS:

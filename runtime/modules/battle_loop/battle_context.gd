@@ -85,7 +85,6 @@ func draw_cards(amount: int) -> int:
 			break
 		_hand.add_card(card)
 		drawn += 1
-		_reshuffle_deck_from_discard("card_effect_draw")
 
 	return drawn
 

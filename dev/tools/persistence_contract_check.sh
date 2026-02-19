@@ -42,6 +42,18 @@ assert_has '^const MIN_COMPAT_VERSION := [0-9]+' \
   "$SAVE_SERVICE_FILE" \
   "MIN_COMPAT_VERSION constant exists"
 
+echo "[persistence_contract] checking run_state serialization..."
+
+# 检查 _serialize_run_state 包含 card_removal_count 字段
+assert_has 'payload\["card_removal_count"\] = run_state\.card_removal_count' \
+  "$SAVE_SERVICE_FILE" \
+  "_serialize_run_state includes card_removal_count field"
+
+# 检查 _deserialize_run_state 恢复 card_removal_count 字段
+assert_has 'restored\.card_removal_count = maxi\(0, int\(payload\.get\("card_removal_count"' \
+  "$SAVE_SERVICE_FILE" \
+  "_deserialize_run_state restores card_removal_count field"
+
 echo "[persistence_contract] checking player stats serialization..."
 
 # 检查 _serialize_player_stats 包含 statuses 字段（来自 get_status_snapshot）

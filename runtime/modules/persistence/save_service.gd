@@ -97,6 +97,7 @@ static func _serialize_run_state(run_state: RunState) -> Dictionary:
 	payload["relics"] = _serialize_relics(run_state.relics)
 	payload["potions"] = _serialize_potions(run_state.potions)
 	payload["run_start_relics_applied"] = run_state.run_start_relics_applied
+	payload["card_removal_count"] = run_state.card_removal_count
 	payload["rng_state"] = RUN_RNG_SCRIPT.export_run_state()
 	return payload
 
@@ -134,6 +135,7 @@ static func _deserialize_run_state(payload: Dictionary, base_stats: CharacterSta
 	restored.relics = _deserialize_relics(payload.get("relics", []))
 	restored.potions = _deserialize_potions(payload.get("potions", []))
 	restored.run_start_relics_applied = bool(payload.get("run_start_relics_applied", restored.floor > 0))
+	restored.card_removal_count = maxi(0, int(payload.get("card_removal_count", 0)))
 	restored.emit_changed()
 	return restored
 

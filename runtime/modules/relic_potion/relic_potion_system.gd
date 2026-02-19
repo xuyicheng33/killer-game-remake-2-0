@@ -27,6 +27,8 @@ var _battle_active := false
 var _pending_battle_start_trigger := false
 var _cards_played_in_battle := 0
 var _enemies_killed_in_battle := 0
+var _battle_start_retry_count := 0
+const MAX_BATTLE_START_RETRIES := 100
 
 
 func _ready() -> void:
@@ -81,6 +83,7 @@ func start_battle() -> void:
 	_battle_active = true
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
+	_battle_start_retry_count = 0
 	_pending_battle_start_trigger = true
 	_try_fire_battle_start_trigger()
 
@@ -113,6 +116,12 @@ func _deferred_try_fire_battle_start_trigger() -> void:
 	if _is_battle_start_context_ready():
 		_pending_battle_start_trigger = false
 		_fire_trigger(TriggerType.ON_BATTLE_START, {})
+		return
+
+	_battle_start_retry_count += 1
+	if _battle_start_retry_count > MAX_BATTLE_START_RETRIES:
+		push_warning("[RelicPotionSystem] 战斗开始触发器等待超时（%d 次重试），放弃触发" % MAX_BATTLE_START_RETRIES)
+		_pending_battle_start_trigger = false
 		return
 
 	var tree := get_tree()
