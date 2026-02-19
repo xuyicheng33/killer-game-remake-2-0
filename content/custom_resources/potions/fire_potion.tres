@@ -7,5 +7,5 @@ script = ExtResource("1_script")
 id = "fire_potion"
 title = "火焰药水"
 description = "对所有敌人造成 20 点伤害。"
-effect_type = 2
+effect_type = 3
 value = 20

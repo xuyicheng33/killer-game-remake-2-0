@@ -65,3 +65,58 @@ func end_player_turn() -> bool:
 func remove_enemy(enemy: Enemy) -> void:
 	_enemies.erase(enemy)
 	phase_machine.remove_enemy(enemy)
+
+
+func draw_cards(amount: int) -> int:
+	if amount <= 0:
+		return 0
+	if _character == null or _hand == null:
+		return 0
+	if _character.draw_pile == null:
+		_character.draw_pile = CardPile.new()
+	if _character.discard == null:
+		_character.discard = CardPile.new()
+
+	var drawn := 0
+	for _index in range(amount):
+		_reshuffle_deck_from_discard("card_effect_draw")
+		var card: Card = _character.draw_pile.draw_card()
+		if card == null:
+			break
+		_hand.add_card(card)
+		drawn += 1
+		_reshuffle_deck_from_discard("card_effect_draw")
+
+	return drawn
+
+
+func gain_mana(amount: int) -> int:
+	if amount <= 0:
+		return 0
+	if _character == null:
+		return 0
+	var before := _character.mana
+	_character.mana = clampi(_character.mana + amount, 0, _character.max_mana)
+	return _character.mana - before
+
+
+func get_player() -> Player:
+	return _player
+
+
+func get_enemies() -> Array[Enemy]:
+	return _enemies.duplicate()
+
+
+func _reshuffle_deck_from_discard(stream_key: String) -> void:
+	if _character == null:
+		return
+	if _character.draw_pile == null or _character.discard == null:
+		return
+	if not _character.draw_pile.empty():
+		return
+
+	while not _character.discard.empty():
+		_character.draw_pile.add_card(_character.discard.draw_card())
+
+	_character.draw_pile.shuffle_with_rng(stream_key)

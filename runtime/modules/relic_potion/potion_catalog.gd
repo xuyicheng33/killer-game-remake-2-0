@@ -7,6 +7,8 @@ const POTION_POOL: Array[String] = [
 	"res://content/custom_resources/potions/healing_potion.tres",
 	"res://content/custom_resources/potions/iron_skin_potion.tres",
 	"res://content/custom_resources/potions/fire_potion.tres",
+	"res://content/custom_resources/potions/battle_cry_potion.tres",
+	"res://content/custom_resources/potions/storm_bomb_potion.tres",
 ]
 
 static var _cache: Array[PotionData] = []

@@ -52,7 +52,7 @@ func test_card_zones_has_bind_context_method() -> void:
 
 
 func test_context_can_be_garbage_collected() -> void:
-	var weak_ref := weakref(_context)
+	var weak_ref = weakref(_context)
 	_context.unbind_battle_context()
 	_context = null
 	
@@ -123,6 +123,10 @@ func test_battle_ends_when_player_hp_reaches_zero() -> void:
 func test_phase_machine_does_not_emit_turn_events_directly() -> void:
 	var phase_machine = _context.get("phase_machine") as BattlePhaseStateMachine
 	assert_not_null(phase_machine, "phase_machine 不应为空")
+	var events = _get_events_singleton()
+	assert_not_null(events, "应能获取 Events 单例")
+	if events == null:
+		return
 
 	var drawn_count := 0
 	var discarded_count := 0
@@ -138,26 +142,33 @@ func test_phase_machine_does_not_emit_turn_events_directly() -> void:
 	var on_enemy_turn_ended := func() -> void:
 		enemy_turn_ended_count += 1
 
-	Events.player_hand_drawn.connect(on_drawn)
-	Events.player_hand_discarded.connect(on_discarded)
-	Events.player_turn_ended.connect(on_player_turn_ended)
-	Events.enemy_turn_ended.connect(on_enemy_turn_ended)
+	events.connect("player_hand_drawn", on_drawn)
+	events.connect("player_hand_discarded", on_discarded)
+	events.connect("player_turn_ended", on_player_turn_ended)
+	events.connect("enemy_turn_ended", on_enemy_turn_ended)
 
 	phase_machine.start()
 	phase_machine.transition_to(BattlePhaseStateMachine.Phase.ACTION)
 	phase_machine.transition_to(BattlePhaseStateMachine.Phase.ENEMY)
 	phase_machine.transition_to(BattlePhaseStateMachine.Phase.RESOLVE)
 
-	if Events.player_hand_drawn.is_connected(on_drawn):
-		Events.player_hand_drawn.disconnect(on_drawn)
-	if Events.player_hand_discarded.is_connected(on_discarded):
-		Events.player_hand_discarded.disconnect(on_discarded)
-	if Events.player_turn_ended.is_connected(on_player_turn_ended):
-		Events.player_turn_ended.disconnect(on_player_turn_ended)
-	if Events.enemy_turn_ended.is_connected(on_enemy_turn_ended):
-		Events.enemy_turn_ended.disconnect(on_enemy_turn_ended)
+	if events.is_connected("player_hand_drawn", on_drawn):
+		events.disconnect("player_hand_drawn", on_drawn)
+	if events.is_connected("player_hand_discarded", on_discarded):
+		events.disconnect("player_hand_discarded", on_discarded)
+	if events.is_connected("player_turn_ended", on_player_turn_ended):
+		events.disconnect("player_turn_ended", on_player_turn_ended)
+	if events.is_connected("enemy_turn_ended", on_enemy_turn_ended):
+		events.disconnect("enemy_turn_ended", on_enemy_turn_ended)
 
 	assert_eq(drawn_count, 0, "状态机不应直接发出 player_hand_drawn")
 	assert_eq(discarded_count, 0, "状态机不应直接发出 player_hand_discarded")
 	assert_eq(player_turn_ended_count, 0, "状态机不应直接发出 player_turn_ended")
 	assert_eq(enemy_turn_ended_count, 0, "状态机不应直接发出 enemy_turn_ended")
+
+
+func _get_events_singleton() -> Node:
+	if not (Engine.get_main_loop() is SceneTree):
+		return null
+	var tree := Engine.get_main_loop() as SceneTree
+	return tree.root.get_node_or_null("Events")

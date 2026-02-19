@@ -16,6 +16,7 @@ enum Target {SELF, SINGLE_ENEMY, ALL_ENEMIES, EVERYONE}
 @export var keyword_void := false
 @export var keyword_ethereal := false
 @export var keyword_x_cost := false
+@export var upgrade_to: String = ""
 
 @export_group("Card Visuals")
 @export var icon: Texture
@@ -87,6 +88,26 @@ func get_cost_label() -> String:
 
 func is_ethereal_card() -> bool:
 	return keyword_ethereal or keyword_void
+
+
+func create_exhaust_upgrade_copy() -> Card:
+	var target_id := upgrade_to.strip_edges()
+	if target_id.is_empty():
+		return null
+
+	var upgraded := duplicate(true) as Card
+	if upgraded == null:
+		return null
+
+	upgraded.id = target_id
+	upgraded.upgrade_to = ""
+	if upgraded.cost > 0:
+		upgraded.cost -= 1
+	if upgraded.tooltip_text.length() > 0:
+		upgraded.tooltip_text += "\n[升级] 消耗后升级：费用-1（最低0）。"
+	else:
+		upgraded.tooltip_text = "[升级] 消耗后升级：费用-1（最低0）。"
+	return upgraded
 
 
 func apply_effects(_targets: Array[Node], _battle_context: RefCounted = null) -> void:

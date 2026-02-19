@@ -4,6 +4,7 @@ extends RefCounted
 const ENEMY_REGISTRY := {
 	"crab": "res://content/enemies/crab/crab_enemy.tres",
 	"bat": "res://content/enemies/bat/bat_enemy.tres",
+	"viper": "res://content/enemies/viper/viper_enemy.tres",
 }
 
 

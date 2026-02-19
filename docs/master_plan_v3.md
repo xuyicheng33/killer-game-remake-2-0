@@ -666,6 +666,11 @@ const NORMAL_FLOOR_COUNT := 14  # 14层普通 + 1层Boss = 15层
 **前置**：Phase 2 完成
 **验收标准**：8张卡 / 3敌人（当前已达标，仅需确认在地图中正常出现） / 6遗物 / 4药水 / 5事件（事件已达标，只确认正常运行）
 
+**Phase 3 联动执行补充（白名单例外）**：
+- 默认按各任务白名单执行（内容任务以 `content/` 为主）。
+- 若为满足 Phase 3 出口条件，必须补齐运行时接线或新机制，需先满足 1.6/12.8（`design_review`/`design_proposal`/负责人批准/审核员可编码确认）并拆分为独立机制任务。
+- 在上述前置满足后，关联内容任务可在 `docs/tasks/<task-id>/plan.md` 显式扩展白名单至 `runtime/`、`dev/tools/`、`dev/tests/`、`docs/tasks/`，并在 `handoff.md`、`verification.md` 记录依赖任务与联动范围。
+
 ---
 
 ### 任务 3a-1：卡牌扩展至8张（在现有4张基础上新增4张）

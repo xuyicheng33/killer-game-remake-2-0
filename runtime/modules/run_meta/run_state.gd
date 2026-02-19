@@ -16,6 +16,7 @@ const MAP_GENERATOR_SCRIPT := preload("res://runtime/modules/map_event/map_gener
 @export var relics: Array[RelicData] = []
 @export var potions: Array[PotionData] = []
 @export var card_removal_count: int = 0
+@export var run_start_relics_applied: bool = false
 
 var player_stats: CharacterStats
 var map_graph: MapGraphData
@@ -29,6 +30,7 @@ func init_with_character(base_stats: CharacterStats, run_seed: int, id: String =
 	gold = 99
 	relics.clear()
 	potions.clear()
+	run_start_relics_applied = false
 
 	player_stats = base_stats.create_instance()
 	if not player_stats.stats_changed.is_connected(_on_player_stats_changed):
@@ -226,6 +228,8 @@ func _apply_potion_effect(potion: PotionData) -> String:
 			if player_stats != null:
 				player_stats.block += value
 			return "使用 %s：获得 %d 格挡" % [potion.title, value]
+		PotionData.EffectType.DAMAGE_ALL_ENEMIES:
+			return "使用 %s：仅战斗中可生效（对全体敌人造成 %d 伤害）" % [potion.title, value]
 		_:
 			return "使用 %s：无效果" % potion.title
 

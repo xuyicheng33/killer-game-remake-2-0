@@ -17,6 +17,14 @@ class SpyEffectStack extends EffectStackEngine:
 		super.enqueue_effect(effect_name, targets, apply_callable, priority, effect_type, source, value)
 
 
+class DummyEnemy:
+	extends Node
+	var damage_taken := 0
+
+	func take_damage(amount: int) -> void:
+		damage_taken += amount
+
+
 var _system: RelicPotionSystem
 var _effect_stack: SpyEffectStack
 var _player: Player
@@ -178,3 +186,49 @@ func test_shop_enter_trigger_is_emitted() -> void:
 	_system.on_shop_enter()
 
 	assert_true(trigger_history.has(int(RelicPotionSystem.TriggerType.ON_SHOP_ENTER)), "进入商店应触发 ON_SHOP_ENTER")
+
+
+func test_run_start_relic_applies_once() -> void:
+	var relic := RelicData.new()
+	relic.id = "run_start_bonus"
+	relic.title = "开局奖励"
+	relic.on_run_start_gold = 25
+	_run_state.relics = [relic]
+	_run_state.gold = 100
+	_run_state.floor = 0
+	_run_state.map_visited_node_ids = PackedStringArray()
+	_run_state.run_start_relics_applied = false
+
+	_system.bind_run_state(_run_state)
+	assert_eq(_run_state.gold, 125, "首次绑定应触发 ON_RUN_START 并加金币")
+	assert_true(_run_state.run_start_relics_applied, "应记录开局触发已执行")
+
+	_system.bind_run_state(_run_state)
+	assert_eq(_run_state.gold, 125, "重复绑定不应重复触发 ON_RUN_START")
+
+
+func test_damage_all_enemies_potion_hits_all_targets() -> void:
+	var enemy_a := DummyEnemy.new()
+	var enemy_b := DummyEnemy.new()
+	enemy_a.add_to_group("enemies")
+	enemy_b.add_to_group("enemies")
+	get_tree().root.add_child(enemy_a)
+	get_tree().root.add_child(enemy_b)
+
+	var potion := PotionData.new()
+	potion.id = "storm_bomb"
+	potion.title = "爆裂药水"
+	potion.effect_type = PotionData.EffectType.DAMAGE_ALL_ENEMIES
+	potion.value = 10
+	_run_state.potions = [potion]
+
+	_system.use_potion(0)
+
+	assert_eq(enemy_a.damage_taken, 10, "敌人 A 应受到 10 点伤害")
+	assert_eq(enemy_b.damage_taken, 10, "敌人 B 应受到 10 点伤害")
+	assert_eq(_run_state.potions.size(), 0, "药水使用后应移除")
+
+	if is_instance_valid(enemy_a):
+		enemy_a.free()
+	if is_instance_valid(enemy_b):
+		enemy_b.free()

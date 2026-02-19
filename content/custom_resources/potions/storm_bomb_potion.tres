@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://storm_bomb_potion001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/potions/potion_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "storm_bomb_potion"
+title = "爆裂药水"
+description = "对所有敌人造成 10 点伤害。"
+effect_type = 3
+value = 10

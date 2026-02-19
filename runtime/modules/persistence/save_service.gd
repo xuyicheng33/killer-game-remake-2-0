@@ -96,6 +96,7 @@ static func _serialize_run_state(run_state: RunState) -> Dictionary:
 	payload["player_stats"] = _serialize_player_stats(run_state.player_stats)
 	payload["relics"] = _serialize_relics(run_state.relics)
 	payload["potions"] = _serialize_potions(run_state.potions)
+	payload["run_start_relics_applied"] = run_state.run_start_relics_applied
 	payload["rng_state"] = RUN_RNG_SCRIPT.export_run_state()
 	return payload
 
@@ -132,6 +133,7 @@ static func _deserialize_run_state(payload: Dictionary, base_stats: CharacterSta
 
 	restored.relics = _deserialize_relics(payload.get("relics", []))
 	restored.potions = _deserialize_potions(payload.get("potions", []))
+	restored.run_start_relics_applied = bool(payload.get("run_start_relics_applied", restored.floor > 0))
 	restored.emit_changed()
 	return restored
 
@@ -236,6 +238,7 @@ static func _serialize_card(card: Card) -> Dictionary:
 	data["keyword_void"] = card.keyword_void
 	data["keyword_ethereal"] = card.keyword_ethereal
 	data["keyword_x_cost"] = card.keyword_x_cost
+	data["upgrade_to"] = card.upgrade_to
 	data["tooltip_text"] = card.tooltip_text
 	data["icon_path"] = icon_path
 	data["sound_path"] = sound_path
@@ -266,6 +269,7 @@ static func _deserialize_card(data: Dictionary) -> Card:
 	card.keyword_void = bool(data.get("keyword_void", false))
 	card.keyword_ethereal = bool(data.get("keyword_ethereal", false))
 	card.keyword_x_cost = bool(data.get("keyword_x_cost", false))
+	card.upgrade_to = str(data.get("upgrade_to", ""))
 	card.tooltip_text = str(data.get("tooltip_text", ""))
 
 	var icon_path: String = str(data.get("icon_path", ""))
@@ -374,6 +378,8 @@ static func _serialize_relics(relics: Array[RelicData]) -> Array[Dictionary]:
 		item["on_turn_start_block"] = relic.on_turn_start_block
 		item["on_turn_end_heal"] = relic.on_turn_end_heal
 		item["shop_discount_percent"] = relic.shop_discount_percent
+		item["on_run_start_gold"] = relic.on_run_start_gold
+		item["on_run_start_max_health"] = relic.on_run_start_max_health
 		out.append(item)
 	return out
 
@@ -400,6 +406,8 @@ static func _deserialize_relics(relics_variant: Variant) -> Array[RelicData]:
 		relic.on_turn_start_block = int(dict_entry.get("on_turn_start_block", 0))
 		relic.on_turn_end_heal = int(dict_entry.get("on_turn_end_heal", 0))
 		relic.shop_discount_percent = int(dict_entry.get("shop_discount_percent", 0))
+		relic.on_run_start_gold = int(dict_entry.get("on_run_start_gold", 0))
+		relic.on_run_start_max_health = int(dict_entry.get("on_run_start_max_health", 0))
 		out.append(relic)
 	return out
 

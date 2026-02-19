@@ -66,6 +66,237 @@
       ],
       "tags": ["starter"],
       "starter_copies": 1
+    },
+    {
+      "id": "warrior_guard_stance",
+      "name": "Guard Stance",
+      "type": "skill",
+      "rarity": "common",
+      "cost": 1,
+      "target": "self",
+      "text": "Gain 8 Block.",
+      "icon": "res://content/art/tile_0102.png",
+      "sound": "res://content/art/block.ogg",
+      "effects": [
+        {"op": "block", "amount": 8}
+      ]
+    },
+    {
+      "id": "warrior_berserker_form",
+      "name": "Berserker Form",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "self",
+      "text": "Gain 1 Strength.",
+      "icon": "res://content/art/muscle.png",
+      "sound": "res://content/art/true_strength.ogg",
+      "effects": [
+        {"op": "apply_status", "status_id": "strength", "stacks": 1}
+      ]
+    },
+    {
+      "id": "warrior_last_stand",
+      "name": "Last Stand",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "enemy",
+      "text": "Deal 10 damage. Exhaust.",
+      "icon": "res://content/art/tile_0119.png",
+      "sound": "res://content/art/axe.ogg",
+      "effects": [
+        {"op": "damage", "amount": 10}
+      ],
+      "tags": ["exhaust"]
+    },
+    {
+      "id": "warrior_whirlwind_x",
+      "name": "Whirlwind X",
+      "type": "attack",
+      "rarity": "rare",
+      "cost": -1,
+      "target": "all_enemies",
+      "text": "X Cost. Deal 2 damage to all enemies.",
+      "icon": "res://content/art/tile_0118.png",
+      "sound": "res://content/art/slash.ogg",
+      "effects": [
+        {"op": "damage", "amount": 2}
+      ],
+      "tags": ["x_cost"]
+    },
+    {
+      "id": "warrior_quick_cut",
+      "name": "Quick Cut",
+      "type": "attack",
+      "rarity": "common",
+      "cost": 0,
+      "target": "enemy",
+      "text": "Deal 4 damage.",
+      "icon": "res://content/art/tile_0119.png",
+      "sound": "res://content/art/slash.ogg",
+      "effects": [
+        {"op": "damage", "amount": 4}
+      ]
+    },
+    {
+      "id": "warrior_heavy_chop",
+      "name": "Heavy Chop",
+      "type": "attack",
+      "rarity": "common",
+      "cost": 1,
+      "target": "enemy",
+      "text": "Deal 8 damage.",
+      "icon": "res://content/art/tile_0119.png",
+      "sound": "res://content/art/axe.ogg",
+      "effects": [
+        {"op": "damage", "amount": 8}
+      ]
+    },
+    {
+      "id": "warrior_twin_strike",
+      "name": "Twin Strike",
+      "type": "attack",
+      "rarity": "common",
+      "cost": 1,
+      "target": "enemy",
+      "text": "Deal 3 damage twice.",
+      "icon": "res://content/art/tile_0118.png",
+      "sound": "res://content/art/slash.ogg",
+      "effects": [
+        {"op": "damage", "amount": 3},
+        {"op": "damage", "amount": 3}
+      ]
+    },
+    {
+      "id": "warrior_condition_rend",
+      "name": "Rend Slash",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "enemy",
+      "text": "If target is Weak, deal extra damage. Apply 1 Vulnerable.",
+      "icon": "res://content/art/tile_0118.png",
+      "sound": "res://content/art/slash.ogg",
+      "effects": [
+        {"op": "damage", "amount": 7},
+        {"op": "apply_status", "status_id": "vulnerable", "stacks": 1}
+      ]
+    },
+    {
+      "id": "warrior_finisher_attack",
+      "name": "Execution Cleave",
+      "type": "attack",
+      "rarity": "rare",
+      "cost": 2,
+      "target": "enemy",
+      "text": "If target is Vulnerable, deal extra damage. Exhaust. When exhausted, add an upgraded copy to discard.",
+      "icon": "res://content/art/tile_0119.png",
+      "sound": "res://content/art/axe.ogg",
+      "effects": [
+        {"op": "damage", "amount": 12}
+      ],
+      "tags": ["exhaust"],
+      "upgrade_to": "warrior_finisher_attack_plus"
+    },
+    {
+      "id": "warrior_shield_wall",
+      "name": "Shield Wall",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": 2,
+      "target": "self",
+      "text": "Gain 12 Block.",
+      "icon": "res://content/art/tile_0102.png",
+      "sound": "res://content/art/block.ogg",
+      "effects": [
+        {"op": "block", "amount": 12}
+      ]
+    },
+    {
+      "id": "warrior_tactical_breath",
+      "name": "Tactical Breath",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "self",
+      "text": "Draw 1 card.",
+      "icon": "res://content/art/draw.png",
+      "sound": "res://content/art/true_strength.ogg",
+      "effects": [
+        {"op": "draw", "amount": 1}
+      ]
+    },
+    {
+      "id": "warrior_battle_focus",
+      "name": "Battle Focus",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "self",
+      "text": "Gain 1 Energy.",
+      "icon": "res://content/art/draw.png",
+      "sound": "res://content/art/true_strength.ogg",
+      "effects": [
+        {"op": "gain_energy", "amount": 1}
+      ]
+    },
+    {
+      "id": "warrior_intimidate",
+      "name": "Intimidate",
+      "type": "skill",
+      "rarity": "common",
+      "cost": 1,
+      "target": "enemy",
+      "text": "Apply 2 Weak.",
+      "icon": "res://content/art/expose.png",
+      "sound": "res://content/art/block.ogg",
+      "effects": [
+        {"op": "apply_status", "status_id": "weak", "stacks": 2}
+      ]
+    },
+    {
+      "id": "warrior_crush_armor",
+      "name": "Crush Armor",
+      "type": "skill",
+      "rarity": "common",
+      "cost": 1,
+      "target": "enemy",
+      "text": "Apply 2 Vulnerable.",
+      "icon": "res://content/art/expose.png",
+      "sound": "res://content/art/axe.ogg",
+      "effects": [
+        {"op": "apply_status", "status_id": "vulnerable", "stacks": 2}
+      ]
+    },
+    {
+      "id": "warrior_iron_will",
+      "name": "Iron Will",
+      "type": "power",
+      "rarity": "rare",
+      "cost": 2,
+      "target": "self",
+      "text": "Gain 2 Dexterity.",
+      "icon": "res://content/art/muscle.png",
+      "sound": "res://content/art/true_strength.ogg",
+      "effects": [
+        {"op": "apply_status", "status_id": "dexterity", "stacks": 2}
+      ]
+    },
+    {
+      "id": "warrior_blood_oath",
+      "name": "Blood Oath",
+      "type": "power",
+      "rarity": "rare",
+      "cost": 2,
+      "target": "self",
+      "text": "Special: Gain 2 Strength and 1 Dexterity.",
+      "icon": "res://content/art/muscle.png",
+      "sound": "res://content/art/true_strength.ogg",
+      "effects": [
+        {"op": "apply_status", "status_id": "strength", "stacks": 2},
+        {"op": "apply_status", "status_id": "dexterity", "stacks": 1}
+      ]
     }
   ]
 }

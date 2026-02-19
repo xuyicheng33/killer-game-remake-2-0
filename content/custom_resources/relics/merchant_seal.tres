@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://merchant_seal001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "merchant_seal"
+title = "商贾印记"
+description = "进入商店时，获得 20% 折扣。"
+rarity = "uncommon"
+shop_discount_percent = 20

@@ -8,6 +8,10 @@ const RELIC_POOL: Array[String] = [
 	"res://content/custom_resources/relics/burning_blood.tres",
 	"res://content/custom_resources/relics/golden_idol.tres",
 	"res://content/custom_resources/relics/thorns_potion.tres",
+	"res://content/custom_resources/relics/dawn_bulwark.tres",
+	"res://content/custom_resources/relics/bounty_emblem.tres",
+	"res://content/custom_resources/relics/trailblazer_emblem.tres",
+	"res://content/custom_resources/relics/merchant_seal.tres",
 ]
 
 static var _cache: Array[RelicData] = []

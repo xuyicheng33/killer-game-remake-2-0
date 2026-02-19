@@ -1,0 +1,36 @@
+[gd_scene load_steps=11 format=3 uid="uid://d0pqecfo6xgqt"]
+
+[ext_resource type="Script" path="res://runtime/scenes/enemy/enemy_action_picker.gd" id="1_picker"]
+[ext_resource type="Script" path="res://content/enemies/viper/viper_attack_action.gd" id="2_attack"]
+[ext_resource type="Script" path="res://content/enemies/viper/viper_poison_action.gd" id="3_poison"]
+[ext_resource type="Texture2D" path="res://content/art/ui/icons/intent_attack.png" id="4_attack_icon"]
+[ext_resource type="Script" path="res://content/custom_resources/intent.gd" id="5_intent_script"]
+[ext_resource type="AudioStream" uid="uid://de2ryat1pxq6" path="res://content/art/enemy_attack.ogg" id="6_attack_sound"]
+[ext_resource type="Texture2D" path="res://content/art/ui/icons/status_health.png" id="7_poison_icon"]
+
+[sub_resource type="Resource" id="Intent_attack"]
+script = ExtResource("5_intent_script")
+number = "6"
+icon = ExtResource("4_attack_icon")
+
+[sub_resource type="Resource" id="Intent_poison"]
+script = ExtResource("5_intent_script")
+number = "毒2"
+icon = ExtResource("7_poison_icon")
+
+[node name="ViperEnemyAI" type="Node"]
+script = ExtResource("1_picker")
+
+[node name="ViperAttackAction" type="Node" parent="."]
+script = ExtResource("2_attack")
+intent = SubResource("Intent_attack")
+sound = ExtResource("6_attack_sound")
+type = 1
+chance_weight = 3.0
+
+[node name="ViperPoisonAction" type="Node" parent="."]
+script = ExtResource("3_poison")
+intent = SubResource("Intent_poison")
+sound = ExtResource("6_attack_sound")
+type = 1
+chance_weight = 7.0

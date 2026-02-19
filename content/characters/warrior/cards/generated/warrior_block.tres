@@ -15,6 +15,7 @@ keyword_retain = false
 keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
+upgrade_to = ""
 tooltip_text = "[center]Defend\\nGain 5 Block.[/center]"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

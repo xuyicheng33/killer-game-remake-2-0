@@ -5,6 +5,7 @@ enum EffectType {
 	HEAL,
 	GOLD,
 	BLOCK,
+	DAMAGE_ALL_ENEMIES,
 }
 
 @export var id: String = ""
@@ -12,4 +13,3 @@ enum EffectType {
 @export_multiline var description: String = ""
 @export var effect_type: EffectType = EffectType.HEAL
 @export var value: int = 0
-

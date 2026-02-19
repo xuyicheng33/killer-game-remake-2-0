@@ -123,8 +123,11 @@ func _handle_post_card_played(card: Card) -> void:
 		_emit_zone_counts()
 		return
 
+	var upgraded_card := card.create_exhaust_upgrade_copy()
 	if _character.discard.remove_card(card):
 		_exhaust_pile.add_card(card)
+		if upgraded_card != null:
+			_character.discard.add_card(upgraded_card)
 	_emit_zone_counts()
 
 

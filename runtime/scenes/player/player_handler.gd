@@ -53,6 +53,10 @@ func draw_card() -> void:
 
 
 func draw_cards(amount: int) -> void:
+	if amount <= 0:
+		Events.player_hand_drawn.emit()
+		return
+
 	var tween := create_tween()
 	for i in range(amount):
 		tween.tween_callback(draw_card)
@@ -64,8 +68,13 @@ func draw_cards(amount: int) -> void:
 
 
 func discard_cards() -> void:
+	var hand_cards: Array[Node] = hand.get_children()
+	if hand_cards.is_empty():
+		Events.player_hand_discarded.emit()
+		return
+
 	var tween := create_tween()
-	for card_ui: CardUI in hand.get_children():
+	for card_ui: CardUI in hand_cards:
 		tween.tween_callback(character.discard.add_card.bind(card_ui.card))
 		tween.tween_callback(hand.discard_card.bind(card_ui))
 		tween.tween_interval(HAND_DISCARD_INTERVAL)

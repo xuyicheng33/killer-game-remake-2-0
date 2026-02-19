@@ -5,12 +5,14 @@ const REWARD_BUNDLE_SCRIPT := preload("res://runtime/modules/reward_economy/rewa
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
 const RELIC_CATALOG_SCRIPT := preload("res://runtime/modules/relic_potion/relic_catalog.gd")
 const POTION_CATALOG_SCRIPT := preload("res://runtime/modules/relic_potion/potion_catalog.gd")
+const WARRIOR_CARD_DIR := "res://content/characters/warrior/cards/generated"
 
-const WARRIOR_POOL: Array[Card] = [
+const FALLBACK_WARRIOR_POOL: Array[Card] = [
 	preload("res://content/characters/warrior/cards/generated/warrior_slash.tres"),
 	preload("res://content/characters/warrior/cards/generated/warrior_block.tres"),
 	preload("res://content/characters/warrior/cards/generated/warrior_axe_attack.tres"),
 ]
+static var _warrior_pool_cache: Array[Card] = []
 
 
 static func generate_post_battle_reward(run_state: RunState, gold_amount: int) -> RewardBundle:
@@ -64,7 +66,7 @@ static func apply_post_battle_reward(run_state: RunState, bundle: RewardBundle, 
 
 static func _get_pool_for_run(_run_state: RunState) -> Array[Card]:
 	# Placeholder for future: choose pool by character/class.
-	return WARRIOR_POOL
+	return _load_warrior_pool()
 
 
 static func get_card_pool_for_run(run_state: RunState) -> Array[Card]:
@@ -174,3 +176,42 @@ static func _reward_stream_key(run_state: RunState, suffix: String) -> String:
 		run_state.floor,
 		run_state.map_current_node_id,
 	]
+
+
+static func _load_warrior_pool() -> Array[Card]:
+	if not _warrior_pool_cache.is_empty():
+		return _warrior_pool_cache.duplicate()
+
+	var loaded_cards: Array[Card] = []
+	var dir := DirAccess.open(WARRIOR_CARD_DIR)
+	if dir != null:
+		var card_files := PackedStringArray()
+		dir.list_dir_begin()
+		while true:
+			var filename := dir.get_next()
+			if filename.is_empty():
+				break
+			if dir.current_is_dir():
+				continue
+			if not filename.ends_with(".tres"):
+				continue
+			if not filename.begins_with("warrior_"):
+				continue
+			card_files.append(filename)
+		dir.list_dir_end()
+
+		card_files.sort()
+		for filename in card_files:
+			var path := "%s/%s" % [WARRIOR_CARD_DIR, filename]
+			if not ResourceLoader.exists(path):
+				continue
+			var card_variant: Variant = load(path)
+			if card_variant is Card:
+				loaded_cards.append(card_variant)
+
+	if loaded_cards.is_empty():
+		_warrior_pool_cache = FALLBACK_WARRIOR_POOL.duplicate()
+	else:
+		_warrior_pool_cache = loaded_cards
+
+	return _warrior_pool_cache.duplicate()

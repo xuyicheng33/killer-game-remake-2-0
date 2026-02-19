@@ -1,0 +1,12 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://trailblazer_emblem001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "trailblazer_emblem"
+title = "开拓者纹章"
+description = "开局获得 25 金币，并提升 5 点最大生命。"
+rarity = "rare"
+on_run_start_gold = 25
+on_run_start_max_health = 5

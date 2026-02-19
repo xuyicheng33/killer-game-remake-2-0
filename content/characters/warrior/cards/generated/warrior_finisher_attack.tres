@@ -1,0 +1,21 @@
+[gd_resource type="Resource" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/characters/warrior/cards/generated/warrior_finisher_attack.gd" id="1_card_script"]
+[ext_resource type="Texture2D" path="res://content/art/tile_0119.png" id="2_icon"]
+[ext_resource type="AudioStream" path="res://content/art/axe.ogg" id="3_sound"]
+
+[resource]
+script = ExtResource("1_card_script")
+id = "warrior_finisher_attack"
+type = 0
+target = 1
+cost = 2
+keyword_exhaust = true
+keyword_retain = false
+keyword_void = false
+keyword_ethereal = false
+keyword_x_cost = false
+upgrade_to = "warrior_finisher_attack_plus"
+tooltip_text = "[center]Execution Cleave\\nIf target is Vulnerable, deal extra damage. Exhaust. When exhausted, add an upgraded copy to discard.[/center]"
+icon = ExtResource("2_icon")
+sound = ExtResource("3_sound")

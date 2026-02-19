@@ -65,7 +65,7 @@ func bind_run_state(value: RunState) -> void:
 	_battle_active = false
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
-	_fire_trigger(TriggerType.ON_RUN_START, {})
+	_apply_run_start_relics_once()
 	log_updated.emit("遗物/药水系统已就绪。")
 
 
@@ -90,6 +90,9 @@ func use_potion(index: int) -> void:
 		return
 	if effect_stack == null:
 		push_warning("[RelicPotionSystem] effect_stack 未注入，药水效果无法派发")
+		return
+	if potion.effect_type == PotionData.EffectType.DAMAGE_ALL_ENEMIES:
+		_use_damage_potion(index, potion)
 		return
 	var player := _find_player()
 	if player == null:
@@ -169,8 +172,19 @@ func _process_relic_trigger(relic: RelicData, trigger_type: TriggerType, context
 			if relic.shop_discount_percent > 0:
 				log_updated.emit("%s 生效：商店折扣 %d%%" % [relic.title, relic.shop_discount_percent])
 
+		TriggerType.ON_RUN_START:
+			if relic.on_run_start_gold > 0:
+				_dispatch_effect("add_gold", relic.on_run_start_gold, relic)
+				log_updated.emit("%s 触发：开局获得 %d 金币" % [relic.title, relic.on_run_start_gold])
+			if relic.on_run_start_max_health > 0:
+				_dispatch_effect("increase_max_health", relic.on_run_start_max_health, relic)
+				log_updated.emit("%s 触发：开局最大生命 +%d" % [relic.title, relic.on_run_start_max_health])
+
 
 func _dispatch_effect(effect_type: String, value: int, relic: RelicData) -> void:
+	if effect_type == "add_gold" or effect_type == "increase_max_health":
+		_apply_relic_effect(effect_type, value)
+		return
 	if effect_stack == null:
 		push_warning("[RelicPotionSystem] effect_stack 未注入，遗物效果无法派发: %s" % effect_type)
 		return
@@ -203,6 +217,8 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 		"add_block":
 			if run_state.player_stats != null:
 				run_state.player_stats.block += value
+		"increase_max_health":
+			run_state.increase_max_health(value)
 
 
 func _find_player() -> Player:
@@ -222,6 +238,8 @@ func _potion_effect_type(potion: PotionData) -> EffectStackEngine.EffectType:
 			return EffectStackEngine.EffectType.HEAL
 		PotionData.EffectType.BLOCK:
 			return EffectStackEngine.EffectType.BLOCK
+		PotionData.EffectType.DAMAGE_ALL_ENEMIES:
+			return EffectStackEngine.EffectType.DAMAGE
 		_:
 			return EffectStackEngine.EffectType.SPECIAL
 
@@ -242,16 +260,11 @@ func _apply_potion_effect(index: int, potion: PotionData) -> void:
 				run_state.player_stats.block += maxi(0, potion.value)
 				run_state.emit_changed()
 			log_updated.emit("使用 %s：获得 %d 格挡" % [potion.title, maxi(0, potion.value)])
+		PotionData.EffectType.DAMAGE_ALL_ENEMIES:
+			log_updated.emit("使用 %s：战斗外无有效目标" % potion.title)
 		_:
 			log_updated.emit("使用 %s：无效果" % potion.title)
-
-	if index >= 0 and index < run_state.potions.size() and run_state.potions[index] == potion:
-		run_state.potions.remove_at(index)
-	else:
-		var fallback_index := run_state.potions.find(potion)
-		if fallback_index != -1:
-			run_state.potions.remove_at(fallback_index)
-	run_state.emit_changed()
+	_consume_potion(index, potion)
 
 
 func _on_card_played(card: Card) -> void:
@@ -312,3 +325,70 @@ func on_boss_killed() -> void:
 		return
 	
 	_fire_trigger(TriggerType.ON_BOSS_KILLED, {})
+
+
+func _apply_run_start_relics_once() -> void:
+	if run_state == null:
+		return
+	if run_state.run_start_relics_applied:
+		return
+
+	# 仅在新局起点触发，避免中途读档重复获得开局收益。
+	var is_fresh_run := run_state.floor <= 0 and run_state.map_visited_node_ids.is_empty()
+	if is_fresh_run:
+		_fire_trigger(TriggerType.ON_RUN_START, {})
+	run_state.run_start_relics_applied = true
+	run_state.emit_changed()
+
+
+func _use_damage_potion(index: int, potion: PotionData) -> void:
+	var enemies := _find_enemies()
+	if enemies.is_empty():
+		log_updated.emit("使用 %s：无有效目标" % potion.title)
+		_consume_potion(index, potion)
+		return
+
+	var damage := maxi(0, potion.value)
+	effect_stack.enqueue_effect(
+		"potion_%s" % potion.id,
+		enemies,
+		_apply_potion_damage_to_enemy.bind(damage),
+		50,
+		EffectStackEngine.EffectType.DAMAGE,
+		null,
+		damage
+	)
+	_consume_potion(index, potion)
+	log_updated.emit("使用 %s：对所有敌人造成 %d 伤害" % [potion.title, damage])
+
+
+func _apply_potion_damage_to_enemy(target: Node, damage: int) -> void:
+	if target == null or not is_instance_valid(target):
+		return
+	if damage <= 0:
+		return
+	if target.has_method("take_damage"):
+		target.call("take_damage", damage)
+
+
+func _consume_potion(index: int, potion: PotionData) -> void:
+	if run_state == null:
+		return
+	if index >= 0 and index < run_state.potions.size() and run_state.potions[index] == potion:
+		run_state.potions.remove_at(index)
+	else:
+		var fallback_index := run_state.potions.find(potion)
+		if fallback_index != -1:
+			run_state.potions.remove_at(fallback_index)
+	run_state.emit_changed()
+
+
+func _find_enemies() -> Array[Node]:
+	var result: Array[Node] = []
+	if not (Engine.get_main_loop() is SceneTree):
+		return result
+	var nodes: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("enemies")
+	for node in nodes:
+		if node != null and is_instance_valid(node):
+			result.append(node)
+	return result

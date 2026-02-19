@@ -54,6 +54,33 @@
       ]
     },
     {
+      "id": "viper",
+      "name": "毒蛇客",
+      "max_health": 30,
+      "art_path": "res://content/art/characters/霜北刀.png",
+      "ai_scene_path": "res://content/enemies/viper/viper_enemy_ai.tscn",
+      "tags": ["common"],
+      "intents": [
+        {
+          "name": "venom_bite",
+          "type": "chance_based",
+          "weight": 70,
+          "effects": [
+            {"op": "damage", "amount": 2, "target": "player"},
+            {"op": "apply_status", "status_id": "poison", "stacks": 2, "target": "player"}
+          ]
+        },
+        {
+          "name": "lunge",
+          "type": "chance_based",
+          "weight": 30,
+          "effects": [
+            {"op": "damage", "amount": 6, "target": "player"}
+          ]
+        }
+      ]
+    },
+    {
       "id": "slime_boss",
       "name": "史莱姆王",
       "max_health": 150,
@@ -101,42 +128,63 @@
       "enemies": ["crab", "crab"],
       "weight": 2,
       "tags": ["common"],
-      "floor_range": {"min": 2, "max": 5}
+      "floor_range": {"min": 2, "max": 6}
     },
     {
       "id": "act1_bat_pair",
       "enemies": ["bat", "bat"],
       "weight": 3,
       "tags": ["common"],
-      "floor_range": {"min": 1, "max": 6}
+      "floor_range": {"min": 1, "max": 8}
     },
     {
       "id": "act1_mixed",
       "enemies": ["crab", "bat"],
       "weight": 3,
       "tags": ["common"],
-      "floor_range": {"min": 2, "max": 8}
+      "floor_range": {"min": 2, "max": 9}
     },
     {
       "id": "act1_triple_bat",
       "enemies": ["bat", "bat", "bat"],
       "weight": 1,
       "tags": ["common"],
-      "floor_range": {"min": 4, "max": 8}
+      "floor_range": {"min": 5, "max": 10}
     },
     {
       "id": "act1_crab_bat_crab",
       "enemies": ["crab", "bat", "crab"],
       "weight": 1,
       "tags": ["common"],
-      "floor_range": {"min": 5, "max": 8}
+      "floor_range": {"min": 6, "max": 11}
+    },
+    {
+      "id": "act1_viper_single",
+      "enemies": ["viper"],
+      "weight": 2,
+      "tags": ["common"],
+      "floor_range": {"min": 2, "max": 8}
+    },
+    {
+      "id": "act1_viper_bat",
+      "enemies": ["viper", "bat"],
+      "weight": 2,
+      "tags": ["common"],
+      "floor_range": {"min": 4, "max": 10}
+    },
+    {
+      "id": "act1_viper_pair",
+      "enemies": ["viper", "viper"],
+      "weight": 1,
+      "tags": ["common"],
+      "floor_range": {"min": 6, "max": 11}
     },
     {
       "id": "act1_boss_slime",
       "enemies": ["slime_boss"],
       "weight": 1,
       "tags": ["boss"],
-      "floor_range": {"min": 9, "max": 10}
+      "floor_range": {"min": 12, "max": 14}
     }
   ]
 }

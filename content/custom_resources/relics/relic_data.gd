@@ -14,4 +14,5 @@ extends Resource
 @export var on_turn_start_block: int = 0
 @export var on_turn_end_heal: int = 0
 @export var shop_discount_percent: int = 0
-
+@export var on_run_start_gold: int = 0
+@export var on_run_start_max_health: int = 0
