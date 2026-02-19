@@ -116,9 +116,28 @@ func resolve_damage_source(target: Node) -> Node:
 	return null
 
 
+## 受击触发的状态效果钩子。
+## 为未来可能添加的"受击触发"状态效果提供框架支持。
+##
+## 示例未来扩展：
+## - "thorns" 状态：对攻击者造成反伤
+## - "reactive_armor" 状态：受击后获得格挡
+##
+## 注意：
+## - 当前游戏中无此类状态，此方法为框架预留
+## - 遗物的"受击触发"效果应在 RelicPotionSystem 中处理
+## - 通过 Events.player_hit 信号触发遗物的 ON_DAMAGE_TAKEN
+## - 遗物 thorns_potion（荆棘护符）是"格挡时触发"，由 ON_BLOCK_APPLIED 处理
 func on_entity_hit(target: Node, _source: Node, _final_damage: int) -> void:
 	if target == null:
 		return
+
+	var stats: Stats = _extract_stats(target)
+	if stats == null:
+		return
+
+	# 当前游戏中无"受击触发"的状态效果，框架预留
+	# 未来可在此添加状态检查和触发逻辑
 
 
 func get_status_badges(stats: Stats) -> Array[Dictionary]:
@@ -246,11 +265,19 @@ func _run_turn_end_hooks(target: Node) -> void:
 	_decay_status(stats, STATUS_VULNERABLE)
 
 
+## 出牌后触发的状态效果钩子。
+## 为未来可能添加的"出牌后触发"状态效果提供框架支持。
+## 注意：遗物的"出牌触发"效果（如"每打出 3 张牌获得 5 金币"）已在
+## RelicPotionSystem._on_card_played() 中处理。此方法用于状态效果的出牌后触发。
+##
+## 示例未来扩展：
+## - "echo_power": 打出攻击牌后，再次造成等量伤害
+## - "momentum": 每打出一张牌获得 1 层力量
 func _run_after_card_played_hooks(target: Node) -> void:
 	var stats: Stats = _extract_stats(target)
 	if stats == null:
 		return
-	
+
 	var status_dict: Dictionary = stats.get_status_snapshot()
 	for status_id: String in status_dict.keys():
 		var stacks_variant: Variant = status_dict[status_id]
@@ -259,8 +286,10 @@ func _run_after_card_played_hooks(target: Node) -> void:
 		var stacks: int = stacks_variant
 		if stacks <= 0:
 			continue
-		
+
 		match status_id:
+			# 当前游戏中无"出牌后触发"的状态效果
+			# 以下状态在出牌后无特殊行为，保留分支以便未来扩展
 			STATUS_STRENGTH, STATUS_DEXTERITY, STATUS_VULNERABLE, STATUS_WEAK, STATUS_POISON:
 				pass
 			STATUS_BURN, STATUS_CONSTRICTED, STATUS_METALLICIZE, STATUS_RITUAL, STATUS_REGENERATE:

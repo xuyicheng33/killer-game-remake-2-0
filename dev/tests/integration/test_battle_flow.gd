@@ -87,9 +87,14 @@ func test_on_battle_start_relic_fires_after_battle_scene_ready():
 	await get_tree().process_frame
 	await get_tree().process_frame
 
+	# 使用公开接口开始新游戏
+	app.start_new_game()
+	await get_tree().process_frame
+	await get_tree().process_frame
+
 	var run_state := app.get("run_state") as RunState
 	var relic_system := app.get("relic_potion_system") as RelicPotionSystem
-	assert_not_null(run_state, "App 初始化后应有 RunState")
+	assert_not_null(run_state, "新游戏后应有 RunState")
 	assert_not_null(relic_system, "App 初始化后应有 RelicPotionSystem")
 	if run_state == null or relic_system == null:
 		if is_instance_valid(app):
@@ -104,7 +109,7 @@ func test_on_battle_start_relic_fires_after_battle_scene_ready():
 	run_state.player_stats.health = maxi(1, run_state.player_stats.health - 10)
 	var health_before := run_state.player_stats.health
 
-	app.call("_open_battle", "act1_crab_single")
+	app.start_battle_for_test("act1_crab_single")
 	await get_tree().create_timer(0.2, false).timeout
 	await get_tree().process_frame
 

@@ -1,6 +1,7 @@
 class_name GameApp
 extends Node
 
+const MAIN_MENU_SCENE := preload("res://runtime/scenes/main_menu/main_menu.tscn")
 const MAP_SCREEN_SCENE := preload("res://runtime/scenes/map/map_screen.tscn")
 const BATTLE_SCENE := preload("res://runtime/scenes/battle/battle.tscn")
 const REWARD_SCREEN_SCENE := preload("res://runtime/scenes/reward/reward_screen.tscn")
@@ -31,8 +32,7 @@ func _ready() -> void:
 	relic_potion_ui.relic_potion_system = relic_potion_system
 
 	_connect_signals()
-	if not _try_load_saved_run():
-		_start_new_run()
+	_open_main_menu()
 
 
 func _exit_tree() -> void:
@@ -61,17 +61,31 @@ func _disconnect_signals() -> void:
 		restart_button.pressed.disconnect(_start_new_run)
 
 
-func _start_new_run() -> void:
+## 公开接口：开始新游戏（供测试和外部调用）
+func start_new_game(character_id: String = "") -> void:
+	_start_new_run(character_id)
+
+
+## 公开接口：仅供测试打开战斗场景
+func start_battle_for_test(encounter_id: String = "") -> void:
+	_open_battle(encounter_id)
+
+
+func _start_new_run(character_id: String = "") -> void:
 	_clear_scene_host()
 	game_over_panel.hide()
 	get_tree().paused = false
 
-	var hero_template: CharacterStats = CHARACTER_REGISTRY_SCRIPT.get_selected_character_template()
+	# 如果未指定角色ID，使用默认或环境变量
+	if character_id.is_empty():
+		character_id = CHARACTER_REGISTRY_SCRIPT.get_selected_character_id()
+
+	var hero_template: CharacterStats = CHARACTER_REGISTRY_SCRIPT.get_character_template(character_id)
 	if hero_template == null:
-		push_error("无法加载角色模板")
+		push_error("无法加载角色模板: %s" % character_id)
 		return
 
-	var result := run_flow_service.lifecycle_service.start_new_run(hero_template, CHARACTER_REGISTRY_SCRIPT.get_selected_character_id())
+	var result := run_flow_service.lifecycle_service.start_new_run(hero_template, character_id)
 	if not bool(result.get("ok", false)):
 		push_error("新局初始化失败")
 		return
@@ -86,6 +100,31 @@ func _start_new_run() -> void:
 	run_flow_service.lifecycle_service.update_repro_progress(run_state)
 
 	_open_map()
+
+
+func _open_main_menu() -> void:
+	_clear_scene_host()
+	game_over_panel.hide()
+	get_tree().paused = false
+
+	var main_menu: Control = MAIN_MENU_SCENE.instantiate()
+	main_menu.new_game_requested.connect(_on_new_game_requested)
+	main_menu.continue_game_requested.connect(_on_continue_game_requested)
+	scene_host.add_child(main_menu)
+
+
+func _on_new_game_requested(character_id: String) -> void:
+	_start_new_run(character_id)
+
+
+func _on_continue_game_requested() -> void:
+	_clear_scene_host()
+	game_over_panel.hide()
+	get_tree().paused = false
+
+	if not _try_load_saved_run():
+		# 如果读档失败，返回主菜单
+		_open_main_menu()
 
 
 func _open_map() -> void:

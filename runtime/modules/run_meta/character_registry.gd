@@ -9,6 +9,13 @@ const CHARACTER_REGISTRY := {
 const DEFAULT_CHARACTER_ID := "warrior"
 
 
+static func get_available_character_ids() -> Array[String]:
+	var ids: Array[String] = []
+	for key in CHARACTER_REGISTRY.keys():
+		ids.append(key as String)
+	return ids
+
+
 static func get_character_template(character_id: String) -> CharacterStats:
 	var path: String = CHARACTER_REGISTRY.get(character_id, "")
 	if path.is_empty():

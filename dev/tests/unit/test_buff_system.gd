@@ -331,3 +331,53 @@ func test_status_labels_exist():
 	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_METALLICIZE), "金")
 	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_RITUAL), "怒")
 	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_REGENERATE), "再")
+
+
+func test_run_after_card_played_hooks_does_not_crash() -> void:
+	var player := FakePlayer.new()
+	var char_stats := CharacterStats.new()
+	char_stats.max_health = 50
+	char_stats.health = 50
+	player.stats = char_stats
+	# 添加各种状态
+	char_stats.add_status(BuffSystem.STATUS_STRENGTH, 2)
+	char_stats.add_status(BuffSystem.STATUS_POISON, 3)
+
+	var health_before := char_stats.health
+	var poison_before := _buff_system.get_status_stack(char_stats, BuffSystem.STATUS_POISON)
+
+	_buff_system.bind_combatants(player, [])
+	# 应该不会崩溃，且状态不应被意外修改
+	_buff_system._run_after_card_played_hooks(player)
+	_buff_system.unbind_combatants()
+
+	# 验证状态未被意外修改（当前所有状态在出牌后无特殊行为）
+	assert_eq(char_stats.health, health_before, "出牌后钩子不应影响血量")
+	assert_eq(
+		_buff_system.get_status_stack(char_stats, BuffSystem.STATUS_POISON),
+		poison_before,
+		"出牌后钩子不应影响毒状态"
+	)
+	player.free()
+
+
+func test_on_entity_hit_with_null_target() -> void:
+	_buff_system.on_entity_hit(null, null, 0)
+	# 应该安全处理 null
+	assert_true(true, "空目标不应导致崩溃")
+
+
+func test_on_entity_hit_with_valid_target() -> void:
+	var player := FakePlayer.new()
+	var char_stats := CharacterStats.new()
+	char_stats.max_health = 50
+	char_stats.health = 50
+	player.stats = char_stats
+	var dummy_source := Node.new()
+
+	_buff_system.on_entity_hit(player, dummy_source, 10)
+	# 应该不会崩溃
+	assert_eq(char_stats.health, 50, "当前无受击触发状态，血量应不变")
+
+	dummy_source.free()
+	player.free()
