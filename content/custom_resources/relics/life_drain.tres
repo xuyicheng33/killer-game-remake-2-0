@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://life_drain001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "life_drain"
+title = "生命汲取"
+description = "战斗结束时，每击杀一名敌人恢复 2 点生命。"
+rarity = "common"
+on_battle_end_heal_per_kill = 2

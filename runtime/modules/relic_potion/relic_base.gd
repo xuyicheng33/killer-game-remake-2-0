@@ -2,17 +2,18 @@ class_name RelicBase
 extends RefCounted
 
 const TRIGGER_ON_BATTLE_START := 0
-const TRIGGER_ON_TURN_START := 1
-const TRIGGER_ON_TURN_END := 2
-const TRIGGER_ON_CARD_PLAYED := 3
-const TRIGGER_ON_ATTACK_PLAYED := 4
-const TRIGGER_ON_SKILL_PLAYED := 5
-const TRIGGER_ON_DAMAGE_TAKEN := 6
-const TRIGGER_ON_BLOCK_APPLIED := 7
-const TRIGGER_ON_ENEMY_KILLED := 8
-const TRIGGER_ON_RUN_START := 9
-const TRIGGER_ON_SHOP_ENTER := 10
-const TRIGGER_ON_BOSS_KILLED := 11
+const TRIGGER_ON_BATTLE_END := 1
+const TRIGGER_ON_TURN_START := 2
+const TRIGGER_ON_TURN_END := 3
+const TRIGGER_ON_CARD_PLAYED := 4
+const TRIGGER_ON_ATTACK_PLAYED := 5
+const TRIGGER_ON_SKILL_PLAYED := 6
+const TRIGGER_ON_DAMAGE_TAKEN := 7
+const TRIGGER_ON_BLOCK_APPLIED := 8
+const TRIGGER_ON_ENEMY_KILLED := 9
+const TRIGGER_ON_RUN_START := 10
+const TRIGGER_ON_SHOP_ENTER := 11
+const TRIGGER_ON_BOSS_KILLED := 12
 
 var data: RelicData
 
@@ -25,6 +26,8 @@ func handle_trigger(trigger_type: int, context: Dictionary, system: Object) -> v
 	match trigger_type:
 		TRIGGER_ON_BATTLE_START:
 			on_battle_start(system, context)
+		TRIGGER_ON_BATTLE_END:
+			on_battle_end(system, context)
 		TRIGGER_ON_TURN_START:
 			on_turn_start(system, context)
 		TRIGGER_ON_TURN_END:
@@ -50,6 +53,10 @@ func handle_trigger(trigger_type: int, context: Dictionary, system: Object) -> v
 
 
 func on_battle_start(_system: Object, _context: Dictionary) -> void:
+	pass
+
+
+func on_battle_end(_system: Object, _context: Dictionary) -> void:
 	pass
 
 

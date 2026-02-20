@@ -16,3 +16,10 @@ extends Resource
 @export var shop_discount_percent: int = 0
 @export var on_run_start_gold: int = 0
 @export var on_run_start_max_health: int = 0
+
+@export var on_turn_start_energy: int = 0
+@export var on_turn_start_damage: int = 0
+@export var on_enemy_killed_strength: int = 0
+@export var on_enemy_killed_damage: int = 0
+@export var on_enemy_killed_draw: int = 0
+@export var on_battle_end_heal_per_kill: int = 0

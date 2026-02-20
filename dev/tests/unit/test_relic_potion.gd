@@ -559,3 +559,58 @@ func test_relic_view_model_handles_empty_relics() -> void:
 	assert_true(projection.has("relic_items"), "projection 应包含 relic_items")
 	var relic_items: Array = projection.get("relic_items", [])
 	assert_eq(relic_items.size(), 0, "无遗物时应为空数组")
+
+
+func test_new_relic_fields_exist() -> void:
+	var relic := RelicData.new()
+	relic.id = "test_new_fields"
+	relic.title = "测试新字段"
+	relic.on_turn_start_energy = 1
+	relic.on_turn_start_damage = 2
+	relic.on_enemy_killed_strength = 1
+	relic.on_enemy_killed_damage = 3
+	relic.on_enemy_killed_draw = 2
+	relic.on_battle_end_heal_per_kill = 5
+
+	assert_eq(relic.on_turn_start_energy, 1, "on_turn_start_energy 应为 1")
+	assert_eq(relic.on_turn_start_damage, 2, "on_turn_start_damage 应为 2")
+	assert_eq(relic.on_enemy_killed_strength, 1, "on_enemy_killed_strength 应为 1")
+	assert_eq(relic.on_enemy_killed_damage, 3, "on_enemy_killed_damage 应为 3")
+	assert_eq(relic.on_enemy_killed_draw, 2, "on_enemy_killed_draw 应为 2")
+	assert_eq(relic.on_battle_end_heal_per_kill, 5, "on_battle_end_heal_per_kill 应为 5")
+
+
+func test_save_service_serializes_new_relic_fields() -> void:
+	var relic := RelicData.new()
+	relic.id = "serialize_test"
+	relic.title = "序列化测试"
+	relic.on_turn_start_energy = 2
+	relic.on_enemy_killed_strength = 3
+	relic.on_battle_end_heal_per_kill = 4
+
+	var serialized: Array = SaveService._serialize_relics([relic])
+	assert_eq(serialized.size(), 1, "应序列化 1 个遗物")
+
+	var item: Dictionary = serialized[0]
+	assert_eq(item.get("on_turn_start_energy", 0), 2, "on_turn_start_energy 应正确序列化")
+	assert_eq(item.get("on_enemy_killed_strength", 0), 3, "on_enemy_killed_strength 应正确序列化")
+	assert_eq(item.get("on_battle_end_heal_per_kill", 0), 4, "on_battle_end_heal_per_kill 应正确序列化")
+
+
+func test_save_service_deserializes_new_relic_fields() -> void:
+	var data: Array[Dictionary] = [{
+		"id": "deserialize_test",
+		"title": "反序列化测试",
+		"description": "",
+		"on_turn_start_energy": 2,
+		"on_enemy_killed_strength": 3,
+		"on_battle_end_heal_per_kill": 4,
+	}]
+
+	var relics: Array[RelicData] = SaveService._deserialize_relics(data)
+	assert_eq(relics.size(), 1, "应反序列化 1 个遗物")
+
+	var relic: RelicData = relics[0]
+	assert_eq(relic.on_turn_start_energy, 2, "on_turn_start_energy 应正确反序列化")
+	assert_eq(relic.on_enemy_killed_strength, 3, "on_enemy_killed_strength 应正确反序列化")
+	assert_eq(relic.on_battle_end_heal_per_kill, 4, "on_battle_end_heal_per_kill 应正确反序列化")

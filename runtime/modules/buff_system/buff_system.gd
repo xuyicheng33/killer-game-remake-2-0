@@ -423,55 +423,17 @@ func _extract_stats(target: Node) -> Stats:
 
 
 func _get_player_node() -> Player:
-	# 优先使用依赖注入的实体
 	if _player != null and is_instance_valid(_player):
 		return _player
-
-	# 回退到场景树查找（用于向后兼容）
-	var tree := _get_tree()
-	if tree == null:
-		return null
-
-	var players: Array[Node] = tree.get_nodes_in_group("player")
-	if players.is_empty():
-		return null
-
-	var first_player: Node = players[0]
-	if first_player is Player and is_instance_valid(first_player):
-		return first_player as Player
-
 	return null
 
 
 func _get_enemy_nodes() -> Array[Enemy]:
-	# 优先使用依赖注入的实体
-	if not _enemies.is_empty():
-		var valid_enemies: Array[Enemy] = []
-		for enemy in _enemies:
-			if enemy != null and is_instance_valid(enemy):
-				valid_enemies.append(enemy)
-		if not valid_enemies.is_empty():
-			return valid_enemies
-
-	# 回退到场景树查找（用于向后兼容）
-	var enemies: Array[Enemy] = []
-	var tree := _get_tree()
-	if tree == null:
-		return enemies
-
-	var enemy_nodes: Array[Node] = tree.get_nodes_in_group("enemies")
-	for enemy_node in enemy_nodes:
-		if enemy_node is Enemy and is_instance_valid(enemy_node):
-			enemies.append(enemy_node as Enemy)
-
-	return enemies
-
-
-func _get_tree() -> SceneTree:
-	var main_loop: MainLoop = Engine.get_main_loop()
-	if main_loop is SceneTree:
-		return main_loop as SceneTree
-	return null
+	var valid_enemies: Array[Enemy] = []
+	for enemy in _enemies:
+		if enemy != null and is_instance_valid(enemy):
+			valid_enemies.append(enemy)
+	return valid_enemies
 
 
 func _get_status_label(status_id: String) -> String:

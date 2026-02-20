@@ -124,7 +124,81 @@
         "card_play_interval": 3,
         "on_player_hit_block": 2
       },
-      "tags": ["obtainable"]
-    }
+		"tags": ["obtainable"]
+      },
+      {
+        "id": "iron_wall",
+        "title": "铁壁遗章",
+        "description": "每回合开始时，获得 3 点格挡。",
+        "art_path": "res://content/art/relics/iron_wall.png",
+        "rarity": "common",
+        "starter": false,
+        "effects": {
+          "on_turn_start_block": 3
+        },
+        "tags": ["obtainable"]
+      },
+      {
+        "id": "greedy_amulet",
+        "title": "贪婪护符",
+        "description": "每回合开始时，失去 1 点生命，获得 1 点能量。",
+        "art_path": "res://content/art/relics/greedy_amulet.png",
+        "rarity": "uncommon",
+        "starter": false,
+        "effects": {
+          "on_turn_start_energy": 1,
+          "on_turn_start_damage": 1
+        },
+        "tags": ["obtainable"]
+      },
+      {
+        "id": "martyr_heart",
+        "title": "殉道者之心",
+        "description": "击杀敌人时，受到 5 点伤害，抽 2 张牌。",
+        "art_path": "res://content/art/relics/martyr_heart.png",
+        "rarity": "uncommon",
+        "starter": false,
+        "effects": {
+          "on_enemy_killed_damage": 5,
+          "on_enemy_killed_draw": 2
+        },
+        "tags": ["obtainable"]
+      },
+      {
+        "id": "energy_crystal",
+        "title": "能量水晶",
+        "description": "每回合开始时，获得 1 点能量。",
+        "art_path": "res://content/art/relics/energy_crystal.png",
+        "rarity": "rare",
+        "starter": false,
+        "effects": {
+          "on_turn_start_energy": 1
+        },
+        "tags": ["obtainable"]
+      },
+      {
+        "id": "soul_catcher",
+        "title": "灵魂捕获器",
+        "description": "击杀敌人时，获得 1 层力量。",
+        "art_path": "res://content/art/relics/soul_catcher.png",
+        "rarity": "uncommon",
+        "starter": false,
+        "effects": {
+          "on_enemy_killed_strength": 1
+        },
+        "tags": ["obtainable"]
+      },
+      {
+        "id": "life_drain",
+        "title": "生命汲取",
+        "description": "战斗结束时，每击杀一名敌人恢复 2 点生命。",
+        "art_path": "res://content/art/relics/life_drain.png",
+        "rarity": "common",
+        "starter": false,
+        "effects": {
+          "on_battle_end_heal_per_kill": 2
+        },
+        "tags": ["obtainable"]
+      }
   ]
 }

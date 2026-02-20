@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://energy_crystal001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "energy_crystal"
+title = "能量水晶"
+description = "每回合开始时，获得 1 点能量。"
+rarity = "rare"
+on_turn_start_energy = 1

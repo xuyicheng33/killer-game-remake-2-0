@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://soul_catcher001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "soul_catcher"
+title = "灵魂捕获器"
+description = "击杀敌人时，获得 1 层力量。"
+rarity = "uncommon"
+on_enemy_killed_strength = 1

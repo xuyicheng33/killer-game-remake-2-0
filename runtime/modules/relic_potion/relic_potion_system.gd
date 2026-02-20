@@ -5,6 +5,7 @@ const RELIC_REGISTRY_SCRIPT := preload("res://runtime/modules/relic_potion/relic
 
 enum TriggerType {
 	ON_BATTLE_START,
+	ON_BATTLE_END,
 	ON_TURN_START,
 	ON_TURN_END,
 	ON_CARD_PLAYED,
@@ -91,6 +92,8 @@ func start_battle() -> void:
 
 
 func end_battle() -> void:
+	if _battle_active:
+		_fire_trigger(TriggerType.ON_BATTLE_END, {"kills": _enemies_killed_in_battle})
 	_battle_active = false
 	_pending_battle_start_trigger = false
 
@@ -248,6 +251,25 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 					Events.player_block_applied.emit(block_gain, "relic")
 		"increase_max_health":
 			run_state.increase_max_health(value)
+		"add_energy":
+			if run_state.player_stats != null:
+				var char_stats: CharacterStats = run_state.player_stats
+				char_stats.mana = mini(char_stats.mana + value, char_stats.max_mana)
+				run_state.emit_changed()
+		"take_damage":
+			if run_state.player_stats != null:
+				run_state.player_stats.take_damage(maxi(0, value))
+		"add_strength":
+			if run_state.player_stats != null:
+				run_state.player_stats.add_status("strength", value)
+		"draw_cards":
+			if run_state.player_stats != null and value > 0:
+				for i in range(value):
+					if run_state.player_stats.draw_pile != null and not run_state.player_stats.draw_pile.cards.is_empty():
+						var card: Card = run_state.player_stats.draw_pile.draw_card()
+						if card != null:
+							run_state.player_stats.discard.add_card(card)
+				run_state.emit_changed()
 
 
 func _find_player() -> Player:

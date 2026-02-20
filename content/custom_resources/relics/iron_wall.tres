@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://iron_wall001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "iron_wall"
+title = "铁壁遗章"
+description = "每回合开始时，获得 3 点格挡。"
+rarity = "common"
+on_turn_start_block = 3

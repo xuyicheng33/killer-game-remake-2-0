@@ -384,6 +384,12 @@ static func _serialize_relics(relics: Array[RelicData]) -> Array[Dictionary]:
 		item["shop_discount_percent"] = relic.shop_discount_percent
 		item["on_run_start_gold"] = relic.on_run_start_gold
 		item["on_run_start_max_health"] = relic.on_run_start_max_health
+		item["on_turn_start_energy"] = relic.on_turn_start_energy
+		item["on_turn_start_damage"] = relic.on_turn_start_damage
+		item["on_enemy_killed_strength"] = relic.on_enemy_killed_strength
+		item["on_enemy_killed_damage"] = relic.on_enemy_killed_damage
+		item["on_enemy_killed_draw"] = relic.on_enemy_killed_draw
+		item["on_battle_end_heal_per_kill"] = relic.on_battle_end_heal_per_kill
 		out.append(item)
 	return out
 
@@ -412,6 +418,12 @@ static func _deserialize_relics(relics_variant: Variant) -> Array[RelicData]:
 		relic.shop_discount_percent = int(dict_entry.get("shop_discount_percent", 0))
 		relic.on_run_start_gold = int(dict_entry.get("on_run_start_gold", 0))
 		relic.on_run_start_max_health = int(dict_entry.get("on_run_start_max_health", 0))
+		relic.on_turn_start_energy = int(dict_entry.get("on_turn_start_energy", 0))
+		relic.on_turn_start_damage = int(dict_entry.get("on_turn_start_damage", 0))
+		relic.on_enemy_killed_strength = int(dict_entry.get("on_enemy_killed_strength", 0))
+		relic.on_enemy_killed_damage = int(dict_entry.get("on_enemy_killed_damage", 0))
+		relic.on_enemy_killed_draw = int(dict_entry.get("on_enemy_killed_draw", 0))
+		relic.on_battle_end_heal_per_kill = int(dict_entry.get("on_battle_end_heal_per_kill", 0))
 		out.append(relic)
 	return out
 

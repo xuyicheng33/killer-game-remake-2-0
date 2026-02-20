@@ -25,7 +25,7 @@ func project(run_state: RunState, latest_log: String) -> Dictionary:
 			continue
 		relic_items.append({
 			"title": relic_data.title,
-			"tooltip_text": "[center]%s\n%s[/center]" % [relic_data.title, relic_data.description],
+			"tooltip_text": "%s\n\n%s" % [relic_data.title, relic_data.description],
 			"tooltip_icon": null,
 		})
 	projection["relic_items"] = relic_items
@@ -37,7 +37,7 @@ func project(run_state: RunState, latest_log: String) -> Dictionary:
 			{
 				"index": i,
 				"text": "使用：%s" % _potion_name(potion),
-				"tooltip_text": "[center]%s\n%s[/center]" % [_potion_name(potion), _potion_desc(potion)],
+				"tooltip_text": "%s\n\n%s" % [_potion_name(potion), _potion_desc(potion)],
 				"tooltip_icon": _potion_icon(potion),
 			}
 		)
