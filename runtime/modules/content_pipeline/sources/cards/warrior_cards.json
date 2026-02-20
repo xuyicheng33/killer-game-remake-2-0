@@ -297,6 +297,131 @@
         {"op": "apply_status", "status_id": "strength", "stacks": 2},
         {"op": "apply_status", "status_id": "dexterity", "stacks": 1}
       ]
+    },
+    {
+      "id": "warrior_eruption",
+      "name": "爆发",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "self",
+      "text": "获得 2 层力量。",
+      "effects": [
+        {"op": "apply_status", "status_id": "strength", "stacks": 2}
+      ]
+    },
+    {
+      "id": "warrior_chain_slash",
+      "name": "连斩",
+      "type": "attack",
+      "rarity": "common",
+      "cost": 1,
+      "target": "enemy",
+      "text": "造成 3 点伤害，连续 3 次。",
+      "effects": [
+        {"op": "damage", "amount": 3},
+        {"op": "damage", "amount": 3},
+        {"op": "damage", "amount": 3}
+      ]
+    },
+    {
+      "id": "warrior_storm_slash",
+      "name": "风暴斩",
+      "type": "attack",
+      "rarity": "common",
+      "cost": 0,
+      "target": "all_enemies",
+      "text": "对所有敌人造成 2 点伤害。",
+      "effects": [
+        {"op": "damage", "amount": 2}
+      ]
+    },
+    {
+      "id": "warrior_desperate_strike",
+      "name": "背水狂攻",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "enemy",
+      "text": "造成 6 点伤害。若当前生命≤50%，伤害翻倍。",
+      "effects": [
+        {"op": "conditional_damage", "amount": 6, "condition": "hp_below_half", "multiplier": 2}
+      ]
+    },
+    {
+      "id": "warrior_blood_pledge_strike",
+      "name": "血誓打击",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "enemy",
+      "text": "失去 3 点生命，造成 12 点伤害。",
+      "effects": [
+        {"op": "lose_hp", "amount": 3, "target_self": true},
+        {"op": "damage", "amount": 12}
+      ]
+    },
+    {
+      "id": "warrior_limit_break",
+      "name": "极限突破",
+      "type": "power",
+      "rarity": "rare",
+      "cost": 2,
+      "target": "self",
+      "text": "获得 1 层力量。本回合内，所有攻击伤害翻倍。消耗。",
+      "effects": [
+        {"op": "strength_and_damage_multiplier", "strength_stacks": 1, "multiplier": 2.0}
+      ],
+      "tags": ["exhaust"]
+    },
+    {
+      "id": "warrior_battle_hunger",
+      "name": "战意积蓄",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "self",
+      "text": "获得 2 层力量。消耗。",
+      "effects": [
+        {"op": "apply_status", "status_id": "strength", "stacks": 2}
+      ],
+      "tags": ["exhaust"]
+    },
+    {
+      "id": "warrior_spinning_strike",
+      "name": "旋身击",
+      "type": "attack",
+      "rarity": "common",
+      "cost": 1,
+      "target": "enemy",
+      "text": "造成 4 点伤害。抽 1 张牌。",
+      "effects": [
+        {"op": "damage_and_draw", "amount": 4, "draw_count": 1}
+      ]
+    },
+    {
+      "id": "warrior_chain_finisher",
+      "name": "连环重击",
+      "type": "attack",
+      "rarity": "rare",
+      "cost": 2,
+      "target": "enemy",
+      "text": "造成 5 点伤害。每有 1 层力量，额外造成一次（最多 3 次）。",
+      "effects": [
+        {"op": "strength_multiplier_damage", "amount": 5, "max_hits": 3}
+      ]
+    },
+    {
+      "id": "warrior_survival_instinct",
+      "name": "生存本能",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": 1,
+      "target": "self",
+      "text": "获得缺失生命值 20% 的格挡（至少 5 点）。",
+      "effects": [
+        {"op": "missing_hp_block", "percent": 0.2, "min_block": 5}
+      ]
     }
   ]
 }

@@ -1,11 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://b60egpxyditoc"]
+[gd_scene load_steps=11 format=3 uid="uid://b60egpxyditoc"]
 
 [ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="1_yv4pj"]
 [ext_resource type="Script" path="res://runtime/scenes/card_ui/card_ui.gd" id="2_uam7p"]
 [ext_resource type="StyleBox" uid="uid://b4b3e0d14kvmi" path="res://runtime/scenes/card_ui/card_base_stylebox.tres" id="3_ayugj"]
 [ext_resource type="Script" path="res://runtime/scenes/card_ui/card_state_machine.gd" id="3_tqtyy"]
 [ext_resource type="Script" path="res://runtime/scenes/card_ui/card_states/card_base_state.gd" id="4_snb4g"]
-[ext_resource type="Texture2D" uid="uid://c6rme2o6dyaoj" path="res://content/art/tile_0104.png" id="4_vps4j"]
 [ext_resource type="Script" path="res://runtime/scenes/card_ui/card_states/card_clicked_state.gd" id="5_2ks3p"]
 [ext_resource type="Script" path="res://runtime/scenes/card_ui/card_states/card_dragging_state.gd" id="6_jk8rm"]
 [ext_resource type="Script" path="res://runtime/scenes/card_ui/card_states/card_released_state.gd" id="7_k7cbr"]
@@ -46,23 +45,33 @@ text = "2"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Icon" type="TextureRect" parent="."]
+[node name="CardContent" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -38.0
-offset_top = -38.0
-offset_right = 38.0
-offset_bottom = 38.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 56.0
+offset_right = -8.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("4_vps4j")
-expand_mode = 1
-stretch_mode = 5
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="CardContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "卡牌名称"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="DescLabel" type="Label" parent="CardContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "效果描述"
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="DropPointDetector" type="Area2D" parent="."]
 collision_mask = 2

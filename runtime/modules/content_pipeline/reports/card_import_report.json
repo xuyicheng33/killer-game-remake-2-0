@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-02-19T15:58:42.477240+00:00",
+  "generated_at": "2026-02-20T12:14:14.027517+00:00",
   "source": "runtime/modules/content_pipeline/sources/cards/warrior_cards.json",
   "summary": {
-    "total_cards": 20,
-    "valid_cards": 20,
+    "total_cards": 30,
+    "valid_cards": 30,
     "error_count": 0,
-    "output_count": 41
+    "output_count": 61
   },
   "outputs": [
     "content/characters/warrior/cards/generated/warrior_axe_attack.gd",
@@ -48,6 +48,26 @@
     "content/characters/warrior/cards/generated/warrior_iron_will.tres",
     "content/characters/warrior/cards/generated/warrior_blood_oath.gd",
     "content/characters/warrior/cards/generated/warrior_blood_oath.tres",
+    "content/characters/warrior/cards/generated/warrior_eruption.gd",
+    "content/characters/warrior/cards/generated/warrior_eruption.tres",
+    "content/characters/warrior/cards/generated/warrior_chain_slash.gd",
+    "content/characters/warrior/cards/generated/warrior_chain_slash.tres",
+    "content/characters/warrior/cards/generated/warrior_storm_slash.gd",
+    "content/characters/warrior/cards/generated/warrior_storm_slash.tres",
+    "content/characters/warrior/cards/generated/warrior_desperate_strike.gd",
+    "content/characters/warrior/cards/generated/warrior_desperate_strike.tres",
+    "content/characters/warrior/cards/generated/warrior_blood_pledge_strike.gd",
+    "content/characters/warrior/cards/generated/warrior_blood_pledge_strike.tres",
+    "content/characters/warrior/cards/generated/warrior_limit_break.gd",
+    "content/characters/warrior/cards/generated/warrior_limit_break.tres",
+    "content/characters/warrior/cards/generated/warrior_battle_hunger.gd",
+    "content/characters/warrior/cards/generated/warrior_battle_hunger.tres",
+    "content/characters/warrior/cards/generated/warrior_spinning_strike.gd",
+    "content/characters/warrior/cards/generated/warrior_spinning_strike.tres",
+    "content/characters/warrior/cards/generated/warrior_chain_finisher.gd",
+    "content/characters/warrior/cards/generated/warrior_chain_finisher.tres",
+    "content/characters/warrior/cards/generated/warrior_survival_instinct.gd",
+    "content/characters/warrior/cards/generated/warrior_survival_instinct.tres",
     "content/characters/warrior/warrior_starting_deck.tres"
   ],
   "errors": []

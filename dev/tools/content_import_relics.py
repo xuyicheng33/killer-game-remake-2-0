@@ -211,6 +211,15 @@ def _validate_relic(
                 "shop_discount_percent": (int, 0, 90),
                 "on_run_start_gold": (int, 0, 9999),
                 "on_run_start_max_health": (int, 0, 9999),
+                "on_turn_start_energy": (int, 0, 99),
+                "on_turn_start_damage": (int, 0, 9999),
+                "on_enemy_killed_strength": (int, 0, 99),
+                "on_enemy_killed_damage": (int, 0, 9999),
+                "on_enemy_killed_draw": (int, 0, 99),
+                "on_battle_end_heal_per_kill": (int, 0, 9999),
+                "on_attack_played_strength": (int, 0, 99),
+                "attack_play_strength_max": (int, 0, 99),
+                "on_run_start_strength": (int, 0, 99),
             }
             for eff_field, (eff_type, min_val, max_val) in valid_effect_fields.items():
                 if eff_field in effects:

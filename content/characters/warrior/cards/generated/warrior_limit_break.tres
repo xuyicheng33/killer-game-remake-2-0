@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/characters/warrior/cards/generated/warrior_limit_break.gd" id="1_card_script"]
+
+[resource]
+script = ExtResource("1_card_script")
+id = "warrior_limit_break"
+display_name = "极限突破"
+type = 2
+target = 0
+cost = 2
+keyword_exhaust = true
+keyword_retain = false
+keyword_void = false
+keyword_ethereal = false
+keyword_x_cost = false
+upgrade_to = ""
+tooltip_text = "获得 1 层力量。本回合内，所有攻击伤害翻倍。消耗。"

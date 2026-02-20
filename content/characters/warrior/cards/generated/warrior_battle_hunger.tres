@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/characters/warrior/cards/generated/warrior_battle_hunger.gd" id="1_card_script"]
+
+[resource]
+script = ExtResource("1_card_script")
+id = "warrior_battle_hunger"
+display_name = "战意积蓄"
+type = 2
+target = 0
+cost = 1
+keyword_exhaust = true
+keyword_retain = false
+keyword_void = false
+keyword_ethereal = false
+keyword_x_cost = false
+upgrade_to = ""
+tooltip_text = "获得 2 层力量。消耗。"

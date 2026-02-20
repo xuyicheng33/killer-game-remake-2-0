@@ -390,6 +390,9 @@ static func _serialize_relics(relics: Array[RelicData]) -> Array[Dictionary]:
 		item["on_enemy_killed_damage"] = relic.on_enemy_killed_damage
 		item["on_enemy_killed_draw"] = relic.on_enemy_killed_draw
 		item["on_battle_end_heal_per_kill"] = relic.on_battle_end_heal_per_kill
+		item["on_attack_played_strength"] = relic.on_attack_played_strength
+		item["attack_play_strength_max"] = relic.attack_play_strength_max
+		item["on_run_start_strength"] = relic.on_run_start_strength
 		out.append(item)
 	return out
 
@@ -424,6 +427,9 @@ static func _deserialize_relics(relics_variant: Variant) -> Array[RelicData]:
 		relic.on_enemy_killed_damage = int(dict_entry.get("on_enemy_killed_damage", 0))
 		relic.on_enemy_killed_draw = int(dict_entry.get("on_enemy_killed_draw", 0))
 		relic.on_battle_end_heal_per_kill = int(dict_entry.get("on_battle_end_heal_per_kill", 0))
+		relic.on_attack_played_strength = int(dict_entry.get("on_attack_played_strength", 0))
+		relic.attack_play_strength_max = int(dict_entry.get("attack_play_strength_max", 0))
+		relic.on_run_start_strength = int(dict_entry.get("on_run_start_strength", 0))
 		out.append(relic)
 	return out
 

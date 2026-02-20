@@ -110,5 +110,8 @@ static func _parse_relic_from_dict(raw: Dictionary) -> RelicData:
 		relic.on_enemy_killed_damage = int(effects.get("on_enemy_killed_damage", 0))
 		relic.on_enemy_killed_draw = int(effects.get("on_enemy_killed_draw", 0))
 		relic.on_battle_end_heal_per_kill = int(effects.get("on_battle_end_heal_per_kill", 0))
+		relic.on_attack_played_strength = int(effects.get("on_attack_played_strength", 0))
+		relic.attack_play_strength_max = int(effects.get("attack_play_strength_max", 0))
+		relic.on_run_start_strength = int(effects.get("on_run_start_strength", 0))
 
 	return relic

@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]斧击\\n造成 6 点伤害。[/center]"
+tooltip_text = "造成 6 点伤害。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

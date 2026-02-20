@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]战术呼吸\\n抽 1 张牌。[/center]"
+tooltip_text = "抽 1 张牌。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

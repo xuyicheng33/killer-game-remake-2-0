@@ -12,7 +12,8 @@ const HOVER_STYLEBOX := preload("res://runtime/scenes/card_ui/card_hover_stylebo
 
 @onready var panel: Panel = $Panel
 @onready var cost: Label = $Cost
-@onready var icon: TextureRect = $Icon
+@onready var name_label: Label = $CardContent/NameLabel
+@onready var desc_label: Label = $CardContent/DescLabel
 @onready var drop_point_detector: Area2D = $DropPointDetector
 @onready var card_state_machine: CardStateMachine = $CardStateMachine
 @onready var targets: Array[Node] = []
@@ -112,7 +113,8 @@ func _set_card(value: Card) -> void:
 
 	card = value
 	cost.text = card.get_cost_label()
-	icon.texture = card.icon
+	name_label.text = card.get_display_name()
+	desc_label.text = card.tooltip_text
 	_refresh_playable_state()
 
 
@@ -120,10 +122,12 @@ func _set_playable(value: bool) -> void:
 	playable = value
 	if not playable:
 		cost.add_theme_color_override("font_color", Color.RED)
-		icon.modulate = Color(1, 1, 1, 0.5)
+		name_label.modulate = Color(1, 1, 1, 0.5)
+		desc_label.modulate = Color(1, 1, 1, 0.5)
 	else:
 		cost.remove_theme_color_override("font_color")
-		icon.modulate = Color(1, 1, 1, 1)
+		name_label.modulate = Color(1, 1, 1, 1)
+		desc_label.modulate = Color(1, 1, 1, 1)
 
 
 func _set_char_stats(value: CharacterStats) -> void:

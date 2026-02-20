@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = "warrior_finisher_attack_plus"
-tooltip_text = "[center]处决劈砍\\n若目标有易伤，造成额外伤害。消耗。消耗时，将一张升级版加入弃牌堆。[/center]"
+tooltip_text = "若目标有易伤，造成额外伤害。消耗。消耗时，将一张升级版加入弃牌堆。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

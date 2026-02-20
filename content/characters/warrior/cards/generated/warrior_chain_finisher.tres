@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/characters/warrior/cards/generated/warrior_chain_finisher.gd" id="1_card_script"]
+
+[resource]
+script = ExtResource("1_card_script")
+id = "warrior_chain_finisher"
+display_name = "连环重击"
+type = 0
+target = 1
+cost = 2
+keyword_exhaust = false
+keyword_retain = false
+keyword_void = false
+keyword_ethereal = false
+keyword_x_cost = false
+upgrade_to = ""
+tooltip_text = "造成 5 点伤害。每有 1 层力量，额外造成一次（最多 3 次）。"

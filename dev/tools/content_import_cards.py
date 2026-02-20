@@ -30,7 +30,20 @@ TARGET_TO_RUNTIME = {
 
 RARITY_VALUES = {"common", "uncommon", "rare"}
 STATUS_VALUES = {"strength", "dexterity", "vulnerable", "weak", "poison"}
-EFFECT_OPS = {"damage", "block", "apply_status", "draw", "gain_energy", "energy"}
+EFFECT_OPS = {
+    "damage",
+    "block",
+    "apply_status",
+    "draw",
+    "gain_energy",
+    "energy",
+    "lose_hp",
+    "conditional_damage",
+    "strength_multiplier_damage",
+    "missing_hp_block",
+    "damage_and_draw",
+    "strength_and_damage_multiplier",
+}
 REQUIRED_FIELDS = ["id", "name", "type", "rarity", "cost", "target", "text", "effects"]
 
 
@@ -109,7 +122,15 @@ def _validate_card(
     errors: list[ValidationError],
 ) -> dict[str, Any] | None:
     if not isinstance(card, dict):
-        _append_error(errors, source_file, index, "", f"cards[{index}]", "invalid_type", "card must be an object")
+        _append_error(
+            errors,
+            source_file,
+            index,
+            "",
+            f"cards[{index}]",
+            "invalid_type",
+            "card must be an object",
+        )
         return None
 
     card_id = str(card.get("id", ""))
@@ -125,7 +146,9 @@ def _validate_card(
                 f"required field '{field}' is missing",
             )
 
-    if errors and any(err.card_index == index and err.code == "missing_field" for err in errors):
+    if errors and any(
+        err.card_index == index and err.code == "missing_field" for err in errors
+    ):
         return None
 
     normalized: dict[str, Any] = {}
@@ -358,6 +381,109 @@ def _validate_card(
                     )
                     continue
                 normalized_effect["amount"] = amount
+            elif op == "lose_hp":
+                amount = effect.get("amount")
+                if not isinstance(amount, int):
+                    _append_error(
+                        errors,
+                        source_file,
+                        index,
+                        card_id,
+                        f"{field_prefix}.amount",
+                        "invalid_type",
+                        "'amount' must be an integer",
+                    )
+                    continue
+                if amount <= 0:
+                    _append_error(
+                        errors,
+                        source_file,
+                        index,
+                        card_id,
+                        f"{field_prefix}.amount",
+                        "out_of_range",
+                        "'amount' must be > 0",
+                    )
+                    continue
+                normalized_effect["amount"] = amount
+                normalized_effect["target_self"] = bool(
+                    effect.get("target_self", False)
+                )
+            elif op == "conditional_damage":
+                amount = effect.get("amount")
+                condition = effect.get("condition")
+                multiplier = effect.get("multiplier", 2)
+                if not isinstance(amount, int):
+                    _append_error(
+                        errors,
+                        source_file,
+                        index,
+                        card_id,
+                        f"{field_prefix}.amount",
+                        "invalid_type",
+                        "'amount' must be an integer",
+                    )
+                    continue
+                if amount <= 0:
+                    _append_error(
+                        errors,
+                        source_file,
+                        index,
+                        card_id,
+                        f"{field_prefix}.amount",
+                        "out_of_range",
+                        "'amount' must be > 0",
+                    )
+                    continue
+                if not isinstance(condition, str) or condition not in {"hp_below_half"}:
+                    _append_error(
+                        errors,
+                        source_file,
+                        index,
+                        card_id,
+                        f"{field_prefix}.condition",
+                        "invalid_enum",
+                        "'condition' must be one of: hp_below_half",
+                    )
+                    continue
+                normalized_effect["amount"] = amount
+                normalized_effect["condition"] = condition
+                normalized_effect["multiplier"] = multiplier
+            elif op in {"strength_multiplier_damage", "damage_and_draw"}:
+                amount = effect.get("amount")
+                if not isinstance(amount, int):
+                    _append_error(
+                        errors,
+                        source_file,
+                        index,
+                        card_id,
+                        f"{field_prefix}.amount",
+                        "invalid_type",
+                        "'amount' must be an integer",
+                    )
+                    continue
+                if amount < 0:
+                    _append_error(
+                        errors,
+                        source_file,
+                        index,
+                        card_id,
+                        f"{field_prefix}.amount",
+                        "out_of_range",
+                        "'amount' must be >= 0",
+                    )
+                    continue
+                normalized_effect["amount"] = amount
+                if op == "strength_multiplier_damage":
+                    normalized_effect["max_hits"] = int(effect.get("max_hits", 3))
+            elif op == "missing_hp_block":
+                normalized_effect["percent"] = float(effect.get("percent", 0.2))
+                normalized_effect["min_block"] = int(effect.get("min_block", 5))
+            elif op == "strength_and_damage_multiplier":
+                normalized_effect["strength_stacks"] = int(
+                    effect.get("strength_stacks", 1)
+                )
+                normalized_effect["multiplier"] = float(effect.get("multiplier", 2.0))
 
             normalized_effects.append(normalized_effect)
 
@@ -547,7 +673,7 @@ def _generate_card_script(card: dict[str, Any]) -> str:
         elif op == "draw":
             lines.extend(
                 [
-                    f"\tvar draw_effect_{suffix} := preload(\"res://content/effects/draw_card_effect.gd\").new()",
+                    f'\tvar draw_effect_{suffix} := preload("res://content/effects/draw_card_effect.gd").new()',
                     f"\tdraw_effect_{suffix}.amount = {effect['amount']}",
                     f"\tdraw_effect_{suffix}.sound = sound",
                     f"\tdraw_effect_{suffix}.execute(_targets, _battle_context)",
@@ -556,10 +682,91 @@ def _generate_card_script(card: dict[str, Any]) -> str:
         elif op == "gain_energy":
             lines.extend(
                 [
-                    f"\tvar energy_effect_{suffix} := preload(\"res://content/effects/gain_energy_effect.gd\").new()",
+                    f'\tvar energy_effect_{suffix} := preload("res://content/effects/gain_energy_effect.gd").new()',
                     f"\tenergy_effect_{suffix}.amount = {effect['amount']}",
                     f"\tenergy_effect_{suffix}.sound = sound",
                     f"\tenergy_effect_{suffix}.execute(_targets, _battle_context)",
+                ]
+            )
+        elif op == "lose_hp":
+            target_self = effect.get("target_self", False)
+            lines.extend(
+                [
+                    f'\tvar lose_hp_effect_{suffix} := preload("res://content/effects/lose_hp_effect.gd").new()',
+                    f"\tlose_hp_effect_{suffix}.amount = {effect['amount']}",
+                    f"\tlose_hp_effect_{suffix}.target_self = {'true' if target_self else 'false'}",
+                    f"\tlose_hp_effect_{suffix}.sound = sound",
+                    f"\tlose_hp_effect_{suffix}.execute(_targets, _battle_context)",
+                ]
+            )
+        elif op == "conditional_damage":
+            condition = effect["condition"]
+            multiplier = effect.get("multiplier", 2)
+            amount = effect["amount"]
+            amount_expr = f"{amount} * last_x_value" if is_x_cost else str(amount)
+            lines.extend(
+                [
+                    f'\tvar cond_damage_effect_{suffix} := preload("res://content/effects/conditional_damage_effect.gd").new()',
+                    f"\tcond_damage_effect_{suffix}.base_amount = {amount_expr}",
+                    f"\tcond_damage_effect_{suffix}.condition = {_json_string(condition)}",
+                    f"\tcond_damage_effect_{suffix}.multiplier = {multiplier}",
+                    f"\tcond_damage_effect_{suffix}.sound = sound",
+                    f"\tcond_damage_effect_{suffix}.execute(_targets, _battle_context)",
+                ]
+            )
+        elif op == "strength_multiplier_damage":
+            amount = effect["amount"]
+            max_hits = effect.get("max_hits", 3)
+            lines.extend(
+                [
+                    f'\tvar str_mult_damage_{suffix} := preload("res://content/effects/strength_multiplier_damage_effect.gd").new()',
+                    f"\tstr_mult_damage_{suffix}.base_amount = {amount}",
+                    f"\tstr_mult_damage_{suffix}.max_hits = {max_hits}",
+                    f"\tstr_mult_damage_{suffix}.sound = sound",
+                    f"\tstr_mult_damage_{suffix}.execute(_targets, _battle_context)",
+                ]
+            )
+        elif op == "missing_hp_block":
+            percent = effect.get("percent", 0.2)
+            min_block = effect.get("min_block", 5)
+            lines.extend(
+                [
+                    f'\tvar missing_hp_block_{suffix} := preload("res://content/effects/missing_hp_block_effect.gd").new()',
+                    f"\tmissing_hp_block_{suffix}.percent = {percent}",
+                    f"\tmissing_hp_block_{suffix}.min_block = {min_block}",
+                    f"\tmissing_hp_block_{suffix}.sound = sound",
+                    f"\tmissing_hp_block_{suffix}.execute(_targets, _battle_context)",
+                ]
+            )
+        elif op == "damage_and_draw":
+            amount = effect["amount"]
+            draw_count = effect.get("draw_count", 1)
+            lines.extend(
+                [
+                    f"\tvar damage_effect_{suffix} := DamageEffect.new()",
+                    f"\tdamage_effect_{suffix}.amount = {amount}",
+                    f"\tdamage_effect_{suffix}.sound = sound",
+                    f"\tdamage_effect_{suffix}.execute(_targets, _battle_context)",
+                    f'\tvar draw_effect_{suffix}b := preload("res://content/effects/draw_card_effect.gd").new()',
+                    f"\tdraw_effect_{suffix}b.amount = {draw_count}",
+                    f"\tdraw_effect_{suffix}b.sound = sound",
+                    f"\tdraw_effect_{suffix}b.execute(_targets, _battle_context)",
+                ]
+            )
+        elif op == "strength_and_damage_multiplier":
+            strength_stacks = effect.get("strength_stacks", 1)
+            multiplier = effect.get("multiplier", 2.0)
+            lines.extend(
+                [
+                    f"\tvar status_effect_{suffix} := ApplyStatusEffect.new()",
+                    f'\tstatus_effect_{suffix}.status_id = "strength"',
+                    f"\tstatus_effect_{suffix}.stacks = {strength_stacks}",
+                    f"\tstatus_effect_{suffix}.sound = sound",
+                    f"\tstatus_effect_{suffix}.execute(_targets, _battle_context)",
+                    f'\tif _battle_context != null and _battle_context.has_method("get"):',
+                    f'\t\tvar buff_system = _battle_context.get("buff_system")',
+                    f'\t\tif buff_system != null and buff_system.has_method("set_player_damage_multiplier"):',
+                    f"\t\t\tbuff_system.set_player_damage_multiplier({multiplier})",
                 ]
             )
 
@@ -567,14 +774,13 @@ def _generate_card_script(card: dict[str, Any]) -> str:
 
 
 def _build_tooltip(card: dict[str, Any]) -> str:
-    name = card["name"]
     text = card["text"]
-    return f"[center]{name}\\n{text}[/center]"
+    return text
 
 
 def _generate_card_tres(card: dict[str, Any], script_res_path: str) -> str:
     ext_lines: list[str] = [
-        f"[ext_resource type=\"Script\" path=\"{script_res_path}\" id=\"1_card_script\"]"
+        f'[ext_resource type="Script" path="{script_res_path}" id="1_card_script"]'
     ]
     icon_id = ""
     sound_id = ""
@@ -583,24 +789,24 @@ def _generate_card_tres(card: dict[str, Any], script_res_path: str) -> str:
     if card.get("icon"):
         icon_id = f"{next_id}_icon"
         ext_lines.append(
-            f"[ext_resource type=\"Texture2D\" path=\"{card['icon']}\" id=\"{icon_id}\"]"
+            f'[ext_resource type="Texture2D" path="{card["icon"]}" id="{icon_id}"]'
         )
         next_id += 1
     if card.get("sound"):
         sound_id = f"{next_id}_sound"
         ext_lines.append(
-            f"[ext_resource type=\"AudioStream\" path=\"{card['sound']}\" id=\"{sound_id}\"]"
+            f'[ext_resource type="AudioStream" path="{card["sound"]}" id="{sound_id}"]'
         )
 
     load_steps = len(ext_lines) + 1
     lines: list[str] = [
-        f"[gd_resource type=\"Resource\" load_steps={load_steps} format=3]",
+        f'[gd_resource type="Resource" load_steps={load_steps} format=3]',
         "",
     ]
     lines.extend(ext_lines)
     lines.append("")
     lines.append("[resource]")
-    lines.append("script = ExtResource(\"1_card_script\")")
+    lines.append('script = ExtResource("1_card_script")')
     lines.append(f"id = {_json_string(card['id'])}")
     lines.append(f"display_name = {_json_string(card.get('name', ''))}")
     lines.append(f"type = {TYPE_TO_RUNTIME[card['runtime_type']]}")
@@ -618,9 +824,9 @@ def _generate_card_tres(card: dict[str, Any], script_res_path: str) -> str:
     lines.append(f"tooltip_text = {_json_string(_build_tooltip(card))}")
 
     if icon_id:
-        lines.append(f"icon = ExtResource(\"{icon_id}\")")
+        lines.append(f'icon = ExtResource("{icon_id}")')
     if sound_id:
-        lines.append(f"sound = ExtResource(\"{sound_id}\")")
+        lines.append(f'sound = ExtResource("{sound_id}")')
 
     return "\n".join(lines) + "\n"
 
@@ -633,28 +839,28 @@ def _generate_starting_deck_tres(deck_cards: list[str]) -> str:
 
     id_map: dict[str, str] = {}
     ext_lines = [
-        "[ext_resource type=\"Script\" path=\"res://content/custom_resources/card_pile.gd\" id=\"1_card_pile_script\"]"
+        '[ext_resource type="Script" path="res://content/custom_resources/card_pile.gd" id="1_card_pile_script"]'
     ]
     for idx, card_path in enumerate(unique_paths):
         ext_id = f"2_card_{idx:03d}"
         id_map[card_path] = ext_id
         ext_lines.append(
-            f"[ext_resource type=\"Resource\" path=\"{card_path}\" id=\"{ext_id}\"]"
+            f'[ext_resource type="Resource" path="{card_path}" id="{ext_id}"]'
         )
 
-    refs = ", ".join(f"ExtResource(\"{id_map[path]}\")" for path in deck_cards)
+    refs = ", ".join(f'ExtResource("{id_map[path]}")' for path in deck_cards)
     load_steps = len(ext_lines) + 1
 
     lines: list[str] = [
-        f"[gd_resource type=\"Resource\" script_class=\"CardPile\" load_steps={load_steps} format=3 uid=\"uid://dyyfi3rcfxyug\"]",
+        f'[gd_resource type="Resource" script_class="CardPile" load_steps={load_steps} format=3 uid="uid://dyyfi3rcfxyug"]',
         "",
     ]
     lines.extend(ext_lines)
     lines.append("")
     lines.append("[resource]")
-    lines.append("script = ExtResource(\"1_card_pile_script\")")
+    lines.append('script = ExtResource("1_card_pile_script")')
     lines.append(
-        "cards = Array[Resource(\"res://content/custom_resources/card.gd\")]([%s])" % refs
+        'cards = Array[Resource("res://content/custom_resources/card.gd")]([%s])' % refs
     )
     return "\n".join(lines) + "\n"
 
@@ -681,12 +887,16 @@ def _write_report(
         "outputs": outputs,
         "errors": [error.to_dict() for error in errors],
     }
-    report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    report_path.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
 
 def main() -> int:
     root = _root_dir()
-    parser = argparse.ArgumentParser(description="Import and validate card content data.")
+    parser = argparse.ArgumentParser(
+        description="Import and validate card content data."
+    )
     parser.add_argument(
         "--input",
         default="runtime/modules/content_pipeline/sources/cards/warrior_cards.json",
@@ -786,7 +996,9 @@ def main() -> int:
         seen_ids: set[str] = set()
         source_file = _to_repo_relative(input_path, root)
         for index, raw_card in enumerate(cards_raw):
-            normalized = _validate_card(raw_card, index, source_file, root, seen_ids, errors)
+            normalized = _validate_card(
+                raw_card, index, source_file, root, seen_ids, errors
+            )
             if normalized is not None:
                 normalized_cards.append(normalized)
 
@@ -844,7 +1056,15 @@ def main() -> int:
             "invalid_value",
             "at least one card must have starter_copies > 0",
         )
-        _write_report(report_path, input_path, len(normalized_cards), len(normalized_cards), errors, outputs, root)
+        _write_report(
+            report_path,
+            input_path,
+            len(normalized_cards),
+            len(normalized_cards),
+            errors,
+            outputs,
+            root,
+        )
         print("[content-import] failed: no starter deck cards generated")
         return 1
 

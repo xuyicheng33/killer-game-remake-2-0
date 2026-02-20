@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]鲜血誓言\\n特殊：获得 2 点力量和 1 点敏捷。[/center]"
+tooltip_text = "特殊：获得 2 点力量和 1 点敏捷。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

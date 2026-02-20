@@ -49,6 +49,8 @@ func show_tooltip(icon: Texture, text: String) -> void:
 	
 	tooltip_icon.texture = icon
 	tooltip_text_label.text = text
+	tooltip_text_label.reset_size()
+	reset_size()
 	tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	tween.tween_callback(show)
 	tween.tween_property(self, "modulate", Color.WHITE, fade_seconds)

@@ -30,6 +30,7 @@ var _enemy_turn_queue: Array[Enemy] = []
 var _active_enemy: Enemy = null
 var _player: Player = null
 var _enemies: Array[Enemy] = []
+var _player_damage_multiplier := 1.0
 
 
 func bind_combatants(player: Player, enemies: Array[Enemy]) -> void:
@@ -78,6 +79,9 @@ func get_modified_damage(base_damage: int, source: Node, target: Node) -> int:
 
 	adjusted += get_status_stack(source_stats, STATUS_STRENGTH)
 
+	if source == _player:
+		adjusted = int(round(float(adjusted) * _player_damage_multiplier))
+
 	if get_status_stack(source_stats, STATUS_WEAK) > 0:
 		adjusted = int(floor(float(adjusted) * 0.75))
 
@@ -85,6 +89,14 @@ func get_modified_damage(base_damage: int, source: Node, target: Node) -> int:
 		adjusted = int(ceil(float(adjusted) * 1.5))
 
 	return maxi(adjusted, 0)
+
+
+func set_player_damage_multiplier(multiplier: float) -> void:
+	_player_damage_multiplier = multiplier
+
+
+func reset_player_damage_multiplier() -> void:
+	_player_damage_multiplier = 1.0
 
 
 func get_modified_block(base_block: int, target: Node) -> int:
@@ -192,6 +204,7 @@ func disconnect_events() -> void:
 
 
 func _on_player_turn_start() -> void:
+	reset_player_damage_multiplier()
 	var player: Player = _get_player_node()
 	if player == null:
 		return

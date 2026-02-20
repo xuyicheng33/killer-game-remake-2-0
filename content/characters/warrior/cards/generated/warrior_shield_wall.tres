@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]盾墙\\n获得 12 点格挡。[/center]"
+tooltip_text = "获得 12 点格挡。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

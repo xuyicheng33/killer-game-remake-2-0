@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-02-19T10:09:12.054660+00:00",
+  "generated_at": "2026-02-20T09:49:37.265755+00:00",
   "source": "runtime/modules/content_pipeline/sources/relics/examples/common_relics.json",
   "summary": {
-    "total_relics": 10,
-    "valid_relics": 10,
+    "total_relics": 18,
+    "valid_relics": 18,
     "error_count": 0
   },
   "errors": []

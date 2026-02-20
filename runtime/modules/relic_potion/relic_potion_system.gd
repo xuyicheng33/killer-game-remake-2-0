@@ -29,7 +29,8 @@ var _pending_battle_start_trigger := false
 var _cards_played_in_battle := 0
 var _enemies_killed_in_battle := 0
 var _battle_start_retry_count := 0
-var _relic_runtimes: Dictionary = {}  # 遗物ID -> 运行时对象缓存
+var _relic_runtimes: Dictionary = {}
+var _relic_trigger_counts: Dictionary = {}
 const MAX_BATTLE_START_RETRIES := 100
 
 
@@ -87,6 +88,7 @@ func start_battle() -> void:
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
 	_battle_start_retry_count = 0
+	_relic_trigger_counts.clear()
 	_pending_battle_start_trigger = true
 	_try_fire_battle_start_trigger()
 
@@ -184,6 +186,17 @@ func fire_trigger(trigger_type: TriggerType, context: Dictionary) -> void:
 
 func get_cards_played_in_battle() -> int:
 	return _cards_played_in_battle
+
+
+func get_relic_trigger_count(relic_id: String, trigger_type: String) -> int:
+	var key := "%s:%s" % [relic_id, trigger_type]
+	return int(_relic_trigger_counts.get(key, 0))
+
+
+func increment_relic_trigger_count(relic_id: String, trigger_type: String) -> void:
+	var key := "%s:%s" % [relic_id, trigger_type]
+	var current := int(_relic_trigger_counts.get(key, 0))
+	_relic_trigger_counts[key] = current + 1
 
 
 func dispatch_relic_effect(effect_type: String, value: int, relic: RelicData) -> void:

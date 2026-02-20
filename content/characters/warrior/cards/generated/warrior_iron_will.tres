@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]钢铁意志\\n获得 2 点敏捷。[/center]"
+tooltip_text = "获得 2 点敏捷。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

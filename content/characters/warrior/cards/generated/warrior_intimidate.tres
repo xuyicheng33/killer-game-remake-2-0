@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]威吓\\n施加 2 层虚弱。[/center]"
+tooltip_text = "施加 2 层虚弱。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

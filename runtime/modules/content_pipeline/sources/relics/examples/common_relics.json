@@ -199,6 +199,31 @@
           "on_battle_end_heal_per_kill": 2
         },
         "tags": ["obtainable"]
+      },
+      {
+        "id": "rage_ring",
+        "title": "战怒之戒",
+        "description": "每打出一张攻击牌，获得 1 层力量（每场战斗最多 5 次）。",
+        "art_path": "res://content/art/relics/rage_ring.png",
+        "rarity": "uncommon",
+        "starter": false,
+        "effects": {
+          "on_attack_played_strength": 1,
+          "attack_play_strength_max": 5
+        },
+        "tags": ["obtainable"]
+      },
+      {
+        "id": "tempering_stone",
+        "title": "淬炼石",
+        "description": "每场战斗开始获得 2 层力量。",
+        "art_path": "res://content/art/relics/tempering_stone.png",
+        "rarity": "rare",
+        "starter": false,
+        "effects": {
+          "on_run_start_strength": 2
+        },
+        "tags": ["obtainable"]
       }
   ]
 }

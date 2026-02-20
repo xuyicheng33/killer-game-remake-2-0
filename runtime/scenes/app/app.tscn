@@ -18,8 +18,6 @@ layer = 10
 unique_name_in_owner = true
 
 [node name="Tooltip" parent="OverlayLayer" instance=ExtResource("4_tooltip")]
-offset_top = 24.0
-offset_bottom = 190.0
 
 [node name="GameOverPanel" type="Panel" parent="OverlayLayer"]
 unique_name_in_owner = true

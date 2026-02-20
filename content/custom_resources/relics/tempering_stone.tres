@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://tempering_stone001"]
+
+[ext_resource type="Script" path="res://content/custom_resources/relics/relic_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "tempering_stone"
+title = "淬炼石"
+description = "每场战斗开始获得 2 层力量。"
+rarity = "rare"
+on_run_start_strength = 2

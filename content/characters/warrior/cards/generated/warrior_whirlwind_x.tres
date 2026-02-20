@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = true
 upgrade_to = ""
-tooltip_text = "[center]旋风斩\\nX费。对所有敌人造成 2 点伤害。[/center]"
+tooltip_text = "X费。对所有敌人造成 2 点伤害。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

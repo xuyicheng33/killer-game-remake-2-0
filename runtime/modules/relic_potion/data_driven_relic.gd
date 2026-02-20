@@ -1,12 +1,19 @@
 extends "res://runtime/modules/relic_potion/relic_base.gd"
 
 
+func _init(relic_data: RelicData = null) -> void:
+	super(relic_data)
+
+
 func on_battle_start(system: Object, _context: Dictionary) -> void:
 	if data == null:
 		return
 	if data.on_battle_start_heal > 0:
 		system.dispatch_relic_effect("heal", data.on_battle_start_heal, data)
 		system.push_external_log("%s 触发：战斗开始恢复 %d 生命" % [data.title, data.on_battle_start_heal])
+	if data.on_run_start_strength > 0:
+		system.dispatch_relic_effect("add_strength", data.on_run_start_strength, data)
+		system.push_external_log("%s 触发：战斗开始获得 %d 力量" % [data.title, data.on_run_start_strength])
 
 
 func on_battle_end(system: Object, context: Dictionary) -> void:
@@ -114,3 +121,20 @@ func on_run_start(system: Object, _context: Dictionary) -> void:
 	if data.on_run_start_max_health > 0:
 		system.dispatch_relic_effect("increase_max_health", data.on_run_start_max_health, data)
 		system.push_external_log("%s 触发：开局最大生命 +%d" % [data.title, data.on_run_start_max_health])
+
+
+func on_attack_played(system: Object, _context: Dictionary) -> void:
+	if data == null:
+		return
+	if data.on_attack_played_strength <= 0:
+		return
+	
+	var max_triggers: int = maxi(0, data.attack_play_strength_max)
+	if max_triggers > 0:
+		var current_count: int = system.get_relic_trigger_count(data.id, "attack_played")
+		if current_count >= max_triggers:
+			return
+		system.increment_relic_trigger_count(data.id, "attack_played")
+	
+	system.dispatch_relic_effect("add_strength", data.on_attack_played_strength, data)
+	system.push_external_log("%s 触发：打出攻击牌获得 %d 力量" % [data.title, data.on_attack_played_strength])

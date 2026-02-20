@@ -23,3 +23,7 @@ extends Resource
 @export var on_enemy_killed_damage: int = 0
 @export var on_enemy_killed_draw: int = 0
 @export var on_battle_end_heal_per_kill: int = 0
+
+@export var on_attack_played_strength: int = 0
+@export var attack_play_strength_max: int = 0
+@export var on_run_start_strength: int = 0

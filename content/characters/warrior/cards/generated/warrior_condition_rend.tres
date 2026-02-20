@@ -17,6 +17,6 @@ keyword_void = false
 keyword_ethereal = false
 keyword_x_cost = false
 upgrade_to = ""
-tooltip_text = "[center]撕裂斩\\n若目标有虚弱，造成额外伤害。施加 1 层易伤。[/center]"
+tooltip_text = "若目标有虚弱，造成额外伤害。施加 1 层易伤。"
 icon = ExtResource("2_icon")
 sound = ExtResource("3_sound")

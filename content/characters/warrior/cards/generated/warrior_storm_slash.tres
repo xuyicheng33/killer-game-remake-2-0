@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/characters/warrior/cards/generated/warrior_storm_slash.gd" id="1_card_script"]
+
+[resource]
+script = ExtResource("1_card_script")
+id = "warrior_storm_slash"
+display_name = "风暴斩"
+type = 0
+target = 2
+cost = 0
+keyword_exhaust = false
+keyword_retain = false
+keyword_void = false
+keyword_ethereal = false
+keyword_x_cost = false
+upgrade_to = ""
+tooltip_text = "对所有敌人造成 2 点伤害。"
