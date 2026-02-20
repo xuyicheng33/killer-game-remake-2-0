@@ -3,6 +3,12 @@
 更新时间：2026-02-20
 基线 Commit：`f04ef84`（当前分支最新基线）
 
+## 0. 编号口径（2026-02-20 对齐）
+
+- 本文件中的 `Phase` 均指 **R2 工程 Phase**（`r2-phaseXX-*` 任务序列）。
+- `docs/后续开发规划v1.0.md` 中的 `Phase` 均指 **产品阶段 Phase**（玩法/内容规划序列）。
+- 两套编号并行维护，不做一一映射；跨文档引用时请显式写成 `R2 Phase X` 或 `产品 Phase X`。
+
 ## 1. 可复现命令集
 
 ### 日常开发
@@ -51,7 +57,7 @@ bash dev/tools/save_load_replay_smoke.sh
 bash dev/tools/workflow_branch_gate_selfcheck.sh
 ```
 
-## 2. R2 Phase 0-12 任务总览表
+## 2. R2 工程 Phase 0-12 任务总览表
 
 | R2 Phase | 任务 ID | 等级 | 主模块 | 目标摘要 | 状态 | 依赖 |
 |---|---|---|---|---|---|---|
@@ -66,21 +72,21 @@ bash dev/tools/workflow_branch_gate_selfcheck.sh
 | 8 | `r2-phase08-content-pipeline-gate-integration-v1` | L1 | `content_pipeline` | 接入 workflow 或发布前强制门禁 | done | Phase 7 |
 | 9 | `r2-phase09-character2-scaffold-v1` | L2 | `run_meta` | 第二角色骨架与开局接线 | done | Phase 8 |
 | 10 | `r2-phase10-enemy-pack-v1` | L2 | `enemy_intent` | 数据驱动遭遇选择 + 普通/精英敌扩容 | done | Phase 9 |
-| 11 | `r2-phase11-relic-potion-event-pack-v1` | L2 | `relic_potion` | 扩展遗物/药水/事件内容池与联动 | done | Phase 10 |
-| 12 | `r2-phase12-art-asset-replacement-v2` | L1 | `ui_shell` | 最终资源替换轨道（最后执行） | planned | Phase 11 |
+| 11 | `r2-phase11-relic-potion-event-pack-v1` | L2 | `relic_potion` | 扩展遗物/药水/事件内容池与联动 | done | R2 Phase 10 |
+| 12 | `r2-phase12-art-asset-replacement-v2` | L1 | `ui_shell` | 最终资源替换轨道（最后执行） | planned | R2 Phase 11 |
 
-### 执行顺序
+### 执行顺序（R2 工程 Phase）
 
-1. Phase 0-2：工具链闭环（L0/L1 快车道）
-2. Phase 3-5：UI 壳层完整化 + 契约回归加固
-3. Phase 6-8：内容管线扩展
-4. Phase 9-11：内容扩容（第二角色、敌人包、遗物药水事件）
-5. Phase 12：视觉资源替换（最后执行）
+1. R2 Phase 0-2：工具链闭环（L0/L1 快车道）
+2. R2 Phase 3-5：UI 壳层完整化 + 契约回归加固
+3. R2 Phase 6-8：内容管线扩展
+4. R2 Phase 9-11：内容扩容（第二角色、敌人包、遗物药水事件）
+5. R2 Phase 12：视觉资源替换（最后执行）
 
 ## 2.1 近期主线进展（2026-02-20）
 
 - 已完成并合并：`phase9-strength-axis-cards-v1`（`feat/card-phase9-strength-axis-cards-v1` -> `main`）
-- Phase 9 关键结果：
+- `phase9-strength-axis-cards-v1` 关键结果：
   - 战士卡池扩展到 30 张（新增力量轴核心卡并走内容管线）
   - 新增遗物：战怒之戒、淬炼石
   - 新增效果能力：`strength_multiplier_damage`、`missing_hp_block` 等
@@ -93,7 +99,7 @@ bash dev/tools/workflow_branch_gate_selfcheck.sh
 
 | 缺口 | 影响 | 计划解决 Phase |
 |---|---|---|
-| Phase 12 视觉资源替换未开始 | 美术/字体/音频仍有占位资源 | Phase 12 |
+| R2 Phase 12 视觉资源替换未开始 | 美术/字体/音频仍有占位资源 | R2 Phase 12 |
 | 运行时手动回归未全量执行 | 关键链路依赖 Godot 编辑器人工复验 | 持续执行 |
 
 ### 技术风险
@@ -102,14 +108,14 @@ bash dev/tools/workflow_branch_gate_selfcheck.sh
 |---|---|---|---|
 | 文档与代码进度偏移 | 中 | 状态判断失真、交接困难 | 每次任务收尾同步更新 baseline/work_log/verification |
 | 手动场景验证遗漏 | 中 | 运行时行为回归未被发现 | 发布前执行 `save_load_replay_smoke` + Godot 手测清单 |
-| 视觉资源替换破坏功能链路 | 低 | Phase 12 返工 | 最后执行，有完整门禁保护 |
+| 视觉资源替换破坏功能链路 | 低 | R2 Phase 12 返工 | 最后执行，有完整门禁保护 |
 
 ### 依赖外部输入
 
 | 依赖 | 来源 | 缺失影响 |
 |---|---|---|
-| 视觉资源包（图像/音频/字体） | 外部 | Phase 12 无法执行 |
-| 资源映射表（旧路径 -> 新路径） | 外部 | Phase 12 无法执行 |
+| 视觉资源包（图像/音频/字体） | 外部 | R2 Phase 12 无法执行 |
+| 资源映射表（旧路径 -> 新路径） | 外部 | R2 Phase 12 无法执行 |
 
 ## 4. 历史基线参考
 
