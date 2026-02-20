@@ -1,7 +1,7 @@
 # R2 基线状态文件
 
-更新时间：2026-02-18
-基线 Commit：`b90c30d`（当前分支最新基线）
+更新时间：2026-02-20
+基线 Commit：`f04ef84`（当前分支最新基线）
 
 ## 1. 可复现命令集
 
@@ -76,6 +76,16 @@ bash dev/tools/workflow_branch_gate_selfcheck.sh
 3. Phase 6-8：内容管线扩展
 4. Phase 9-11：内容扩容（第二角色、敌人包、遗物药水事件）
 5. Phase 12：视觉资源替换（最后执行）
+
+## 2.1 近期主线进展（2026-02-20）
+
+- 已完成并合并：`phase9-strength-axis-cards-v1`（`feat/card-phase9-strength-axis-cards-v1` -> `main`）
+- Phase 9 关键结果：
+  - 战士卡池扩展到 30 张（新增力量轴核心卡并走内容管线）
+  - 新增遗物：战怒之戒、淬炼石
+  - 新增效果能力：`strength_multiplier_damage`、`missing_hp_block` 等
+  - 修复血誓打击目标、遗物字段持久化、卡牌文案重复显示等审核问题
+- 验证口径：`make test` 142/142 通过
 
 ## 3. 已知缺口与风险
 
