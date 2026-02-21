@@ -35,12 +35,25 @@ class FakePlayer extends Player:
 		pass
 
 
+class FakeBattleContext:
+	extends BattleContext
+	var draw_calls: Array[int] = []
+
+	func draw_cards(amount: int) -> int:
+		draw_calls.append(amount)
+		return amount
+
+
 class RelicPotionSystemForTest:
 	extends RelicPotionSystem
 	var fake_player: Player = null
+	var fake_battle_context: BattleContext = null
 
 	func _find_player() -> Player:
 		return fake_player
+
+	func _find_battle_context() -> BattleContext:
+		return fake_battle_context
 
 
 class CustomRegistryRelic:
@@ -88,6 +101,7 @@ func after_each() -> void:
 	_player = null
 	if _system != null and is_instance_valid(_system):
 		_system.fake_player = null
+		_system.fake_battle_context = null
 		_system.free()
 	_system = null
 	_effect_stack = null
@@ -298,6 +312,30 @@ func test_damage_all_enemies_potion_hits_all_targets() -> void:
 		enemy_b.free()
 
 
+func test_damage_all_enemies_potion_not_consumed_without_targets() -> void:
+	var potion := PotionData.new()
+	potion.id = "storm_bomb"
+	potion.title = "爆裂药水"
+	potion.effect_type = PotionData.EffectType.DAMAGE_ALL_ENEMIES
+	potion.value = 10
+	_run_state.potions = [potion]
+
+	_system.use_potion(0)
+
+	assert_eq(_run_state.potions.size(), 1, "战斗外无敌人时伤害药水不应被消耗")
+	assert_eq(_effect_stack.enqueue_calls, 0, "无目标时不应派发伤害效果")
+
+
+func test_relic_draw_cards_uses_battle_context_draw() -> void:
+	var fake_battle_context := FakeBattleContext.new()
+	_system.fake_battle_context = fake_battle_context
+
+	_system._apply_relic_effect("draw_cards", 2)
+
+	assert_eq(fake_battle_context.draw_calls.size(), 1, "draw_cards 应调用 battle_context.draw_cards")
+	assert_eq(fake_battle_context.draw_calls[0], 2, "draw_cards 应传入正确抽牌数量")
+
+
 func test_custom_relic_callback_invoked_via_registry() -> void:
 	var holder := RuntimeRelicHolder.new()
 	RELIC_REGISTRY_SCRIPT.register_factory(
@@ -364,42 +402,21 @@ func test_relic_runtime_cache_reuses_same_instance() -> void:
 	RELIC_REGISTRY_SCRIPT.clear_factories()
 
 
-func test_relic_runtime_cache_duplicate_id_shares_state() -> void:
-	# 测试重复 relic id 的行为：共享同一运行时实例（可能导致状态共享歧义）
-	# 这是预期行为的文档化测试，开发者应避免使用重复 ID
-
-	RELIC_REGISTRY_SCRIPT.register_factory(
-		"dup_id_relic",
-		func(relic_data: RelicData):
-			return StatefulTestRelic.new(relic_data)
-	)
-
-	# 创建两个相同 ID 的遗物数据
+func test_run_state_add_relic_rejects_duplicate_id() -> void:
 	var relic1 := RelicData.new()
 	relic1.id = "dup_id_relic"
 	relic1.title = "重复遗物1"
 
 	var relic2 := RelicData.new()
 	relic2.id = "dup_id_relic"
-	relic2.title = "重复遗物2"  # 不同的 title，但相同 ID
+	relic2.title = "重复遗物2"
 
-	_run_state.relics = [relic1, relic2]
+	var added_first := _run_state.add_relic(relic1)
+	var added_second := _run_state.add_relic(relic2)
 
-	# 绑定 RunState 会重建缓存
-	_system.bind_run_state(_run_state)
-
-	# 缓存中应只有一个实例（因为 ID 相同）
-	var cached_runtime: Variant = _system._relic_runtimes.get("dup_id_relic", null)
-	assert_not_null(cached_runtime, "应有缓存")
-
-	# 缓存大小应为 1（而不是 2）
-	assert_eq(_system._relic_runtimes.size(), 1, "重复 ID 应只缓存一个实例")
-
-	# 重要：如果两个遗物数据有不同的属性，后加载的会覆盖缓存
-	# 这意味着两个遗物将共享同一个运行时实例，可能导致状态混淆
-	# 建议：遗物 ID 应唯一，或在添加遗物时检查重复
-
-	RELIC_REGISTRY_SCRIPT.clear_factories()
+	assert_true(added_first, "首个遗物应能添加")
+	assert_false(added_second, "重复 relic id 应被拒绝")
+	assert_eq(_run_state.relics.size(), 1, "重复 id 不应进入 relic 列表")
 
 
 func test_relic_runtime_cache_clears_on_rebind() -> void:

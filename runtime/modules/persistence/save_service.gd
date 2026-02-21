@@ -29,9 +29,7 @@ static func save_run_state(run_state: RunState) -> Dictionary:
 	return _ok("存档成功。")
 
 
-static func load_run_state(base_stats: CharacterStats) -> Dictionary:
-	if base_stats == null:
-		return _fail("角色模板为空，无法读档。", "invalid_character")
+static func load_run_state(base_stats: CharacterStats = null, character_template_resolver: Callable = Callable()) -> Dictionary:
 	if not has_save():
 		return _fail("未找到本地存档。", "missing")
 
@@ -58,7 +56,11 @@ static func load_run_state(base_stats: CharacterStats) -> Dictionary:
 			"version_mismatch"
 		)
 
-	var restored: RunState = _deserialize_run_state(payload, base_stats)
+	var resolved_base_stats: CharacterStats = _resolve_base_stats(payload, base_stats, character_template_resolver)
+	if resolved_base_stats == null:
+		return _fail("角色模板为空，无法读档。", "invalid_character")
+
+	var restored: RunState = _deserialize_run_state(payload, resolved_base_stats)
 	if restored == null:
 		return _fail("存档恢复失败：关键字段缺失或无效。", "restore_failed")
 
@@ -66,6 +68,21 @@ static func load_run_state(base_stats: CharacterStats) -> Dictionary:
 	result["run_state"] = restored
 	result["rng_state"] = payload.get("rng_state", {})
 	return result
+
+
+static func _resolve_base_stats(payload: Dictionary, fallback_stats: CharacterStats, character_template_resolver: Callable) -> CharacterStats:
+	var resolved: CharacterStats = fallback_stats
+	if not character_template_resolver.is_valid():
+		return resolved
+
+	var saved_character_id: String = str(payload.get("character_id", "")).strip_edges()
+	if saved_character_id.is_empty():
+		return resolved
+
+	var resolved_variant: Variant = character_template_resolver.call(saved_character_id)
+	if resolved_variant is CharacterStats:
+		return resolved_variant as CharacterStats
+	return resolved
 
 
 static func clear_save() -> Dictionary:
@@ -403,12 +420,19 @@ static func _deserialize_relics(relics_variant: Variant) -> Array[RelicData]:
 		return out
 
 	var data: Array = relics_variant as Array
+	var seen_ids: Dictionary = {}
 	for entry in data:
 		if typeof(entry) != TYPE_DICTIONARY:
 			continue
 		var dict_entry: Dictionary = entry as Dictionary
+		var relic_id: String = str(dict_entry.get("id", "")).strip_edges()
+		if relic_id.is_empty():
+			continue
+		if seen_ids.has(relic_id):
+			continue
+
 		var relic := RelicData.new()
-		relic.id = str(dict_entry.get("id", ""))
+		relic.id = relic_id
 		relic.title = str(dict_entry.get("title", ""))
 		relic.description = str(dict_entry.get("description", ""))
 		relic.on_battle_start_heal = int(dict_entry.get("on_battle_start_heal", 0))
@@ -430,6 +454,7 @@ static func _deserialize_relics(relics_variant: Variant) -> Array[RelicData]:
 		relic.on_attack_played_strength = int(dict_entry.get("on_attack_played_strength", 0))
 		relic.attack_play_strength_max = int(dict_entry.get("attack_play_strength_max", 0))
 		relic.on_run_start_strength = int(dict_entry.get("on_run_start_strength", 0))
+		seen_ids[relic_id] = true
 		out.append(relic)
 	return out
 

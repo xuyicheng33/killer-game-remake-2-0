@@ -277,12 +277,9 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 				run_state.player_stats.add_status("strength", value)
 		"draw_cards":
 			if run_state.player_stats != null and value > 0:
-				for i in range(value):
-					if run_state.player_stats.draw_pile != null and not run_state.player_stats.draw_pile.cards.is_empty():
-						var card: Card = run_state.player_stats.draw_pile.draw_card()
-						if card != null:
-							run_state.player_stats.discard.add_card(card)
-				run_state.emit_changed()
+				var drawn := _draw_cards_in_battle_context(value)
+				if drawn > 0:
+					run_state.emit_changed()
 
 
 func _find_player() -> Player:
@@ -293,6 +290,50 @@ func _find_player() -> Player:
 		return null
 	if players[0] is Player:
 		return players[0] as Player
+	return null
+
+
+func _draw_cards_in_battle_context(amount: int) -> int:
+	if amount <= 0:
+		return 0
+	var battle_context := _find_battle_context()
+	if battle_context == null:
+		push_warning("[RelicPotionSystem] draw_cards 缺少 BattleContext，效果跳过")
+		return 0
+	return maxi(0, battle_context.draw_cards(amount))
+
+
+func _find_battle_context() -> BattleContext:
+	if not (Engine.get_main_loop() is SceneTree):
+		return null
+
+	var tree := Engine.get_main_loop() as SceneTree
+	var app_nodes: Array[Node] = tree.get_nodes_in_group("app")
+	if app_nodes.is_empty():
+		return null
+
+	var app_node := app_nodes[0]
+	if app_node == null or not is_instance_valid(app_node):
+		return null
+	if not "scene_host" in app_node:
+		return null
+
+	var scene_host_variant: Variant = app_node.get("scene_host")
+	if not (scene_host_variant is Node):
+		return null
+	var scene_host: Node = scene_host_variant as Node
+	if scene_host.get_child_count() <= 0:
+		return null
+
+	var current_scene := scene_host.get_child(0)
+	if current_scene == null or not is_instance_valid(current_scene):
+		return null
+	if not "_battle_context" in current_scene:
+		return null
+
+	var context_variant: Variant = current_scene.get("_battle_context")
+	if context_variant is BattleContext:
+		return context_variant as BattleContext
 	return null
 
 
@@ -469,8 +510,7 @@ func _apply_run_start_relics_once() -> void:
 func _use_damage_potion(index: int, potion: PotionData) -> void:
 	var enemies := _find_enemies()
 	if enemies.is_empty():
-		log_updated.emit("使用 %s：无有效目标" % potion.title)
-		_consume_potion(index, potion)
+		log_updated.emit("使用 %s：仅战斗中可生效（本次不消耗）" % potion.title)
 		return
 
 	var damage := maxi(0, potion.value)

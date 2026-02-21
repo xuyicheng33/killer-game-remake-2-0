@@ -273,12 +273,7 @@ func _clear_scene_host() -> void:
 
 
 func _try_load_saved_run() -> bool:
-	var hero_template: CharacterStats = CHARACTER_REGISTRY_SCRIPT.get_selected_character_template()
-	if hero_template == null:
-		push_error("无法加载角色模板")
-		return false
-
-	var result := run_flow_service.lifecycle_service.try_load_saved_run(hero_template)
+	var result := run_flow_service.lifecycle_service.try_load_saved_run()
 	if not bool(result.get("ok", false)):
 		push_warning("[save] %s" % str(result.get("message", "读档失败。")))
 		return false

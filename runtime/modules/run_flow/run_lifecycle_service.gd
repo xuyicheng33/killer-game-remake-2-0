@@ -4,6 +4,7 @@ extends RefCounted
 const SAVE_SERVICE_SCRIPT := preload("res://runtime/modules/persistence/save_service.gd")
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
 const REPRO_LOG_SCRIPT := preload("res://runtime/global/repro_log.gd")
+const CHARACTER_REGISTRY_SCRIPT := preload("res://runtime/modules/run_meta/character_registry.gd")
 
 var _current_floor: int = 0
 
@@ -28,8 +29,12 @@ func start_new_run_with_seed(hero_template: CharacterStats, seed: int, character
 	}
 
 
-func try_load_saved_run(hero_template: CharacterStats) -> Dictionary:
-	var load_result: Dictionary = SAVE_SERVICE_SCRIPT.load_run_state(hero_template)
+func try_load_saved_run(fallback_template: CharacterStats = null) -> Dictionary:
+	var load_result: Dictionary = SAVE_SERVICE_SCRIPT.load_run_state(
+		fallback_template,
+		func(character_id: String):
+			return CHARACTER_REGISTRY_SCRIPT.get_character_template(character_id)
+	)
 	if not bool(load_result.get("ok", false)):
 		return {
 			"ok": false,

@@ -446,3 +446,58 @@ func test_player_stats_with_statuses_roundtrip() -> void:
 	if deck_variant is Array:
 		var deck: Array = deck_variant
 		assert_eq(deck.size(), 2, "牌组应有 2 张卡")
+
+
+func test_resolve_base_stats_prefers_saved_character_template() -> void:
+	var fallback_stats := CharacterStats.new()
+	fallback_stats.max_health = 80
+	fallback_stats.starting_deck = CardPile.new()
+
+	var mage_stats := CharacterStats.new()
+	mage_stats.max_health = 66
+	mage_stats.starting_deck = CardPile.new()
+
+	var payload := {"character_id": "mage"}
+	var resolver := func(character_id: String):
+		if character_id == "mage":
+			return mage_stats
+		return null
+
+	var resolved: CharacterStats = SaveService._resolve_base_stats(payload, fallback_stats, resolver)
+	assert_eq(resolved, mage_stats, "存在有效 resolver 时应优先使用存档角色模板")
+
+
+func test_resolve_base_stats_falls_back_when_resolver_invalid() -> void:
+	var fallback_stats := CharacterStats.new()
+	fallback_stats.max_health = 80
+	fallback_stats.starting_deck = CardPile.new()
+
+	var payload := {"character_id": "mage"}
+	var resolver := func(_character_id: String):
+		return null
+
+	var resolved: CharacterStats = SaveService._resolve_base_stats(payload, fallback_stats, resolver)
+	assert_eq(resolved, fallback_stats, "resolver 返回无效模板时应回退到 fallback")
+
+
+func test_deserialize_relics_deduplicates_same_id() -> void:
+	var data: Array[Dictionary] = [
+		{
+			"id": "dup_relic",
+			"title": "重复遗物A",
+			"description": "A",
+			"on_battle_start_heal": 1,
+		},
+		{
+			"id": "dup_relic",
+			"title": "重复遗物B",
+			"description": "B",
+			"on_battle_start_heal": 99,
+		},
+	]
+
+	var relics: Array[RelicData] = SaveService._deserialize_relics(data)
+	assert_eq(relics.size(), 1, "读档应去重重复 relic id")
+	if relics.size() <= 0:
+		return
+	assert_eq(relics[0].title, "重复遗物A", "重复 id 去重应保留首个条目")
