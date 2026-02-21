@@ -17,12 +17,18 @@ func set_run_state(value: RunState) -> void:
 
 
 func set_relic_potion_system(value: RelicPotionSystem) -> void:
-	if _relic_potion_system and _relic_potion_system.log_updated.is_connected(_on_log_updated):
-		_relic_potion_system.log_updated.disconnect(_on_log_updated)
+	if _relic_potion_system:
+		if _relic_potion_system.log_updated.is_connected(_on_log_updated):
+			_relic_potion_system.log_updated.disconnect(_on_log_updated)
+		if _relic_potion_system.battle_state_changed.is_connected(_on_battle_state_changed):
+			_relic_potion_system.battle_state_changed.disconnect(_on_battle_state_changed)
 
 	_relic_potion_system = value
-	if _relic_potion_system and not _relic_potion_system.log_updated.is_connected(_on_log_updated):
-		_relic_potion_system.log_updated.connect(_on_log_updated)
+	if _relic_potion_system:
+		if not _relic_potion_system.log_updated.is_connected(_on_log_updated):
+			_relic_potion_system.log_updated.connect(_on_log_updated)
+		if not _relic_potion_system.battle_state_changed.is_connected(_on_battle_state_changed):
+			_relic_potion_system.battle_state_changed.connect(_on_battle_state_changed)
 	refresh()
 
 
@@ -35,7 +41,7 @@ func use_potion(index: int) -> void:
 
 func refresh() -> void:
 	var projection := _view_model.project(_run_state, _latest_log)
-	var button_enabled := _relic_potion_system != null
+	var button_enabled := _relic_potion_system != null and _relic_potion_system.is_battle_active()
 	var raw_buttons: Variant = projection.get("potion_buttons", [])
 	var buttons_with_state: Array[Dictionary] = []
 	if raw_buttons is Array:
@@ -46,9 +52,15 @@ func refresh() -> void:
 			button_data["enabled"] = button_enabled
 			buttons_with_state.append(button_data)
 	projection["potion_buttons"] = buttons_with_state
+	projection["battle_only_hint_visible"] = not button_enabled and not buttons_with_state.is_empty()
+	projection["battle_only_hint"] = "药水仅可在战斗中使用。"
 	projection_changed.emit(projection)
 
 
 func _on_log_updated(text: String) -> void:
 	_latest_log = text
+	refresh()
+
+
+func _on_battle_state_changed(_active: bool) -> void:
 	refresh()

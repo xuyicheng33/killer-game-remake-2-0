@@ -24,6 +24,23 @@ func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
 			}
 		)
 
+	var next_route := route_dispatcher.route_for_map_node_type(node.type)
+	var encounter_id := ""
+	if next_route == RunRouteDispatcher.ROUTE_BATTLE:
+		var encounter_result := _resolve_battle_encounter(run_state, node)
+		if not bool(encounter_result.get("ok", false)):
+			return route_dispatcher.make_result(
+				RunRouteDispatcher.ROUTE_MAP,
+				{
+					"accepted": false,
+					"error_code": str(encounter_result.get("error_code", "encounter_missing")),
+					"error_text": str(encounter_result.get("error_text", "当前节点未配置可用遭遇。")),
+					"node_id": node.id,
+					"node_type": node.type,
+				}
+			)
+		encounter_id = str(encounter_result.get("encounter_id", ""))
+
 	if not run_state.enter_map_node(node.id):
 		return route_dispatcher.make_result(
 			RunRouteDispatcher.ROUTE_MAP,
@@ -32,7 +49,6 @@ func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
 			}
 		)
 
-	var next_route := route_dispatcher.route_for_map_node_type(node.type)
 	var payload := {
 		"accepted": true,
 		"node_id": node.id,
@@ -41,16 +57,7 @@ func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
 	}
 
 	if next_route == RunRouteDispatcher.ROUTE_BATTLE:
-		var tags := ENCOUNTER_REGISTRY_SCRIPT.get_node_type_tags(node.type)
-		var rng_key := "encounter:%s:%s" % [run_state.seed, node.id]
-		var encounter := ENCOUNTER_REGISTRY_SCRIPT.pick_encounter(run_state.floor, tags, rng_key)
-		if encounter.is_empty():
-			var fallback := ENCOUNTER_REGISTRY_SCRIPT.pick_fallback_encounter(tags)
-			payload["encounter_id"] = str(fallback.get("id", ""))
-			if payload["encounter_id"] == "":
-				push_warning("MapFlowService: no encounter available for node_type=%s tags=%s" % [str(node.type), str(tags)])
-		else:
-			payload["encounter_id"] = str(encounter.get("id", ""))
+		payload["encounter_id"] = encounter_id
 
 	if next_route == RunRouteDispatcher.ROUTE_MAP:
 		run_state.next_floor()
@@ -75,3 +82,34 @@ func resolve_non_battle_completion(run_state: RunState, node_type: MapNodeData.N
 			"bonus_log": bonus_log,
 		}
 	)
+
+
+func _resolve_battle_encounter(run_state: RunState, node: MapNodeData) -> Dictionary:
+	var tags := ENCOUNTER_REGISTRY_SCRIPT.get_node_type_tags(node.type)
+	var rng_key := "encounter:%s:%s" % [run_state.seed, node.id]
+	var encounter := ENCOUNTER_REGISTRY_SCRIPT.pick_encounter(run_state.floor, tags, rng_key)
+	if encounter.is_empty():
+		encounter = ENCOUNTER_REGISTRY_SCRIPT.pick_fallback_encounter(tags)
+
+	var encounter_id := str(encounter.get("id", ""))
+	if encounter_id.is_empty():
+		push_warning(
+			"MapFlowService: no encounter available for node_id=%s node_type=%s tags=%s floor=%d" % [
+				node.id,
+				str(node.type),
+				str(tags),
+				run_state.floor,
+			]
+		)
+		var failed_result := {
+			"ok": false,
+			"error_code": "encounter_missing",
+			"error_text": "当前战斗节点缺少可用遭遇，请检查内容配置。",
+		}
+		return failed_result
+
+	var success_result := {
+		"ok": true,
+		"encounter_id": encounter_id,
+	}
+	return success_result

@@ -141,6 +141,10 @@ func _open_map() -> void:
 func _on_map_node_selected(node: MapNodeData) -> void:
 	var command_result := run_flow_service.map_flow_service.enter_map_node(run_state, node)
 	if not bool(command_result.get("accepted", false)):
+		var error_text := str(command_result.get("error_text", ""))
+		if error_text.length() > 0:
+			push_warning("[map] %s" % error_text)
+			relic_potion_system.push_external_log("节点进入失败：%s" % error_text)
 		return
 
 	run_flow_service.apply_map_node_context(command_result, node.type)
@@ -157,7 +161,6 @@ func _open_battle(encounter_id: String = "") -> void:
 	battle_scene.set("runtime_stats", run_state.player_stats)
 	battle_scene.set("encounter_id", encounter_id)
 	scene_host.add_child(battle_scene)
-	relic_potion_system.start_battle()
 
 
 func _on_battle_finished(result: int) -> void:

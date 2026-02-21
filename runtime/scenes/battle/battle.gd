@@ -134,7 +134,14 @@ func _inject_effect_stack_to_relic_system() -> void:
 	var rps = app_node.get("relic_potion_system")
 	if rps == null:
 		return
+	if rps.has_method("on_battle_scene_ready"):
+		rps.call("on_battle_scene_ready", _battle_context.effect_stack, _battle_context)
+		return
+
+	# Backward-compatible fallback for older RelicPotionSystem implementations.
 	rps.effect_stack = _battle_context.effect_stack
+	if rps.has_method("start_battle"):
+		rps.call("start_battle")
 
 
 func _spawn_enemies() -> void:

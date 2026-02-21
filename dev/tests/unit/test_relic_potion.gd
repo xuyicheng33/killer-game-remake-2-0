@@ -85,10 +85,10 @@ func before_each() -> void:
 	RELIC_REGISTRY_SCRIPT.clear_factories()
 	_system = RelicPotionSystemForTest.new()
 	get_tree().root.add_child(_system)
-	_effect_stack = SpyEffectStack.new()
-	_system.effect_stack = _effect_stack
 	_run_state = _create_run_state()
 	_system.bind_run_state(_run_state)
+	_effect_stack = SpyEffectStack.new()
+	_system.effect_stack = _effect_stack
 	_player = FakePlayer.new()
 	_player.stats = _run_state.player_stats
 	_system.fake_player = _player
@@ -179,6 +179,7 @@ func test_potion_applies_effect_via_effect_stack() -> void:
 	_run_state.player_stats.health = 30
 	_run_state.potions = [potion]
 
+	_system.start_battle()
 	_system.use_potion(0)
 
 	assert_eq(_effect_stack.enqueue_calls, 1, "药水效果应通过 EffectStack 派发")
@@ -300,6 +301,7 @@ func test_damage_all_enemies_potion_hits_all_targets() -> void:
 	potion.value = 10
 	_run_state.potions = [potion]
 
+	_system.start_battle()
 	_system.use_potion(0)
 
 	assert_eq(enemy_a.damage_taken, 10, "敌人 A 应受到 10 点伤害")
@@ -324,6 +326,69 @@ func test_damage_all_enemies_potion_not_consumed_without_targets() -> void:
 
 	assert_eq(_run_state.potions.size(), 1, "战斗外无敌人时伤害药水不应被消耗")
 	assert_eq(_effect_stack.enqueue_calls, 0, "无目标时不应派发伤害效果")
+
+
+func test_potion_use_is_rejected_when_not_in_battle() -> void:
+	var potion := PotionData.new()
+	potion.id = "heal_potion_test"
+	potion.title = "治疗药水"
+	potion.effect_type = PotionData.EffectType.HEAL
+	potion.value = 9
+	_run_state.potions = [potion]
+
+	var log_state := {"text": ""}
+	_system.log_updated.connect(func(text: String) -> void:
+		log_state["text"] = text
+	)
+
+	_system.use_potion(0)
+
+	assert_eq(_run_state.potions.size(), 1, "战斗外使用药水不应被消耗")
+	assert_eq(_effect_stack.enqueue_calls, 0, "战斗外不应派发药水效果")
+	assert_true(str(log_state["text"]).contains("仅可在战斗中使用"), "应提示药水仅可战斗中使用")
+
+
+func test_relic_potion_adapter_disables_potion_buttons_outside_battle() -> void:
+	var adapter := RelicPotionUIAdapter.new()
+	var potion := PotionData.new()
+	potion.id = "heal_potion_test"
+	potion.title = "治疗药水"
+	potion.effect_type = PotionData.EffectType.HEAL
+	potion.value = 9
+	_run_state.potions = [potion]
+
+	var projection_state := {"latest": {}}
+	adapter.projection_changed.connect(func(projection: Dictionary) -> void:
+		projection_state["latest"] = projection
+	)
+	adapter.set_run_state(_run_state)
+	adapter.set_relic_potion_system(_system)
+	adapter.refresh()
+
+	var latest_projection: Dictionary = projection_state["latest"] as Dictionary
+	var outside_buttons: Array = latest_projection.get("potion_buttons", [])
+	assert_eq(outside_buttons.size(), 1, "应渲染 1 个药水按钮")
+	if outside_buttons.size() > 0:
+		var button_data: Dictionary = outside_buttons[0] as Dictionary
+		assert_false(bool(button_data.get("enabled", true)), "战斗外药水按钮应禁用")
+	assert_true(bool(latest_projection.get("battle_only_hint_visible", false)), "战斗外应显示战斗限定提示")
+
+	_system.start_battle()
+	adapter.refresh()
+	latest_projection = projection_state["latest"] as Dictionary
+	var battle_buttons: Array = latest_projection.get("potion_buttons", [])
+	if battle_buttons.size() > 0:
+		var battle_button: Dictionary = battle_buttons[0] as Dictionary
+		assert_true(bool(battle_button.get("enabled", false)), "战斗中药水按钮应启用")
+	assert_false(bool(latest_projection.get("battle_only_hint_visible", true)), "战斗中不应显示战斗限定提示")
+
+	_system.end_battle()
+	adapter.refresh()
+	latest_projection = projection_state["latest"] as Dictionary
+	var after_buttons: Array = latest_projection.get("potion_buttons", [])
+	if after_buttons.size() > 0:
+		var after_button: Dictionary = after_buttons[0] as Dictionary
+		assert_false(bool(after_button.get("enabled", true)), "战斗结束后药水按钮应恢复禁用")
 
 
 func test_relic_draw_cards_uses_battle_context_draw() -> void:

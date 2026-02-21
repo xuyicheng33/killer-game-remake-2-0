@@ -8,6 +8,34 @@ class DamageCapture extends Node:
 		damage_received += amount
 
 
+func _build_reachable_run_state(node_type: MapNodeData.NodeType, floor: int = 0) -> Dictionary:
+	var run_state := RunState.new()
+	run_state.seed = 12345
+	run_state.floor = floor
+	run_state.map_current_node_id = ""
+	run_state.map_visited_node_ids = PackedStringArray()
+
+	var node := MapNodeData.new()
+	node.id = "test_node"
+	node.type = node_type
+	node.reward_gold = 18
+	node.floor_index = floor
+	node.next_node_ids = PackedStringArray(["next_node"])
+
+	var graph := MapGraphData.new()
+	graph.floor_count = floor + 2
+	graph.nodes = [node]
+	graph.rebuild_index()
+
+	run_state.map_graph = graph
+	run_state.map_reachable_node_ids = PackedStringArray([node.id])
+
+	return {
+		"run_state": run_state,
+		"node": node,
+	}
+
+
 func test_boss_victory_routes_to_run_complete() -> void:
 	var service := BattleFlowService.new()
 	var run_state := RunState.new()
@@ -87,3 +115,43 @@ func test_x_cost_whirlwind_scales_damage_by_x() -> void:
 	assert_eq(capture.damage_received, 6, "X=3 时旋风斩应造成 2×3=6 点伤害")
 	SFXPlayer.stop()
 	capture.free()
+
+
+func test_map_flow_rejects_battle_node_when_encounter_missing() -> void:
+	var setup := _build_reachable_run_state(MapNodeData.NodeType.ELITE, 10)
+	var run_state: RunState = setup.get("run_state") as RunState
+	var node: MapNodeData = setup.get("node") as MapNodeData
+	var service := MapFlowService.new()
+
+	var backup_cache: Array[Dictionary] = EncounterRegistry._encounters_cache.duplicate(true)
+	EncounterRegistry._encounters_cache = [
+		{
+			"id": "common_only",
+			"enemies": ["crab"],
+			"weight": 1,
+			"tags": ["common"],
+			"floor_range": {"min": 0, "max": 20},
+		}
+	]
+
+	var result := service.enter_map_node(run_state, node)
+	EncounterRegistry._encounters_cache = backup_cache
+
+	assert_false(bool(result.get("accepted", true)), "遭遇缺失时应拒绝进入节点")
+	assert_eq(str(result.get("error_code", "")), "encounter_missing", "应返回 encounter_missing 错误码")
+	assert_eq(run_state.map_current_node_id, "", "拒绝进入时不应推进当前节点")
+	assert_false(run_state.map_visited_node_ids.has(node.id), "拒绝进入时不应写入 visited")
+
+
+func test_map_flow_battle_route_returns_encounter_id() -> void:
+	var setup := _build_reachable_run_state(MapNodeData.NodeType.BATTLE, 1)
+	var run_state: RunState = setup.get("run_state") as RunState
+	var node: MapNodeData = setup.get("node") as MapNodeData
+	var service := MapFlowService.new()
+
+	var result := service.enter_map_node(run_state, node)
+
+	assert_true(bool(result.get("accepted", false)), "普通战斗节点应可进入")
+	assert_eq(str(result.get("next_route", "")), RunRouteDispatcher.ROUTE_BATTLE, "战斗节点应路由到 battle")
+	assert_true(result.has("encounter_id"), "战斗节点返回应包含 encounter_id")
+	assert_true(str(result.get("encounter_id", "")).length() > 0, "encounter_id 不应为空")

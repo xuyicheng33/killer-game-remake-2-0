@@ -150,6 +150,13 @@ func _render_potions(projection: Dictionary) -> void:
 		hint.text = str(projection.get("empty_potion_hint", "（无可用药水）"))
 		potion_container.add_child(hint)
 
+	if bool(projection.get("battle_only_hint_visible", false)):
+		var battle_hint := Label.new()
+		battle_hint.text = str(projection.get("battle_only_hint", "药水仅可在战斗中使用。"))
+		battle_hint.add_theme_font_size_override("font_size", 14)
+		battle_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		potion_container.add_child(battle_hint)
+
 
 func _on_viewport_resized() -> void:
 	_apply_responsive_layout()

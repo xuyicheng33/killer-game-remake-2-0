@@ -21,6 +21,7 @@ enum TriggerType {
 
 signal log_updated(text: String)
 signal trigger_fired(trigger_type: TriggerType, context: Dictionary)
+signal battle_state_changed(active: bool)
 
 var run_state: RunState
 var effect_stack: EffectStackEngine = null
@@ -29,6 +30,7 @@ var _pending_battle_start_trigger := false
 var _cards_played_in_battle := 0
 var _enemies_killed_in_battle := 0
 var _battle_start_retry_count := 0
+var _battle_context: BattleContext = null
 var _relic_runtimes: Dictionary = {}
 var _relic_trigger_counts: Dictionary = {}
 const MAX_BATTLE_START_RETRIES := 100
@@ -78,8 +80,12 @@ func bind_run_state(value: RunState) -> void:
 	_pending_battle_start_trigger = false
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
+	_battle_start_retry_count = 0
+	_battle_context = null
+	effect_stack = null
 	_rebuild_relic_runtime_cache()
 	_apply_run_start_relics_once()
+	battle_state_changed.emit(false)
 	log_updated.emit("遗物/药水系统已就绪。")
 
 
@@ -90,6 +96,7 @@ func start_battle() -> void:
 	_battle_start_retry_count = 0
 	_relic_trigger_counts.clear()
 	_pending_battle_start_trigger = true
+	battle_state_changed.emit(true)
 	_try_fire_battle_start_trigger()
 
 
@@ -98,6 +105,24 @@ func end_battle() -> void:
 		_fire_trigger(TriggerType.ON_BATTLE_END, {"kills": _enemies_killed_in_battle})
 	_battle_active = false
 	_pending_battle_start_trigger = false
+	_battle_start_retry_count = 0
+	_battle_context = null
+	effect_stack = null
+	battle_state_changed.emit(false)
+
+
+func on_battle_scene_ready(battle_effect_stack: EffectStackEngine, battle_context_ref: BattleContext = null) -> void:
+	effect_stack = battle_effect_stack
+	_battle_context = battle_context_ref
+	if not _battle_active:
+		start_battle()
+		return
+	_battle_start_retry_count = 0
+	_try_fire_battle_start_trigger()
+
+
+func is_battle_active() -> bool:
+	return _battle_active
 
 
 func _try_fire_battle_start_trigger() -> void:
@@ -140,11 +165,18 @@ func _deferred_try_fire_battle_start_trigger() -> void:
 func _is_battle_start_context_ready() -> bool:
 	if effect_stack == null:
 		return false
+	if _battle_context != null:
+		var context_player := _battle_context.get_player()
+		if context_player != null and is_instance_valid(context_player):
+			return true
 	return _find_player() != null
 
 
 func use_potion(index: int) -> void:
 	if run_state == null:
+		return
+	if not _battle_active:
+		log_updated.emit("药水仅可在战斗中使用。")
 		return
 	if index < 0 or index >= run_state.potions.size():
 		return
@@ -296,7 +328,9 @@ func _find_player() -> Player:
 func _draw_cards_in_battle_context(amount: int) -> int:
 	if amount <= 0:
 		return 0
-	var battle_context := _find_battle_context()
+	var battle_context := _battle_context
+	if battle_context == null:
+		battle_context = _find_battle_context()
 	if battle_context == null:
 		push_warning("[RelicPotionSystem] draw_cards 缺少 BattleContext，效果跳过")
 		return 0
