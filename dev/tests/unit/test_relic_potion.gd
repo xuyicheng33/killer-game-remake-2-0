@@ -219,6 +219,40 @@ func test_turn_end_relic_heals_player() -> void:
 	assert_eq(_effect_stack.enqueue_calls, 1, "ON_TURN_END 遗物应通过 EffectStack 派发")
 
 
+func test_take_damage_relic_emits_player_died_when_lethal_in_battle() -> void:
+	_run_state.player_stats.health = 1
+	var signal_state := {"count": 0}
+	var on_player_died := func() -> void:
+		signal_state["count"] = int(signal_state["count"]) + 1
+	Events.player_died.connect(on_player_died)
+
+	_system.start_battle()
+	_system._apply_relic_effect("take_damage", 1)
+
+	assert_eq(_run_state.player_stats.health, 0, "遗物自伤应正确扣血到 0")
+	assert_eq(int(signal_state["count"]), 1, "战斗中遗物自伤致死应立即发射 player_died")
+
+	if Events.player_died.is_connected(on_player_died):
+		Events.player_died.disconnect(on_player_died)
+
+
+func test_take_damage_relic_does_not_emit_player_died_outside_battle() -> void:
+	_run_state.player_stats.health = 1
+	var signal_state := {"count": 0}
+	var on_player_died := func() -> void:
+		signal_state["count"] = int(signal_state["count"]) + 1
+	Events.player_died.connect(on_player_died)
+
+	_system.end_battle()
+	_system._apply_relic_effect("take_damage", 1)
+
+	assert_eq(_run_state.player_stats.health, 0, "战斗外遗物自伤应仍然扣血")
+	assert_eq(int(signal_state["count"]), 0, "战斗外不应发射 player_died")
+
+	if Events.player_died.is_connected(on_player_died):
+		Events.player_died.disconnect(on_player_died)
+
+
 func test_shop_enter_trigger_is_emitted() -> void:
 	var trigger_history: Array[int] = []
 	_system.trigger_fired.connect(func(trigger_type: RelicPotionSystem.TriggerType, _context: Dictionary) -> void:

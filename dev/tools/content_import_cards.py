@@ -83,6 +83,14 @@ def _to_res_path(path: Path, root: Path) -> str:
     return "res://" + rel
 
 
+def _deterministic_generated_at(source_path: Path) -> str:
+    try:
+        timestamp = source_path.stat().st_mtime
+    except OSError:
+        return datetime.fromtimestamp(0, timezone.utc).isoformat()
+    return datetime.fromtimestamp(timestamp, timezone.utc).replace(microsecond=0).isoformat()
+
+
 def _write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
@@ -876,7 +884,7 @@ def _write_report(
 ) -> None:
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": _deterministic_generated_at(source_path),
         "source": _to_repo_relative(source_path, root),
         "summary": {
             "total_cards": cards_total,

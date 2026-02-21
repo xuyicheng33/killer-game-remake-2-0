@@ -46,6 +46,14 @@ def _to_repo_relative(path: Path, root: Path) -> str:
         return path.resolve().as_posix()
 
 
+def _deterministic_generated_at(source_path: Path) -> str:
+    try:
+        timestamp = source_path.stat().st_mtime
+    except OSError:
+        return datetime.fromtimestamp(0, timezone.utc).isoformat()
+    return datetime.fromtimestamp(timestamp, timezone.utc).replace(microsecond=0).isoformat()
+
+
 def _append_error(
     errors: list[ValidationError],
     source_file: str,
@@ -294,7 +302,7 @@ def _write_report(
 ) -> None:
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": _deterministic_generated_at(source_path),
         "source": _to_repo_relative(source_path, root),
         "summary": {
             "total_relics": total_relics,

@@ -302,8 +302,7 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 				char_stats.mana = mini(char_stats.mana + value, char_stats.max_mana)
 				run_state.emit_changed()
 		"take_damage":
-			if run_state.player_stats != null:
-				run_state.player_stats.take_damage(maxi(0, value))
+			_apply_relic_self_damage(value)
 		"add_strength":
 			if run_state.player_stats != null:
 				run_state.player_stats.add_status("strength", value)
@@ -312,6 +311,20 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 				var drawn := _draw_cards_in_battle_context(value)
 				if drawn > 0:
 					run_state.emit_changed()
+
+
+func _apply_relic_self_damage(value: int) -> void:
+	if run_state == null or run_state.player_stats == null:
+		return
+	var damage := maxi(0, value)
+	if damage <= 0:
+		return
+
+	var stats: CharacterStats = run_state.player_stats
+	var initial_health := stats.health
+	stats.take_damage(damage)
+	if _battle_active and initial_health > 0 and stats.health <= 0:
+		Events.player_died.emit()
 
 
 func _find_player() -> Player:

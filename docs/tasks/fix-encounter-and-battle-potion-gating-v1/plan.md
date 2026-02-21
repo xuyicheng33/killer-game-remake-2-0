@@ -39,6 +39,11 @@
 - `runtime/modules/ui_shell/adapter/relic_potion_ui_adapter.gd`
 - `runtime/scenes/ui/relic_potion_ui.gd`
 - `runtime/modules/run_flow/README.md`
+- `runtime/modules/content_pipeline/reports/`
+- `dev/tools/content_import_cards.py`
+- `dev/tools/content_import_enemies.py`
+- `dev/tools/content_import_relics.py`
+- `dev/tools/content_import_events.py`
 - `dev/tests/unit/test_run_flow.gd`
 - `dev/tests/unit/test_relic_potion.gd`
 - `docs/tasks/fix-encounter-and-battle-potion-gating-v1/plan.md`
