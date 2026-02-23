@@ -157,36 +157,50 @@ func is_battle_active() -> bool:
 
 
 func _try_fire_battle_start_trigger() -> void:
-	if not _pending_battle_start_trigger:
-		return
-	if not _battle_active:
-		_pending_battle_start_trigger = false
+	if not _can_continue_pending_battle_start_trigger():
 		return
 	if not _is_battle_start_context_ready():
 		call_deferred("_deferred_try_fire_battle_start_trigger")
 		return
 
-	_pending_battle_start_trigger = false
-	_fire_trigger(TriggerType.ON_BATTLE_START, {})
+	_complete_pending_battle_start_trigger()
 
 
 func _deferred_try_fire_battle_start_trigger() -> void:
-	if not _pending_battle_start_trigger:
-		return
-	if not _battle_active:
-		_pending_battle_start_trigger = false
+	if not _can_continue_pending_battle_start_trigger():
 		return
 	if _is_battle_start_context_ready():
-		_pending_battle_start_trigger = false
-		_fire_trigger(TriggerType.ON_BATTLE_START, {})
+		_complete_pending_battle_start_trigger()
 		return
 
 	_battle_start_retry_count += 1
 	if _battle_start_retry_count > MAX_BATTLE_START_RETRIES:
 		push_warning("[RelicPotionSystem] 战斗开始触发器等待超时（%d 次重试），放弃触发" % MAX_BATTLE_START_RETRIES)
-		_pending_battle_start_trigger = false
+		_abort_pending_battle_start_trigger()
 		return
 
+	_schedule_battle_start_retry()
+
+
+func _can_continue_pending_battle_start_trigger() -> bool:
+	if not _pending_battle_start_trigger:
+		return false
+	if _battle_active:
+		return true
+	_abort_pending_battle_start_trigger()
+	return false
+
+
+func _complete_pending_battle_start_trigger() -> void:
+	_abort_pending_battle_start_trigger()
+	_fire_trigger(TriggerType.ON_BATTLE_START, {})
+
+
+func _abort_pending_battle_start_trigger() -> void:
+	_pending_battle_start_trigger = false
+
+
+func _schedule_battle_start_retry() -> void:
 	var tree := get_tree()
 	if tree == null:
 		return
