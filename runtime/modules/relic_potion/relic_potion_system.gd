@@ -7,6 +7,7 @@ const RELIC_RUNTIME_CACHE_SCRIPT := preload("res://runtime/modules/relic_potion/
 const RELIC_EFFECT_EXECUTOR_SCRIPT := preload("res://runtime/modules/relic_potion/relic_effect_executor.gd")
 const POTION_USE_SERVICE_SCRIPT := preload("res://runtime/modules/relic_potion/potion_use_service.gd")
 const BATTLE_START_TRIGGER_COORDINATOR_SCRIPT := preload("res://runtime/modules/relic_potion/battle_start_trigger_coordinator.gd")
+const BATTLE_PARTICIPANT_RESOLVER_SCRIPT := preload("res://runtime/modules/relic_potion/battle_participant_resolver.gd")
 
 enum TriggerType {
 	ON_BATTLE_START,
@@ -47,6 +48,7 @@ var _runtime_cache = null
 var _effect_executor = null
 var _potion_use_service = null
 var _battle_start_trigger_coordinator = null
+var _battle_participant_resolver = null
 const MAX_BATTLE_START_RETRIES := 100
 
 
@@ -318,18 +320,8 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 
 
 func _find_player() -> Player:
-	if _battle_session_port != null:
-		var port_player: Variant = _battle_session_port.resolve_player()
-		if port_player is Player and is_instance_valid(port_player):
-			return port_player as Player
-	if not (Engine.get_main_loop() is SceneTree):
-		return null
-	var players: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("player")
-	if players.is_empty():
-		return null
-	if players[0] is Player:
-		return players[0] as Player
-	return null
+	_init_services()
+	return _battle_participant_resolver.resolve_player(_battle_session_port)
 
 
 func _draw_cards_in_battle_context(amount: int) -> int:
@@ -347,11 +339,8 @@ func _draw_cards_in_battle_context(amount: int) -> int:
 
 
 func _find_battle_context() -> BattleContext:
-	if _battle_session_port != null:
-		return _battle_session_port.battle_context
-	if _battle_context != null:
-		return _battle_context
-	return null
+	_init_services()
+	return _battle_participant_resolver.resolve_battle_context(_battle_session_port, _battle_context)
 
 
 func _apply_potion_effect(index: int, potion: PotionData) -> void:
@@ -506,25 +495,8 @@ func _consume_potion(index: int, potion: PotionData) -> void:
 
 
 func _find_enemies() -> Array[Node]:
-	if _battle_session_port != null:
-		var port_enemies: Variant = _battle_session_port.resolve_enemies()
-		if not (port_enemies is Array):
-			port_enemies = []
-		if not port_enemies.is_empty():
-			var typed_enemies: Array[Node] = []
-			for enemy in port_enemies:
-				if enemy is Node and is_instance_valid(enemy):
-					typed_enemies.append(enemy)
-			return typed_enemies
-
-	var result: Array[Node] = []
-	if not (Engine.get_main_loop() is SceneTree):
-		return result
-	var nodes: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("enemies")
-	for node in nodes:
-		if node != null and is_instance_valid(node):
-			result.append(node)
-	return result
+	_init_services()
+	return _battle_participant_resolver.resolve_enemies(_battle_session_port)
 
 
 func _init_services() -> void:
@@ -536,6 +508,8 @@ func _init_services() -> void:
 		_potion_use_service = POTION_USE_SERVICE_SCRIPT.new()
 	if _battle_start_trigger_coordinator == null:
 		_battle_start_trigger_coordinator = BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.new()
+	if _battle_participant_resolver == null:
+		_battle_participant_resolver = BATTLE_PARTICIPANT_RESOLVER_SCRIPT.new()
 	_effect_executor.bind_resolvers(Callable(self, "_find_player"), Callable(self, "_draw_cards_in_battle_context"))
 
 
