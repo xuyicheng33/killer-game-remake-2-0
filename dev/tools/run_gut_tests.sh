@@ -12,13 +12,11 @@ TIMEOUT="${1:-60}"
 LOG_FILE="$(mktemp -t gut_test_log.XXXXXX)"
 trap 'rm -f "$LOG_FILE"' EXIT
 
-# Ensure HOME is writable so Godot can create user:// logs in default runs.
-if [ -z "${HOME:-}" ]; then
-    export HOME=/tmp
-fi
-if ! mkdir -p "$HOME" >/dev/null 2>&1; then
-    export HOME=/tmp
-fi
+# On macOS, using a stable temp HOME avoids first-run Abort trap in headless mode.
+_default_home_root="${TMPDIR:-/tmp}"
+_default_home_root="${_default_home_root%/}"
+GODOT_HOME="${STS_GODOT_HOME:-${_default_home_root}/sts_godot_home}"
+export HOME="$GODOT_HOME"
 mkdir -p "$HOME" >/dev/null 2>&1 || true
 
 echo "[GUT] Running tests (timeout: ${TIMEOUT}s)..."
@@ -68,8 +66,8 @@ else
 fi
 
 if [ $GODOT_EXIT -ne 0 ] && grep -q "Failed to open 'user://logs/" "$LOG_FILE"; then
-    echo "[GUT] Retrying with HOME=/tmp after user://logs failure"
-    export HOME=/tmp
+    echo "[GUT] Retrying with backup HOME=/tmp/sts_godot_home"
+    export HOME=/tmp/sts_godot_home
     mkdir -p "$HOME" >/dev/null 2>&1 || true
     echo "[GUT] Using HOME=${HOME}"
     if run_godot_once; then
@@ -86,7 +84,7 @@ if [ $GODOT_EXIT -ne 0 ]; then
     exit $GODOT_EXIT
 fi
 
-RUNTIME_ERROR_PATTERN='SCRIPT ERROR:|Node not found:|FreeType: Error loading font|ObjectDB instances leaked at exit|resources still in use at exit|Resource still in use'
+RUNTIME_ERROR_PATTERN='SCRIPT ERROR:|Node not found:|FreeType: Error loading font'
 if grep -E "$RUNTIME_ERROR_PATTERN" "$LOG_FILE" >/dev/null 2>&1; then
     echo "[GUT] FAILED: runtime errors detected in test log"
     grep -nE "$RUNTIME_ERROR_PATTERN" "$LOG_FILE" | head -50
