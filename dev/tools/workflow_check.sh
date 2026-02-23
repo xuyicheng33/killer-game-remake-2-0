@@ -149,6 +149,9 @@ bash dev/tools/run_flow_contract_check.sh
 bash dev/tools/run_flow_payload_contract_check.sh
 bash dev/tools/run_flow_result_shape_check.sh
 bash dev/tools/run_flow_regression_check.sh
+bash dev/tools/battle_relic_injection_contract_check.sh
+bash dev/tools/module_scene_type_dependency_check.sh
+bash dev/tools/dynamic_call_guard_check.sh
 bash dev/tools/run_lifecycle_contract_check.sh
 bash dev/tools/persistence_contract_check.sh
 bash dev/tools/seed_rng_contract_check.sh

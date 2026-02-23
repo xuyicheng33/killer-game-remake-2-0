@@ -1,6 +1,7 @@
 extends Node2D
 
 const BATTLE_CONTEXT_SCRIPT := preload("res://runtime/modules/battle_loop/battle_context.gd")
+const BATTLE_SESSION_PORT_SCRIPT := preload("res://runtime/modules/relic_potion/contracts/battle_session_port.gd")
 const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
 const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
 const ENCOUNTER_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/encounter_registry.gd")
@@ -10,6 +11,7 @@ const PHASE_LOG_LIMIT := 8
 @export var music: AudioStream
 @export var runtime_stats: CharacterStats
 @export var encounter_id: String = ""
+var relic_potion_system: RelicPotionSystem = null
 
 @onready var battle_ui: BattleUI = $BattleUI
 @onready var player_handler: PlayerHandler = $PlayerHandler
@@ -115,33 +117,32 @@ func start_battle(stats: CharacterStats) -> void:
 		return
 	_battle_context.bind_combatants(player, enemies)
 	enemy_handler.reset_enemy_actions()
-	_inject_effect_stack_to_relic_system()
+	_bind_battle_session_to_relic_system()
 	_battle_context.start_battle()
 
 
-func _inject_effect_stack_to_relic_system() -> void:
-	var tree := get_tree()
-	if tree == null:
-		return
-	var app_nodes := tree.get_nodes_in_group("app")
-	if app_nodes.is_empty():
-		return
-	var app_node := app_nodes[0]
-	if app_node == null or not is_instance_valid(app_node):
-		return
-	if not "relic_potion_system" in app_node:
-		return
-	var rps = app_node.get("relic_potion_system")
-	if rps == null:
-		return
-	if rps.has_method("on_battle_scene_ready"):
-		rps.call("on_battle_scene_ready", _battle_context.effect_stack, _battle_context)
+func _bind_battle_session_to_relic_system() -> void:
+	if relic_potion_system == null:
 		return
 
-	# Backward-compatible fallback for older RelicPotionSystem implementations.
-	rps.effect_stack = _battle_context.effect_stack
-	if rps.has_method("start_battle"):
-		rps.call("start_battle")
+	var session_port := BATTLE_SESSION_PORT_SCRIPT.new(
+		_battle_context.effect_stack,
+		_battle_context,
+		func() -> Player:
+			return player,
+		func() -> Array[Node]:
+			return _resolve_live_enemies()
+	)
+
+	relic_potion_system.on_battle_session_bound(session_port)
+
+
+func _resolve_live_enemies() -> Array[Node]:
+	var out: Array[Node] = []
+	for enemy in _get_battle_enemies():
+		if enemy != null and is_instance_valid(enemy):
+			out.append(enemy)
+	return out
 
 
 func _spawn_enemies() -> void:

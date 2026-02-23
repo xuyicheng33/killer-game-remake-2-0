@@ -8,9 +8,9 @@ const REWARD_SCREEN_SCENE := preload("res://runtime/scenes/reward/reward_screen.
 const REST_SCREEN_SCENE := preload("res://runtime/scenes/map/rest_screen.tscn")
 const SHOP_SCREEN_SCENE := preload("res://runtime/scenes/shop/shop_screen.tscn")
 const EVENT_SCREEN_SCENE := preload("res://runtime/scenes/events/event_screen.tscn")
-const CHARACTER_REGISTRY_SCRIPT := preload("res://runtime/modules/run_meta/character_registry.gd")
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://runtime/modules/relic_potion/relic_potion_system.gd")
 const RUN_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/run_flow_service.gd")
+const APP_FLOW_ORCHESTRATOR_SCRIPT := preload("res://runtime/modules/run_flow/app_flow_orchestrator.gd")
 
 @onready var scene_host: Node = %SceneHost
 @onready var relic_potion_ui: RelicPotionUI = %RelicPotionUI
@@ -21,6 +21,7 @@ const RUN_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/run_flo
 var run_state: RunState
 var relic_potion_system: RelicPotionSystem
 var run_flow_service: RunFlowService
+var app_flow_orchestrator
 
 
 func _ready() -> void:
@@ -30,6 +31,10 @@ func _ready() -> void:
 	relic_potion_system = RELIC_POTION_SYSTEM_SCRIPT.new() as RelicPotionSystem
 	add_child(relic_potion_system)
 	relic_potion_ui.relic_potion_system = relic_potion_system
+	app_flow_orchestrator = APP_FLOW_ORCHESTRATOR_SCRIPT.new(
+		run_flow_service,
+		relic_potion_system
+	)
 
 	_connect_signals()
 	_open_main_menu()
@@ -76,28 +81,16 @@ func _start_new_run(character_id: String = "") -> void:
 	game_over_panel.hide()
 	get_tree().paused = false
 
-	# 如果未指定角色ID，使用默认或环境变量
-	if character_id.is_empty():
-		character_id = CHARACTER_REGISTRY_SCRIPT.get_selected_character_id()
-
-	var hero_template: CharacterStats = CHARACTER_REGISTRY_SCRIPT.get_character_template(character_id)
-	if hero_template == null:
-		push_error("无法加载角色模板: %s" % character_id)
-		return
-
-	var result := run_flow_service.lifecycle_service.start_new_run(hero_template, character_id)
+	var result: Dictionary = app_flow_orchestrator.start_new_run(character_id)
 	if not bool(result.get("ok", false)):
-		push_error("新局初始化失败")
+		push_error(str(result.get("message", "新局初始化失败。")))
 		return
 
 	run_state = _extract_run_state(result)
 	if run_state == null:
 		push_error("新局初始化失败：返回结果中缺少有效的 RunState")
 		return
-	run_flow_service.reset_flow_context()
-	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
-	run_flow_service.lifecycle_service.update_repro_progress(run_state)
 
 	_open_map()
 
@@ -139,19 +132,13 @@ func _open_map() -> void:
 
 
 func _on_map_node_selected(node: MapNodeData) -> void:
-	var command_result := run_flow_service.map_flow_service.enter_map_node(run_state, node)
+	var command_result: Dictionary = app_flow_orchestrator.enter_map_node(run_state, node)
 	if not bool(command_result.get("accepted", false)):
 		var error_text := str(command_result.get("error_text", ""))
 		if error_text.length() > 0:
 			push_warning("[map] %s" % error_text)
-			relic_potion_system.push_external_log("节点进入失败：%s" % error_text)
+			app_flow_orchestrator.push_external_log("节点进入失败：%s" % error_text)
 		return
-
-	run_flow_service.apply_map_node_context(command_result, node.type)
-	run_flow_service.lifecycle_service.log_node_enter(
-		str(command_result.get("node_id", node.id)),
-		int(run_flow_service.get_pending_node_type())
-	)
 	_dispatch_next_route(command_result)
 
 
@@ -160,23 +147,13 @@ func _open_battle(encounter_id: String = "") -> void:
 	var battle_scene := BATTLE_SCENE.instantiate()
 	battle_scene.set("runtime_stats", run_state.player_stats)
 	battle_scene.set("encounter_id", encounter_id)
+	battle_scene.set("relic_potion_system", relic_potion_system)
 	scene_host.add_child(battle_scene)
 
 
 func _on_battle_finished(result: int) -> void:
-	var is_win := result == BattleOverPanel.Type.WIN
-	var is_boss := run_flow_service.get_pending_node_type() == MapNodeData.NodeType.BOSS
-	if is_win and is_boss:
-		relic_potion_system.on_boss_killed()
-	relic_potion_system.end_battle()
 	_clear_scene_host()
-
-	var command_result := run_flow_service.battle_flow_service.resolve_battle_completion(
-		run_state,
-		is_win,
-		run_flow_service.get_pending_reward_gold(),
-		is_boss
-	)
+	var command_result: Dictionary = app_flow_orchestrator.resolve_battle_completion(run_state, result)
 	_dispatch_next_route(command_result)
 
 
@@ -190,10 +167,10 @@ func _open_reward(reward_gold: int) -> void:
 
 
 func _on_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
-	var command_result := run_flow_service.battle_flow_service.apply_battle_reward(run_state, bundle, chosen_card)
+	var command_result: Dictionary = app_flow_orchestrator.apply_battle_reward(run_state, bundle, chosen_card)
 	var reward_log := str(command_result.get("reward_log", ""))
 	if reward_log.length() > 0:
-		relic_potion_system.push_external_log("战斗奖励：%s" % reward_log)
+		app_flow_orchestrator.push_external_log("战斗奖励：%s" % reward_log)
 	_dispatch_next_route(command_result)
 
 
@@ -211,7 +188,7 @@ func _on_rest_completed() -> void:
 
 func _open_shop_screen() -> void:
 	_clear_scene_host()
-	relic_potion_system.on_shop_enter()
+	app_flow_orchestrator.on_shop_enter()
 	var shop_screen := SHOP_SCREEN_SCENE.instantiate() as ShopScreen
 	shop_screen.run_state = run_state
 	shop_screen.shop_completed.connect(_on_shop_completed)
@@ -235,25 +212,21 @@ func _on_event_completed() -> void:
 
 
 func _on_non_battle_node_completed() -> void:
-	var command_result := run_flow_service.map_flow_service.resolve_non_battle_completion(
-		run_state,
-		run_flow_service.get_pending_node_type()
-	)
+	var command_result: Dictionary = app_flow_orchestrator.resolve_non_battle_completion(run_state)
 	var bonus_log := str(command_result.get("bonus_log", ""))
 	if bonus_log.length() > 0:
-		relic_potion_system.push_external_log(bonus_log)
+		app_flow_orchestrator.push_external_log(bonus_log)
 	_dispatch_next_route(command_result)
 
 
 func _dispatch_next_route(command_result: Dictionary) -> void:
-	var next_route := str(command_result.get("next_route", RunRouteDispatcher.ROUTE_MAP))
-	run_flow_service.apply_route_context(command_result)
+	var next_route: String = app_flow_orchestrator.dispatch_next_route(command_result)
 	match next_route:
 		RunRouteDispatcher.ROUTE_BATTLE:
 			var enc_id := str(command_result.get("encounter_id", ""))
 			_open_battle(enc_id)
 		RunRouteDispatcher.ROUTE_REWARD:
-			_open_reward(run_flow_service.reward_gold_for(command_result))
+			_open_reward(app_flow_orchestrator.reward_gold_for(command_result))
 		RunRouteDispatcher.ROUTE_REST:
 			_open_rest_screen()
 		RunRouteDispatcher.ROUTE_SHOP:
@@ -276,7 +249,7 @@ func _clear_scene_host() -> void:
 
 
 func _try_load_saved_run() -> bool:
-	var result := run_flow_service.lifecycle_service.try_load_saved_run()
+	var result: Dictionary = app_flow_orchestrator.continue_saved_run()
 	if not bool(result.get("ok", false)):
 		push_warning("[save] %s" % str(result.get("message", "读档失败。")))
 		return false
@@ -289,11 +262,9 @@ func _try_load_saved_run() -> bool:
 	if run_state == null:
 		push_warning("[save] 读档失败：返回结果中缺少有效的 RunState。")
 		return false
-	run_flow_service.reset_flow_context()
-	relic_potion_system.bind_run_state(run_state)
 	relic_potion_ui.run_state = run_state
 	_open_map()
-	relic_potion_system.push_external_log("继续游戏：层数 %d，金币 %d" % [run_state.floor + 1, run_state.gold])
+	app_flow_orchestrator.push_external_log("继续游戏：层数 %d，金币 %d" % [run_state.floor + 1, run_state.gold])
 	return true
 
 

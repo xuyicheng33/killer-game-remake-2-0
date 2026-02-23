@@ -3,12 +3,15 @@ extends RefCounted
 
 const EVENT_SERVICE_SCRIPT := preload("res://runtime/modules/map_event/event_service.gd")
 const ROUTE_DISPATCHER_SCRIPT := preload("res://runtime/modules/run_flow/route_dispatcher.gd")
+const RUN_STATE_COMMAND_SERVICE_SCRIPT := preload("res://runtime/modules/run_meta/run_state_command_service.gd")
 
 var route_dispatcher: RunRouteDispatcher
+var _commands
 
 
 func _init() -> void:
 	route_dispatcher = ROUTE_DISPATCHER_SCRIPT.new() as RunRouteDispatcher
+	_commands = RUN_STATE_COMMAND_SERVICE_SCRIPT.new()
 
 
 func pick_event_template(run_state: RunState) -> Dictionary:
@@ -25,7 +28,7 @@ func execute_option(run_state: RunState, option: Dictionary) -> Dictionary:
 func execute_continue(run_state: RunState) -> Dictionary:
 	if run_state == null:
 		return _result(RunRouteDispatcher.ROUTE_EVENT, false, "", false)
-	run_state.next_floor()
+	_commands.next_floor(run_state)
 	return _result(RunRouteDispatcher.ROUTE_MAP, true, "", true)
 
 

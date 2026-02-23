@@ -1,4 +1,4 @@
-# RunState 契约（v0.5.0）
+# RunState 契约（v0.6.0）
 
 ## 目的
 
@@ -59,9 +59,8 @@
 - 版本不匹配时必须安全失败并给出提示，不允许崩溃或写坏当前运行态。
 - 当前范围不含"战斗中断点恢复"，仅保证恢复后可继续局外流程推进。
 - 版本兼容策略：
-  - v1 存档读取时，`statuses` 字段缺失则使用空字典默认值，不恢复任何状态层。
-  - v2 存档读取时，按 `statuses` 字典恢复各状态层数值。
-  - v3 存档读取时，新增 `character_id` 字段，旧存档默认为 "warrior"。
+  - v4 为当前唯一兼容版本（`MIN_COMPAT_VERSION = 4`）。
+  - 读取 v1~v3 存档时返回 `version_mismatch` 并安全失败。
 
 ## C2 固定种子约束（feat-seed-deterministic-v1）
 
@@ -74,20 +73,8 @@
 
 ## 兼容说明
 
-- 本版本新增遗物/药水字段，属于兼容性扩展（MINOR）。
-- Phase 10 新增玩家状态层字段（`player_stats.statuses`），属于兼容性扩展（MINOR）。
-- Phase 9 新增角色字段（`character_id`），属于兼容性扩展（MINOR）。
-- 旧存档无上述字段时，应使用默认值：
-  - `character_id = "warrior"`
-  - `map_current_node_id = ""`
-  - `map_reachable_node_ids = []`
-  - `map_visited_node_ids = []`
-  - `map_graph = null`（可在开局时重建）
-  - `relic_capacity = 6`
-  - `potion_capacity = 2`
-  - `relics = []`
-  - `potions = []`
-  - `statuses = {}`（状态层为空）
+- 本版本执行断兼容升级（MAJOR）：仅支持 v4 存档读档。
+- `statuses` 字段在反序列化时仍保留默认空字典兜底，用于健壮性（不用于兼容旧版本）。
 
 ## 变更规则
 
@@ -104,6 +91,6 @@
 | `MIN_COMPAT_VERSION` | 最低兼容版本常量，必须存在 |
 | `_serialize_player_stats.statuses` | 序列化时必须包含状态层字段（`get_status_snapshot`） |
 | `_apply_player_stats.statuses` | 反序列化时必须恢复状态层（`set_status`） |
-| v1 兼容兜底 | 读取 `statuses` 时必须提供空字典默认值 |
+| 反序列化兜底 | 读取 `statuses` 时必须提供空字典默认值 |
 
 门禁目的：防止后续改动破坏 Phase 10 的"状态层存档兼容"能力。

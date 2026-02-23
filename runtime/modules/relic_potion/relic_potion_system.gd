@@ -2,6 +2,7 @@ class_name RelicPotionSystem
 extends Node
 
 const RELIC_REGISTRY_SCRIPT := preload("res://runtime/modules/relic_potion/relic_registry.gd")
+const BATTLE_SESSION_PORT_SCRIPT := preload("res://runtime/modules/relic_potion/contracts/battle_session_port.gd")
 
 enum TriggerType {
 	ON_BATTLE_START,
@@ -31,6 +32,7 @@ var _cards_played_in_battle := 0
 var _enemies_killed_in_battle := 0
 var _battle_start_retry_count := 0
 var _battle_context: BattleContext = null
+var _battle_session_port = null
 var _relic_runtimes: Dictionary = {}
 var _relic_trigger_counts: Dictionary = {}
 const MAX_BATTLE_START_RETRIES := 100
@@ -82,6 +84,7 @@ func bind_run_state(value: RunState) -> void:
 	_enemies_killed_in_battle = 0
 	_battle_start_retry_count = 0
 	_battle_context = null
+	_battle_session_port = null
 	effect_stack = null
 	_rebuild_relic_runtime_cache()
 	_apply_run_start_relics_once()
@@ -107,18 +110,28 @@ func end_battle() -> void:
 	_pending_battle_start_trigger = false
 	_battle_start_retry_count = 0
 	_battle_context = null
+	_battle_session_port = null
 	effect_stack = null
 	battle_state_changed.emit(false)
 
 
-func on_battle_scene_ready(battle_effect_stack: EffectStackEngine, battle_context_ref: BattleContext = null) -> void:
-	effect_stack = battle_effect_stack
-	_battle_context = battle_context_ref
+func on_battle_session_bound(session_port) -> void:
+	_battle_session_port = session_port
+	effect_stack = session_port.effect_stack if session_port != null else null
+	_battle_context = session_port.battle_context if session_port != null else null
 	if not _battle_active:
 		start_battle()
 		return
 	_battle_start_retry_count = 0
 	_try_fire_battle_start_trigger()
+
+
+func on_battle_scene_ready(battle_effect_stack: EffectStackEngine, battle_context_ref: BattleContext = null) -> void:
+	var session_port = BATTLE_SESSION_PORT_SCRIPT.new(
+		battle_effect_stack,
+		battle_context_ref
+	)
+	on_battle_session_bound(session_port)
 
 
 func is_battle_active() -> bool:
@@ -168,6 +181,10 @@ func _is_battle_start_context_ready() -> bool:
 	if _battle_context != null:
 		var context_player := _battle_context.get_player()
 		if context_player != null and is_instance_valid(context_player):
+			return true
+	if _battle_session_port != null:
+		var port_player: Variant = _battle_session_port.resolve_player()
+		if port_player != null and is_instance_valid(port_player):
 			return true
 	return _find_player() != null
 
@@ -328,6 +345,10 @@ func _apply_relic_self_damage(value: int) -> void:
 
 
 func _find_player() -> Player:
+	if _battle_session_port != null:
+		var port_player: Variant = _battle_session_port.resolve_player()
+		if port_player is Player and is_instance_valid(port_player):
+			return port_player as Player
 	if not (Engine.get_main_loop() is SceneTree):
 		return null
 	var players: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("player")
@@ -342,6 +363,8 @@ func _draw_cards_in_battle_context(amount: int) -> int:
 	if amount <= 0:
 		return 0
 	var battle_context := _battle_context
+	if battle_context == null and _battle_session_port != null:
+		battle_context = _battle_session_port.battle_context
 	if battle_context == null:
 		battle_context = _find_battle_context()
 	if battle_context == null:
@@ -351,36 +374,10 @@ func _draw_cards_in_battle_context(amount: int) -> int:
 
 
 func _find_battle_context() -> BattleContext:
-	if not (Engine.get_main_loop() is SceneTree):
-		return null
-
-	var tree := Engine.get_main_loop() as SceneTree
-	var app_nodes: Array[Node] = tree.get_nodes_in_group("app")
-	if app_nodes.is_empty():
-		return null
-
-	var app_node := app_nodes[0]
-	if app_node == null or not is_instance_valid(app_node):
-		return null
-	if not "scene_host" in app_node:
-		return null
-
-	var scene_host_variant: Variant = app_node.get("scene_host")
-	if not (scene_host_variant is Node):
-		return null
-	var scene_host: Node = scene_host_variant as Node
-	if scene_host.get_child_count() <= 0:
-		return null
-
-	var current_scene := scene_host.get_child(0)
-	if current_scene == null or not is_instance_valid(current_scene):
-		return null
-	if not "_battle_context" in current_scene:
-		return null
-
-	var context_variant: Variant = current_scene.get("_battle_context")
-	if context_variant is BattleContext:
-		return context_variant as BattleContext
+	if _battle_session_port != null:
+		return _battle_session_port.battle_context
+	if _battle_context != null:
+		return _battle_context
 	return null
 
 
@@ -596,6 +593,17 @@ func _consume_potion(index: int, potion: PotionData) -> void:
 
 
 func _find_enemies() -> Array[Node]:
+	if _battle_session_port != null:
+		var port_enemies: Variant = _battle_session_port.resolve_enemies()
+		if not (port_enemies is Array):
+			port_enemies = []
+		if not port_enemies.is_empty():
+			var typed_enemies: Array[Node] = []
+			for enemy in port_enemies:
+				if enemy is Node and is_instance_valid(enemy):
+					typed_enemies.append(enemy)
+			return typed_enemies
+
 	var result: Array[Node] = []
 	if not (Engine.get_main_loop() is SceneTree):
 		return result

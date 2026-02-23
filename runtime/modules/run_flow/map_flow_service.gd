@@ -5,14 +5,17 @@ const ROUTE_DISPATCHER_SCRIPT := preload("res://runtime/modules/run_flow/route_d
 const REWARD_GENERATOR_SCRIPT := preload("res://runtime/modules/reward_economy/reward_generator.gd")
 const ENCOUNTER_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/encounter_registry.gd")
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
+const RUN_STATE_COMMAND_SERVICE_SCRIPT := preload("res://runtime/modules/run_meta/run_state_command_service.gd")
 
 var route_dispatcher: RunRouteDispatcher
+var _commands
 
 
 func _init(dispatcher: RunRouteDispatcher = null) -> void:
 	route_dispatcher = dispatcher
 	if route_dispatcher == null:
 		route_dispatcher = ROUTE_DISPATCHER_SCRIPT.new() as RunRouteDispatcher
+	_commands = RUN_STATE_COMMAND_SERVICE_SCRIPT.new()
 
 
 func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
@@ -41,7 +44,7 @@ func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
 			)
 		encounter_id = str(encounter_result.get("encounter_id", ""))
 
-	if not run_state.enter_map_node(node.id):
+	if not _commands.enter_map_node(run_state, node.id):
 		return route_dispatcher.make_result(
 			RunRouteDispatcher.ROUTE_MAP,
 			{
@@ -60,7 +63,7 @@ func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
 		payload["encounter_id"] = encounter_id
 
 	if next_route == RunRouteDispatcher.ROUTE_MAP:
-		run_state.next_floor()
+		_commands.next_floor(run_state)
 		payload["advanced_floor"] = true
 
 	return route_dispatcher.make_result(next_route, payload)

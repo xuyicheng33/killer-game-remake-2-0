@@ -3,16 +3,19 @@ extends RefCounted
 
 const SHOP_OFFER_GENERATOR_SCRIPT := preload("res://runtime/modules/reward_economy/shop_offer_generator.gd")
 const ROUTE_DISPATCHER_SCRIPT := preload("res://runtime/modules/run_flow/route_dispatcher.gd")
+const RUN_STATE_COMMAND_SERVICE_SCRIPT := preload("res://runtime/modules/run_meta/run_state_command_service.gd")
 
 const OFFER_TYPE_CARD := "card"
 const OFFER_TYPE_RELIC := "relic"
 const OFFER_TYPE_POTION := "potion"
 
 var route_dispatcher: RunRouteDispatcher
+var _commands
 
 
 func _init() -> void:
 	route_dispatcher = ROUTE_DISPATCHER_SCRIPT.new() as RunRouteDispatcher
+	_commands = RUN_STATE_COMMAND_SERVICE_SCRIPT.new()
 
 
 func generate_offers(run_state: RunState) -> Array[Dictionary]:
@@ -37,10 +40,10 @@ func execute_buy_offer(run_state: RunState, offers: Array[Dictionary], index: in
 				card = card_variant
 			if card == null:
 				return _result(RunRouteDispatcher.ROUTE_SHOP, true, "购买失败：卡牌数据无效。")
-			if not run_state.spend_gold(price):
+			if not _commands.spend_gold(run_state, price):
 				return _result(RunRouteDispatcher.ROUTE_SHOP, true, "金币不足，无法购买。")
-			if not run_state.add_card_to_deck(card):
-				run_state.add_gold(price)
+			if not _commands.add_card_to_deck(run_state, card):
+				_commands.add_gold(run_state, price)
 				return _result(RunRouteDispatcher.ROUTE_SHOP, true, "购买失败：卡牌无效，已退款。")
 			offers.remove_at(index)
 			return _result(RunRouteDispatcher.ROUTE_SHOP, true, "已购买卡牌：%s" % _card_name(card))
@@ -102,7 +105,7 @@ func execute_remove_card(run_state: RunState, index: int) -> Dictionary:
 func execute_leave(run_state: RunState) -> Dictionary:
 	if run_state == null:
 		return _result(RunRouteDispatcher.ROUTE_SHOP, false, "")
-	run_state.next_floor()
+	_commands.next_floor(run_state)
 	return _result(RunRouteDispatcher.ROUTE_MAP, true, "")
 
 

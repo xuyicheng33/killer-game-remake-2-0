@@ -6,46 +6,50 @@
 - 任务级别：`L2`
 - 主模块：`run_flow`
 - 负责人：`Codex`
-- 日期：`2026-02-21`
+- 日期：`2026-02-23`
 
 ## 目标
 
-修复两类高优先级稳定性问题：
-1. 战斗节点遭遇缺失时不再静默回退为默认敌组，改为显式拒绝并透出原因。
-2. 药水严格限定为“仅战斗可用”，并在 UI 层反映可用状态。
+在已完成“遭遇缺失显式失败 + 药水战斗态门禁”基础上，执行一次架构收口，作为后续功能开发新基线：
 
-同时收口 battle start 触发时序：由战斗场景就绪后显式启动遗物战斗开始触发，减少轮询依赖。
+1. `app.gd` 进一步瘦身，生命周期与路由编排下沉到 `run_flow`。
+2. battle -> relic/potion 依赖改为显式 battle session 注入，移除隐式发现。
+3. `SaveService` 拆分为“读写网关 + 序列化 + 反序列化 + façade”，降低单文件复杂度。
+4. 引入 `RunStateCommandService` 统一 RunState 写入口，减少分散写操作。
+5. 清理模块层对场景具体类型依赖。
+6. 将关键约束固化为 workflow 门禁，避免后续回归。
 
 ## 范围边界
 
 - 包含：
-  - `MapFlowService.enter_map_node` 遭遇选择流程收口（先校验遭遇，再写入地图推进状态）
-  - `GameApp` 对 map_flow 拒绝结果的用户可见反馈
-  - `RelicPotionSystem` 战斗可用约束（仅战斗可用）、战斗上下文显式绑定入口
-  - `Battle` 场景对遗物系统的 battle-ready 显式通知
-  - `RelicPotionUIAdapter/UI` 战斗外药水按钮禁用与提示
-  - 对应单测回归
+  - `run_flow` 应用编排下沉与 `app.gd` 瘦身
+  - `relic_potion` battle session 显式契约与注入
+  - `persistence` 模块职责拆分与存档版本策略调整
+  - `map/shop/event/rest` 对 RunState 写入口收口
+  - 场景类型依赖清理（限定在 `card_system` 现有耦合点）
+  - 新增/更新质量门禁与对应测试
 - 不包含：
-  - 新增卡牌/敌人/遗物内容
-  - 存档结构调整
-  - 视觉主题改版
+  - 新增卡牌/敌人/遗物玩法内容
+  - UI 视觉改版
+  - 新存档兼容迁移器（本次按审批直接破兼容）
 
 ## 改动白名单文件
 
-- `runtime/modules/run_flow/map_flow_service.gd`
+- `runtime/modules/run_flow/`
+- `runtime/modules/relic_potion/`
+- `runtime/modules/run_meta/`
+- `runtime/modules/persistence/`
+- `runtime/modules/card_system/card_zones_model.gd`
 - `runtime/scenes/app/app.gd`
 - `runtime/scenes/battle/battle.gd`
-- `runtime/modules/relic_potion/relic_potion_system.gd`
 - `runtime/modules/ui_shell/adapter/relic_potion_ui_adapter.gd`
 - `runtime/scenes/ui/relic_potion_ui.gd`
 - `runtime/modules/run_flow/README.md`
-- `runtime/modules/content_pipeline/reports/`
-- `dev/tools/content_import_cards.py`
-- `dev/tools/content_import_enemies.py`
-- `dev/tools/content_import_relics.py`
-- `dev/tools/content_import_events.py`
+- `dev/tools/`
 - `dev/tests/unit/test_run_flow.gd`
 - `dev/tests/unit/test_relic_potion.gd`
+- `dev/tests/unit/test_run_state_command_service.gd`
+- `docs/contracts/run_state.md`
 - `docs/tasks/fix-encounter-and-battle-potion-gating-v1/plan.md`
 - `docs/tasks/fix-encounter-and-battle-potion-gating-v1/handoff.md`
 - `docs/tasks/fix-encounter-and-battle-potion-gating-v1/verification.md`
@@ -53,24 +57,27 @@
 
 ## 实施步骤
 
-1. 调整 `map_flow_service.gd`：战斗节点先完成遭遇解析，缺失则返回 rejected + error payload，不推进 run_state。
-2. 调整 `app.gd`：处理 rejected 结果并通过日志/UI 输出提示。
-3. 调整 `relic_potion_system.gd`：增加 battle-ready 显式绑定入口、仅战斗可用约束、battle 状态查询接口。
-4. 调整 `battle.gd`：战斗场景 ready 后显式通知 relic system 并启动 battle trigger。
-5. 调整 `relic_potion_ui_adapter.gd` 与 `relic_potion_ui.gd`：战斗外禁用药水按钮并显示“仅战斗可用”提示。
-6. 补充单测：run_flow 遭遇缺失拒绝路径、药水按钮启用状态和 battle-only 行为。
-7. 执行验证命令并更新任务文档/工作日志。
+1. 新增 `AppFlowOrchestrator`，迁移 app 生命周期与路由编排调用。
+2. 引入 battle session port，完成 `app -> battle -> relic_potion` 显式注入链。
+3. 拆分 `SaveService` 为 gateway/serializer/deserializer/facade。
+4. 新增 `RunStateCommandService` 并改造 `map/shop/event/rest` 写入调用。
+5. 清理 `card_zones_model` 对场景类型的直接依赖。
+6. 增加门禁脚本并接入 `workflow_check.sh`。
+7. 回归验证并更新任务三件套与工作日志。
 
 ## 验证方案
 
-1. `make test`
-2. `make workflow-check TASK_ID=fix-encounter-and-battle-potion-gating-v1`
-3. `bash dev/tools/save_load_replay_smoke.sh`
+1. `bash dev/tools/run_gut_tests.sh 120`
+2. `TASK_ID=fix-encounter-and-battle-potion-gating-v1 bash dev/tools/workflow_check.sh`
+3. `bash dev/tools/module_scene_type_dependency_check.sh`
+4. `bash dev/tools/dynamic_call_guard_check.sh`
+5. `bash dev/tools/persistence_contract_check.sh`
 
 ## 风险与回滚
 
 - 风险：
-  - 遭遇缺失改为拒绝后，若内容管线短时异常，玩家会看到无法进入战斗节点。
-  - battle-ready 改为显式通知，若通知链断裂将导致战斗开始触发缺失。
+  - 存档版本升级到 v4-only 后旧档不可继续读。
+  - 编排入口迁移后若有人绕过 orchestrator，可能出现生命周期分叉。
+  - battle session 注入链断裂会影响遗物战斗触发时序。
 - 回滚方式：
-  - 按提交执行 `git revert <commit>`。
+  - 按提交粒度执行 `git revert <commit>`。
