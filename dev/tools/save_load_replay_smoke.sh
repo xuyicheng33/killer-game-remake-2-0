@@ -55,6 +55,9 @@ assert_not_has() {
 RUN_RNG_FILE="runtime/global/run_rng.gd"
 RUN_LIFECYCLE_FILE="runtime/modules/run_flow/run_lifecycle_service.gd"
 SAVE_SERVICE_FILE="runtime/modules/persistence/save_service.gd"
+SAVE_SLOT_GATEWAY_FILE="runtime/modules/persistence/save_slot_gateway.gd"
+RUN_STATE_SERIALIZER_FILE="runtime/modules/persistence/run_state_serializer.gd"
+RUN_STATE_DESERIALIZER_FILE="runtime/modules/persistence/run_state_deserializer.gd"
 ROUTE_DISPATCHER_FILE="runtime/modules/run_flow/route_dispatcher.gd"
 CARD_PILE_FILE="content/custom_resources/card_pile.gd"
 PLAYER_HANDLER_FILE="runtime/scenes/player/player_handler.gd"
@@ -69,7 +72,8 @@ echo "=========================================="
 echo "[smoke] 0. 前置检查：目标文件存在性"
 echo "=========================================="
 
-for file in "$RUN_RNG_FILE" "$RUN_LIFECYCLE_FILE" "$SAVE_SERVICE_FILE" \
+for file in "$RUN_RNG_FILE" "$RUN_LIFECYCLE_FILE" "$SAVE_SERVICE_FILE" "$SAVE_SLOT_GATEWAY_FILE" \
+            "$RUN_STATE_SERIALIZER_FILE" "$RUN_STATE_DESERIALIZER_FILE" \
             "$ROUTE_DISPATCHER_FILE" "$CARD_PILE_FILE" "$PLAYER_HANDLER_FILE" \
             "$RUN_STATE_FILE" "$BATTLE_FLOW_FILE" "$MAP_FLOW_FILE" "$REPRO_LOG_FILE"; do
   if [[ ! -f "$file" ]]; then
@@ -85,7 +89,7 @@ echo "[smoke] 1. fixed-seed bootstrap check"
 echo "=========================================="
 
 echo "[smoke] 1.1 检查 RunRng 支持固定种子初始化..."
-assert_has 'static func begin_run\(seed: int\)' \
+assert_has 'static func begin_run\([a-zA-Z_][a-zA-Z0-9_]*: int\)' \
   "$RUN_RNG_FILE" \
   "RunRng.begin_run(seed) 方法存在"
 
@@ -102,7 +106,7 @@ assert_has 'func start_new_run_with_seed\(.*seed: int' \
   "$RUN_LIFECYCLE_FILE" \
   "RunLifecycleService.start_new_run_with_seed(seed) 方法存在"
 
-assert_has 'RUN_RNG_SCRIPT\.begin_run\(seed\)' \
+assert_has 'RUN_RNG_SCRIPT\.begin_run\([a-zA-Z_][a-zA-Z0-9_]*\)' \
   "$RUN_LIFECYCLE_FILE" \
   "start_new_run_with_seed 调用 RunRng.begin_run(seed)"
 
@@ -334,7 +338,7 @@ echo "[smoke] 8. repro log continuity check"
 echo "=========================================="
 
 echo "[smoke] 8.1 检查 ReproLog 基础方法..."
-assert_has 'static func begin_run\(seed: int\)' \
+assert_has 'static func begin_run\([a-zA-Z_][a-zA-Z0-9_]*: int\)' \
   "$REPRO_LOG_FILE" \
   "ReproLog.begin_run(seed) 方法存在"
 
@@ -347,7 +351,7 @@ assert_has 'static func log_event\(' \
   "ReproLog.log_event 方法存在"
 
 echo "[smoke] 8.2 检查新局时复盘日志初始化..."
-assert_has 'REPRO_LOG_SCRIPT\.begin_run\(seed\)' \
+assert_has 'REPRO_LOG_SCRIPT\.begin_run\([a-zA-Z_][a-zA-Z0-9_]*\)' \
   "$RUN_LIFECYCLE_FILE" \
   "start_new_run_with_seed 调用 REPRO_LOG_SCRIPT.begin_run"
 
@@ -366,36 +370,44 @@ echo "=========================================="
 echo "[smoke] 9. runtime main link integrity check"
 echo "=========================================="
 
-echo "[smoke] 9.1 检查 SaveService 存档文件操作..."
+echo "[smoke] 9.1 检查 SaveSlotGateway 文件操作..."
 assert_has 'FileAccess\.file_exists\(' \
-  "$SAVE_SERVICE_FILE" \
-  "SaveService 检查存档文件存在性"
+  "$SAVE_SLOT_GATEWAY_FILE" \
+  "SaveSlotGateway 检查存档文件存在性"
 
 assert_has 'FileAccess\.open\(' \
-  "$SAVE_SERVICE_FILE" \
-  "SaveService 使用 FileAccess 打开文件"
+  "$SAVE_SLOT_GATEWAY_FILE" \
+  "SaveSlotGateway 使用 FileAccess 打开文件"
 
 assert_has 'FileAccess\.get_open_error\(\)' \
-  "$SAVE_SERVICE_FILE" \
-  "SaveService 检查文件打开错误"
+  "$SAVE_SLOT_GATEWAY_FILE" \
+  "SaveSlotGateway 检查文件打开错误"
 
-echo "[smoke] 9.2 检查存档数据序列化..."
+echo "[smoke] 9.2 检查持久化网关 JSON 读写..."
 assert_has 'JSON\.stringify\(' \
-  "$SAVE_SERVICE_FILE" \
-  "SaveService 使用 JSON.stringify 序列化"
+  "$SAVE_SLOT_GATEWAY_FILE" \
+  "SaveSlotGateway 使用 JSON.stringify 序列化"
 
 assert_has 'JSON\.new\(\)' \
-  "$SAVE_SERVICE_FILE" \
-  "SaveService 使用 JSON parser 解析"
+  "$SAVE_SLOT_GATEWAY_FILE" \
+  "SaveSlotGateway 使用 JSON parser 解析"
 
-echo "[smoke] 9.3 检查存档清理功能..."
+echo "[smoke] 9.3 检查 SaveService 与序列化层连接..."
+assert_has 'SERIALIZER_SCRIPT\.serialize_run_state\(' \
+  "$SAVE_SERVICE_FILE" \
+  "SaveService 调用 RunStateSerializer.serialize_run_state"
+
+assert_has 'DESERIALIZER_SCRIPT\.deserialize_run_state\(' \
+  "$SAVE_SERVICE_FILE" \
+  "SaveService 调用 RunStateDeserializer.deserialize_run_state"
+
 assert_has 'static func clear_save\(\)' \
   "$SAVE_SERVICE_FILE" \
   "SaveService.clear_save 方法存在"
 
 assert_has 'DirAccess\.remove_absolute\(' \
-  "$SAVE_SERVICE_FILE" \
-  "SaveService 使用 DirAccess 删除存档"
+  "$SAVE_SLOT_GATEWAY_FILE" \
+  "SaveSlotGateway 使用 DirAccess 删除存档"
 
 echo "[smoke] 9.4 检查 RunState 初始化完整性..."
 assert_has 'func init_with_character\(' \
@@ -405,6 +417,14 @@ assert_has 'func init_with_character\(' \
 assert_has 'static func _deserialize_run_state\(' \
   "$SAVE_SERVICE_FILE" \
   "SaveService._deserialize_run_state 反序列化方法存在"
+
+assert_has 'static func serialize_run_state\(' \
+  "$RUN_STATE_SERIALIZER_FILE" \
+  "RunStateSerializer.serialize_run_state 方法存在"
+
+assert_has 'static func deserialize_run_state\(' \
+  "$RUN_STATE_DESERIALIZER_FILE" \
+  "RunStateDeserializer.deserialize_run_state 方法存在"
 
 # ========== 总结 ==========
 echo ""

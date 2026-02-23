@@ -4,7 +4,7 @@
 
 ## 3 分钟上手
 
-1. 用 Godot 4.6 打开本目录。
+1. 用 Godot 4.5.1 打开本目录。
 2. 运行主场景（当前入口在 `project.godot`）：
    - `res://runtime/scenes/app/app.tscn`
 3. 预期最小流程：
