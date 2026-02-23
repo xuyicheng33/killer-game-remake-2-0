@@ -1,6 +1,8 @@
 class_name GainEnergyEffect
 extends Effect
 
+const EFFECT_ENQUEUE_HELPER_SCRIPT := preload("res://runtime/modules/effect_engine/effect_enqueue_helper.gd")
+
 var amount := 0
 
 
@@ -12,19 +14,17 @@ func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 		return
 
 	var effect_name := "GainEnergy(%d)" % amount
-	if battle_context.has_method("get"):
-		var es = battle_context.get("effect_stack")
-		if es != null:
-			es.enqueue_effect(
-				effect_name,
-				targets,
-				_apply_energy_to_target.bind(battle_context),
-				50,
-				EffectStackEngine.EffectType.SPECIAL,
-				null,
-				amount
-			)
-			return
+	if EFFECT_ENQUEUE_HELPER_SCRIPT.try_enqueue(
+		battle_context,
+		effect_name,
+		targets,
+		_apply_energy_to_target.bind(battle_context),
+		50,
+		EffectStackEngine.EffectType.SPECIAL,
+		null,
+		amount
+	):
+		return
 
 	_apply_energy_to_target(null, battle_context)
 

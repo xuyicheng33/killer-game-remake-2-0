@@ -1,16 +1,20 @@
 class_name DamageEffect
 extends Effect
 
+const EFFECT_ENQUEUE_HELPER_SCRIPT := preload("res://runtime/modules/effect_engine/effect_enqueue_helper.gd")
+
 var amount := 0
 
 
 func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 	var effect_name := "Damage(%d)" % amount
-	if battle_context != null and battle_context.has_method("get"):
-		var es = battle_context.get("effect_stack")
-		if es != null:
-			es.enqueue_effect(effect_name, targets, _apply_damage_to_target.bind(battle_context))
-			return
+	if EFFECT_ENQUEUE_HELPER_SCRIPT.try_enqueue(
+		battle_context,
+		effect_name,
+		targets,
+		_apply_damage_to_target.bind(battle_context)
+	):
+		return
 
 	# 兜底路径：在无 BattleContext 的场景（如敌人动作脚本）仍应造成基础伤害。
 	var applied := false
