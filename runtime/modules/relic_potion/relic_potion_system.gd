@@ -8,6 +8,7 @@ const RELIC_EFFECT_EXECUTOR_SCRIPT := preload("res://runtime/modules/relic_potio
 const POTION_USE_SERVICE_SCRIPT := preload("res://runtime/modules/relic_potion/potion_use_service.gd")
 const BATTLE_START_TRIGGER_COORDINATOR_SCRIPT := preload("res://runtime/modules/relic_potion/battle_start_trigger_coordinator.gd")
 const BATTLE_PARTICIPANT_RESOLVER_SCRIPT := preload("res://runtime/modules/relic_potion/battle_participant_resolver.gd")
+const RELIC_TRIGGER_DISPATCHER_SCRIPT := preload("res://runtime/modules/relic_potion/relic_trigger_dispatcher.gd")
 
 enum TriggerType {
 	ON_BATTLE_START,
@@ -49,6 +50,7 @@ var _effect_executor = null
 var _potion_use_service = null
 var _battle_start_trigger_coordinator = null
 var _battle_participant_resolver = null
+var _trigger_dispatcher = null
 const MAX_BATTLE_START_RETRIES := 100
 
 
@@ -292,19 +294,14 @@ func _fire_trigger(trigger_type: TriggerType, context: Dictionary) -> void:
 		return
 
 	trigger_fired.emit(trigger_type, context)
-
-	for relic in run_state.relics:
-		if not (relic is RelicData):
-			continue
-		var relic_data: RelicData = relic
-
-		# 使用缓存的运行时对象，避免每次触发都实例化
-		var relic_runtime: Variant = _get_or_create_relic_runtime(relic_data)
-		if relic_runtime == null:
-			continue
-		if not relic_runtime.has_method("handle_trigger"):
-			continue
-		relic_runtime.call("handle_trigger", int(trigger_type), context, self)
+	_init_services()
+	_trigger_dispatcher.dispatch_trigger(
+		run_state,
+		int(trigger_type),
+		context,
+		Callable(self, "_get_or_create_relic_runtime"),
+		self
+	)
 
 
 func _dispatch_effect(effect_type: String, value: int, _relic: RelicData) -> void:
@@ -510,6 +507,8 @@ func _init_services() -> void:
 		_battle_start_trigger_coordinator = BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.new()
 	if _battle_participant_resolver == null:
 		_battle_participant_resolver = BATTLE_PARTICIPANT_RESOLVER_SCRIPT.new()
+	if _trigger_dispatcher == null:
+		_trigger_dispatcher = RELIC_TRIGGER_DISPATCHER_SCRIPT.new()
 	_effect_executor.bind_resolvers(Callable(self, "_find_player"), Callable(self, "_draw_cards_in_battle_context"))
 
 
