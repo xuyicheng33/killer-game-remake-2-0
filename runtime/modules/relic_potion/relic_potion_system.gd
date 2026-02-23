@@ -351,7 +351,7 @@ func _apply_potion_effect(index: int, potion: PotionData) -> void:
 
 
 func _on_card_played(card: Card) -> void:
-	if not _battle_active or run_state == null:
+	if not _can_process_battle_trigger():
 		return
 
 	_cards_played_in_battle += 1
@@ -360,63 +360,62 @@ func _on_card_played(card: Card) -> void:
 	
 	if card != null:
 		if card.type == Card.Type.ATTACK:
-			_fire_trigger(TriggerType.ON_ATTACK_PLAYED, context)
+			_emit_battle_trigger(TriggerType.ON_ATTACK_PLAYED, context)
 		elif card.type == Card.Type.SKILL:
-			_fire_trigger(TriggerType.ON_SKILL_PLAYED, context)
-	
-	_fire_trigger(TriggerType.ON_CARD_PLAYED, context)
+			_emit_battle_trigger(TriggerType.ON_SKILL_PLAYED, context)
+
+	_emit_battle_trigger(TriggerType.ON_CARD_PLAYED, context)
 
 
 func _on_player_hit() -> void:
-	if not _battle_active or run_state == null:
-		return
-	
-	_fire_trigger(TriggerType.ON_DAMAGE_TAKEN, {})
+	_emit_battle_trigger(TriggerType.ON_DAMAGE_TAKEN, {})
 
 
 func _on_player_block_applied(amount: int, source: String) -> void:
-	if not _battle_active or run_state == null:
-		return
-	_fire_trigger(TriggerType.ON_BLOCK_APPLIED, {
+	_emit_battle_trigger(TriggerType.ON_BLOCK_APPLIED, {
 		"amount": maxi(0, amount),
 		"source": source,
 	})
 
 
 func _on_enemy_died(_enemy: Enemy) -> void:
-	if not _battle_active or run_state == null:
+	if not _can_process_battle_trigger():
 		return
 	
 	_enemies_killed_in_battle += 1
-	_fire_trigger(TriggerType.ON_ENEMY_KILLED, {"count": _enemies_killed_in_battle})
+	_emit_battle_trigger(TriggerType.ON_ENEMY_KILLED, {"count": _enemies_killed_in_battle})
 
 
 func _on_player_turn_start() -> void:
-	if not _battle_active or run_state == null:
-		return
-	
-	_fire_trigger(TriggerType.ON_TURN_START, {})
+	_emit_battle_trigger(TriggerType.ON_TURN_START, {})
 
 
 func _on_player_turn_end() -> void:
-	if not _battle_active or run_state == null:
-		return
-	
-	_fire_trigger(TriggerType.ON_TURN_END, {})
+	_emit_battle_trigger(TriggerType.ON_TURN_END, {})
 
 
 func on_shop_enter() -> void:
-	if run_state == null:
-		return
-	
-	_fire_trigger(TriggerType.ON_SHOP_ENTER, {})
+	_emit_run_trigger(TriggerType.ON_SHOP_ENTER, {})
 
 
 func on_boss_killed() -> void:
+	_emit_run_trigger(TriggerType.ON_BOSS_KILLED, {})
+
+
+func _can_process_battle_trigger() -> bool:
+	return _battle_active and run_state != null
+
+
+func _emit_battle_trigger(trigger_type: TriggerType, context: Dictionary = {}) -> void:
+	if not _can_process_battle_trigger():
+		return
+	_fire_trigger(trigger_type, context)
+
+
+func _emit_run_trigger(trigger_type: TriggerType, context: Dictionary = {}) -> void:
 	if run_state == null:
 		return
-	
-	_fire_trigger(TriggerType.ON_BOSS_KILLED, {})
+	_fire_trigger(trigger_type, context)
 
 
 func _rebuild_relic_runtime_cache() -> void:
