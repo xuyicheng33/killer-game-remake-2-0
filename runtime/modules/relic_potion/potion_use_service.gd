@@ -1,6 +1,8 @@
 class_name PotionUseService
 extends RefCounted
 
+const LOG_TEMPLATES := preload("res://runtime/global/log_templates.gd")
+
 
 func use_potion(
 	index: int,
@@ -16,7 +18,7 @@ func use_potion(
 	if run_state == null:
 		return
 	if not battle_active:
-		_emit_log(log_emit, "药水仅可在战斗中使用。")
+		_emit_log(log_emit, LOG_TEMPLATES.format("potion_battle_only"))
 		return
 	if index < 0 or index >= run_state.potions.size():
 		return
@@ -60,7 +62,7 @@ func _use_damage_potion(
 ) -> void:
 	var enemies := _resolve_enemies(resolve_enemies)
 	if enemies.is_empty():
-		_emit_log(log_emit, "使用 %s：仅战斗中可生效（本次不消耗）" % potion.title)
+		_emit_log(log_emit, LOG_TEMPLATES.potion(potion.title, "potion_no_target", 0))
 		return
 
 	var damage := maxi(0, potion.value)
@@ -76,7 +78,7 @@ func _use_damage_potion(
 
 	if consume_potion.is_valid():
 		consume_potion.call(index, potion)
-	_emit_log(log_emit, "使用 %s：对所有敌人造成 %d 伤害" % [potion.title, damage])
+	_emit_log(log_emit, LOG_TEMPLATES.potion(potion.title, "potion_damage_all", damage))
 
 
 func _apply_potion_damage_to_enemy(target: Node, damage: int) -> void:

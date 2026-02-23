@@ -9,6 +9,7 @@ const POTION_USE_SERVICE_SCRIPT := preload("res://runtime/modules/relic_potion/p
 const BATTLE_START_TRIGGER_COORDINATOR_SCRIPT := preload("res://runtime/modules/relic_potion/battle_start_trigger_coordinator.gd")
 const BATTLE_PARTICIPANT_RESOLVER_SCRIPT := preload("res://runtime/modules/relic_potion/battle_participant_resolver.gd")
 const RELIC_TRIGGER_DISPATCHER_SCRIPT := preload("res://runtime/modules/relic_potion/relic_trigger_dispatcher.gd")
+const LOG_TEMPLATES := preload("res://runtime/global/log_templates.gd")
 
 enum TriggerType {
 	ON_BATTLE_START,
@@ -108,7 +109,7 @@ func bind_run_state(value: RunState) -> void:
 	_sync_effect_executor()
 	_apply_run_start_relics_once()
 	battle_state_changed.emit(false)
-	log_updated.emit("遗物/药水系统已就绪。")
+	log_updated.emit(LOG_TEMPLATES.format("system_ready"))
 
 
 func start_battle() -> void:
@@ -347,10 +348,10 @@ func _apply_potion_effect(index: int, potion: PotionData) -> void:
 	match potion.effect_type:
 		PotionData.EffectType.HEAL:
 			run_state.heal_player(maxi(0, potion.value))
-			log_updated.emit("使用 %s：恢复 %d 生命" % [potion.title, maxi(0, potion.value)])
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_heal", maxi(0, potion.value)))
 		PotionData.EffectType.GOLD:
 			run_state.add_gold(maxi(0, potion.value))
-			log_updated.emit("使用 %s：获得 %d 金币" % [potion.title, maxi(0, potion.value)])
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_gold", maxi(0, potion.value)))
 		PotionData.EffectType.BLOCK:
 			if run_state.player_stats != null:
 				var block_gain := maxi(0, potion.value)
@@ -358,11 +359,11 @@ func _apply_potion_effect(index: int, potion: PotionData) -> void:
 				if block_gain > 0:
 					Events.player_block_applied.emit(block_gain, "potion")
 				run_state.emit_changed()
-			log_updated.emit("使用 %s：获得 %d 格挡" % [potion.title, maxi(0, potion.value)])
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_block", maxi(0, potion.value)))
 		PotionData.EffectType.DAMAGE_ALL_ENEMIES:
-			log_updated.emit("使用 %s：战斗外无有效目标" % potion.title)
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_no_target", 0))
 		_:
-			log_updated.emit("使用 %s：无效果" % potion.title)
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_no_effect", 0))
 	_consume_potion(index, potion)
 
 
