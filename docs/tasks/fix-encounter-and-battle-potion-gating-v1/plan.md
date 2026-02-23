@@ -18,6 +18,7 @@
 4. 引入 `RunStateCommandService` 统一 RunState 写入口，减少分散写操作。
 5. 清理模块层对场景具体类型依赖。
 6. 将关键约束固化为 workflow 门禁，避免后续回归。
+7. 清理 Godot 启动期 GDScript warning，保证基线运行日志干净。
 
 ## 范围边界
 
@@ -39,9 +40,16 @@
 - `runtime/modules/relic_potion/`
 - `runtime/modules/run_meta/`
 - `runtime/modules/persistence/`
+- `runtime/modules/map_event/`
+- `runtime/modules/enemy_intent/`
+- `runtime/modules/buff_system/`
+- `runtime/modules/reward_economy/shop_offer_generator.gd`
 - `runtime/modules/card_system/card_zones_model.gd`
+- `runtime/global/`
 - `runtime/scenes/app/app.gd`
 - `runtime/scenes/battle/battle.gd`
+- `runtime/scenes/card_ui/`
+- `runtime/scenes/shop/shop_screen.gd`
 - `runtime/modules/ui_shell/adapter/relic_potion_ui_adapter.gd`
 - `runtime/scenes/ui/relic_potion_ui.gd`
 - `runtime/modules/run_flow/README.md`
@@ -63,7 +71,8 @@
 4. 新增 `RunStateCommandService` 并改造 `map/shop/event/rest` 写入调用。
 5. 清理 `card_zones_model` 对场景类型的直接依赖。
 6. 增加门禁脚本并接入 `workflow_check.sh`。
-7. 回归验证并更新任务三件套与工作日志。
+7. 清理命名冲突/unused/enum 强转/变量遮蔽等启动期 warning。
+8. 回归验证并更新任务三件套与工作日志。
 
 ## 验证方案
 
@@ -72,6 +81,7 @@
 3. `bash dev/tools/module_scene_type_dependency_check.sh`
 4. `bash dev/tools/dynamic_call_guard_check.sh`
 5. `bash dev/tools/persistence_contract_check.sh`
+6. Godot MCP: `run_project(scene=runtime/scenes/app/app.tscn)` + `get_debug_output`（确认 `errors=[]`）
 
 ## 风险与回滚
 

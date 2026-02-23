@@ -64,7 +64,7 @@ static func _generate_card_offers(run_state: RunState, stream_key: String, disco
 	return offers
 
 
-static func _generate_relic_offers(run_state: RunState, stream_key: String, discount_percent: int) -> Array[Dictionary]:
+static func _generate_relic_offers(_run_state: RunState, stream_key: String, discount_percent: int) -> Array[Dictionary]:
 	var offers: Array[Dictionary] = []
 	
 	for i in range(SHOP_RELIC_COUNT):
@@ -79,7 +79,7 @@ static func _generate_relic_offers(run_state: RunState, stream_key: String, disc
 	return offers
 
 
-static func _generate_potion_offers(run_state: RunState, stream_key: String, discount_percent: int) -> Array[Dictionary]:
+static func _generate_potion_offers(_run_state: RunState, stream_key: String, discount_percent: int) -> Array[Dictionary]:
 	var offers: Array[Dictionary] = []
 	
 	for i in range(SHOP_POTION_COUNT):

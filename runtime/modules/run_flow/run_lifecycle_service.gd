@@ -10,22 +10,22 @@ var _current_floor: int = 0
 
 
 func start_new_run(hero_template: CharacterStats, character_id: String = "warrior") -> Dictionary:
-	var seed := _resolve_run_seed()
-	return start_new_run_with_seed(hero_template, seed, character_id)
+	var run_seed := _resolve_run_seed()
+	return start_new_run_with_seed(hero_template, run_seed, character_id)
 
 
-func start_new_run_with_seed(hero_template: CharacterStats, seed: int, character_id: String = "warrior") -> Dictionary:
-	RUN_RNG_SCRIPT.begin_run(seed)
-	REPRO_LOG_SCRIPT.begin_run(seed)
+func start_new_run_with_seed(hero_template: CharacterStats, run_seed: int, character_id: String = "warrior") -> Dictionary:
+	RUN_RNG_SCRIPT.begin_run(run_seed)
+	REPRO_LOG_SCRIPT.begin_run(run_seed)
 
 	var run_state := RunState.new()
-	run_state.init_with_character(hero_template, seed, character_id)
+	run_state.init_with_character(hero_template, run_seed, character_id)
 	_current_floor = run_state.floor
 
 	return {
 		"ok": true,
 		"run_state": run_state,
-		"seed": seed,
+		"seed": run_seed,
 	}
 
 

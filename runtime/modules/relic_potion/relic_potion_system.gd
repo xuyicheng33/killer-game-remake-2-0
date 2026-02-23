@@ -272,7 +272,7 @@ func _fire_trigger(trigger_type: TriggerType, context: Dictionary) -> void:
 		relic_runtime.call("handle_trigger", int(trigger_type), context, self)
 
 
-func _dispatch_effect(effect_type: String, value: int, relic: RelicData) -> void:
+func _dispatch_effect(effect_type: String, value: int, _relic: RelicData) -> void:
 	if effect_type == "add_gold" or effect_type == "increase_max_health":
 		_apply_relic_effect(effect_type, value)
 		return

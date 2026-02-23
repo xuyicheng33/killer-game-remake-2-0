@@ -48,6 +48,13 @@
      - `run_lifecycle_contract_check.sh`（允许通过 orchestrator 的生命周期调用路径）
      - `persistence_contract_check.sh`（适配持久化拆分后的多文件契约）
 
+7. **Godot 启动 warning 清零（运行期日志收口）**
+   - 清理 `seed/floor` 命名冲突告警（参数重命名或局部抑制）。
+   - 清理 unused 参数/信号告警（参数下划线前缀、事件总线信号标注）。
+   - 清理 enum 赋值告警（使用显式枚举映射函数，避免不安全强转）。
+   - 清理变量遮蔽告警（tooltip 与流程变量重命名）。
+   - 结果：Godot MCP 启动 `app.tscn` 后 `finalErrors=[]`。
+
 ## 变更文件
 
 - 编排与流程：
@@ -80,6 +87,24 @@
   - `dev/tools/persistence_contract_check.sh`
   - `dev/tools/run_lifecycle_contract_check.sh`
   - `dev/tools/workflow_check.sh`
+- warning 清零相关：
+  - `runtime/global/events.gd`
+  - `runtime/global/run_rng.gd`
+  - `runtime/global/repro_log.gd`
+  - `runtime/modules/map_event/map_generator.gd`
+  - `runtime/modules/enemy_intent/encounter_registry.gd`
+  - `runtime/modules/buff_system/buff_system.gd`
+  - `runtime/modules/persistence/run_state_deserializer.gd`
+  - `runtime/modules/run_flow/flow_context.gd`
+  - `runtime/modules/run_flow/run_lifecycle_service.gd`
+  - `runtime/modules/run_flow/app_flow_orchestrator.gd`
+  - `runtime/modules/run_meta/run_state.gd`
+  - `runtime/modules/reward_economy/shop_offer_generator.gd`
+  - `runtime/modules/relic_potion/relic_potion_system.gd`
+  - `runtime/scenes/card_ui/card_states/card_state.gd`
+  - `runtime/scenes/card_ui/card_ui.gd`
+  - `runtime/scenes/shop/shop_screen.gd`
+  - `runtime/scenes/ui/relic_potion_ui.gd`
 
 ## 验证结果
 
@@ -88,6 +113,7 @@
 - [x] `bash dev/tools/module_scene_type_dependency_check.sh`
 - [x] `bash dev/tools/dynamic_call_guard_check.sh`
 - [x] `bash dev/tools/persistence_contract_check.sh`
+- [x] Godot MCP `run_project(scene=runtime/scenes/app/app.tscn)` + `get_debug_output`（`finalErrors=[]`）
 
 ## 风险与影响范围
 

@@ -18,10 +18,10 @@ static func resolve_base_stats(payload: Dictionary, fallback_stats: CharacterSta
 
 
 static func deserialize_run_state(payload: Dictionary, base_stats: CharacterStats, map_generator_script: Script) -> RunState:
-	var seed: int = int(payload.get("seed", 0))
+	var run_seed: int = int(payload.get("seed", 0))
 	var character_id: String = str(payload.get("character_id", "warrior"))
 	var restored := RunState.new()
-	restored.init_with_character(base_stats, seed, character_id)
+	restored.init_with_character(base_stats, run_seed, character_id)
 
 	restored.act = maxi(1, int(payload.get("act", restored.act)))
 	restored.floor = maxi(0, int(payload.get("floor", restored.floor)))
@@ -121,8 +121,8 @@ static func deserialize_card(data: Dictionary) -> Card:
 
 	card.id = str(data.get("id", ""))
 	card.display_name = str(data.get("display_name", ""))
-	card.type = int(data.get("type", int(Card.Type.ATTACK)))
-	card.target = int(data.get("target", int(Card.Target.SELF)))
+	card.type = coerce_card_type(int(data.get("type", int(Card.Type.ATTACK))))
+	card.target = coerce_card_target(int(data.get("target", int(Card.Target.SELF))))
 	card.cost = int(data.get("cost", 0))
 	card.keyword_exhaust = bool(data.get("keyword_exhaust", false))
 	card.keyword_retain = bool(data.get("keyword_retain", false))
@@ -165,7 +165,7 @@ static func deserialize_map_graph(data: Dictionary) -> MapGraphData:
 		var node_dict: Dictionary = entry as Dictionary
 		var node := MapNodeData.new()
 		node.id = str(node_dict.get("id", ""))
-		node.type = int(node_dict.get("type", int(MapNodeData.NodeType.BATTLE)))
+		node.type = coerce_node_type(int(node_dict.get("type", int(MapNodeData.NodeType.BATTLE))))
 		node.title = str(node_dict.get("title", ""))
 		node.description = str(node_dict.get("description", ""))
 		node.reward_gold = int(node_dict.get("reward_gold", 0))
@@ -252,10 +252,68 @@ static func deserialize_potions(potions_variant: Variant) -> Array[PotionData]:
 		potion.id = str(dict_entry.get("id", ""))
 		potion.title = str(dict_entry.get("title", ""))
 		potion.description = str(dict_entry.get("description", ""))
-		potion.effect_type = int(dict_entry.get("effect_type", int(PotionData.EffectType.HEAL)))
+		potion.effect_type = coerce_potion_effect_type(int(dict_entry.get("effect_type", int(PotionData.EffectType.HEAL))))
 		potion.value = int(dict_entry.get("value", 0))
 		out.append(potion)
 	return out
+
+
+static func coerce_card_type(raw_value: int) -> Card.Type:
+	match raw_value:
+		int(Card.Type.ATTACK):
+			return Card.Type.ATTACK
+		int(Card.Type.SKILL):
+			return Card.Type.SKILL
+		int(Card.Type.POWER):
+			return Card.Type.POWER
+		_:
+			return Card.Type.ATTACK
+
+
+static func coerce_card_target(raw_value: int) -> Card.Target:
+	match raw_value:
+		int(Card.Target.SELF):
+			return Card.Target.SELF
+		int(Card.Target.SINGLE_ENEMY):
+			return Card.Target.SINGLE_ENEMY
+		int(Card.Target.ALL_ENEMIES):
+			return Card.Target.ALL_ENEMIES
+		int(Card.Target.EVERYONE):
+			return Card.Target.EVERYONE
+		_:
+			return Card.Target.SELF
+
+
+static func coerce_node_type(raw_value: int) -> MapNodeData.NodeType:
+	match raw_value:
+		int(MapNodeData.NodeType.BATTLE):
+			return MapNodeData.NodeType.BATTLE
+		int(MapNodeData.NodeType.ELITE):
+			return MapNodeData.NodeType.ELITE
+		int(MapNodeData.NodeType.REST):
+			return MapNodeData.NodeType.REST
+		int(MapNodeData.NodeType.SHOP):
+			return MapNodeData.NodeType.SHOP
+		int(MapNodeData.NodeType.EVENT):
+			return MapNodeData.NodeType.EVENT
+		int(MapNodeData.NodeType.BOSS):
+			return MapNodeData.NodeType.BOSS
+		_:
+			return MapNodeData.NodeType.BATTLE
+
+
+static func coerce_potion_effect_type(raw_value: int) -> PotionData.EffectType:
+	match raw_value:
+		int(PotionData.EffectType.HEAL):
+			return PotionData.EffectType.HEAL
+		int(PotionData.EffectType.GOLD):
+			return PotionData.EffectType.GOLD
+		int(PotionData.EffectType.BLOCK):
+			return PotionData.EffectType.BLOCK
+		int(PotionData.EffectType.DAMAGE_ALL_ENEMIES):
+			return PotionData.EffectType.DAMAGE_ALL_ENEMIES
+		_:
+			return PotionData.EffectType.HEAL
 
 
 static func variant_to_packed_string_array(values_variant: Variant) -> PackedStringArray:

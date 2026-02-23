@@ -86,8 +86,8 @@ func enter_map_node(run_state, node) -> Dictionary:
 
 func resolve_battle_completion(run_state, battle_result: int) -> Dictionary:
 	var is_win: bool = battle_result == BattleOverPanel.Type.WIN
-	var pending_node_type: int = int(_run_flow_service.get_pending_node_type())
-	var is_boss: bool = pending_node_type == int(MapNodeData.NodeType.BOSS)
+	var pending_node_type_value: int = int(_run_flow_service.get_pending_node_type())
+	var is_boss: bool = pending_node_type_value == int(MapNodeData.NodeType.BOSS)
 	if is_win and is_boss:
 		_relic_potion_system.on_boss_killed()
 	_relic_potion_system.end_battle()

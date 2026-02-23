@@ -98,9 +98,9 @@ func _render_offers(projection: Dictionary) -> void:
 
 		# Connect tooltip hover signals
 		var tooltip_icon: Texture = button_data.get("tooltip_icon")
-		var tooltip_text: String = str(button_data.get("tooltip_text", ""))
-		if tooltip_text.length() > 0:
-			btn.mouse_entered.connect(_on_offer_button_mouse_entered.bind(tooltip_icon, tooltip_text))
+		var tooltip_body: String = str(button_data.get("tooltip_text", ""))
+		if tooltip_body.length() > 0:
+			btn.mouse_entered.connect(_on_offer_button_mouse_entered.bind(tooltip_icon, tooltip_body))
 			btn.mouse_exited.connect(_on_offer_button_mouse_exited)
 
 		offers_container.add_child(btn)

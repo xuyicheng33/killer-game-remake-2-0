@@ -12,7 +12,7 @@ func reset() -> void:
 
 
 func apply_map_node_result(command_result: Dictionary, fallback_node_type: MapNodeData.NodeType) -> void:
-	pending_node_type = int(command_result.get("node_type", int(fallback_node_type)))
+	pending_node_type = _coerce_node_type(int(command_result.get("node_type", int(fallback_node_type))))
 	pending_reward_gold = int(command_result.get("reward_gold", pending_reward_gold))
 
 
@@ -24,3 +24,21 @@ func apply_route_result(command_result: Dictionary) -> void:
 
 func reward_gold_for(command_result: Dictionary) -> int:
 	return int(command_result.get("reward_gold", pending_reward_gold))
+
+
+static func _coerce_node_type(raw_value: int) -> MapNodeData.NodeType:
+	match raw_value:
+		int(MapNodeData.NodeType.BATTLE):
+			return MapNodeData.NodeType.BATTLE
+		int(MapNodeData.NodeType.ELITE):
+			return MapNodeData.NodeType.ELITE
+		int(MapNodeData.NodeType.REST):
+			return MapNodeData.NodeType.REST
+		int(MapNodeData.NodeType.SHOP):
+			return MapNodeData.NodeType.SHOP
+		int(MapNodeData.NodeType.EVENT):
+			return MapNodeData.NodeType.EVENT
+		int(MapNodeData.NodeType.BOSS):
+			return MapNodeData.NodeType.BOSS
+		_:
+			return MapNodeData.NodeType.BATTLE

@@ -40,7 +40,7 @@ static func _load_encounter_data() -> void:
 				_encounters_cache.append(e as Dictionary)
 
 
-static func get_encounters_for_floor(floor: int, tags: Array[String] = []) -> Array[Dictionary]:
+static func get_encounters_for_floor(floor_index: int, tags: Array[String] = []) -> Array[Dictionary]:
 	_load_encounter_data()
 	
 	var result: Array[Dictionary] = []
@@ -53,7 +53,7 @@ static func get_encounters_for_floor(floor: int, tags: Array[String] = []) -> Ar
 			min_floor = int(floor_range.get("min", 0))
 			max_floor = int(floor_range.get("max", 999))
 		
-		if floor < min_floor or floor > max_floor:
+		if floor_index < min_floor or floor_index > max_floor:
 			continue
 		
 		if not _encounter_matches_tags(encounter, tags):
@@ -67,11 +67,11 @@ static func get_encounters_for_floor(floor: int, tags: Array[String] = []) -> Ar
 	return result
 
 
-static func pick_encounter(floor: int, tags: Array[String] = [], rng_stream_key: String = "encounter_pick") -> Dictionary:
-	var candidates := get_encounters_for_floor(floor, tags)
+static func pick_encounter(floor_index: int, tags: Array[String] = [], rng_stream_key: String = "encounter_pick") -> Dictionary:
+	var candidates := get_encounters_for_floor(floor_index, tags)
 	
 	if candidates.is_empty():
-		push_warning("EncounterRegistry: no encounters for floor=%d tags=%s" % [floor, tags])
+		push_warning("EncounterRegistry: no encounters for floor=%d tags=%s" % [floor_index, tags])
 		return {}
 	
 	if candidates.size() == 1:

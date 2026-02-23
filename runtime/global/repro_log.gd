@@ -12,16 +12,16 @@ static var _node: String = ""
 static var _session: int = 0
 
 
-static func begin_run(seed: int) -> void:
-	_seed = seed
+static func begin_run(run_seed: int) -> void:
+	_seed = run_seed
 	_floor = 0
 	_node = ""
 	_session += 1
 	_emit("run_start", "-", "session=%d" % _session)
 
 
-static func set_progress(floor: int, node_id: String) -> void:
-	_floor = maxi(0, floor)
+static func set_progress(floor_index: int, node_id: String) -> void:
+	_floor = maxi(0, floor_index)
 	_node = node_id
 	_emit("progress", "-", "")
 

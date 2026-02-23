@@ -97,10 +97,10 @@ func _render_relics(projection: Dictionary) -> void:
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.flat = true
 
-		var tooltip_text: String = str(item_data.get("tooltip_text", ""))
+		var tooltip_body: String = str(item_data.get("tooltip_text", ""))
 		var tooltip_icon: Texture = item_data.get("tooltip_icon")
-		if tooltip_text.length() > 0:
-			btn.mouse_entered.connect(_on_relic_button_mouse_entered.bind(tooltip_icon, tooltip_text))
+		if tooltip_body.length() > 0:
+			btn.mouse_entered.connect(_on_relic_button_mouse_entered.bind(tooltip_icon, tooltip_body))
 			btn.mouse_exited.connect(_on_relic_button_mouse_exited)
 
 		relic_list_label.add_child(btn)
@@ -138,9 +138,9 @@ func _render_potions(projection: Dictionary) -> void:
 
 			# Connect tooltip hover signals
 			var tooltip_icon: Texture = button_data.get("tooltip_icon")
-			var tooltip_text: String = str(button_data.get("tooltip_text", ""))
-			if tooltip_text.length() > 0:
-				btn.mouse_entered.connect(_on_potion_button_mouse_entered.bind(tooltip_icon, tooltip_text))
+			var tooltip_body: String = str(button_data.get("tooltip_text", ""))
+			if tooltip_body.length() > 0:
+				btn.mouse_entered.connect(_on_potion_button_mouse_entered.bind(tooltip_icon, tooltip_body))
 				btn.mouse_exited.connect(_on_potion_button_mouse_exited)
 
 			potion_container.add_child(btn)

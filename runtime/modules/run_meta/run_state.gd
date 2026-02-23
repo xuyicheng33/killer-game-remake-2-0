@@ -4,8 +4,10 @@ extends Resource
 const MAP_GENERATOR_SCRIPT := preload("res://runtime/modules/map_event/map_generator.gd")
 
 @export var character_id: String = "warrior"
+@warning_ignore("shadowed_global_identifier")
 @export var seed: int = 0
 @export var act: int = 1
+@warning_ignore("shadowed_global_identifier")
 @export var floor: int = 0
 @export var gold: int = 99
 @export var relic_capacity: int = 6

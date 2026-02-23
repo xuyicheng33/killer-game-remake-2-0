@@ -373,7 +373,7 @@ func _trigger_ritual(_target: Node, stats: Stats) -> void:
 	stats.add_status(STATUS_STRENGTH, ritual_stacks)
 
 
-func _trigger_regenerate(target: Node, stats: Stats) -> void:
+func _trigger_regenerate(_target: Node, stats: Stats) -> void:
 	var regen_stacks := get_status_stack(stats, STATUS_REGENERATE)
 	if regen_stacks <= 0:
 		return

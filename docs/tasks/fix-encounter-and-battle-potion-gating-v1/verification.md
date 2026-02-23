@@ -12,6 +12,7 @@
 3. `bash dev/tools/module_scene_type_dependency_check.sh`
 4. `bash dev/tools/dynamic_call_guard_check.sh`
 5. `bash dev/tools/persistence_contract_check.sh`
+6. Godot MCP: `run_project(scene="runtime/scenes/app/app.tscn")` + `get_debug_output` + `stop_project`
 
 ## 结果记录
 
@@ -43,7 +44,16 @@ bash dev/tools/persistence_contract_check.sh
 
 - 实际结果：通过
 
+### 4) Godot MCP 启动验证
+
+- 实际结果：通过
+- 摘要：
+  - `run_project` 启动成功
+  - `get_debug_output` 返回 `errors=[]`
+  - `stop_project` 返回 `finalErrors=[]`
+  - 启动期脚本 warning 清零
+
 ## 结论
 
 - 编排收口、显式 battle session 注入、持久化拆分与 RunState 写入口收口均已落地。
-- 全量测试与门禁通过，可作为后续功能开发新基线。
+- 启动日志 warning 已清零；全量测试与门禁通过，可作为后续功能开发新基线。
