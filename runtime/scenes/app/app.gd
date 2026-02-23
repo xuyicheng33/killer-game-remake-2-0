@@ -22,6 +22,7 @@ var run_state: RunState
 var relic_potion_system: RelicPotionSystem
 var run_flow_service: RunFlowService
 var app_flow_orchestrator
+var _route_handlers: Dictionary = {}
 
 
 func _ready() -> void:
@@ -35,6 +36,7 @@ func _ready() -> void:
 		run_flow_service,
 		relic_potion_system
 	)
+	_build_route_handlers()
 
 	_connect_signals()
 	_open_main_menu()
@@ -77,9 +79,7 @@ func start_battle_for_test(encounter_id: String = "") -> void:
 
 
 func _start_new_run(character_id: String = "") -> void:
-	_clear_scene_host()
-	game_over_panel.hide()
-	get_tree().paused = false
+	_reset_app_overlay_state()
 
 	var result: Dictionary = app_flow_orchestrator.start_new_run(character_id)
 	if not bool(result.get("ok", false)):
@@ -96,9 +96,7 @@ func _start_new_run(character_id: String = "") -> void:
 
 
 func _open_main_menu() -> void:
-	_clear_scene_host()
-	game_over_panel.hide()
-	get_tree().paused = false
+	_reset_app_overlay_state()
 
 	var main_menu: Control = MAIN_MENU_SCENE.instantiate()
 	main_menu.new_game_requested.connect(_on_new_game_requested)
@@ -111,9 +109,7 @@ func _on_new_game_requested(character_id: String) -> void:
 
 
 func _on_continue_game_requested() -> void:
-	_clear_scene_host()
-	game_over_panel.hide()
-	get_tree().paused = false
+	_reset_app_overlay_state()
 
 	if not _try_load_saved_run():
 		# 如果读档失败，返回主菜单
@@ -175,11 +171,11 @@ func _on_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
 
 
 func _open_rest_screen() -> void:
-	_clear_scene_host()
-	var rest_screen := REST_SCREEN_SCENE.instantiate() as RestScreen
-	rest_screen.run_state = run_state
-	rest_screen.rest_completed.connect(_on_rest_completed)
-	scene_host.add_child(rest_screen)
+	_open_run_state_screen(
+		REST_SCREEN_SCENE,
+		&"rest_completed",
+		Callable(self, "_on_rest_completed")
+	)
 
 
 func _on_rest_completed() -> void:
@@ -187,12 +183,12 @@ func _on_rest_completed() -> void:
 
 
 func _open_shop_screen() -> void:
-	_clear_scene_host()
-	app_flow_orchestrator.on_shop_enter()
-	var shop_screen := SHOP_SCREEN_SCENE.instantiate() as ShopScreen
-	shop_screen.run_state = run_state
-	shop_screen.shop_completed.connect(_on_shop_completed)
-	scene_host.add_child(shop_screen)
+	_open_run_state_screen(
+		SHOP_SCREEN_SCENE,
+		&"shop_completed",
+		Callable(self, "_on_shop_completed"),
+		Callable(self, "_notify_shop_enter")
+	)
 
 
 func _on_shop_completed() -> void:
@@ -200,11 +196,11 @@ func _on_shop_completed() -> void:
 
 
 func _open_event_screen() -> void:
-	_clear_scene_host()
-	var event_screen := EVENT_SCREEN_SCENE.instantiate() as EventScreen
-	event_screen.run_state = run_state
-	event_screen.event_completed.connect(_on_event_completed)
-	scene_host.add_child(event_screen)
+	_open_run_state_screen(
+		EVENT_SCREEN_SCENE,
+		&"event_completed",
+		Callable(self, "_on_event_completed")
+	)
 
 
 func _on_event_completed() -> void:
@@ -221,26 +217,13 @@ func _on_non_battle_node_completed() -> void:
 
 func _dispatch_next_route(command_result: Dictionary) -> void:
 	var next_route: String = app_flow_orchestrator.dispatch_next_route(command_result)
-	match next_route:
-		RunRouteDispatcher.ROUTE_BATTLE:
-			var enc_id := str(command_result.get("encounter_id", ""))
-			_open_battle(enc_id)
-		RunRouteDispatcher.ROUTE_REWARD:
-			_open_reward(app_flow_orchestrator.reward_gold_for(command_result))
-		RunRouteDispatcher.ROUTE_REST:
-			_open_rest_screen()
-		RunRouteDispatcher.ROUTE_SHOP:
-			_open_shop_screen()
-		RunRouteDispatcher.ROUTE_EVENT:
-			_open_event_screen()
-		RunRouteDispatcher.ROUTE_GAME_OVER:
-			game_over_panel.show()
-			game_over_text.text = str(command_result.get("game_over_text", "本次远征失败"))
-		RunRouteDispatcher.ROUTE_RUN_COMPLETE:
-			game_over_panel.show()
-			game_over_text.text = str(command_result.get("run_complete_text", "恭喜通关！"))
-		_:
-			_open_map()
+	var route_handler: Variant = _route_handlers.get(next_route, Callable())
+	if route_handler is Callable:
+		var callable_handler: Callable = route_handler as Callable
+		if callable_handler.is_valid():
+			callable_handler.call(command_result)
+			return
+	_open_map()
 
 
 func _clear_scene_host() -> void:
@@ -254,9 +237,7 @@ func _try_load_saved_run() -> bool:
 		push_warning("[save] %s" % str(result.get("message", "读档失败。")))
 		return false
 
-	_clear_scene_host()
-	game_over_panel.hide()
-	get_tree().paused = false
+	_reset_app_overlay_state()
 
 	run_state = _extract_run_state(result)
 	if run_state == null:
@@ -283,6 +264,59 @@ func _extract_run_state(result: Dictionary) -> RunState:
 	if run_state_variant is RunState:
 		return run_state_variant
 	return null
+
+
+func _notify_shop_enter() -> void:
+	app_flow_orchestrator.on_shop_enter()
+
+
+func _reset_app_overlay_state() -> void:
+	_clear_scene_host()
+	game_over_panel.hide()
+	get_tree().paused = false
+
+
+func _open_run_state_screen(
+	scene: PackedScene,
+	completed_signal: StringName,
+	completed_handler: Callable,
+	before_attach: Callable = Callable()
+) -> Node:
+	_clear_scene_host()
+	if before_attach.is_valid():
+		before_attach.call()
+
+	var screen: Node = scene.instantiate()
+	screen.set("run_state", run_state)
+	if not completed_signal.is_empty() and screen.has_signal(completed_signal) and completed_handler.is_valid():
+		screen.connect(completed_signal, completed_handler)
+	scene_host.add_child(screen)
+	return screen
+
+
+func _build_route_handlers() -> void:
+	_route_handlers[RunRouteDispatcher.ROUTE_BATTLE] = func(command_result: Dictionary) -> void:
+		_open_battle(str(command_result.get("encounter_id", "")))
+
+	_route_handlers[RunRouteDispatcher.ROUTE_REWARD] = func(command_result: Dictionary) -> void:
+		_open_reward(app_flow_orchestrator.reward_gold_for(command_result))
+
+	_route_handlers[RunRouteDispatcher.ROUTE_REST] = func(_command_result: Dictionary) -> void:
+		_open_rest_screen()
+
+	_route_handlers[RunRouteDispatcher.ROUTE_SHOP] = func(_command_result: Dictionary) -> void:
+		_open_shop_screen()
+
+	_route_handlers[RunRouteDispatcher.ROUTE_EVENT] = func(_command_result: Dictionary) -> void:
+		_open_event_screen()
+
+	_route_handlers[RunRouteDispatcher.ROUTE_GAME_OVER] = func(command_result: Dictionary) -> void:
+		game_over_panel.show()
+		game_over_text.text = str(command_result.get("game_over_text", "本次远征失败"))
+
+	_route_handlers[RunRouteDispatcher.ROUTE_RUN_COMPLETE] = func(command_result: Dictionary) -> void:
+		game_over_panel.show()
+		game_over_text.text = str(command_result.get("run_complete_text", "恭喜通关！"))
 
 
 func _on_viewport_resized() -> void:
