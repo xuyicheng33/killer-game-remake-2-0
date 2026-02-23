@@ -6,6 +6,7 @@ const BATTLE_SESSION_PORT_SCRIPT := preload("res://runtime/modules/relic_potion/
 const RELIC_RUNTIME_CACHE_SCRIPT := preload("res://runtime/modules/relic_potion/relic_runtime_cache.gd")
 const RELIC_EFFECT_EXECUTOR_SCRIPT := preload("res://runtime/modules/relic_potion/relic_effect_executor.gd")
 const POTION_USE_SERVICE_SCRIPT := preload("res://runtime/modules/relic_potion/potion_use_service.gd")
+const BATTLE_START_TRIGGER_COORDINATOR_SCRIPT := preload("res://runtime/modules/relic_potion/battle_start_trigger_coordinator.gd")
 
 enum TriggerType {
 	ON_BATTLE_START,
@@ -45,6 +46,7 @@ var _relic_runtimes: Dictionary:
 var _runtime_cache = null
 var _effect_executor = null
 var _potion_use_service = null
+var _battle_start_trigger_coordinator = null
 const MAX_BATTLE_START_RETRIES := 100
 
 
@@ -157,38 +159,34 @@ func is_battle_active() -> bool:
 
 
 func _try_fire_battle_start_trigger() -> void:
-	if not _can_continue_pending_battle_start_trigger():
-		return
-	if not _is_battle_start_context_ready():
-		call_deferred("_deferred_try_fire_battle_start_trigger")
-		return
-
-	_complete_pending_battle_start_trigger()
+	_init_services()
+	var context_ready := false
+	if _pending_battle_start_trigger and _battle_active:
+		context_ready = _is_battle_start_context_ready()
+	var action: int = _battle_start_trigger_coordinator.evaluate_immediate(
+		_pending_battle_start_trigger,
+		_battle_active,
+		context_ready
+	)
+	_handle_battle_start_action(action, false)
 
 
 func _deferred_try_fire_battle_start_trigger() -> void:
-	if not _can_continue_pending_battle_start_trigger():
-		return
-	if _is_battle_start_context_ready():
-		_complete_pending_battle_start_trigger()
-		return
-
-	_battle_start_retry_count += 1
-	if _battle_start_retry_count > MAX_BATTLE_START_RETRIES:
-		push_warning("[RelicPotionSystem] 战斗开始触发器等待超时（%d 次重试），放弃触发" % MAX_BATTLE_START_RETRIES)
-		_abort_pending_battle_start_trigger()
-		return
-
-	_schedule_battle_start_retry()
-
-
-func _can_continue_pending_battle_start_trigger() -> bool:
-	if not _pending_battle_start_trigger:
-		return false
-	if _battle_active:
-		return true
-	_abort_pending_battle_start_trigger()
-	return false
+	_init_services()
+	var context_ready := false
+	if _pending_battle_start_trigger and _battle_active:
+		context_ready = _is_battle_start_context_ready()
+	var outcome: Dictionary = _battle_start_trigger_coordinator.evaluate_deferred(
+		_pending_battle_start_trigger,
+		_battle_active,
+		context_ready,
+		_battle_start_retry_count,
+		MAX_BATTLE_START_RETRIES
+	)
+	_battle_start_retry_count = int(outcome.get("retry_count", _battle_start_retry_count))
+	var action: int = int(outcome.get("action", 0))
+	var timed_out := bool(outcome.get("timed_out", false))
+	_handle_battle_start_action(action, timed_out)
 
 
 func _complete_pending_battle_start_trigger() -> void:
@@ -205,6 +203,24 @@ func _schedule_battle_start_retry() -> void:
 	if tree == null:
 		return
 	tree.create_timer(0.01, false).timeout.connect(_try_fire_battle_start_trigger, CONNECT_ONE_SHOT)
+
+
+func _handle_battle_start_action(action: int, timed_out: bool) -> void:
+	match action:
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.NOOP:
+			return
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.DEFER_CHECK:
+			call_deferred("_deferred_try_fire_battle_start_trigger")
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.COMPLETE:
+			_complete_pending_battle_start_trigger()
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.ABORT:
+			if timed_out:
+				push_warning("[RelicPotionSystem] 战斗开始触发器等待超时（%d 次重试），放弃触发" % MAX_BATTLE_START_RETRIES)
+			_abort_pending_battle_start_trigger()
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.SCHEDULE_RETRY:
+			_schedule_battle_start_retry()
+		_:
+			push_warning("[RelicPotionSystem] 未知的 battle start action: %s" % str(action))
 
 
 func _is_battle_start_context_ready() -> bool:
@@ -518,6 +534,8 @@ func _init_services() -> void:
 		_effect_executor = RELIC_EFFECT_EXECUTOR_SCRIPT.new()
 	if _potion_use_service == null:
 		_potion_use_service = POTION_USE_SERVICE_SCRIPT.new()
+	if _battle_start_trigger_coordinator == null:
+		_battle_start_trigger_coordinator = BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.new()
 	_effect_executor.bind_resolvers(Callable(self, "_find_player"), Callable(self, "_draw_cards_in_battle_context"))
 
 
