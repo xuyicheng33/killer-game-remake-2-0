@@ -210,11 +210,7 @@ func _append_phase_log(text: String) -> void:
 
 func _update_phase_hud(phase_name: String, turn: int) -> void:
 	current_phase_label.text = "回合 %d | 阶段：%s" % [turn, phase_name]
-
-	var combined_log := "阶段日志："
-	for entry in _phase_logs:
-		combined_log += "\n%s" % entry
-	phase_log_label.text = combined_log
+	phase_log_label.text = "阶段日志：\n" + "\n".join(_phase_logs)
 
 
 func _on_player_died() -> void:

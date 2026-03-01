@@ -27,16 +27,15 @@ static func write_payload(save_path: String, payload: Dictionary) -> Dictionary:
 
 
 static func read_payload(save_path: String) -> Dictionary:
-	if not has_save(save_path):
-		return {
-			"ok": false,
-			"code": "missing",
-			"message": "未找到本地存档。",
-		}
-
 	var file: FileAccess = FileAccess.open(save_path, FileAccess.READ)
 	if file == null:
 		var open_err: int = FileAccess.get_open_error()
+		if open_err == ERR_FILE_NOT_FOUND:
+			return {
+				"ok": false,
+				"code": "missing",
+				"message": "未找到本地存档。",
+			}
 		return {
 			"ok": false,
 			"code": "io_open_failed",

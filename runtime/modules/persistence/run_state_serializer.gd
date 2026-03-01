@@ -161,6 +161,5 @@ static func serialize_potions(potions: Array[PotionData]) -> Array[Dictionary]:
 
 static func packed_string_array_to_array(values: PackedStringArray) -> Array[String]:
 	var out: Array[String] = []
-	for value in values:
-		out.append(value)
+	out.assign(values)
 	return out

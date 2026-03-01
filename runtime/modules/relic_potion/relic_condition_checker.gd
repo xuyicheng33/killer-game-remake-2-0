@@ -11,8 +11,7 @@ class_name RelicConditionChecker
 static func check_interval(current_count: int, interval: int) -> bool:
 	if interval <= 0:
 		return true
-	var safe_interval := maxi(1, interval)
-	return current_count % safe_interval == 0
+	return current_count % interval == 0
 
 
 ## 检查触发次数限制

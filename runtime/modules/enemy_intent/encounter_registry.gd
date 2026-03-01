@@ -7,63 +7,69 @@ const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy
 const ENCOUNTER_DATA_PATH := "res://runtime/modules/content_pipeline/sources/enemies/examples/act1_enemies.json"
 
 static var _encounters_cache: Array[Dictionary] = []
+static var _encounters_by_id: Dictionary = {}
 
 
 static func _load_encounter_data() -> void:
 	if not _encounters_cache.is_empty():
 		return
-	
+
 	if not ResourceLoader.exists(ENCOUNTER_DATA_PATH):
 		push_warning("EncounterRegistry: encounter data not found at '%s'" % ENCOUNTER_DATA_PATH)
 		return
-	
+
 	var file := FileAccess.open(ENCOUNTER_DATA_PATH, FileAccess.READ)
 	if file == null:
 		push_warning("EncounterRegistry: failed to open encounter data file")
 		return
-	
+
 	var json_text := file.get_as_text()
 	file.close()
-	
+
 	var parser := JSON.new()
 	if parser.parse(json_text) != OK:
 		push_warning("EncounterRegistry: failed to parse encounter data JSON")
 		return
-	
+
 	var data: Dictionary = parser.data as Dictionary
-	
+
 	var encounters_variant: Variant = data.get("encounters", [])
 	if typeof(encounters_variant) == TYPE_ARRAY:
 		_encounters_cache.clear()
+		_encounters_by_id.clear()
 		for e in encounters_variant:
-			if typeof(e) == TYPE_DICTIONARY:
-				_encounters_cache.append(e as Dictionary)
+			if typeof(e) != TYPE_DICTIONARY:
+				continue
+			var encounter: Dictionary = e as Dictionary
+			if not _is_encounter_enemy_ids_valid(encounter):
+				continue
+			_encounters_cache.append(encounter)
+			var enc_id: String = str(encounter.get("id", ""))
+			if not enc_id.is_empty():
+				_encounters_by_id[enc_id] = encounter
 
 
 static func get_encounters_for_floor(floor_index: int, tags: Array[String] = []) -> Array[Dictionary]:
 	_load_encounter_data()
-	
+
 	var result: Array[Dictionary] = []
 	for encounter in _encounters_cache:
 		var floor_range: Variant = encounter.get("floor_range", {})
-		
+
 		var min_floor := 0
 		var max_floor := 999
 		if typeof(floor_range) == TYPE_DICTIONARY:
 			min_floor = int(floor_range.get("min", 0))
 			max_floor = int(floor_range.get("max", 999))
-		
+
 		if floor_index < min_floor or floor_index > max_floor:
 			continue
-		
+
 		if not _encounter_matches_tags(encounter, tags):
 			continue
 
-		if not _is_encounter_enemy_ids_valid(encounter):
-			continue
-		
 		result.append(encounter)
-	
+
 	return result
 
 
@@ -102,20 +108,13 @@ static func pick_fallback_encounter(tags: Array[String] = []) -> Dictionary:
 	for encounter in _encounters_cache:
 		if not _encounter_matches_tags(encounter, tags):
 			continue
-		if not _is_encounter_enemy_ids_valid(encounter):
-			continue
 		return encounter
 	return {}
 
 
 static func get_encounter_by_id(encounter_id: String) -> Dictionary:
 	_load_encounter_data()
-	
-	for encounter in _encounters_cache:
-		if str(encounter.get("id", "")) == encounter_id:
-			return encounter
-	
-	return {}
+	return _encounters_by_id.get(encounter_id, {}) as Dictionary
 
 
 static func get_enemy_ids_for_encounter(encounter: Dictionary) -> Array[String]:

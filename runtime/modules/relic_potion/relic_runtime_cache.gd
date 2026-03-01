@@ -35,6 +35,8 @@ func resolve(relic_data: RelicData) -> Variant:
 func prime_relic(relic: RelicData) -> void:
 	if relic == null or relic.id.is_empty():
 		return
+	if _runtimes.has(relic.id):
+		return
 	var runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic)
 	if runtime != null:
 		_runtimes[relic.id] = runtime

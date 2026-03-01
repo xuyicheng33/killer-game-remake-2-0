@@ -502,6 +502,7 @@ func _init_services() -> void:
 		_runtime_cache = RELIC_RUNTIME_CACHE_SCRIPT.new()
 	if _effect_executor == null:
 		_effect_executor = RELIC_EFFECT_EXECUTOR_SCRIPT.new()
+		_effect_executor.bind_resolvers(Callable(self, "_find_player"), Callable(self, "_draw_cards_in_battle_context"))
 	if _potion_use_service == null:
 		_potion_use_service = POTION_USE_SERVICE_SCRIPT.new()
 	if _battle_start_trigger_coordinator == null:
@@ -510,7 +511,6 @@ func _init_services() -> void:
 		_battle_participant_resolver = BATTLE_PARTICIPANT_RESOLVER_SCRIPT.new()
 	if _trigger_dispatcher == null:
 		_trigger_dispatcher = RELIC_TRIGGER_DISPATCHER_SCRIPT.new()
-	_effect_executor.bind_resolvers(Callable(self, "_find_player"), Callable(self, "_draw_cards_in_battle_context"))
 
 
 func _sync_effect_executor() -> void:

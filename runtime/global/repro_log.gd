@@ -10,6 +10,8 @@ static var _seed: int = 0
 static var _floor: int = 0
 static var _node: String = ""
 static var _session: int = 0
+static var _effect_log_enabled: int = -1  # -1 = uncached
+static var _event_log_enabled: int = -1   # -1 = uncached
 
 
 static func begin_run(run_seed: int) -> void:
@@ -80,7 +82,26 @@ static func _emit(tag: String, enemy: String, detail: String) -> void:
 
 
 static func _is_log_enabled(setting_path: String, env_key: String) -> bool:
+	# Use per-setting cached slots to avoid repeated OS/ProjectSettings lookups.
+	var slot: int
+	if setting_path == EFFECT_LOG_SETTING_PATH:
+		if _effect_log_enabled >= 0:
+			return _effect_log_enabled == 1
+		slot = 0
+	else:
+		if _event_log_enabled >= 0:
+			return _event_log_enabled == 1
+		slot = 1
+
+	var result: bool
 	if ProjectSettings.has_setting(setting_path):
-		return bool(ProjectSettings.get_setting(setting_path))
-	var env_value := OS.get_environment(env_key).strip_edges().to_lower()
-	return env_value == "1" or env_value == "true" or env_value == "yes" or env_value == "on"
+		result = bool(ProjectSettings.get_setting(setting_path))
+	else:
+		var env_value := OS.get_environment(env_key).strip_edges().to_lower()
+		result = env_value == "1" or env_value == "true" or env_value == "yes" or env_value == "on"
+
+	if slot == 0:
+		_effect_log_enabled = 1 if result else 0
+	else:
+		_event_log_enabled = 1 if result else 0
+	return result

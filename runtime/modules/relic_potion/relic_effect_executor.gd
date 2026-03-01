@@ -78,6 +78,7 @@ func _apply_relic_effect(effect_type: String, value: int) -> void:
 				run_state.player_stats.block += block_gain
 				if block_gain > 0:
 					Events.player_block_applied.emit(block_gain, "relic")
+				run_state.emit_changed()
 		"increase_max_health":
 			run_state.increase_max_health(value)
 		"add_energy":

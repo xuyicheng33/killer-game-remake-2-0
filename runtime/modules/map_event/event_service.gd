@@ -119,13 +119,10 @@ static func _upgrade_first_card(run_state: RunState) -> String:
 	var success := run_state.upgrade_card_in_deck_at(0)
 	if not success:
 		return "(升级失败)"
-	var first_card: Card = null
-	var first_card_variant: Variant = run_state.get_deck_cards()[0]
+	var first_card_variant: Variant = cards[0]
 	if first_card_variant is Card:
-		first_card = first_card_variant
-	if first_card == null:
-		return "(升级完成)"
-	return _card_display_name(first_card)
+		return _card_display_name(first_card_variant as Card)
+	return "(升级完成)"
 
 
 static func _remove_first_card(run_state: RunState) -> String:
