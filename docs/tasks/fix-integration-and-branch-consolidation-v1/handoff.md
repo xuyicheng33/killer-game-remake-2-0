@@ -52,3 +52,43 @@
 ## 建议提交信息
 
 - `fix(run_flow): close gate blockers and consolidate branch governance（fix-integration-and-branch-consolidation-v1）`
+
+## 最终提交/合并记录
+
+- `42874eb` `chore(integration): checkpoint workspace before consolidation`
+- `9d8f4ac` `fix(run_flow): close gate blockers and consolidate branches（fix-integration-and-branch-consolidation-v1）`
+- `35e2886` `merge: integrate run_flow consolidation fixes`（`main` 上 `--no-ff` 合并节点）
+
+## 归档标签清单（2026-03-02）
+
+- `archive/chore/docs-r2-phase00-baseline-snapshot-v1-20260302`
+- `archive/chore/gitignore-chore-gitignore-uid-cleanup-20260302`
+- `archive/chore/gitignore-uid-cleanup-20260302`
+- `archive/chore/process-phase7-8-audit-closeout-v1-20260302`
+- `archive/chore/run_meta-r2-phase02-audit-pipeline-bootstrap-v1-20260302`
+- `archive/docs/r2-phase02-audit-pipeline-bootstrap-v1-20260302`
+- `archive/feat/card-phase9-strength-axis-cards-v1-20260302`
+- `archive/feat/content_pipeline-r2-phase06-content-schema-expansion-v1-20260302`
+- `archive/feat/content_pipeline-r2-phase07-content-importers-expansion-v1-20260302`
+- `archive/feat/content_pipeline-r2-phase08-content-pipeline-gate-integration-v1-20260302`
+- `archive/feat/dev_tools-phase21-workflow-branch-taskid-gate-v1-20260302`
+- `archive/feat/dev_tools-phase22-workflow-branch-gate-selfcheck-v1-20260302`
+- `archive/feat/enemy_intent-r2-phase10-enemy-pack-v1-20260302`
+- `archive/feat/persistence-phase10-persistence-status-serialization-v1-20260302`
+- `archive/feat/phase2-all-tasks-20260302`
+- `archive/feat/phase2-feat-effect-stack-v2-20260302`
+- `archive/feat/phase2-feat-effect-stack-v2-feat-buff-system-v2-feat-battle-loop-state-machine-v2-feat-relic-potion-v2-feat-map-graph-v2-feat-reward-economy-v2-20260302`
+- `archive/feat/phase3-content-cards-warrior-set2-v1-feat-card-draw-energy-ops-v1-feat-potion-direct-damage-effect-v1-feat-relic-on-run-start-trigger-v1-feat-card-exhaust-upgrade-on-consume-v1-20260302`
+- `archive/feat/relic_potion-phase8-relic-expansion-v1-20260302`
+- `archive/feat/relic_potion-r2-phase11-relic-potion-event-pack-v1-20260302`
+- `archive/feat/run_flow-phase11-run-flow-app-lifecycle-decoupling-v1-20260302`
+- `archive/feat/run_flow-r2-phase04-run-flow-regression-gate-v1-20260302`
+- `archive/feat/run_meta-r2-phase09-character2-scaffold-v1-20260302`
+- `archive/feat/seed_replay-phase9-seed-deterministic-draw-shuffle-v1-20260302`
+- `archive/feat/seed_replay-r2-phase05-save-load-replay-runtime-smoke-v1-20260302`
+- `archive/feat/ui_shell-phase8-ui-shell-battle-ui-decoupling-v1-20260302`
+- `archive/feat/ui_shell-r2-phase03-ui-shell-full-decoupling-v1-20260302`
+- `archive/fix/buff_system-fix-p0-battle-core-v1-20260302`
+- `archive/fix/run_flow-fix-encounter-and-battle-potion-gating-v1-20260302`
+- `archive/fix/run_meta-fix-p0p2-mechanics-consistency-v1-20260302`
+- `archive/fix/tooltip-fix-tooltip-event-signature-v1-20260302`
