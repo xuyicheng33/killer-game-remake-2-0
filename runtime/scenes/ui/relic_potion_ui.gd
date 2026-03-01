@@ -97,10 +97,10 @@ func _render_relics(projection: Dictionary) -> void:
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.flat = true
 
-		var tooltip_text: String = str(item_data.get("tooltip_text", ""))
+		var tooltip_body: String = str(item_data.get("tooltip_text", ""))
 		var tooltip_icon: Texture = item_data.get("tooltip_icon")
-		if tooltip_text.length() > 0:
-			btn.mouse_entered.connect(_on_relic_button_mouse_entered.bind(tooltip_icon, tooltip_text))
+		if tooltip_body.length() > 0:
+			btn.mouse_entered.connect(_on_relic_button_mouse_entered.bind(tooltip_icon, tooltip_body))
 			btn.mouse_exited.connect(_on_relic_button_mouse_exited)
 
 		relic_list_label.add_child(btn)
@@ -138,9 +138,9 @@ func _render_potions(projection: Dictionary) -> void:
 
 			# Connect tooltip hover signals
 			var tooltip_icon: Texture = button_data.get("tooltip_icon")
-			var tooltip_text: String = str(button_data.get("tooltip_text", ""))
-			if tooltip_text.length() > 0:
-				btn.mouse_entered.connect(_on_potion_button_mouse_entered.bind(tooltip_icon, tooltip_text))
+			var tooltip_body: String = str(button_data.get("tooltip_text", ""))
+			if tooltip_body.length() > 0:
+				btn.mouse_entered.connect(_on_potion_button_mouse_entered.bind(tooltip_icon, tooltip_body))
 				btn.mouse_exited.connect(_on_potion_button_mouse_exited)
 
 			potion_container.add_child(btn)
@@ -149,6 +149,13 @@ func _render_potions(projection: Dictionary) -> void:
 		var hint := Label.new()
 		hint.text = str(projection.get("empty_potion_hint", "（无可用药水）"))
 		potion_container.add_child(hint)
+
+	if bool(projection.get("battle_only_hint_visible", false)):
+		var battle_hint := Label.new()
+		battle_hint.text = str(projection.get("battle_only_hint", "药水仅可在战斗中使用。"))
+		battle_hint.add_theme_font_size_override("font_size", 14)
+		battle_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		potion_container.add_child(battle_hint)
 
 
 func _on_viewport_resized() -> void:

@@ -1,7 +1,7 @@
 extends GutTest
 
 const EVENT_SOURCE_PATH := "res://runtime/modules/content_pipeline/sources/events/examples/baseline_events.json"
-const RELIC_SOURCE_PATH := "res://runtime/modules/content_pipeline/sources/relics/examples/common_relics.json"
+const RELIC_DIR := "res://content/custom_resources/relics"
 
 
 func test_event_templates_loaded_from_pipeline_source() -> void:
@@ -17,16 +17,12 @@ func test_event_templates_loaded_from_pipeline_source() -> void:
 		assert_true(source_ids.has(event_id), "事件应来自 pipeline 数据源: %s" % event_id)
 
 
-func test_relic_pool_loaded_from_pipeline_source() -> void:
+func test_relic_pool_loaded_from_tres_directory() -> void:
 	RelicCatalog._cache.clear()
-	var source_relics := _load_entries_from_json(RELIC_SOURCE_PATH, "relics")
+	var tres_count := _count_tres_files(RELIC_DIR)
 	var relic_pool := RelicCatalog.get_all()
 
-	assert_eq(relic_pool.size(), source_relics.size(), "遗物池数量应与 pipeline 源数据一致")
-
-	var source_ids := _collect_ids_from_dict_entries(source_relics)
-	for relic in relic_pool:
-		assert_true(source_ids.has(relic.id), "遗物应来自 pipeline 数据源: %s" % relic.id)
+	assert_eq(relic_pool.size(), tres_count, "遗物池数量应与 .tres 文件数量一致")
 
 
 func test_obtainable_relics_at_least_eight() -> void:
@@ -87,3 +83,23 @@ func _collect_ids_from_dict_entries(entries: Array[Dictionary]) -> Dictionary:
 	for entry in entries:
 		ids[str(entry.get("id", ""))] = true
 	return ids
+
+
+func _count_tres_files(dir_path: String) -> int:
+	var dir := DirAccess.open(dir_path)
+	if dir == null:
+		return 0
+
+	var count := 0
+	dir.list_dir_begin()
+	while true:
+		var file_name := dir.get_next()
+		if file_name.is_empty():
+			break
+		if dir.current_is_dir():
+			continue
+		if not file_name.ends_with(".tres"):
+			continue
+		count += 1
+	dir.list_dir_end()
+	return count

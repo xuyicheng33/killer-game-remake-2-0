@@ -8,8 +8,8 @@ const LANE_COUNT := 3
 const ELITE_FLOOR_START := 7
 
 
-static func create_act1_seed_graph(seed: int) -> MapGraphData:
-	var rng: RandomNumberGenerator = RUN_RNG_SCRIPT.create_seeded_rng(seed + 104_729, "map_generator_act1")
+static func create_act1_seed_graph(run_seed: int) -> MapGraphData:
+	var rng: RandomNumberGenerator = RUN_RNG_SCRIPT.create_seeded_rng(run_seed + 104_729, "map_generator_act1")
 
 	var graph := MapGraphData.new()
 	graph.floor_count = NORMAL_FLOOR_COUNT + 1
@@ -50,9 +50,9 @@ static func create_act1_seed_graph(seed: int) -> MapGraphData:
 	return graph
 
 
-static func create_act1_seed_map(seed: int, floor: int) -> Array[MapNodeData]:
-	var graph := create_act1_seed_graph(seed)
-	var clamped_floor := clampi(floor, 0, graph.floor_count - 1)
+static func create_act1_seed_map(run_seed: int, floor_index: int) -> Array[MapNodeData]:
+	var graph := create_act1_seed_graph(run_seed)
+	var clamped_floor := clampi(floor_index, 0, graph.floor_count - 1)
 	return graph.get_nodes_for_floor(clamped_floor)
 
 

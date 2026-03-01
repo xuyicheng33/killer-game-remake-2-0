@@ -1,6 +1,8 @@
 class_name ConditionalDamageEffect
 extends Effect
 
+const EFFECT_ENQUEUE_HELPER_SCRIPT := preload("res://runtime/modules/effect_engine/effect_enqueue_helper.gd")
+
 var base_amount := 0
 var condition := "hp_below_half"
 var multiplier := 2
@@ -8,11 +10,13 @@ var multiplier := 2
 
 func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 	var effect_name := "ConditionalDamage(%d)" % base_amount
-	if battle_context != null and battle_context.has_method("get"):
-		var es = battle_context.get("effect_stack")
-		if es != null:
-			es.enqueue_effect(effect_name, targets, _apply_conditional_damage.bind(battle_context))
-			return
+	if EFFECT_ENQUEUE_HELPER_SCRIPT.try_enqueue(
+		battle_context,
+		effect_name,
+		targets,
+		_apply_conditional_damage.bind(battle_context)
+	):
+		return
 
 	for target in targets:
 		if target == null or not is_instance_valid(target):
@@ -52,10 +56,11 @@ func _check_condition(source: Node) -> bool:
 			return false
 		if not "stats" in source:
 			return false
-		var stats = source.stats
-		if stats == null:
+		var stats_variant: Variant = source.stats
+		if not (stats_variant is Stats):
 			return false
-		var current_hp = stats.get("health", 0)
-		var max_hp = stats.get("max_health", 1)
+		var stats: Stats = stats_variant as Stats
+		var current_hp := stats.health
+		var max_hp := maxi(1, stats.max_health)
 		return current_hp <= max_hp / 2
 	return false

@@ -52,8 +52,8 @@ static func apply_option(run_state: RunState, option: Dictionary) -> String:
 		"add_card_for_hp":
 			var hp_cost := int(option.get("hp", 0))
 			run_state.damage_player(hp_cost)
-			var card_id := _add_random_card(run_state)
-			return "失去 %d 生命，获得卡牌：%s" % [maxi(0, hp_cost), card_id]
+			var card_name := _add_random_card(run_state)
+			return "失去 %d 生命，获得卡牌：%s" % [maxi(0, hp_cost), card_name]
 		"buy_card":
 			var cost := int(option.get("cost", 0))
 			if not run_state.spend_gold(cost):
@@ -69,8 +69,8 @@ static func apply_option(run_state: RunState, option: Dictionary) -> String:
 		"upgrade_for_hp":
 			var hp_pay := int(option.get("hp", 0))
 			run_state.damage_player(hp_pay)
-			var upgraded_id := _upgrade_first_card(run_state)
-			return "失去 %d 生命，升级卡牌：%s" % [maxi(0, hp_pay), upgraded_id]
+			var upgraded_name := _upgrade_first_card(run_state)
+			return "失去 %d 生命，升级卡牌：%s" % [maxi(0, hp_pay), upgraded_name]
 		"remove_card":
 			var removed := _remove_first_card(run_state)
 			return "移除卡牌：%s" % removed
@@ -109,7 +109,7 @@ static func _add_random_card(run_state: RunState) -> String:
 		return "(无效卡)"
 	if not run_state.add_card_to_deck(card):
 		return "(加牌失败)"
-	return card.id
+	return _card_display_name(card)
 
 
 static func _upgrade_first_card(run_state: RunState) -> String:
@@ -119,11 +119,10 @@ static func _upgrade_first_card(run_state: RunState) -> String:
 	var success := run_state.upgrade_card_in_deck_at(0)
 	if not success:
 		return "(升级失败)"
-	var first_card: Card = null
-	var first_card_variant: Variant = run_state.get_deck_cards()[0]
+	var first_card_variant: Variant = cards[0]
 	if first_card_variant is Card:
-		first_card = first_card_variant
-	return first_card.id if first_card else "(升级完成)"
+		return _card_display_name(first_card_variant as Card)
+	return "(升级完成)"
 
 
 static func _remove_first_card(run_state: RunState) -> String:
@@ -131,4 +130,18 @@ static func _remove_first_card(run_state: RunState) -> String:
 	if cards.size() <= 1:
 		return "(牌组无法继续移除)"
 	var removed := run_state.remove_card_from_deck_at(0)
-	return removed.id if removed else "(移除失败)"
+	if removed == null:
+		return "(移除失败)"
+	return _card_display_name(removed)
+
+
+static func _card_display_name(card: Card) -> String:
+	if card == null:
+		return "(无效卡)"
+	var display_name := card.get_display_name().strip_edges()
+	if not display_name.is_empty():
+		return display_name
+	var card_id := card.id.strip_edges()
+	if not card_id.is_empty():
+		return card_id
+	return "(无效卡)"

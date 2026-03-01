@@ -7,10 +7,18 @@ var target_self := false
 
 func execute(targets: Array[Node], _battle_context: RefCounted = null) -> void:
 	if target_self:
-		if _battle_context != null and _battle_context.has_method("get"):
-			var player = _battle_context.get("player")
-			if player != null and player.stats != null:
-				_apply_lose_hp_to_target(player)
+		var player: Node = null
+		if _battle_context != null:
+			if _battle_context.has_method("get_player"):
+				var player_variant: Variant = _battle_context.call("get_player")
+				if player_variant is Node:
+					player = player_variant as Node
+			if player == null and _battle_context.has_method("get"):
+				var fallback_variant: Variant = _battle_context.get("player")
+				if fallback_variant is Node:
+					player = fallback_variant as Node
+		if player != null:
+			_apply_lose_hp_to_target(player)
 	else:
 		for target in targets:
 			if target == null or not is_instance_valid(target):
@@ -20,7 +28,15 @@ func execute(targets: Array[Node], _battle_context: RefCounted = null) -> void:
 
 
 func _apply_lose_hp_to_target(target: Node) -> void:
-	var stats = target.stats if "stats" in target else null
+	var stats: Stats = null
+	if target is Player:
+		stats = (target as Player).stats
+	elif target is Enemy:
+		stats = (target as Enemy).stats
+	elif target != null and target.has_method("get"):
+		var stats_variant: Variant = target.get("stats")
+		if stats_variant is Stats:
+			stats = stats_variant as Stats
 	if stats == null:
 		return
 	

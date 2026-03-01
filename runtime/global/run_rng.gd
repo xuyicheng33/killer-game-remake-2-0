@@ -11,8 +11,8 @@ static var _initialized: bool = false
 static var _streams: Dictionary = {}
 
 
-static func begin_run(seed: int) -> void:
-	_run_seed = seed
+static func begin_run(run_seed: int) -> void:
+	_run_seed = run_seed
 	_streams.clear()
 	_initialized = true
 
@@ -64,9 +64,9 @@ static func restore_run_state(state: Dictionary) -> bool:
 	return true
 
 
-static func create_seeded_rng(seed: int, stream_key: String) -> RandomNumberGenerator:
+static func create_seeded_rng(run_seed: int, stream_key: String) -> RandomNumberGenerator:
 	var rng := RandomNumberGenerator.new()
-	rng.seed = _compose_seed(seed, stream_key)
+	rng.seed = _compose_seed(run_seed, stream_key)
 	return rng
 
 

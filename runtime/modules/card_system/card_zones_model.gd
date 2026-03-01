@@ -5,7 +5,7 @@ signal zone_counts_changed(draw_count: int, hand_count: int, discard_count: int,
 
 var _events_connected := false
 var _character: CharacterStats = null
-var _hand: Hand = null
+var _hand: Node = null
 var _exhaust_pile: CardPile = CardPile.new()
 var _bound_draw_pile: CardPile = null
 var _bound_discard_pile: CardPile = null
@@ -13,7 +13,7 @@ var _turn_end_hand_snapshot: Array[Card] = []
 var _player_action_window_open := false
 
 
-func bind_context(character: CharacterStats, hand: Hand) -> void:
+func bind_context(character: CharacterStats, hand: Node) -> void:
 	_disconnect_pile_signals()
 	_disconnect_hand_signals()
 	_disconnect_events()
@@ -138,13 +138,10 @@ func _on_player_turn_ended() -> void:
 		return
 
 	for child_node: Node in _hand.get_children():
-		if not (child_node is CardUI):
+		var card := _extract_card_from_hand_child(child_node)
+		if card == null:
 			continue
-
-		var card_ui: CardUI = child_node
-		if card_ui.card == null:
-			continue
-		_turn_end_hand_snapshot.append(card_ui.card)
+		_turn_end_hand_snapshot.append(card)
 
 
 func _on_player_hand_discarded() -> void:
@@ -164,7 +161,7 @@ func _on_player_hand_discarded() -> void:
 
 		if card.keyword_retain:
 			if _character.discard.remove_card(card):
-				if _hand != null and is_instance_valid(_hand):
+				if _hand != null and is_instance_valid(_hand) and _hand.has_method("add_card"):
 					_hand.add_card(card)
 
 	_turn_end_hand_snapshot.clear()
@@ -243,3 +240,14 @@ func _emit_zone_counts() -> void:
 		get_discard_count(),
 		get_exhaust_count()
 	)
+
+
+func _extract_card_from_hand_child(child_node: Node) -> Card:
+	if child_node == null or not is_instance_valid(child_node):
+		return null
+	if not ("card" in child_node):
+		return null
+	var card_variant: Variant = child_node.get("card")
+	if card_variant is Card:
+		return card_variant as Card
+	return null

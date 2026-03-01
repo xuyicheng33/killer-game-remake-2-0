@@ -2,7 +2,7 @@ class_name RelicCatalog
 extends RefCounted
 
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
-const RELIC_SOURCE_PATH := "res://runtime/modules/content_pipeline/sources/relics/examples/common_relics.json"
+const RELIC_DIR := "res://content/custom_resources/relics"
 
 static var _cache: Array[RelicData] = []
 
@@ -45,73 +45,29 @@ static func pick_random_for_reward(run_state: RunState, reward_type: String) -> 
 static func _load_pool() -> void:
 	if not _cache.is_empty():
 		return
-	if not ResourceLoader.exists(RELIC_SOURCE_PATH):
-		push_warning("RelicCatalog: source not found at '%s'" % RELIC_SOURCE_PATH)
-		return
 
-	var file := FileAccess.open(RELIC_SOURCE_PATH, FileAccess.READ)
-	if file == null:
-		push_warning("RelicCatalog: failed to open source '%s'" % RELIC_SOURCE_PATH)
-		return
-
-	var parser := JSON.new()
-	var parse_code := parser.parse(file.get_as_text())
-	file.close()
-	if parse_code != OK:
-		push_warning("RelicCatalog: failed to parse source '%s'" % RELIC_SOURCE_PATH)
-		return
-
-	var root_variant: Variant = parser.data
-	if typeof(root_variant) != TYPE_DICTIONARY:
-		push_warning("RelicCatalog: source root must be Dictionary")
-		return
-	var root: Dictionary = root_variant
-
-	var relics_variant: Variant = root.get("relics", [])
-	if typeof(relics_variant) != TYPE_ARRAY:
-		push_warning("RelicCatalog: source field 'relics' must be Array")
+	var dir := DirAccess.open(RELIC_DIR)
+	if dir == null:
+		push_warning("RelicCatalog: 无法打开遗物目录 '%s'" % RELIC_DIR)
 		return
 
 	_cache.clear()
-	for item in (relics_variant as Array):
-		if typeof(item) != TYPE_DICTIONARY:
+	dir.list_dir_begin()
+	while true:
+		var file_name := dir.get_next()
+		if file_name.is_empty():
+			break
+		if dir.current_is_dir():
 			continue
-		var relic_data := _parse_relic_from_dict(item as Dictionary)
-		if relic_data == null:
+		if not file_name.ends_with(".tres"):
 			continue
-		_cache.append(relic_data)
+		# 跳过脚本文件
+		if file_name.ends_with(".gd"):
+			continue
 
+		var path := "%s/%s" % [RELIC_DIR, file_name]
+		var relic_variant: Variant = ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_IGNORE)
+		if relic_variant is RelicData:
+			_cache.append(relic_variant as RelicData)
 
-static func _parse_relic_from_dict(raw: Dictionary) -> RelicData:
-	var relic := RelicData.new()
-	relic.id = str(raw.get("id", ""))
-	if relic.id.is_empty():
-		return null
-	relic.title = str(raw.get("title", relic.id))
-	relic.description = str(raw.get("description", ""))
-	relic.rarity = str(raw.get("rarity", "common"))
-
-	var effects_variant: Variant = raw.get("effects", {})
-	if typeof(effects_variant) == TYPE_DICTIONARY:
-		var effects: Dictionary = effects_variant
-		relic.on_battle_start_heal = int(effects.get("on_battle_start_heal", 0))
-		relic.on_card_played_gold = int(effects.get("on_card_played_gold", 0))
-		relic.card_play_interval = maxi(1, int(effects.get("card_play_interval", relic.card_play_interval)))
-		relic.on_player_hit_block = int(effects.get("on_player_hit_block", 0))
-		relic.on_enemy_killed_gold = int(effects.get("on_enemy_killed_gold", 0))
-		relic.on_turn_start_block = int(effects.get("on_turn_start_block", 0))
-		relic.on_turn_end_heal = int(effects.get("on_turn_end_heal", 0))
-		relic.shop_discount_percent = int(effects.get("shop_discount_percent", 0))
-		relic.on_run_start_gold = int(effects.get("on_run_start_gold", 0))
-		relic.on_run_start_max_health = int(effects.get("on_run_start_max_health", 0))
-		relic.on_turn_start_energy = int(effects.get("on_turn_start_energy", 0))
-		relic.on_turn_start_damage = int(effects.get("on_turn_start_damage", 0))
-		relic.on_enemy_killed_strength = int(effects.get("on_enemy_killed_strength", 0))
-		relic.on_enemy_killed_damage = int(effects.get("on_enemy_killed_damage", 0))
-		relic.on_enemy_killed_draw = int(effects.get("on_enemy_killed_draw", 0))
-		relic.on_battle_end_heal_per_kill = int(effects.get("on_battle_end_heal_per_kill", 0))
-		relic.on_attack_played_strength = int(effects.get("on_attack_played_strength", 0))
-		relic.attack_play_strength_max = int(effects.get("attack_play_strength_max", 0))
-		relic.on_run_start_strength = int(effects.get("on_run_start_strength", 0))
-
-	return relic
+	dir.list_dir_end()

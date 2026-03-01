@@ -1,15 +1,16 @@
 extends Node2D
 
 const BATTLE_CONTEXT_SCRIPT := preload("res://runtime/modules/battle_loop/battle_context.gd")
+const BATTLE_SESSION_PORT_SCRIPT := preload("res://runtime/modules/relic_potion/contracts/battle_session_port.gd")
+const ENEMY_SPAWN_SERVICE_SCRIPT := preload("res://runtime/modules/battle_loop/enemy_spawn_service.gd")
 const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
-const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
-const ENCOUNTER_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/encounter_registry.gd")
 const PHASE_LOG_LIMIT := 8
 
 @export var char_stats: CharacterStats
 @export var music: AudioStream
 @export var runtime_stats: CharacterStats
 @export var encounter_id: String = ""
+var relic_potion_system: RelicPotionSystem = null
 
 @onready var battle_ui: BattleUI = $BattleUI
 @onready var player_handler: PlayerHandler = $PlayerHandler
@@ -23,6 +24,7 @@ const PHASE_LOG_LIMIT := 8
 
 var _battle_phase_machine: BattlePhaseStateMachine
 var _battle_context: BattleContext
+var _enemy_spawn_service = null
 var _phase_logs: Array[String] = []
 var _battle_ended := false
 var _active_stats: CharacterStats
@@ -34,6 +36,7 @@ func _ready() -> void:
 	player.stats = _active_stats
 
 	_battle_context = BATTLE_CONTEXT_SCRIPT.new()
+	_enemy_spawn_service = ENEMY_SPAWN_SERVICE_SCRIPT.new()
 	battle_ui.bind_battle_context(_battle_context)
 
 	_apply_responsive_layout()
@@ -107,71 +110,49 @@ func start_battle(stats: CharacterStats) -> void:
 	_battle_ended = false
 	_phase_logs.clear()
 	_battle_context.bind_battle_context(_active_stats, battle_ui.hand_container)
-	_spawn_enemies()
-	var enemies := _get_battle_enemies()
+	var spawned_enemy_nodes: Array[Node] = _enemy_spawn_service.spawn_enemies(
+		enemy_handler,
+		_battle_context,
+		encounter_id,
+		get_viewport_rect().size.x,
+		ENEMY_SCENE
+	)
+	var enemies: Array[Enemy] = []
+	for enemy_node in spawned_enemy_nodes:
+		if enemy_node is Enemy:
+			enemies.append(enemy_node as Enemy)
 	if enemies.is_empty():
 		push_error("battle.gd: battle setup aborted, no valid enemies were spawned")
 		_on_battle_ended("defeat")
 		return
 	_battle_context.bind_combatants(player, enemies)
 	enemy_handler.reset_enemy_actions()
-	_inject_effect_stack_to_relic_system()
+	_bind_battle_session_to_relic_system()
 	_battle_context.start_battle()
 
 
-func _inject_effect_stack_to_relic_system() -> void:
-	var tree := get_tree()
-	if tree == null:
+func _bind_battle_session_to_relic_system() -> void:
+	if relic_potion_system == null:
 		return
-	var app_nodes := tree.get_nodes_in_group("app")
-	if app_nodes.is_empty():
-		return
-	var app_node := app_nodes[0]
-	if app_node == null or not is_instance_valid(app_node):
-		return
-	if not "relic_potion_system" in app_node:
-		return
-	var rps = app_node.get("relic_potion_system")
-	if rps == null:
-		return
-	rps.effect_stack = _battle_context.effect_stack
+
+	var session_port := BATTLE_SESSION_PORT_SCRIPT.new(
+		_battle_context.effect_stack,
+		_battle_context,
+		func() -> Player:
+			return player,
+		func() -> Array[Node]:
+			return _resolve_live_enemies()
+	)
+
+	relic_potion_system.on_battle_session_bound(session_port)
 
 
-func _spawn_enemies() -> void:
-	for child in enemy_handler.get_children():
-		child.queue_free()
-	
-	var enemy_ids: Array[String] = []
-	
-	if not encounter_id.is_empty():
-		var encounter := ENCOUNTER_REGISTRY_SCRIPT.get_encounter_by_id(encounter_id)
-		enemy_ids = ENCOUNTER_REGISTRY_SCRIPT.get_enemy_ids_for_encounter(encounter)
-	
-	if enemy_ids.is_empty():
-		enemy_ids = ["crab", "bat"]
-	
-	var enemy_count := enemy_ids.size()
-	var viewport_width := get_viewport_rect().size.x
-	var start_x := viewport_width * 0.6
-	var spacing := viewport_width * 0.12
-	var base_y := 530.0
-	
-	for i in enemy_count:
-		var enemy_id := enemy_ids[i]
-		var enemy_stats: EnemyStats = ENEMY_REGISTRY_SCRIPT.get_enemy_stats(enemy_id)
-		if enemy_stats == null:
-			push_error("battle.gd: failed to load enemy stats for '%s'" % enemy_id)
-			continue
-		
-		var enemy: Enemy = ENEMY_SCENE.instantiate() as Enemy
-		enemy.stats = enemy_stats
-		enemy.battle_context = _battle_context
-		
-		var offset_x := (i - (enemy_count - 1) / 2.0) * spacing
-		# 视觉布局随机抖动，不影响游戏逻辑或种子一致性
-		enemy.position = Vector2(start_x + offset_x, base_y + randf_range(-30, 30))
-		
-		enemy_handler.add_child(enemy)
+func _resolve_live_enemies() -> Array[Node]:
+	var out: Array[Node] = []
+	for enemy in _enemy_spawn_service.collect_battle_enemies(enemy_handler):
+		if enemy != null and is_instance_valid(enemy):
+			out.append(enemy)
+	return out
 
 
 func _on_enemies_child_order_changed() -> void:
@@ -224,11 +205,7 @@ func _on_phase_changed(from_phase: BattlePhaseStateMachine.Phase, to_phase: Batt
 
 
 func _get_battle_enemies() -> Array[Enemy]:
-	var enemies: Array[Enemy] = []
-	for child in enemy_handler.get_children():
-		if child is Enemy:
-			enemies.append(child)
-	return enemies
+	return _enemy_spawn_service.collect_battle_enemies(enemy_handler)
 
 
 func _append_phase_log(text: String) -> void:
@@ -239,11 +216,7 @@ func _append_phase_log(text: String) -> void:
 
 func _update_phase_hud(phase_name: String, turn: int) -> void:
 	current_phase_label.text = "回合 %d | 阶段：%s" % [turn, phase_name]
-
-	var combined_log := "阶段日志："
-	for entry in _phase_logs:
-		combined_log += "\n%s" % entry
-	phase_log_label.text = combined_log
+	phase_log_label.text = "阶段日志：\n" + "\n".join(_phase_logs)
 
 
 func _on_player_died() -> void:
@@ -278,10 +251,10 @@ func _on_battle_ended(result: String) -> void:
 	_battle_ended = true
 	MusicPlayer.stop()
 	var panel_type := BattleOverPanel.Type.WIN
-	var text := "Victorious!"
+	var text := "胜利！"
 	if result != "victory":
 		panel_type = BattleOverPanel.Type.LOSE
-		text = "Game Over!"
+		text = "游戏结束！"
 	Events.battle_over_screen_requested.emit(text, panel_type)
 
 

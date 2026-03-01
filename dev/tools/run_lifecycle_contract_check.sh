@@ -42,6 +42,24 @@ assert_has() {
   fail "$label"
 }
 
+assert_has_any() {
+  local file="$1"
+  local label="$2"
+  shift 2
+  for pattern in "$@"; do
+    if grep -Eq "$pattern" "$file" 2>/dev/null; then
+      pass "$label"
+      return
+    fi
+  done
+  echo "  file: $file" >&2
+  echo "  accepted patterns:" >&2
+  for pattern in "$@"; do
+    echo "    - $pattern" >&2
+  done
+  fail "$label"
+}
+
 echo "[run_lifecycle_contract] checking forbidden direct dependencies in app.gd..."
 
 # 检查 app.gd 不得直接 preload/use persistence/save_service.gd
@@ -79,16 +97,22 @@ assert_not_has 'ReproLog\.new\(' \
 echo "[run_lifecycle_contract] checking lifecycle service calls through run_flow_service..."
 
 # 检查 app.gd 必须通过 run_flow_service.lifecycle_service 调用生命周期方法
-assert_has 'run_flow_service\.lifecycle_service\.start_new_run' \
+assert_has_any \
   "$APP_FILE" \
-  "app.gd must call start_new_run through run_flow_service.lifecycle_service"
+  "app.gd must call start_new_run through run_flow_service.lifecycle_service or app_flow_orchestrator" \
+  'run_flow_service\.lifecycle_service\.start_new_run' \
+  'app_flow_orchestrator\.start_new_run'
 
-assert_has 'run_flow_service\.lifecycle_service\.try_load_saved_run' \
+assert_has_any \
   "$APP_FILE" \
-  "app.gd must call try_load_saved_run through run_flow_service.lifecycle_service"
+  "app.gd must call try_load_saved_run through run_flow_service.lifecycle_service or app_flow_orchestrator" \
+  'run_flow_service\.lifecycle_service\.try_load_saved_run' \
+  'app_flow_orchestrator\.continue_saved_run'
 
-assert_has 'run_flow_service\.lifecycle_service\.save_checkpoint' \
+assert_has_any \
   "$APP_FILE" \
-  "app.gd must call save_checkpoint through run_flow_service.lifecycle_service"
+  "app.gd must call save_checkpoint through run_flow_service.lifecycle_service or app_flow_orchestrator" \
+  'run_flow_service\.lifecycle_service\.save_checkpoint' \
+  'app_flow_orchestrator\.save_checkpoint'
 
 echo "[run_lifecycle_contract] all checks passed."

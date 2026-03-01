@@ -2,6 +2,14 @@ class_name RelicPotionSystem
 extends Node
 
 const RELIC_REGISTRY_SCRIPT := preload("res://runtime/modules/relic_potion/relic_registry.gd")
+const BATTLE_SESSION_PORT_SCRIPT := preload("res://runtime/modules/relic_potion/contracts/battle_session_port.gd")
+const RELIC_RUNTIME_CACHE_SCRIPT := preload("res://runtime/modules/relic_potion/relic_runtime_cache.gd")
+const RELIC_EFFECT_EXECUTOR_SCRIPT := preload("res://runtime/modules/relic_potion/relic_effect_executor.gd")
+const POTION_USE_SERVICE_SCRIPT := preload("res://runtime/modules/relic_potion/potion_use_service.gd")
+const BATTLE_START_TRIGGER_COORDINATOR_SCRIPT := preload("res://runtime/modules/relic_potion/battle_start_trigger_coordinator.gd")
+const BATTLE_PARTICIPANT_RESOLVER_SCRIPT := preload("res://runtime/modules/relic_potion/battle_participant_resolver.gd")
+const RELIC_TRIGGER_DISPATCHER_SCRIPT := preload("res://runtime/modules/relic_potion/relic_trigger_dispatcher.gd")
+const LOG_TEMPLATES := preload("res://runtime/global/log_templates.gd")
 
 enum TriggerType {
 	ON_BATTLE_START,
@@ -21,6 +29,7 @@ enum TriggerType {
 
 signal log_updated(text: String)
 signal trigger_fired(trigger_type: TriggerType, context: Dictionary)
+signal battle_state_changed(active: bool)
 
 var run_state: RunState
 var effect_stack: EffectStackEngine = null
@@ -29,12 +38,25 @@ var _pending_battle_start_trigger := false
 var _cards_played_in_battle := 0
 var _enemies_killed_in_battle := 0
 var _battle_start_retry_count := 0
-var _relic_runtimes: Dictionary = {}
+var _battle_context: BattleContext = null
+var _battle_session_port = null
 var _relic_trigger_counts: Dictionary = {}
+var _relic_runtimes: Dictionary:
+	get:
+		if _runtime_cache == null:
+			return {}
+		return _runtime_cache.data()
+var _runtime_cache = null
+var _effect_executor = null
+var _potion_use_service = null
+var _battle_start_trigger_coordinator = null
+var _battle_participant_resolver = null
+var _trigger_dispatcher = null
 const MAX_BATTLE_START_RETRIES := 100
 
 
 func _ready() -> void:
+	_init_services()
 	_connect_signals()
 
 
@@ -73,23 +95,33 @@ func _disconnect_signals() -> void:
 
 
 func bind_run_state(value: RunState) -> void:
+	_init_services()
 	run_state = value
 	_battle_active = false
 	_pending_battle_start_trigger = false
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
+	_battle_start_retry_count = 0
+	_battle_context = null
+	_battle_session_port = null
+	effect_stack = null
 	_rebuild_relic_runtime_cache()
+	_sync_effect_executor()
 	_apply_run_start_relics_once()
-	log_updated.emit("遗物/药水系统已就绪。")
+	battle_state_changed.emit(false)
+	log_updated.emit(LOG_TEMPLATES.format("system_ready"))
 
 
 func start_battle() -> void:
+	_init_services()
 	_battle_active = true
 	_cards_played_in_battle = 0
 	_enemies_killed_in_battle = 0
 	_battle_start_retry_count = 0
 	_relic_trigger_counts.clear()
 	_pending_battle_start_trigger = true
+	_sync_effect_executor()
+	battle_state_changed.emit(true)
 	_try_fire_battle_start_trigger()
 
 
@@ -98,79 +130,130 @@ func end_battle() -> void:
 		_fire_trigger(TriggerType.ON_BATTLE_END, {"kills": _enemies_killed_in_battle})
 	_battle_active = false
 	_pending_battle_start_trigger = false
+	_battle_start_retry_count = 0
+	_battle_context = null
+	_battle_session_port = null
+	effect_stack = null
+	_sync_effect_executor()
+	battle_state_changed.emit(false)
+
+
+func on_battle_session_bound(session_port) -> void:
+	_init_services()
+	_battle_session_port = session_port
+	effect_stack = session_port.effect_stack if session_port != null else null
+	_battle_context = session_port.battle_context if session_port != null else null
+	_sync_effect_executor()
+	if not _battle_active:
+		start_battle()
+		return
+	_battle_start_retry_count = 0
+	_try_fire_battle_start_trigger()
+
+
+func on_battle_scene_ready(battle_effect_stack: EffectStackEngine, battle_context_ref: BattleContext = null) -> void:
+	var session_port = BATTLE_SESSION_PORT_SCRIPT.new(
+		battle_effect_stack,
+		battle_context_ref
+	)
+	on_battle_session_bound(session_port)
+
+
+func is_battle_active() -> bool:
+	return _battle_active
 
 
 func _try_fire_battle_start_trigger() -> void:
-	if not _pending_battle_start_trigger:
-		return
-	if not _battle_active:
-		_pending_battle_start_trigger = false
-		return
-	if not _is_battle_start_context_ready():
-		call_deferred("_deferred_try_fire_battle_start_trigger")
-		return
-
-	_pending_battle_start_trigger = false
-	_fire_trigger(TriggerType.ON_BATTLE_START, {})
+	_init_services()
+	var context_ready := false
+	if _pending_battle_start_trigger and _battle_active:
+		context_ready = _is_battle_start_context_ready()
+	var action: int = _battle_start_trigger_coordinator.evaluate_immediate(
+		_pending_battle_start_trigger,
+		_battle_active,
+		context_ready
+	)
+	_handle_battle_start_action(action, false)
 
 
 func _deferred_try_fire_battle_start_trigger() -> void:
-	if not _pending_battle_start_trigger:
-		return
-	if not _battle_active:
-		_pending_battle_start_trigger = false
-		return
-	if _is_battle_start_context_ready():
-		_pending_battle_start_trigger = false
-		_fire_trigger(TriggerType.ON_BATTLE_START, {})
-		return
+	_init_services()
+	var context_ready := false
+	if _pending_battle_start_trigger and _battle_active:
+		context_ready = _is_battle_start_context_ready()
+	var outcome: Dictionary = _battle_start_trigger_coordinator.evaluate_deferred(
+		_pending_battle_start_trigger,
+		_battle_active,
+		context_ready,
+		_battle_start_retry_count,
+		MAX_BATTLE_START_RETRIES
+	)
+	_battle_start_retry_count = int(outcome.get("retry_count", _battle_start_retry_count))
+	var action: int = int(outcome.get("action", 0))
+	var timed_out := bool(outcome.get("timed_out", false))
+	_handle_battle_start_action(action, timed_out)
 
-	_battle_start_retry_count += 1
-	if _battle_start_retry_count > MAX_BATTLE_START_RETRIES:
-		push_warning("[RelicPotionSystem] 战斗开始触发器等待超时（%d 次重试），放弃触发" % MAX_BATTLE_START_RETRIES)
-		_pending_battle_start_trigger = false
-		return
 
+func _complete_pending_battle_start_trigger() -> void:
+	_abort_pending_battle_start_trigger()
+	_fire_trigger(TriggerType.ON_BATTLE_START, {})
+
+
+func _abort_pending_battle_start_trigger() -> void:
+	_pending_battle_start_trigger = false
+
+
+func _schedule_battle_start_retry() -> void:
 	var tree := get_tree()
 	if tree == null:
 		return
 	tree.create_timer(0.01, false).timeout.connect(_try_fire_battle_start_trigger, CONNECT_ONE_SHOT)
 
 
+func _handle_battle_start_action(action: int, timed_out: bool) -> void:
+	match action:
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.NOOP:
+			return
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.DEFER_CHECK:
+			call_deferred("_deferred_try_fire_battle_start_trigger")
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.COMPLETE:
+			_complete_pending_battle_start_trigger()
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.ABORT:
+			if timed_out:
+				push_warning("[RelicPotionSystem] 战斗开始触发器等待超时（%d 次重试），放弃触发" % MAX_BATTLE_START_RETRIES)
+			_abort_pending_battle_start_trigger()
+		BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.Action.SCHEDULE_RETRY:
+			_schedule_battle_start_retry()
+		_:
+			push_warning("[RelicPotionSystem] 未知的 battle start action: %s" % str(action))
+
+
 func _is_battle_start_context_ready() -> bool:
 	if effect_stack == null:
 		return false
+	if _battle_context != null:
+		var context_player := _battle_context.get_player()
+		if context_player != null and is_instance_valid(context_player):
+			return true
+	if _battle_session_port != null:
+		var port_player: Variant = _battle_session_port.resolve_player()
+		if port_player != null and is_instance_valid(port_player):
+			return true
 	return _find_player() != null
 
 
 func use_potion(index: int) -> void:
-	if run_state == null:
-		return
-	if index < 0 or index >= run_state.potions.size():
-		return
-	var potion: PotionData = run_state.potions[index]
-	if potion == null:
-		return
-	if effect_stack == null:
-		push_warning("[RelicPotionSystem] effect_stack 未注入，药水效果无法派发")
-		return
-	if potion.effect_type == PotionData.EffectType.DAMAGE_ALL_ENEMIES:
-		_use_damage_potion(index, potion)
-		return
-	var player := _find_player()
-	if player == null:
-		push_warning("[RelicPotionSystem] 未找到 player，药水效果无法派发")
-		return
-
-	effect_stack.enqueue_effect(
-		"potion_%s" % potion.id,
-		[player],
-		func(_target: Node) -> void:
-			_apply_potion_effect(index, potion),
-		50,
-		_potion_effect_type(potion),
-		null,
-		potion.value
+	_init_services()
+	_potion_use_service.use_potion(
+		index,
+		run_state,
+		_battle_active,
+		effect_stack,
+		Callable(self, "_find_player"),
+		Callable(self, "_find_enemies"),
+		Callable(self, "_apply_potion_effect"),
+		Callable(self, "_consume_potion"),
+		Callable(self, "push_external_log")
 	)
 
 
@@ -193,6 +276,10 @@ func get_relic_trigger_count(relic_id: String, trigger_type: String) -> int:
 	return int(_relic_trigger_counts.get(key, 0))
 
 
+func get_relic_runtime_cache_snapshot() -> Dictionary:
+	return _relic_runtimes.duplicate()
+
+
 func increment_relic_trigger_count(relic_id: String, trigger_type: String) -> void:
 	var key := "%s:%s" % [relic_id, trigger_type]
 	var current := int(_relic_trigger_counts.get(key, 0))
@@ -208,104 +295,50 @@ func _fire_trigger(trigger_type: TriggerType, context: Dictionary) -> void:
 		return
 
 	trigger_fired.emit(trigger_type, context)
-
-	for relic in run_state.relics:
-		if not (relic is RelicData):
-			continue
-		var relic_data: RelicData = relic
-
-		# 使用缓存的运行时对象，避免每次触发都实例化
-		var relic_runtime: Variant = _get_or_create_relic_runtime(relic_data)
-		if relic_runtime == null:
-			continue
-		if not relic_runtime.has_method("handle_trigger"):
-			continue
-		relic_runtime.call("handle_trigger", int(trigger_type), context, self)
-
-
-func _dispatch_effect(effect_type: String, value: int, relic: RelicData) -> void:
-	if effect_type == "add_gold" or effect_type == "increase_max_health":
-		_apply_relic_effect(effect_type, value)
-		return
-	if effect_stack == null:
-		push_warning("[RelicPotionSystem] effect_stack 未注入，遗物效果无法派发: %s" % effect_type)
-		return
-	var player := _find_player()
-	if player == null:
-		push_warning("[RelicPotionSystem] 未找到 player，遗物效果无法派发: %s" % effect_type)
-		return
-	
-	effect_stack.enqueue_effect(
-		"relic_%s" % effect_type,
-		[player],
-		func(_target: Node) -> void:
-			_apply_relic_effect(effect_type, value),
-		50,
-		EffectStackEngine.EffectType.SPECIAL,
-		null,
-		value
+	_init_services()
+	_trigger_dispatcher.dispatch_trigger(
+		run_state,
+		int(trigger_type),
+		context,
+		Callable(self, "_get_or_create_relic_runtime"),
+		self
 	)
 
 
+func _dispatch_effect(effect_type: String, value: int, _relic: RelicData) -> void:
+	_init_services()
+	_sync_effect_executor()
+	_effect_executor.dispatch_effect(effect_type, value)
+
+
 func _apply_relic_effect(effect_type: String, value: int) -> void:
-	if run_state == null:
-		return
-	
-	match effect_type:
-		"heal":
-			run_state.heal_player(value)
-		"add_gold":
-			run_state.add_gold(value)
-		"add_block":
-			if run_state.player_stats != null:
-				var block_gain := maxi(0, value)
-				run_state.player_stats.block += block_gain
-				if block_gain > 0:
-					Events.player_block_applied.emit(block_gain, "relic")
-		"increase_max_health":
-			run_state.increase_max_health(value)
-		"add_energy":
-			if run_state.player_stats != null:
-				var char_stats: CharacterStats = run_state.player_stats
-				char_stats.mana = mini(char_stats.mana + value, char_stats.max_mana)
-				run_state.emit_changed()
-		"take_damage":
-			if run_state.player_stats != null:
-				run_state.player_stats.take_damage(maxi(0, value))
-		"add_strength":
-			if run_state.player_stats != null:
-				run_state.player_stats.add_status("strength", value)
-		"draw_cards":
-			if run_state.player_stats != null and value > 0:
-				for i in range(value):
-					if run_state.player_stats.draw_pile != null and not run_state.player_stats.draw_pile.cards.is_empty():
-						var card: Card = run_state.player_stats.draw_pile.draw_card()
-						if card != null:
-							run_state.player_stats.discard.add_card(card)
-				run_state.emit_changed()
+	_init_services()
+	_sync_effect_executor()
+	_effect_executor.apply_effect(effect_type, value)
 
 
 func _find_player() -> Player:
-	if not (Engine.get_main_loop() is SceneTree):
-		return null
-	var players: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("player")
-	if players.is_empty():
-		return null
-	if players[0] is Player:
-		return players[0] as Player
-	return null
+	_init_services()
+	return _battle_participant_resolver.resolve_player(_battle_session_port)
 
 
-func _potion_effect_type(potion: PotionData) -> EffectStackEngine.EffectType:
-	match potion.effect_type:
-		PotionData.EffectType.HEAL:
-			return EffectStackEngine.EffectType.HEAL
-		PotionData.EffectType.BLOCK:
-			return EffectStackEngine.EffectType.BLOCK
-		PotionData.EffectType.DAMAGE_ALL_ENEMIES:
-			return EffectStackEngine.EffectType.DAMAGE
-		_:
-			return EffectStackEngine.EffectType.SPECIAL
+func _draw_cards_in_battle_context(amount: int) -> int:
+	if amount <= 0:
+		return 0
+	var battle_context := _battle_context
+	if battle_context == null and _battle_session_port != null:
+		battle_context = _battle_session_port.battle_context
+	if battle_context == null:
+		battle_context = _find_battle_context()
+	if battle_context == null:
+		push_warning("[RelicPotionSystem] draw_cards 缺少 BattleContext，效果跳过")
+		return 0
+	return maxi(0, battle_context.draw_cards(amount))
+
+
+func _find_battle_context() -> BattleContext:
+	_init_services()
+	return _battle_participant_resolver.resolve_battle_context(_battle_session_port, _battle_context)
 
 
 func _apply_potion_effect(index: int, potion: PotionData) -> void:
@@ -315,10 +348,10 @@ func _apply_potion_effect(index: int, potion: PotionData) -> void:
 	match potion.effect_type:
 		PotionData.EffectType.HEAL:
 			run_state.heal_player(maxi(0, potion.value))
-			log_updated.emit("使用 %s：恢复 %d 生命" % [potion.title, maxi(0, potion.value)])
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_heal", maxi(0, potion.value)))
 		PotionData.EffectType.GOLD:
 			run_state.add_gold(maxi(0, potion.value))
-			log_updated.emit("使用 %s：获得 %d 金币" % [potion.title, maxi(0, potion.value)])
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_gold", maxi(0, potion.value)))
 		PotionData.EffectType.BLOCK:
 			if run_state.player_stats != null:
 				var block_gain := maxi(0, potion.value)
@@ -326,16 +359,16 @@ func _apply_potion_effect(index: int, potion: PotionData) -> void:
 				if block_gain > 0:
 					Events.player_block_applied.emit(block_gain, "potion")
 				run_state.emit_changed()
-			log_updated.emit("使用 %s：获得 %d 格挡" % [potion.title, maxi(0, potion.value)])
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_block", maxi(0, potion.value)))
 		PotionData.EffectType.DAMAGE_ALL_ENEMIES:
-			log_updated.emit("使用 %s：战斗外无有效目标" % potion.title)
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_no_target", 0))
 		_:
-			log_updated.emit("使用 %s：无效果" % potion.title)
+			log_updated.emit(LOG_TEMPLATES.potion(potion.title, "potion_no_effect", 0))
 	_consume_potion(index, potion)
 
 
 func _on_card_played(card: Card) -> void:
-	if not _battle_active or run_state == null:
+	if not _can_process_battle_trigger():
 		return
 
 	_cards_played_in_battle += 1
@@ -344,89 +377,72 @@ func _on_card_played(card: Card) -> void:
 	
 	if card != null:
 		if card.type == Card.Type.ATTACK:
-			_fire_trigger(TriggerType.ON_ATTACK_PLAYED, context)
+			_emit_battle_trigger(TriggerType.ON_ATTACK_PLAYED, context)
 		elif card.type == Card.Type.SKILL:
-			_fire_trigger(TriggerType.ON_SKILL_PLAYED, context)
-	
-	_fire_trigger(TriggerType.ON_CARD_PLAYED, context)
+			_emit_battle_trigger(TriggerType.ON_SKILL_PLAYED, context)
+
+	_emit_battle_trigger(TriggerType.ON_CARD_PLAYED, context)
 
 
 func _on_player_hit() -> void:
-	if not _battle_active or run_state == null:
-		return
-	
-	_fire_trigger(TriggerType.ON_DAMAGE_TAKEN, {})
+	_emit_battle_trigger(TriggerType.ON_DAMAGE_TAKEN, {})
 
 
 func _on_player_block_applied(amount: int, source: String) -> void:
-	if not _battle_active or run_state == null:
-		return
-	_fire_trigger(TriggerType.ON_BLOCK_APPLIED, {
+	_emit_battle_trigger(TriggerType.ON_BLOCK_APPLIED, {
 		"amount": maxi(0, amount),
 		"source": source,
 	})
 
 
 func _on_enemy_died(_enemy: Enemy) -> void:
-	if not _battle_active or run_state == null:
+	if not _can_process_battle_trigger():
 		return
 	
 	_enemies_killed_in_battle += 1
-	_fire_trigger(TriggerType.ON_ENEMY_KILLED, {"count": _enemies_killed_in_battle})
+	_emit_battle_trigger(TriggerType.ON_ENEMY_KILLED, {"count": _enemies_killed_in_battle})
 
 
 func _on_player_turn_start() -> void:
-	if not _battle_active or run_state == null:
-		return
-	
-	_fire_trigger(TriggerType.ON_TURN_START, {})
+	_emit_battle_trigger(TriggerType.ON_TURN_START, {})
 
 
 func _on_player_turn_end() -> void:
-	if not _battle_active or run_state == null:
-		return
-	
-	_fire_trigger(TriggerType.ON_TURN_END, {})
+	_emit_battle_trigger(TriggerType.ON_TURN_END, {})
 
 
 func on_shop_enter() -> void:
-	if run_state == null:
-		return
-	
-	_fire_trigger(TriggerType.ON_SHOP_ENTER, {})
+	_emit_run_trigger(TriggerType.ON_SHOP_ENTER, {})
 
 
 func on_boss_killed() -> void:
+	_emit_run_trigger(TriggerType.ON_BOSS_KILLED, {})
+
+
+func _can_process_battle_trigger() -> bool:
+	return _battle_active and run_state != null
+
+
+func _emit_battle_trigger(trigger_type: TriggerType, context: Dictionary = {}) -> void:
+	if not _can_process_battle_trigger():
+		return
+	_fire_trigger(trigger_type, context)
+
+
+func _emit_run_trigger(trigger_type: TriggerType, context: Dictionary = {}) -> void:
 	if run_state == null:
 		return
-	
-	_fire_trigger(TriggerType.ON_BOSS_KILLED, {})
+	_fire_trigger(trigger_type, context)
 
 
 func _rebuild_relic_runtime_cache() -> void:
-	_relic_runtimes.clear()
-	if run_state == null:
-		return
-	for relic in run_state.relics:
-		if not (relic is RelicData):
-			continue
-		var relic_data: RelicData = relic
-		if relic_data.id.is_empty():
-			continue
-		var runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic_data)
-		if runtime != null:
-			_relic_runtimes[relic_data.id] = runtime
+	_init_services()
+	_runtime_cache.rebuild(run_state)
 
 
 func _get_or_create_relic_runtime(relic_data: RelicData) -> Variant:
-	if relic_data == null or relic_data.id.is_empty():
-		return null
-	if _relic_runtimes.has(relic_data.id):
-		return _relic_runtimes[relic_data.id]
-	var runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic_data)
-	if runtime != null:
-		_relic_runtimes[relic_data.id] = runtime
-	return runtime
+	_init_services()
+	return _runtime_cache.resolve(relic_data)
 
 
 func add_relic(relic: RelicData) -> void:
@@ -435,15 +451,13 @@ func add_relic(relic: RelicData) -> void:
 	if run_state == null:
 		return
 	if run_state.add_relic(relic):
-		var runtime: Variant = RELIC_REGISTRY_SCRIPT.create_relic(relic)
-		if runtime != null:
-			_relic_runtimes[relic.id] = runtime
+		_runtime_cache.prime_relic(relic)
 
 
 func remove_relic(relic_id: String) -> bool:
 	if relic_id.is_empty() or run_state == null:
 		return false
-	_relic_runtimes.erase(relic_id)
+	_runtime_cache.remove(relic_id)
 	for i in run_state.relics.size():
 		if run_state.relics[i].id == relic_id:
 			run_state.relics.remove_at(i)
@@ -466,36 +480,6 @@ func _apply_run_start_relics_once() -> void:
 	run_state.emit_changed()
 
 
-func _use_damage_potion(index: int, potion: PotionData) -> void:
-	var enemies := _find_enemies()
-	if enemies.is_empty():
-		log_updated.emit("使用 %s：无有效目标" % potion.title)
-		_consume_potion(index, potion)
-		return
-
-	var damage := maxi(0, potion.value)
-	effect_stack.enqueue_effect(
-		"potion_%s" % potion.id,
-		enemies,
-		_apply_potion_damage_to_enemy.bind(damage),
-		50,
-		EffectStackEngine.EffectType.DAMAGE,
-		null,
-		damage
-	)
-	_consume_potion(index, potion)
-	log_updated.emit("使用 %s：对所有敌人造成 %d 伤害" % [potion.title, damage])
-
-
-func _apply_potion_damage_to_enemy(target: Node, damage: int) -> void:
-	if target == null or not is_instance_valid(target):
-		return
-	if damage <= 0:
-		return
-	if target.has_method("take_damage"):
-		target.call("take_damage", damage)
-
-
 func _consume_potion(index: int, potion: PotionData) -> void:
 	if run_state == null:
 		return
@@ -509,11 +493,27 @@ func _consume_potion(index: int, potion: PotionData) -> void:
 
 
 func _find_enemies() -> Array[Node]:
-	var result: Array[Node] = []
-	if not (Engine.get_main_loop() is SceneTree):
-		return result
-	var nodes: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("enemies")
-	for node in nodes:
-		if node != null and is_instance_valid(node):
-			result.append(node)
-	return result
+	_init_services()
+	return _battle_participant_resolver.resolve_enemies(_battle_session_port)
+
+
+func _init_services() -> void:
+	if _runtime_cache == null:
+		_runtime_cache = RELIC_RUNTIME_CACHE_SCRIPT.new()
+	if _effect_executor == null:
+		_effect_executor = RELIC_EFFECT_EXECUTOR_SCRIPT.new()
+		_effect_executor.bind_resolvers(Callable(self, "_find_player"), Callable(self, "_draw_cards_in_battle_context"))
+	if _potion_use_service == null:
+		_potion_use_service = POTION_USE_SERVICE_SCRIPT.new()
+	if _battle_start_trigger_coordinator == null:
+		_battle_start_trigger_coordinator = BATTLE_START_TRIGGER_COORDINATOR_SCRIPT.new()
+	if _battle_participant_resolver == null:
+		_battle_participant_resolver = BATTLE_PARTICIPANT_RESOLVER_SCRIPT.new()
+	if _trigger_dispatcher == null:
+		_trigger_dispatcher = RELIC_TRIGGER_DISPATCHER_SCRIPT.new()
+
+
+func _sync_effect_executor() -> void:
+	_init_services()
+	_effect_executor.bind_run_state(run_state)
+	_effect_executor.bind_battle_session(effect_stack, _battle_active)

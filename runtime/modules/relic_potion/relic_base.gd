@@ -1,19 +1,8 @@
 class_name RelicBase
 extends RefCounted
 
-const TRIGGER_ON_BATTLE_START := 0
-const TRIGGER_ON_BATTLE_END := 1
-const TRIGGER_ON_TURN_START := 2
-const TRIGGER_ON_TURN_END := 3
-const TRIGGER_ON_CARD_PLAYED := 4
-const TRIGGER_ON_ATTACK_PLAYED := 5
-const TRIGGER_ON_SKILL_PLAYED := 6
-const TRIGGER_ON_DAMAGE_TAKEN := 7
-const TRIGGER_ON_BLOCK_APPLIED := 8
-const TRIGGER_ON_ENEMY_KILLED := 9
-const TRIGGER_ON_RUN_START := 10
-const TRIGGER_ON_SHOP_ENTER := 11
-const TRIGGER_ON_BOSS_KILLED := 12
+# 触发器类型统一使用 RelicPotionSystem.TriggerType 枚举
+# 例如: RelicPotionSystem.TriggerType.ON_BATTLE_START
 
 var data: RelicData
 
@@ -24,31 +13,31 @@ func _init(relic_data: RelicData = null) -> void:
 
 func handle_trigger(trigger_type: int, context: Dictionary, system: Object) -> void:
 	match trigger_type:
-		TRIGGER_ON_BATTLE_START:
+		RelicPotionSystem.TriggerType.ON_BATTLE_START:
 			on_battle_start(system, context)
-		TRIGGER_ON_BATTLE_END:
+		RelicPotionSystem.TriggerType.ON_BATTLE_END:
 			on_battle_end(system, context)
-		TRIGGER_ON_TURN_START:
+		RelicPotionSystem.TriggerType.ON_TURN_START:
 			on_turn_start(system, context)
-		TRIGGER_ON_TURN_END:
+		RelicPotionSystem.TriggerType.ON_TURN_END:
 			on_turn_end(system, context)
-		TRIGGER_ON_CARD_PLAYED:
+		RelicPotionSystem.TriggerType.ON_CARD_PLAYED:
 			on_card_played(system, context)
-		TRIGGER_ON_ATTACK_PLAYED:
+		RelicPotionSystem.TriggerType.ON_ATTACK_PLAYED:
 			on_attack_played(system, context)
-		TRIGGER_ON_SKILL_PLAYED:
+		RelicPotionSystem.TriggerType.ON_SKILL_PLAYED:
 			on_skill_played(system, context)
-		TRIGGER_ON_DAMAGE_TAKEN:
+		RelicPotionSystem.TriggerType.ON_DAMAGE_TAKEN:
 			on_damage_taken(system, context)
-		TRIGGER_ON_BLOCK_APPLIED:
+		RelicPotionSystem.TriggerType.ON_BLOCK_APPLIED:
 			on_block_applied(system, context)
-		TRIGGER_ON_ENEMY_KILLED:
+		RelicPotionSystem.TriggerType.ON_ENEMY_KILLED:
 			on_enemy_killed(system, context)
-		TRIGGER_ON_RUN_START:
+		RelicPotionSystem.TriggerType.ON_RUN_START:
 			on_run_start(system, context)
-		TRIGGER_ON_SHOP_ENTER:
+		RelicPotionSystem.TriggerType.ON_SHOP_ENTER:
 			on_shop_enter(system, context)
-		TRIGGER_ON_BOSS_KILLED:
+		RelicPotionSystem.TriggerType.ON_BOSS_KILLED:
 			on_boss_killed(system, context)
 
 

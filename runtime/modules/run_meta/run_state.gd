@@ -4,8 +4,10 @@ extends Resource
 const MAP_GENERATOR_SCRIPT := preload("res://runtime/modules/map_event/map_generator.gd")
 
 @export var character_id: String = "warrior"
+@warning_ignore("shadowed_global_identifier")
 @export var seed: int = 0
 @export var act: int = 1
+@warning_ignore("shadowed_global_identifier")
 @export var floor: int = 0
 @export var gold: int = 99
 @export var relic_capacity: int = 6
@@ -58,8 +60,19 @@ func spend_gold(amount: int) -> bool:
 func add_relic(relic: RelicData) -> bool:
 	if relic == null:
 		return false
+	var relic_id: String = relic.id.strip_edges()
+	if relic_id.is_empty():
+		return false
 	if relics.size() >= relic_capacity:
 		return false
+
+	for existing_variant in relics:
+		if not (existing_variant is RelicData):
+			continue
+		var existing: RelicData = existing_variant as RelicData
+		if existing != null and existing.id == relic_id:
+			return false
+
 	relics.append(relic.duplicate(true))
 	emit_changed()
 	return true

@@ -35,12 +35,25 @@ class FakePlayer extends Player:
 		pass
 
 
+class FakeBattleContext:
+	extends BattleContext
+	var draw_calls: Array[int] = []
+
+	func draw_cards(amount: int) -> int:
+		draw_calls.append(amount)
+		return amount
+
+
 class RelicPotionSystemForTest:
 	extends RelicPotionSystem
 	var fake_player: Player = null
+	var fake_battle_context: BattleContext = null
 
 	func _find_player() -> Player:
 		return fake_player
+
+	func _find_battle_context() -> BattleContext:
+		return fake_battle_context
 
 
 class CustomRegistryRelic:
@@ -72,10 +85,10 @@ func before_each() -> void:
 	RELIC_REGISTRY_SCRIPT.clear_factories()
 	_system = RelicPotionSystemForTest.new()
 	get_tree().root.add_child(_system)
-	_effect_stack = SpyEffectStack.new()
-	_system.effect_stack = _effect_stack
 	_run_state = _create_run_state()
 	_system.bind_run_state(_run_state)
+	_effect_stack = SpyEffectStack.new()
+	_system.effect_stack = _effect_stack
 	_player = FakePlayer.new()
 	_player.stats = _run_state.player_stats
 	_system.fake_player = _player
@@ -88,6 +101,7 @@ func after_each() -> void:
 	_player = null
 	if _system != null and is_instance_valid(_system):
 		_system.fake_player = null
+		_system.fake_battle_context = null
 		_system.free()
 	_system = null
 	_effect_stack = null
@@ -165,6 +179,7 @@ func test_potion_applies_effect_via_effect_stack() -> void:
 	_run_state.player_stats.health = 30
 	_run_state.potions = [potion]
 
+	_system.start_battle()
 	_system.use_potion(0)
 
 	assert_eq(_effect_stack.enqueue_calls, 1, "药水效果应通过 EffectStack 派发")
@@ -202,6 +217,40 @@ func test_turn_end_relic_heals_player() -> void:
 
 	assert_eq(_run_state.player_stats.health, 34, "ON_TURN_END 遗物应在回合结束恢复生命")
 	assert_eq(_effect_stack.enqueue_calls, 1, "ON_TURN_END 遗物应通过 EffectStack 派发")
+
+
+func test_take_damage_relic_emits_player_died_when_lethal_in_battle() -> void:
+	_run_state.player_stats.health = 1
+	var signal_state := {"count": 0}
+	var on_player_died := func() -> void:
+		signal_state["count"] = int(signal_state["count"]) + 1
+	Events.player_died.connect(on_player_died)
+
+	_system.start_battle()
+	_system._apply_relic_effect("take_damage", 1)
+
+	assert_eq(_run_state.player_stats.health, 0, "遗物自伤应正确扣血到 0")
+	assert_eq(int(signal_state["count"]), 1, "战斗中遗物自伤致死应立即发射 player_died")
+
+	if Events.player_died.is_connected(on_player_died):
+		Events.player_died.disconnect(on_player_died)
+
+
+func test_take_damage_relic_does_not_emit_player_died_outside_battle() -> void:
+	_run_state.player_stats.health = 1
+	var signal_state := {"count": 0}
+	var on_player_died := func() -> void:
+		signal_state["count"] = int(signal_state["count"]) + 1
+	Events.player_died.connect(on_player_died)
+
+	_system.end_battle()
+	_system._apply_relic_effect("take_damage", 1)
+
+	assert_eq(_run_state.player_stats.health, 0, "战斗外遗物自伤应仍然扣血")
+	assert_eq(int(signal_state["count"]), 0, "战斗外不应发射 player_died")
+
+	if Events.player_died.is_connected(on_player_died):
+		Events.player_died.disconnect(on_player_died)
 
 
 func test_shop_enter_trigger_is_emitted() -> void:
@@ -286,6 +335,7 @@ func test_damage_all_enemies_potion_hits_all_targets() -> void:
 	potion.value = 10
 	_run_state.potions = [potion]
 
+	_system.start_battle()
 	_system.use_potion(0)
 
 	assert_eq(enemy_a.damage_taken, 10, "敌人 A 应受到 10 点伤害")
@@ -296,6 +346,93 @@ func test_damage_all_enemies_potion_hits_all_targets() -> void:
 		enemy_a.free()
 	if is_instance_valid(enemy_b):
 		enemy_b.free()
+
+
+func test_damage_all_enemies_potion_not_consumed_without_targets() -> void:
+	var potion := PotionData.new()
+	potion.id = "storm_bomb"
+	potion.title = "爆裂药水"
+	potion.effect_type = PotionData.EffectType.DAMAGE_ALL_ENEMIES
+	potion.value = 10
+	_run_state.potions = [potion]
+
+	_system.use_potion(0)
+
+	assert_eq(_run_state.potions.size(), 1, "战斗外无敌人时伤害药水不应被消耗")
+	assert_eq(_effect_stack.enqueue_calls, 0, "无目标时不应派发伤害效果")
+
+
+func test_potion_use_is_rejected_when_not_in_battle() -> void:
+	var potion := PotionData.new()
+	potion.id = "heal_potion_test"
+	potion.title = "治疗药水"
+	potion.effect_type = PotionData.EffectType.HEAL
+	potion.value = 9
+	_run_state.potions = [potion]
+
+	var log_state := {"text": ""}
+	_system.log_updated.connect(func(text: String) -> void:
+		log_state["text"] = text
+	)
+
+	_system.use_potion(0)
+
+	assert_eq(_run_state.potions.size(), 1, "战斗外使用药水不应被消耗")
+	assert_eq(_effect_stack.enqueue_calls, 0, "战斗外不应派发药水效果")
+	assert_true(str(log_state["text"]).contains("仅可在战斗中使用"), "应提示药水仅可战斗中使用")
+
+
+func test_relic_potion_adapter_disables_potion_buttons_outside_battle() -> void:
+	var adapter := RelicPotionUIAdapter.new()
+	var potion := PotionData.new()
+	potion.id = "heal_potion_test"
+	potion.title = "治疗药水"
+	potion.effect_type = PotionData.EffectType.HEAL
+	potion.value = 9
+	_run_state.potions = [potion]
+
+	var projection_state := {"latest": {}}
+	adapter.projection_changed.connect(func(projection: Dictionary) -> void:
+		projection_state["latest"] = projection
+	)
+	adapter.set_run_state(_run_state)
+	adapter.set_relic_potion_system(_system)
+	adapter.refresh()
+
+	var latest_projection: Dictionary = projection_state["latest"] as Dictionary
+	var outside_buttons: Array = latest_projection.get("potion_buttons", [])
+	assert_eq(outside_buttons.size(), 1, "应渲染 1 个药水按钮")
+	if outside_buttons.size() > 0:
+		var button_data: Dictionary = outside_buttons[0] as Dictionary
+		assert_false(bool(button_data.get("enabled", true)), "战斗外药水按钮应禁用")
+	assert_true(bool(latest_projection.get("battle_only_hint_visible", false)), "战斗外应显示战斗限定提示")
+
+	_system.start_battle()
+	adapter.refresh()
+	latest_projection = projection_state["latest"] as Dictionary
+	var battle_buttons: Array = latest_projection.get("potion_buttons", [])
+	if battle_buttons.size() > 0:
+		var battle_button: Dictionary = battle_buttons[0] as Dictionary
+		assert_true(bool(battle_button.get("enabled", false)), "战斗中药水按钮应启用")
+	assert_false(bool(latest_projection.get("battle_only_hint_visible", true)), "战斗中不应显示战斗限定提示")
+
+	_system.end_battle()
+	adapter.refresh()
+	latest_projection = projection_state["latest"] as Dictionary
+	var after_buttons: Array = latest_projection.get("potion_buttons", [])
+	if after_buttons.size() > 0:
+		var after_button: Dictionary = after_buttons[0] as Dictionary
+		assert_false(bool(after_button.get("enabled", true)), "战斗结束后药水按钮应恢复禁用")
+
+
+func test_relic_draw_cards_uses_battle_context_draw() -> void:
+	var fake_battle_context := FakeBattleContext.new()
+	_system.fake_battle_context = fake_battle_context
+
+	_system._apply_relic_effect("draw_cards", 2)
+
+	assert_eq(fake_battle_context.draw_calls.size(), 1, "draw_cards 应调用 battle_context.draw_cards")
+	assert_eq(fake_battle_context.draw_calls[0], 2, "draw_cards 应传入正确抽牌数量")
 
 
 func test_custom_relic_callback_invoked_via_registry() -> void:
@@ -364,42 +501,21 @@ func test_relic_runtime_cache_reuses_same_instance() -> void:
 	RELIC_REGISTRY_SCRIPT.clear_factories()
 
 
-func test_relic_runtime_cache_duplicate_id_shares_state() -> void:
-	# 测试重复 relic id 的行为：共享同一运行时实例（可能导致状态共享歧义）
-	# 这是预期行为的文档化测试，开发者应避免使用重复 ID
-
-	RELIC_REGISTRY_SCRIPT.register_factory(
-		"dup_id_relic",
-		func(relic_data: RelicData):
-			return StatefulTestRelic.new(relic_data)
-	)
-
-	# 创建两个相同 ID 的遗物数据
+func test_run_state_add_relic_rejects_duplicate_id() -> void:
 	var relic1 := RelicData.new()
 	relic1.id = "dup_id_relic"
 	relic1.title = "重复遗物1"
 
 	var relic2 := RelicData.new()
 	relic2.id = "dup_id_relic"
-	relic2.title = "重复遗物2"  # 不同的 title，但相同 ID
+	relic2.title = "重复遗物2"
 
-	_run_state.relics = [relic1, relic2]
+	var added_first := _run_state.add_relic(relic1)
+	var added_second := _run_state.add_relic(relic2)
 
-	# 绑定 RunState 会重建缓存
-	_system.bind_run_state(_run_state)
-
-	# 缓存中应只有一个实例（因为 ID 相同）
-	var cached_runtime: Variant = _system._relic_runtimes.get("dup_id_relic", null)
-	assert_not_null(cached_runtime, "应有缓存")
-
-	# 缓存大小应为 1（而不是 2）
-	assert_eq(_system._relic_runtimes.size(), 1, "重复 ID 应只缓存一个实例")
-
-	# 重要：如果两个遗物数据有不同的属性，后加载的会覆盖缓存
-	# 这意味着两个遗物将共享同一个运行时实例，可能导致状态混淆
-	# 建议：遗物 ID 应唯一，或在添加遗物时检查重复
-
-	RELIC_REGISTRY_SCRIPT.clear_factories()
+	assert_true(added_first, "首个遗物应能添加")
+	assert_false(added_second, "重复 relic id 应被拒绝")
+	assert_eq(_run_state.relics.size(), 1, "重复 id 不应进入 relic 列表")
 
 
 func test_relic_runtime_cache_clears_on_rebind() -> void:
