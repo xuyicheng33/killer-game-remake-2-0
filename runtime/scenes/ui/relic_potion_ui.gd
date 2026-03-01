@@ -28,6 +28,7 @@ func _set_relic_potion_system(value: RelicPotionSystem) -> void:
 func _ready() -> void:
 	_connect_signals()
 	_adapter.refresh()
+	_apply_responsive_layout()
 
 
 func _exit_tree() -> void:
@@ -96,8 +97,14 @@ func _render_relics(projection: Dictionary) -> void:
 		btn.text = str(item_data.get("title", "遗物"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.flat = true
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
-		var tooltip_body: String = str(item_data.get("tooltip_text", ""))
+		var tooltip_body: String = _resolve_tooltip_text(
+			str(item_data.get("tooltip_text", "")),
+			btn.text
+		)
+		btn.tooltip_text = tooltip_body
 		var tooltip_icon: Texture = item_data.get("tooltip_icon")
 		if tooltip_body.length() > 0:
 			btn.mouse_entered.connect(_on_relic_button_mouse_entered.bind(tooltip_icon, tooltip_body))
@@ -134,11 +141,17 @@ func _render_potions(projection: Dictionary) -> void:
 			btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			btn.disabled = not bool(button_data.get("enabled", true))
+			btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 			btn.pressed.connect(_on_use_potion.bind(index))
 
 			# Connect tooltip hover signals
 			var tooltip_icon: Texture = button_data.get("tooltip_icon")
-			var tooltip_body: String = str(button_data.get("tooltip_text", ""))
+			var tooltip_body: String = _resolve_tooltip_text(
+				str(button_data.get("tooltip_text", "")),
+				btn.text
+			)
+			btn.tooltip_text = tooltip_body
 			if tooltip_body.length() > 0:
 				btn.mouse_entered.connect(_on_potion_button_mouse_entered.bind(tooltip_icon, tooltip_body))
 				btn.mouse_exited.connect(_on_potion_button_mouse_exited)
@@ -176,3 +189,10 @@ func _apply_responsive_layout() -> void:
 	offset_top = top_margin
 	offset_right = -right_margin
 	offset_bottom = top_margin + panel_height
+
+
+func _resolve_tooltip_text(raw: String, fallback: String) -> String:
+	var trimmed := raw.strip_edges()
+	if trimmed.length() > 0:
+		return trimmed
+	return fallback.strip_edges()

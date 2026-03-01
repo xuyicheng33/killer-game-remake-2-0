@@ -21,6 +21,7 @@ var current_action: EnemyAction : set = set_current_action
 var battle_context: RefCounted : set = set_battle_context
 var _default_sprite_scale := Vector2.ONE
 var _display_half_width := 0.0
+var _death_notified := false
 
 
 func _ready() -> void:
@@ -52,6 +53,7 @@ func set_battle_context(value: RefCounted) -> void:
 
 func set_enemy_stats(value: EnemyStats) -> void:
 	stats = value.create_instance()
+	_death_notified = false
 	
 	if not stats.stats_changed.is_connected(update_stats):
 		stats.stats_changed.connect(update_stats)
@@ -155,6 +157,8 @@ func _on_enemy_action_completed(enemy: Enemy) -> void:
 func take_damage(damage: int) -> void:
 	if stats.health <= 0:
 		return
+	if _death_notified:
+		return
 	
 	sprite_2d.material = WHITE_SPRITE_MATERIAL
 	
@@ -167,9 +171,9 @@ func take_damage(damage: int) -> void:
 		func():
 			sprite_2d.material = null
 			
-			if stats.health <= 0:
+			if stats.health <= 0 and not _death_notified:
+				_death_notified = true
 				Events.enemy_died.emit(self)
-				queue_free()
 	)
 
 

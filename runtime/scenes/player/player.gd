@@ -14,6 +14,7 @@ const MAX_PORTRAIT_SCALE := 6.0
 @onready var stats_ui: StatsUI = $StatsUI
 
 var _default_sprite_scale := Vector2.ONE
+var _death_notified := false
 
 
 func _ready() -> void:
@@ -29,6 +30,7 @@ func set_character_stats(value: CharacterStats) -> void:
 	if stats != null and stats.stats_changed.is_connected(update_stats):
 		stats.stats_changed.disconnect(update_stats)
 	stats = value
+	_death_notified = false
 	
 	if stats != null and not stats.stats_changed.is_connected(update_stats):
 		stats.stats_changed.connect(update_stats)
@@ -86,6 +88,8 @@ func _get_visible_texture_size(texture: Texture2D) -> Vector2:
 func take_damage(damage: int) -> void:
 	if stats.health <= 0:
 		return
+	if _death_notified:
+		return
 	
 	sprite_2d.material = WHITE_SPRITE_MATERIAL
 	
@@ -98,7 +102,7 @@ func take_damage(damage: int) -> void:
 		func():
 			sprite_2d.material = null
 			
-			if stats.health <= 0:
+			if stats.health <= 0 and not _death_notified:
+				_death_notified = true
 				Events.player_died.emit()
-				queue_free()
 	)

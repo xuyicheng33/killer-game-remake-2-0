@@ -1,6 +1,10 @@
 extends GutTest
 
 const RELIC_REGISTRY_SCRIPT := preload("res://runtime/modules/relic_potion/relic_registry.gd")
+const RELIC_POTION_UI_SCENE := preload("res://runtime/scenes/ui/relic_potion_ui.tscn")
+const PLAYER_SCENE := preload("res://runtime/scenes/player/player.tscn")
+const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
+const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
 
 class SpyEffectStack extends EffectStackEngine:
 	var enqueue_calls := 0
@@ -675,6 +679,93 @@ func test_relic_view_model_handles_empty_relics() -> void:
 	assert_true(projection.has("relic_items"), "projection 应包含 relic_items")
 	var relic_items: Array = projection.get("relic_items", [])
 	assert_eq(relic_items.size(), 0, "无遗物时应为空数组")
+
+
+func test_relic_ui_emits_tooltip_on_hover() -> void:
+	var ui := RELIC_POTION_UI_SCENE.instantiate() as RelicPotionUI
+	get_tree().root.add_child(ui)
+	await get_tree().process_frame
+
+	var run_state := _create_run_state()
+	var relic := RelicData.new()
+	relic.id = "tooltip_hover_relic"
+	relic.title = "悬停测试遗物"
+	relic.description = "悬停应触发 tooltip"
+	run_state.relics = [relic]
+	ui.run_state = run_state
+	await get_tree().process_frame
+
+	var relic_list := ui.get_node("MarginContainer/ContentScroll/VBox/RelicListLabel") as VBoxContainer
+	assert_not_null(relic_list, "RelicListLabel 应存在")
+	assert_true(relic_list.get_child_count() > 0, "应渲染至少一个遗物按钮")
+
+	var button := relic_list.get_child(0) as Button
+	assert_not_null(button, "第一个遗物项应为 Button")
+
+	var tooltip_state := {"text": ""}
+	var on_tooltip := func(_icon: Texture, text: String) -> void:
+		tooltip_state["text"] = text
+	Events.relic_tooltip_requested.connect(on_tooltip, CONNECT_ONE_SHOT)
+
+	button.mouse_entered.emit()
+	await get_tree().process_frame
+
+	var emitted_text := str(tooltip_state["text"])
+	assert_true(emitted_text.contains("悬停测试遗物"), "悬停遗物应发出包含标题的 tooltip")
+	assert_true(emitted_text.contains("悬停应触发 tooltip"), "悬停遗物应发出包含描述的 tooltip")
+
+	if is_instance_valid(ui):
+		ui.free()
+
+
+func test_player_take_damage_does_not_queue_free_self() -> void:
+	var player := PLAYER_SCENE.instantiate() as Player
+	get_tree().root.add_child(player)
+	await get_tree().process_frame
+
+	var stats := CharacterStats.new()
+	stats.max_health = 20
+	stats.health = 1
+	stats.max_mana = 3
+	stats.starting_deck = CardPile.new()
+	stats.deck = CardPile.new()
+	stats.draw_pile = CardPile.new()
+	stats.discard = CardPile.new()
+	player.stats = stats
+	await get_tree().process_frame
+
+	player.take_damage(1)
+	await get_tree().create_timer(0.25, false).timeout
+	await get_tree().process_frame
+
+	assert_true(is_instance_valid(player), "Player 致死后不应在节点内自 queue_free")
+	if is_instance_valid(player):
+		player.free()
+
+
+func test_enemy_take_damage_does_not_queue_free_self() -> void:
+	var enemy := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().root.add_child(enemy)
+	await get_tree().process_frame
+
+	var template := ENEMY_REGISTRY_SCRIPT.get_enemy_stats("crab")
+	assert_not_null(template, "应可加载 crab 敌人模板")
+	if template == null:
+		if is_instance_valid(enemy):
+			enemy.free()
+		return
+
+	enemy.stats = template
+	await get_tree().process_frame
+	enemy.stats.health = 1
+
+	enemy.take_damage(1)
+	await get_tree().create_timer(0.25, false).timeout
+	await get_tree().process_frame
+
+	assert_true(is_instance_valid(enemy), "Enemy 致死后不应在节点内自 queue_free")
+	if is_instance_valid(enemy):
+		enemy.free()
 
 
 func test_new_relic_fields_exist() -> void:
