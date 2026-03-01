@@ -1,7 +1,6 @@
 class_name EnemySpawnService
 extends RefCounted
 
-const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
 const ENEMY_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/enemy_registry.gd")
 const ENCOUNTER_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/encounter_registry.gd")
 
@@ -10,9 +9,13 @@ func spawn_enemies(
 	enemy_handler: Node,
 	battle_context: RefCounted,
 	encounter_id: String,
-	viewport_width: float
-) -> Array[Enemy]:
+	viewport_width: float,
+	enemy_scene: PackedScene
+) -> Array[Node]:
 	if enemy_handler == null:
+		return []
+	if enemy_scene == null:
+		push_error("EnemySpawnService: enemy_scene is null")
 		return []
 
 	_clear_existing_enemies(enemy_handler)
@@ -34,9 +37,12 @@ func spawn_enemies(
 			push_error("EnemySpawnService: failed to load enemy stats for '%s'" % enemy_id)
 			continue
 
-		var enemy: Enemy = ENEMY_SCENE.instantiate() as Enemy
-		enemy.stats = enemy_stats
-		enemy.battle_context = battle_context
+		var enemy: Node = enemy_scene.instantiate()
+		if enemy == null:
+			push_error("EnemySpawnService: failed to instantiate enemy scene")
+			continue
+		enemy.set("stats", enemy_stats)
+		enemy.set("battle_context", battle_context)
 
 		var offset_x := (i - (enemy_count - 1) / 2.0) * spacing
 		# 视觉布局随机抖动，不影响游戏逻辑或种子一致性
@@ -46,12 +52,12 @@ func spawn_enemies(
 	return collect_battle_enemies(enemy_handler)
 
 
-func collect_battle_enemies(enemy_handler: Node) -> Array[Enemy]:
-	var enemies: Array[Enemy] = []
+func collect_battle_enemies(enemy_handler: Node) -> Array[Node]:
+	var enemies: Array[Node] = []
 	if enemy_handler == null:
 		return enemies
 	for child in enemy_handler.get_children():
-		if child is Enemy:
+		if child is Node and child.is_in_group("enemies"):
 			enemies.append(child)
 	return enemies
 

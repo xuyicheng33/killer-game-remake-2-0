@@ -114,7 +114,10 @@ static func pick_fallback_encounter(tags: Array[String] = []) -> Dictionary:
 
 static func get_encounter_by_id(encounter_id: String) -> Dictionary:
 	_load_encounter_data()
-	return _encounters_by_id.get(encounter_id, {}) as Dictionary
+	var encounter_variant: Variant = _encounters_by_id.get(encounter_id, {})
+	if encounter_variant is Dictionary:
+		return encounter_variant as Dictionary
+	return {}
 
 
 static func get_enemy_ids_for_encounter(encounter: Dictionary) -> Array[String]:

@@ -113,12 +113,12 @@ func _apply_relic_self_damage(value: int) -> void:
 		Events.player_died.emit()
 
 
-func _resolve_player() -> Player:
+func _resolve_player() -> Node:
 	if not _player_resolver.is_valid():
 		return null
 	var player_variant: Variant = _player_resolver.call()
-	if player_variant is Player and is_instance_valid(player_variant):
-		return player_variant as Player
+	if player_variant is Node and is_instance_valid(player_variant):
+		return player_variant as Node
 	return null
 
 

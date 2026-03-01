@@ -11,6 +11,8 @@ const EVENT_SCREEN_SCENE := preload("res://runtime/scenes/events/event_screen.ts
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://runtime/modules/relic_potion/relic_potion_system.gd")
 const RUN_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/run_flow_service.gd")
 const APP_FLOW_ORCHESTRATOR_SCRIPT := preload("res://runtime/modules/run_flow/app_flow_orchestrator.gd")
+const PRE_ATTACH_NONE := &"none"
+const PRE_ATTACH_SHOP_ENTER := &"shop_enter"
 
 @onready var scene_host: Node = %SceneHost
 @onready var relic_potion_ui: RelicPotionUI = %RelicPotionUI
@@ -22,7 +24,6 @@ var run_state: RunState
 var relic_potion_system: RelicPotionSystem
 var run_flow_service: RunFlowService
 var app_flow_orchestrator
-var _route_handlers: Dictionary = {}
 
 
 func _ready() -> void:
@@ -36,7 +37,6 @@ func _ready() -> void:
 		run_flow_service,
 		relic_potion_system
 	)
-	_build_route_handlers()
 
 	_connect_signals()
 	_open_main_menu()
@@ -187,7 +187,7 @@ func _open_shop_screen() -> void:
 		SHOP_SCREEN_SCENE,
 		&"shop_completed",
 		Callable(self, "_on_shop_completed"),
-		Callable(self, "_notify_shop_enter")
+		PRE_ATTACH_SHOP_ENTER
 	)
 
 
@@ -217,13 +217,25 @@ func _on_non_battle_node_completed() -> void:
 
 func _dispatch_next_route(command_result: Dictionary) -> void:
 	var next_route: String = app_flow_orchestrator.dispatch_next_route(command_result)
-	var route_handler: Variant = _route_handlers.get(next_route, Callable())
-	if route_handler is Callable:
-		var callable_handler: Callable = route_handler as Callable
-		if callable_handler.is_valid():
-			callable_handler.call(command_result)
-			return
-	_open_map()
+	match next_route:
+		RunRouteDispatcher.ROUTE_BATTLE:
+			_open_battle(str(command_result.get("encounter_id", "")))
+		RunRouteDispatcher.ROUTE_REWARD:
+			_open_reward(app_flow_orchestrator.reward_gold_for(command_result))
+		RunRouteDispatcher.ROUTE_REST:
+			_open_rest_screen()
+		RunRouteDispatcher.ROUTE_SHOP:
+			_open_shop_screen()
+		RunRouteDispatcher.ROUTE_EVENT:
+			_open_event_screen()
+		RunRouteDispatcher.ROUTE_GAME_OVER:
+			game_over_panel.show()
+			game_over_text.text = str(command_result.get("game_over_text", "本次远征失败"))
+		RunRouteDispatcher.ROUTE_RUN_COMPLETE:
+			game_over_panel.show()
+			game_over_text.text = str(command_result.get("run_complete_text", "恭喜通关！"))
+		_:
+			_open_map()
 
 
 func _clear_scene_host() -> void:
@@ -280,11 +292,10 @@ func _open_run_state_screen(
 	scene: PackedScene,
 	completed_signal: StringName,
 	completed_handler: Callable,
-	before_attach: Callable = Callable()
+	before_attach_action: StringName = PRE_ATTACH_NONE
 ) -> Node:
 	_clear_scene_host()
-	if before_attach.is_valid():
-		before_attach.call()
+	_run_pre_attach_action(before_attach_action)
 
 	var screen: Node = scene.instantiate()
 	screen.set("run_state", run_state)
@@ -294,29 +305,12 @@ func _open_run_state_screen(
 	return screen
 
 
-func _build_route_handlers() -> void:
-	_route_handlers[RunRouteDispatcher.ROUTE_BATTLE] = func(command_result: Dictionary) -> void:
-		_open_battle(str(command_result.get("encounter_id", "")))
-
-	_route_handlers[RunRouteDispatcher.ROUTE_REWARD] = func(command_result: Dictionary) -> void:
-		_open_reward(app_flow_orchestrator.reward_gold_for(command_result))
-
-	_route_handlers[RunRouteDispatcher.ROUTE_REST] = func(_command_result: Dictionary) -> void:
-		_open_rest_screen()
-
-	_route_handlers[RunRouteDispatcher.ROUTE_SHOP] = func(_command_result: Dictionary) -> void:
-		_open_shop_screen()
-
-	_route_handlers[RunRouteDispatcher.ROUTE_EVENT] = func(_command_result: Dictionary) -> void:
-		_open_event_screen()
-
-	_route_handlers[RunRouteDispatcher.ROUTE_GAME_OVER] = func(command_result: Dictionary) -> void:
-		game_over_panel.show()
-		game_over_text.text = str(command_result.get("game_over_text", "本次远征失败"))
-
-	_route_handlers[RunRouteDispatcher.ROUTE_RUN_COMPLETE] = func(command_result: Dictionary) -> void:
-		game_over_panel.show()
-		game_over_text.text = str(command_result.get("run_complete_text", "恭喜通关！"))
+func _run_pre_attach_action(action: StringName) -> void:
+	match action:
+		PRE_ATTACH_SHOP_ENTER:
+			_notify_shop_enter()
+		_:
+			pass
 
 
 func _on_viewport_resized() -> void:

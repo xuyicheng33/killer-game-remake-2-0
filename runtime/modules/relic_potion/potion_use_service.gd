@@ -90,12 +90,12 @@ func _apply_potion_damage_to_enemy(target: Node, damage: int) -> void:
 		target.call("take_damage", damage)
 
 
-func _resolve_player(resolve_player: Callable) -> Player:
+func _resolve_player(resolve_player: Callable) -> Node:
 	if not resolve_player.is_valid():
 		return null
 	var player_variant: Variant = resolve_player.call()
-	if player_variant is Player and is_instance_valid(player_variant):
-		return player_variant as Player
+	if player_variant is Node and is_instance_valid(player_variant):
+		return player_variant as Node
 	return null
 
 

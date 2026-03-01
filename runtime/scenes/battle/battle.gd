@@ -3,6 +3,7 @@ extends Node2D
 const BATTLE_CONTEXT_SCRIPT := preload("res://runtime/modules/battle_loop/battle_context.gd")
 const BATTLE_SESSION_PORT_SCRIPT := preload("res://runtime/modules/relic_potion/contracts/battle_session_port.gd")
 const ENEMY_SPAWN_SERVICE_SCRIPT := preload("res://runtime/modules/battle_loop/enemy_spawn_service.gd")
+const ENEMY_SCENE := preload("res://runtime/scenes/enemy/enemy.tscn")
 const PHASE_LOG_LIMIT := 8
 
 @export var char_stats: CharacterStats
@@ -109,12 +110,17 @@ func start_battle(stats: CharacterStats) -> void:
 	_battle_ended = false
 	_phase_logs.clear()
 	_battle_context.bind_battle_context(_active_stats, battle_ui.hand_container)
-	var enemies: Array[Enemy] = _enemy_spawn_service.spawn_enemies(
+	var spawned_enemy_nodes: Array[Node] = _enemy_spawn_service.spawn_enemies(
 		enemy_handler,
 		_battle_context,
 		encounter_id,
-		get_viewport_rect().size.x
+		get_viewport_rect().size.x,
+		ENEMY_SCENE
 	)
+	var enemies: Array[Enemy] = []
+	for enemy_node in spawned_enemy_nodes:
+		if enemy_node is Enemy:
+			enemies.append(enemy_node as Enemy)
 	if enemies.is_empty():
 		push_error("battle.gd: battle setup aborted, no valid enemies were spawned")
 		_on_battle_ended("defeat")
@@ -245,10 +251,10 @@ func _on_battle_ended(result: String) -> void:
 	_battle_ended = true
 	MusicPlayer.stop()
 	var panel_type := BattleOverPanel.Type.WIN
-	var text := "Victorious!"
+	var text := "胜利！"
 	if result != "victory":
 		panel_type = BattleOverPanel.Type.LOSE
-		text = "Game Over!"
+		text = "游戏结束！"
 	Events.battle_over_screen_requested.emit(text, panel_type)
 
 

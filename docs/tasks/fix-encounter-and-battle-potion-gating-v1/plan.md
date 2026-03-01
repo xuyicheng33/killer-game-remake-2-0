@@ -43,6 +43,7 @@
 - `runtime/modules/map_event/`
 - `runtime/modules/enemy_intent/`
 - `runtime/modules/buff_system/`
+- `runtime/modules/battle_loop/enemy_spawn_service.gd`
 - `runtime/modules/reward_economy/shop_offer_generator.gd`
 - `runtime/modules/card_system/card_zones_model.gd`
 - `runtime/global/`
@@ -61,7 +62,10 @@
 - `docs/tasks/fix-encounter-and-battle-potion-gating-v1/plan.md`
 - `docs/tasks/fix-encounter-and-battle-potion-gating-v1/handoff.md`
 - `docs/tasks/fix-encounter-and-battle-potion-gating-v1/verification.md`
+- `docs/tasks/fix-integration-and-branch-consolidation-v1/`
 - `docs/work_logs/2026-02.md`
+- `docs/work_logs/2026-03.md`
+- `docs/work_log.md`
 
 ## 实施步骤
 
