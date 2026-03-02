@@ -46,7 +46,7 @@
 
 ### 3. 自动推进规则增强
 
-在 `r2_task_publisher_reviewer_prompts_v1.md` 中新增：
+在 `r2_task_publisher_reviewer_prompts_v1.md`（后续已删除）中新增：
 - 查找下一任务规则
 - 自动填充字段规则
 - 禁止项附加规则
@@ -58,7 +58,7 @@
 
 - `docs/templates/auditor_output_template.md`
 - `docs/templates/programmer_task_template.md`
-- `docs/prompts/r2_task_publisher_reviewer_prompts_v1.md`
+- `r2_task_publisher_reviewer_prompts_v1.md`（后续在 `chore-prompts-cleanup-v1` 删除）
 - `docs/work_logs/2026-02.md`
 - `docs/tasks/r2-phase02-audit-pipeline-bootstrap-v1/plan.md`
 - `docs/tasks/r2-phase02-audit-pipeline-bootstrap-v1/handoff.md`
@@ -69,7 +69,7 @@
 1. 创建 `docs/templates/` 目录
 2. 创建 `auditor_output_template.md`
 3. 创建 `programmer_task_template.md`
-4. 更新 `r2_task_publisher_reviewer_prompts_v1.md`
+4. 更新 `r2_task_publisher_reviewer_prompts_v1.md`（后续已删除）
 5. 更新 `docs/work_logs/2026-02.md`
 6. 创建任务三件套
 

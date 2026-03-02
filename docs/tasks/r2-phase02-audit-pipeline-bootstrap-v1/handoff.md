@@ -15,7 +15,7 @@
 |---|---|---|
 | `docs/templates/auditor_output_template.md` | 新建 | 审核员输出模板 |
 | `docs/templates/programmer_task_template.md` | 新建 | 程序员任务卡模板 |
-| `docs/prompts/r2_task_publisher_reviewer_prompts_v1.md` | 更新 | 增强自动推进规则 |
+| `r2_task_publisher_reviewer_prompts_v1.md` | 更新 | 增强自动推进规则（后续已删除） |
 | `docs/work_logs/2026-02.md` | 更新 | 添加本任务记录 |
 
 ## 交接说明

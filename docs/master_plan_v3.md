@@ -5,7 +5,7 @@
 **修订日期**：2026-02-18（V3.1，依据审查员反馈修订；补充：统一使用 Godot 4.5.1 执行）
 **制定者**：项目负责人
 **执行角色**：程序员 + 审核师
-**本文档取代**：`development_roadmap_v2.md`、`engineering_rectification_plan_v1.md`、`master_plan_v3.md（V3原版）`
+**本文档取代**：`development_roadmap_v2.md`、`docs/archive/engineering_rectification_plan_v1.md`、`master_plan_v3.md（V3原版）`
 
 **V3 → V3.1 主要变更**：
 - Phase 0 改为"基线对齐 + GUT接入"，承认 R2 Phase 0-11 已完成的工作

@@ -5,10 +5,10 @@
 
 ## 验证命令
 ```bash
-ls docs/prompts/r2_task_publisher_reviewer_prompts_v1.md
+ls docs/prompts | rg "r2_task_publisher_reviewer_prompts_v1.md"
 ```
 
-**预期结果**: 文件不存在
+**预期结果**: 无输出（文件不存在）
 
 ## 验证命令
 ```bash
