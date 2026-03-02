@@ -9,9 +9,9 @@
 - 改造 `BattleOverPanel` 与 `Events`，实现 battle 结果回传。
 - 初始化 Git 仓库。
 - 优化 workflow/new-task/install-hooks，并让 `make workflow-check TASK_ID=feat-bootstrap-v0-20260215` 通过。
-- 新增文档：`docs/module_build_order.md`、`docs/ui_asset_requirements.md`。
+- 新增文档：`docs/archive/module_build_order.md`、`docs/ui_asset_requirements.md`。
 - 修复运行时报错（`RunState` 信号机制与教程目录重复类注册冲突）。
-- 新增任务流水线文档：`docs/build_execution_plan_v0.md`（含每任务可运行验收点）。
+- 新增任务流水线文档：`docs/archive/build_execution_plan_v0.md`（含每任务可运行验收点）。
 - 重构目录结构：新增 `references/`，并迁移教程基线与原版参考资料。
 - 清理无用文件：删除 `.DS_Store` 与 `references/tutorial_baseline/.godot` 缓存目录。
 - 新增文档：`docs/gap_analysis_2026-02-15_v2.md`、`docs/development_roadmap_v2.md`、`docs/resource_rebuild_backlog.md`、`docs/repo_structure.md`、`docs/assets_licenses.md`。
