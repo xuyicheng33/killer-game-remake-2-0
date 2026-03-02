@@ -52,6 +52,8 @@ func _run_card_case(card_def: Dictionary) -> void:
 	var after := _snapshot_metrics(fixture, player, [enemy_a, enemy_b], context, stack)
 	_assert_effects(card, card_def, before, after)
 
+	context.unbind_battle_context()
+	SFXPlayer.stop()
 	fixture.free_nodes(nodes)
 
 

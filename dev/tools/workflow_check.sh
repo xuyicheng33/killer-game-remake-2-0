@@ -143,6 +143,7 @@ if [[ "${#changed_files[@]}" -gt 0 ]]; then
 fi
 
 echo "[workflow-check] running quality gates..."
+bash dev/tools/commit_scope_guard_check.sh
 bash dev/tools/repo_structure_check.sh
 bash dev/tools/ui_shell_contract_check.sh
 bash dev/tools/run_flow_contract_check.sh

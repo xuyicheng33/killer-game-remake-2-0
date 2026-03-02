@@ -176,9 +176,14 @@ func _run_relic_case(relic: RelicData) -> void:
 	if _relic_has_any_active_effect(relic):
 		assert_gt(logs.size(), 0, "激活型遗物应产生触发日志：%s" % relic.id)
 
+	context.unbind_battle_context()
+	system.end_battle()
 	system.fake_player = null
 	if is_instance_valid(system):
-		system.queue_free()
+		if system.get_parent() != null:
+			system.get_parent().remove_child(system)
+		system.free()
+	SFXPlayer.stop()
 	fixture.free_nodes(nodes)
 
 
