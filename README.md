@@ -35,5 +35,6 @@
 ## 关键约束
 
 - 架构约束：`docs/module_architecture.md`
+- 架构真源索引：`docs/architecture_source_of_truth.md`
 - 仓库规范：`docs/repo_conventions.md`
 - 结构说明：`docs/repo_structure.md`

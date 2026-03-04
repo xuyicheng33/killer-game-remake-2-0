@@ -39,6 +39,11 @@
 - `runtime/global -> runtime/scenes/runtime/modules` 的业务耦合
 - UI 脚本直接写核心运行态（按 `dev/tools/ui_shell_contract_check.sh` 执行）
 
+口径优先级：
+
+- 依赖方向与模块边界冲突时，以 `docs/contracts/module_boundaries_v1.md` 为真源。
+- 跨文档冲突处理流程见 `docs/architecture_source_of_truth.md`。
+
 ## 4. 命名收口
 
 - 存档主模块统一为 `runtime/modules/persistence`。

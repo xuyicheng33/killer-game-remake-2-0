@@ -2,6 +2,8 @@
 
 更新时间：2026-02-17
 
+> 口径说明：模块边界与依赖方向的最终判定以 `docs/contracts/module_boundaries_v1.md` 为准；本文档用于解释当前实现现状。
+
 ## 1. 当前代码基线
 
 本文件以仓库当前运行代码为准（不是 `references/tutorial_baseline`）：

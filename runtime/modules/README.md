@@ -7,7 +7,7 @@
 ## 模块清单（按现状）
 
 - `run_meta`：运行态真源（`RunState`）
-- `run_flow`：应用编排目标模块（当前占位）
+- `run_flow`：应用编排模块（已落地最小实现，持续扩展中）
 - `battle_loop`：战斗阶段状态机
 - `card_system`：牌区与关键词最小联动
 - `effect_engine`：效果入队与顺序结算
@@ -23,7 +23,7 @@
 
 ## 当前映射（过渡期）
 
-- `runtime/scenes/app/app.gd` 当前承担 `run_flow` 编排职责。
+- `runtime/scenes/app/app.gd` 当前承担部分 `run_flow` 编排与场景接线职责。
 - `runtime/scenes/ui/` 当前承担 `ui_shell` 实现职责。
 - `runtime/modules/persistence/` 是当前唯一存档实现目录。
 
@@ -32,3 +32,4 @@
 1. 存档主模块统一使用 `persistence`。
 2. `seed_replay` 不新增实现，等待后续阶段做并入或移除决策。
 3. `run_flow` 保留为后续流程编排落地目录。
+4. 边界冲突时以 `docs/contracts/module_boundaries_v1.md` 与 `docs/architecture_source_of_truth.md` 为准。
