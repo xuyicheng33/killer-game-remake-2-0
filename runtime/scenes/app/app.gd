@@ -11,6 +11,7 @@ const EVENT_SCREEN_SCENE := preload("res://runtime/scenes/events/event_screen.ts
 const RELIC_POTION_SYSTEM_SCRIPT := preload("res://runtime/modules/relic_potion/relic_potion_system.gd")
 const RUN_FLOW_SERVICE_SCRIPT := preload("res://runtime/modules/run_flow/run_flow_service.gd")
 const APP_FLOW_ORCHESTRATOR_SCRIPT := preload("res://runtime/modules/run_flow/app_flow_orchestrator.gd")
+const APP_SCREEN_HOST_SCRIPT := preload("res://runtime/scenes/app/app_screen_host.gd")
 const PRE_ATTACH_NONE := &"none"
 const PRE_ATTACH_SHOP_ENTER := &"shop_enter"
 
@@ -24,11 +25,13 @@ var run_state: RunState
 var relic_potion_system: RelicPotionSystem
 var run_flow_service: RunFlowService
 var app_flow_orchestrator
+var app_screen_host: AppScreenHost
 
 
 func _ready() -> void:
 	add_to_group("app")
 	run_flow_service = RUN_FLOW_SERVICE_SCRIPT.new() as RunFlowService
+	app_screen_host = APP_SCREEN_HOST_SCRIPT.new(scene_host) as AppScreenHost
 
 	relic_potion_system = RELIC_POTION_SYSTEM_SCRIPT.new() as RelicPotionSystem
 	add_child(relic_potion_system)
@@ -97,11 +100,11 @@ func _start_new_run(character_id: String = "") -> void:
 
 func _open_main_menu() -> void:
 	_reset_app_overlay_state()
-
-	var main_menu: Control = MAIN_MENU_SCENE.instantiate()
-	main_menu.new_game_requested.connect(_on_new_game_requested)
-	main_menu.continue_game_requested.connect(_on_continue_game_requested)
-	scene_host.add_child(main_menu)
+	app_screen_host.open_main_menu(
+		MAIN_MENU_SCENE,
+		Callable(self, "_on_new_game_requested"),
+		Callable(self, "_on_continue_game_requested")
+	)
 
 
 func _on_new_game_requested(character_id: String) -> void:
@@ -117,13 +120,12 @@ func _on_continue_game_requested() -> void:
 
 
 func _open_map() -> void:
-	_clear_scene_host()
-	var map_screen := MAP_SCREEN_SCENE.instantiate() as MapScreen
-	map_screen.run_state = run_state
-	map_screen.set_map_graph(run_state.map_graph)
-	map_screen.node_selected.connect(_on_map_node_selected)
-	map_screen.restart_requested.connect(_start_new_run)
-	scene_host.add_child(map_screen)
+	app_screen_host.open_map(
+		MAP_SCREEN_SCENE,
+		run_state,
+		Callable(self, "_on_map_node_selected"),
+		Callable(self, "_start_new_run")
+	)
 	_save_checkpoint("map")
 
 
@@ -154,12 +156,12 @@ func _on_battle_finished(result: int) -> void:
 
 
 func _open_reward(reward_gold: int) -> void:
-	_clear_scene_host()
-	var reward_screen := REWARD_SCREEN_SCENE.instantiate() as RewardScreen
-	reward_screen.run_state = run_state
-	reward_screen.reward_gold = reward_gold
-	reward_screen.reward_completed.connect(_on_reward_completed)
-	scene_host.add_child(reward_screen)
+	app_screen_host.open_reward(
+		REWARD_SCREEN_SCENE,
+		run_state,
+		reward_gold,
+		Callable(self, "_on_reward_completed")
+	)
 
 
 func _on_reward_completed(bundle: RewardBundle, chosen_card: Card) -> void:
@@ -239,8 +241,7 @@ func _dispatch_next_route(command_result: Dictionary) -> void:
 
 
 func _clear_scene_host() -> void:
-	for child in scene_host.get_children():
-		child.queue_free()
+	app_screen_host.clear()
 
 
 func _try_load_saved_run() -> bool:
@@ -296,13 +297,7 @@ func _open_run_state_screen(
 ) -> Node:
 	_clear_scene_host()
 	_run_pre_attach_action(before_attach_action)
-
-	var screen: Node = scene.instantiate()
-	screen.set("run_state", run_state)
-	if not completed_signal.is_empty() and screen.has_signal(completed_signal) and completed_handler.is_valid():
-		screen.connect(completed_signal, completed_handler)
-	scene_host.add_child(screen)
-	return screen
+	return app_screen_host.open_run_state_screen(scene, run_state, completed_signal, completed_handler)
 
 
 func _run_pre_attach_action(action: StringName) -> void:
