@@ -15,6 +15,7 @@
 - `make content-index`：重建参考资料索引。
 - `make repo-structure-check`：检查目录规范（根目录与 docs 分层）。
 - `make workflow-check TASK_ID=<task-id>`：提交前聚合门禁。
+- `make ci-check`：执行 CI 同步门禁（结构 + 契约 + 类型；检测到 Godot 时附带最小冒烟测试）。
 - `make install-hooks`：安装本地 hooks。
 - `make new-task TASK_ID=<task-id>`：创建任务三件套模板。
 - `make migration-draft`：输出 runtime/content/dev 大迁移草案命令。

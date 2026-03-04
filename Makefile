@@ -1,4 +1,4 @@
-.PHONY: content-index workflow-check repo-structure-check install-hooks new-task migration-draft test test-effects-matrix type-safety-check e2e-run full-validation-check
+.PHONY: content-index workflow-check repo-structure-check install-hooks new-task migration-draft test test-effects-matrix type-safety-check e2e-run full-validation-check ci-check
 
 GODOT ?= godot
 
@@ -40,3 +40,6 @@ full-validation-check:
 	@$(MAKE) test-effects-matrix
 	@$(MAKE) e2e-run
 	@bash dev/tools/save_load_replay_smoke.sh
+
+ci-check:
+	@bash dev/tools/ci_checks.sh
