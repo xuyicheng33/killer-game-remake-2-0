@@ -54,6 +54,7 @@ func test_poison_decrements_each_turn():
 	char_stats.max_health = 50
 	char_stats.health = 50
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status(BuffSystem.STATUS_POISON, 3)
 
@@ -66,6 +67,7 @@ func test_poison_decrements_each_turn():
 
 	assert_eq(char_stats.health, 45, "Poison 应再造成 2 点伤害")
 	assert_eq(_buff_system.get_status_stack(char_stats, BuffSystem.STATUS_POISON), 1, "Poison 应递减到 1")
+	_buff_system.unbind_combatants()
 	player.free()
 
 
@@ -76,6 +78,7 @@ func test_weak_reduces_damage_by_25_percent():
 	char_stats.max_health = 50
 	char_stats.health = 50
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status(BuffSystem.STATUS_WEAK, 2)
 
@@ -83,6 +86,7 @@ func test_weak_reduces_damage_by_25_percent():
 	var modified := _buff_system.get_modified_damage(base_damage, player, dummy_target)
 
 	assert_eq(modified, 15, "虚弱应减少 25% 伤害（20 -> 15）")
+	_buff_system.unbind_combatants()
 	player.free()
 	dummy_target.free()
 
@@ -94,6 +98,7 @@ func test_vulnerable_increases_received_damage():
 	enemy_stats.max_health = 30
 	enemy_stats.health = 30
 	enemy.stats = enemy_stats
+	_buff_system.bind_combatants(dummy_source, [enemy])
 
 	enemy.stats.add_status(BuffSystem.STATUS_VULNERABLE, 1)
 
@@ -101,6 +106,7 @@ func test_vulnerable_increases_received_damage():
 	var modified := _buff_system.get_modified_damage(base_damage, dummy_source, enemy)
 
 	assert_eq(modified, 30, "易伤应增加 50% 受伤（20 -> 30）")
+	_buff_system.unbind_combatants()
 	enemy.free()
 	dummy_source.free()
 
@@ -112,6 +118,7 @@ func test_strength_adds_to_attack_damage():
 	char_stats.max_health = 50
 	char_stats.health = 50
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status(BuffSystem.STATUS_STRENGTH, 5)
 
@@ -119,6 +126,7 @@ func test_strength_adds_to_attack_damage():
 	var modified := _buff_system.get_modified_damage(base_damage, player, dummy_target)
 
 	assert_eq(modified, 15, "力量应增加攻击伤害（10 -> 15）")
+	_buff_system.unbind_combatants()
 	player.free()
 	dummy_target.free()
 
@@ -130,6 +138,7 @@ func test_metallicize_grants_block_on_turn_end():
 	char_stats.health = 50
 	char_stats.block = 0
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status(BuffSystem.STATUS_METALLICIZE, 4)
 
@@ -140,6 +149,7 @@ func test_metallicize_grants_block_on_turn_end():
 	_buff_system._run_turn_end_hooks(player)
 
 	assert_eq(char_stats.block, 8, "金属化应永久生效")
+	_buff_system.unbind_combatants()
 	player.free()
 
 
@@ -149,6 +159,7 @@ func test_burn_deals_damage_and_removes():
 	char_stats.max_health = 50
 	char_stats.health = 50
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status(BuffSystem.STATUS_BURN, 5)
 
@@ -156,6 +167,7 @@ func test_burn_deals_damage_and_removes():
 
 	assert_eq(char_stats.health, 45, "燃烧应造成 5 点伤害（等于层数）")
 	assert_eq(_buff_system.get_status_stack(char_stats, BuffSystem.STATUS_BURN), 4, "燃烧应衰减 1 层")
+	_buff_system.unbind_combatants()
 	player.free()
 
 
@@ -165,6 +177,7 @@ func test_ritual_adds_strength_on_turn_end():
 	char_stats.max_health = 50
 	char_stats.health = 50
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status(BuffSystem.STATUS_RITUAL, 2)
 
@@ -175,6 +188,7 @@ func test_ritual_adds_strength_on_turn_end():
 	_buff_system._run_turn_end_hooks(player)
 
 	assert_eq(_buff_system.get_status_stack(char_stats, BuffSystem.STATUS_STRENGTH), 4, "愤怒应永久生效")
+	_buff_system.unbind_combatants()
 	player.free()
 
 
@@ -184,6 +198,7 @@ func test_regenrate_heals_and_decrements():
 	char_stats.max_health = 50
 	char_stats.health = 40
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status(BuffSystem.STATUS_REGENERATE, 5)
 
@@ -191,6 +206,7 @@ func test_regenrate_heals_and_decrements():
 
 	assert_eq(char_stats.health, 45, "再生应在回合结束回血")
 	assert_eq(_buff_system.get_status_stack(char_stats, BuffSystem.STATUS_REGENERATE), 4, "再生应递减")
+	_buff_system.unbind_combatants()
 	player.free()
 
 
@@ -200,6 +216,7 @@ func test_constricted_deals_damage_permanent():
 	char_stats.max_health = 50
 	char_stats.health = 50
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status(BuffSystem.STATUS_CONSTRICTED, 3)
 
@@ -211,6 +228,7 @@ func test_constricted_deals_damage_permanent():
 	_buff_system._run_turn_end_hooks(player)
 
 	assert_eq(char_stats.health, 44, "束缚应持续造成伤害")
+	_buff_system.unbind_combatants()
 	player.free()
 
 
@@ -244,6 +262,7 @@ func test_turn_start_hooks_dispatches_for_player():
 	char_stats.health = 50
 
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 
 	player.stats.add_status("strength", 3)
 	player.stats.add_status("weak", 2)
@@ -255,6 +274,7 @@ func test_turn_start_hooks_dispatches_for_player():
 
 	var snapshot_after: Dictionary = player.stats.get_status_snapshot()
 	assert_eq(snapshot_after.size(), 2, "钩子执行后状态数应不变")
+	_buff_system.unbind_combatants()
 	player.free()
 
 
@@ -264,6 +284,7 @@ func test_turn_start_hook_fires_for_registered_status():
 	char_stats.max_health = 30
 	char_stats.health = 30
 	player.stats = char_stats
+	_buff_system.bind_combatants(player, [])
 	player.stats.add_status(BuffSystem.STATUS_POISON, 3)
 
 	_buff_system._run_turn_start_hooks(player)
@@ -274,6 +295,7 @@ func test_turn_start_hook_fires_for_registered_status():
 		2,
 		"回合开始触发后 poison 应递减"
 	)
+	_buff_system.unbind_combatants()
 	player.free()
 
 

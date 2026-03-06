@@ -20,6 +20,7 @@ var _enemy_turn_queue: Array[Node] = []
 var _active_enemy: Node = null
 var _player: Node = null
 var _enemies: Array[Node] = []
+var _role_map: Dictionary = {}
 var _player_damage_multiplier := 1.0
 
 
@@ -40,15 +41,22 @@ func has_status(status_id: String) -> bool:
 func bind_combatants(player: Node, enemies: Array[Node]) -> void:
 	_player = player
 	_enemies = enemies.duplicate()
+	_role_map.clear()
+	if player != null:
+		_role_map[player] = CombatantRole.Type.PLAYER
+	for enemy in enemies:
+		_role_map[enemy] = CombatantRole.Type.ENEMY
 
 
 func unbind_combatants() -> void:
 	_player = null
 	_enemies.clear()
+	_role_map.clear()
 
 
 func remove_enemy(enemy: Node) -> void:
 	_enemies.erase(enemy)
+	_role_map.erase(enemy)
 	if _active_enemy == enemy:
 		_active_enemy = null
 	_enemy_turn_queue.erase(enemy)
@@ -83,7 +91,7 @@ func get_modified_damage(base_damage: int, source: Node, target: Node) -> int:
 
 	adjusted += get_status_stack(source_stats, STATUS_STRENGTH)
 
-	if source == _player:
+	if _get_role(source) == CombatantRole.Type.PLAYER:
 		adjusted = int(round(float(adjusted) * _player_damage_multiplier))
 
 	if get_status_stack(source_stats, STATUS_WEAK) > 0:
@@ -114,10 +122,10 @@ func resolve_damage_source(target: Node) -> Node:
 	if target == null:
 		return null
 
-	if target.is_in_group("enemies"):
+	if _get_role(target) == CombatantRole.Type.ENEMY:
 		return _get_player_node()
 
-	if target.is_in_group("player"):
+	if _get_role(target) == CombatantRole.Type.PLAYER:
 		if _active_enemy != null and is_instance_valid(_active_enemy):
 			return _active_enemy
 		if not _enemy_turn_queue.is_empty():
@@ -305,13 +313,11 @@ func _handle_death(target: Node) -> void:
 	if target == null or not is_instance_valid(target):
 		return
 
-	# BuffSystem 是域服务，不应该直接操作场景节点
-	# 只发射死亡信号，让场景层（如 battle.gd）处理节点释放
-	if target.is_in_group("player"):
+	if _get_role(target) == CombatantRole.Type.PLAYER:
 		Events.player_died.emit()
 		return
 
-	if target.is_in_group("enemies"):
+	if _get_role(target) == CombatantRole.Type.ENEMY:
 		Events.enemy_died.emit(target)
 		return
 
@@ -337,6 +343,12 @@ func _extract_stats(target: Node) -> Stats:
 	return null
 
 
+func _get_role(target: Node) -> int:
+	if target == null or not is_instance_valid(target):
+		return CombatantRole.Type.UNKNOWN
+	return _role_map.get(target, CombatantRole.Type.UNKNOWN)
+
+
 func _get_player_node() -> Node:
 	if _player != null and is_instance_valid(_player):
 		return _player
@@ -360,26 +372,26 @@ func _register_builtin_statuses() -> void:
 		func(target: Node, stats: Stats, stacks: int) -> void:
 			stats.health -= stacks
 			stats.add_status(STATUS_POISON, -1)
-			if target.is_in_group("player"):
+			if _get_role(target) == CombatantRole.Type.PLAYER:
 				Events.player_hit.emit()
 	))
 	register_status(StatusHandler.create(STATUS_BURN, "燃", Callable(),
 		func(target: Node, stats: Stats, stacks: int) -> void:
 			stats.health -= stacks
-			if target.is_in_group("player"):
+			if _get_role(target) == CombatantRole.Type.PLAYER:
 				Events.player_hit.emit(),
 		true
 	))
 	register_status(StatusHandler.create(STATUS_CONSTRICTED, "缚", Callable(),
 		func(target: Node, stats: Stats, stacks: int) -> void:
 			stats.health -= stacks
-			if target.is_in_group("player"):
+			if _get_role(target) == CombatantRole.Type.PLAYER:
 				Events.player_hit.emit()
 	))
 	register_status(StatusHandler.create(STATUS_METALLICIZE, "金", Callable(),
 		func(target: Node, stats: Stats, stacks: int) -> void:
 			stats.block += stacks
-			if target != null and target.is_in_group("player"):
+			if _get_role(target) == CombatantRole.Type.PLAYER:
 				Events.player_block_applied.emit(stacks, "status:metallicize")
 	))
 	register_status(StatusHandler.create(STATUS_RITUAL, "怒", Callable(),
