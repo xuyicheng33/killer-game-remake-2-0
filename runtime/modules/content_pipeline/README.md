@@ -52,11 +52,13 @@ Not implemented in this task:
 bash dev/tools/content_pipeline_check.sh
 ```
 
-Runs all four importers:
+Runs all five importers plus one negative contract:
 1. cards
 2. enemies
 3. relics
-4. events
+4. potions
+5. events
+6. invalid potion contract
 
 Reports output to `runtime/modules/content_pipeline/reports/`.
 
@@ -74,7 +76,15 @@ See `schemas/README.md` for:
 | Cards | `card_schema.json` | `sources/cards/` | ✅ Implemented |
 | Enemies | `enemy_schema.json` | `sources/enemies/examples/` | ✅ Implemented |
 | Relics | `relic_schema.json` | `sources/relics/examples/` | ✅ Implemented |
+| Potions | `potion_schema.json` | `sources/potions/examples/` | ✅ Implemented |
 | Events | `event_schema.json` | `sources/events/examples/` | ✅ Implemented |
+
+## Runtime Source Of Truth
+
+- Events runtime catalog reads JSON source directly.
+- Encounter runtime registry reads JSON source directly.
+- Potion runtime catalog now reads JSON source directly.
+- Existing `content/custom_resources/potions/*.tres` are legacy resources, no longer the runtime source of truth.
 
 ## Commands
 
@@ -106,6 +116,12 @@ python3 dev/tools/content_import_relics.py \
 ```bash
 python3 dev/tools/content_import_events.py \
   --input runtime/modules/content_pipeline/sources/events/examples/baseline_events.json
+```
+
+### Potion Import
+```bash
+python3 dev/tools/content_import_potions.py \
+  --input runtime/modules/content_pipeline/sources/potions/examples/base_potions.json
 ```
 
 ### All Content (Aggregate)

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "potions": [
+    {
+      "id": "broken_potion",
+      "title": "坏药水",
+      "description": "用于负路径测试。",
+      "art_path": "content/art/ui/icons/potion.png",
+      "effect_type": "heal",
+      "value": 8,
+      "unexpected": true
+    }
+  ]
+}

@@ -11,7 +11,7 @@ echo "[content-pipeline-check] running all content importers..."
 
 failed=0
 
-echo "[content-pipeline-check] 1/5 cards..."
+echo "[content-pipeline-check] 1/6 cards..."
 if python3 dev/tools/content_import_cards.py --report "$REPORT_DIR/card_import_report.json" >/dev/null 2>&1; then
   echo "[content-pipeline-check]   cards: ok"
 else
@@ -20,7 +20,7 @@ else
   failed=1
 fi
 
-echo "[content-pipeline-check] 2/5 enemies..."
+echo "[content-pipeline-check] 2/6 enemies..."
 if python3 dev/tools/content_import_enemies.py --input runtime/modules/content_pipeline/sources/enemies/examples/act1_enemies.json --report "$REPORT_DIR/enemy_import_report.json" >/dev/null 2>&1; then
   echo "[content-pipeline-check]   enemies: ok"
 else
@@ -29,7 +29,7 @@ else
   failed=1
 fi
 
-echo "[content-pipeline-check] 3/5 relics..."
+echo "[content-pipeline-check] 3/6 relics..."
 if python3 dev/tools/content_import_relics.py --input runtime/modules/content_pipeline/sources/relics/examples/common_relics.json --report "$REPORT_DIR/relic_import_report.json" >/dev/null 2>&1; then
   echo "[content-pipeline-check]   relics: ok"
 else
@@ -38,7 +38,7 @@ else
   failed=1
 fi
 
-echo "[content-pipeline-check] 4/5 potions..."
+echo "[content-pipeline-check] 4/6 potions..."
 if python3 dev/tools/content_import_potions.py --input runtime/modules/content_pipeline/sources/potions/examples/base_potions.json --report "$REPORT_DIR/potion_import_report.json" >/dev/null 2>&1; then
   echo "[content-pipeline-check]   potions: ok"
 else
@@ -47,12 +47,21 @@ else
   failed=1
 fi
 
-echo "[content-pipeline-check] 5/5 events..."
+echo "[content-pipeline-check] 5/6 events..."
 if python3 dev/tools/content_import_events.py --input runtime/modules/content_pipeline/sources/events/examples/baseline_events.json --report "$REPORT_DIR/event_import_report.json" >/dev/null 2>&1; then
   echo "[content-pipeline-check]   events: ok"
 else
   echo "[content-pipeline-check]   events: FAILED"
   python3 dev/tools/content_import_events.py --input runtime/modules/content_pipeline/sources/events/examples/baseline_events.json --report "$REPORT_DIR/event_import_report.json" 2>&1 || true
+  failed=1
+fi
+
+echo "[content-pipeline-check] 6/6 potion negative contract..."
+if bash dev/tools/potion_pipeline_negative_check.sh >/dev/null 2>&1; then
+  echo "[content-pipeline-check]   potion negative contract: ok"
+else
+  echo "[content-pipeline-check]   potion negative contract: FAILED"
+  bash dev/tools/potion_pipeline_negative_check.sh 2>&1 || true
   failed=1
 fi
 
