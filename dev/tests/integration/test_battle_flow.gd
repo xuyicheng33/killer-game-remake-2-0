@@ -42,7 +42,7 @@ func test_events_signal_mechanism():
 
 func test_boss_encounter_spawns_boss_enemy():
 	var battle := BATTLE_SCENE.instantiate()
-	battle.set("encounter_id", "act1_boss_slime")
+	battle.call("init_battle", null, "act1_boss_slime", null)
 	get_tree().root.add_child(battle)
 	await get_tree().process_frame
 
@@ -62,7 +62,7 @@ func test_boss_encounter_spawns_boss_enemy():
 
 func test_battle_scene_does_not_end_immediately_after_setup():
 	var battle := BATTLE_SCENE.instantiate()
-	battle.set("encounter_id", "act1_boss_slime")
+	battle.call("init_battle", null, "act1_boss_slime", null)
 	get_tree().root.add_child(battle)
 	await get_tree().process_frame
 
@@ -130,7 +130,7 @@ func test_dot_death_triggers_battle_end_correctly():
 
 	# === 1. 创建战斗场景 ===
 	var battle := BATTLE_SCENE.instantiate()
-	battle.set("encounter_id", "act1_crab_single")  # 单敌人遭遇
+	battle.call("init_battle", null, "act1_crab_single", null)  # 单敌人遭遇
 	get_tree().root.add_child(battle)
 	await get_tree().process_frame
 	await get_tree().create_timer(0.1).timeout
@@ -190,7 +190,7 @@ func test_dot_death_triggers_battle_end_correctly():
 	assert_eq(enemy_handler.get_child_count(), 0, "enemy_died 后应从 EnemyHandler 移除敌人")
 	var battle_result := battle_context.phase_machine.check_battle_end()
 	assert_true(battle_result.ended, "敌人死亡后战斗应结束")
-	assert_eq(battle_result.result, "victory", "敌人死亡后应判定胜利")
+	assert_eq(battle_result.result, BattlePhaseStateMachine.RESULT_VICTORY, "敌人死亡后应判定胜利")
 
 	# === 清理 ===
 	if is_instance_valid(battle):
@@ -203,7 +203,7 @@ func test_dot_damage_and_death_logic_via_trigger_poison():
 
 	# === 1. 创建战斗场景 ===
 	var battle := BATTLE_SCENE.instantiate()
-	battle.set("encounter_id", "act1_crab_single")
+	battle.call("init_battle", null, "act1_crab_single", null)
 	get_tree().root.add_child(battle)
 	await get_tree().process_frame
 	await get_tree().create_timer(0.1).timeout
@@ -262,7 +262,7 @@ func test_battle_phase_machine_empty_enemies_victory():
 
 	# === 1. 创建战斗场景 ===
 	var battle := BATTLE_SCENE.instantiate()
-	battle.set("encounter_id", "act1_crab_single")
+	battle.call("init_battle", null, "act1_crab_single", null)
 	get_tree().root.add_child(battle)
 	await get_tree().process_frame
 	await get_tree().create_timer(0.1).timeout
@@ -289,7 +289,7 @@ func test_battle_phase_machine_empty_enemies_victory():
 	# === 5. 验证战斗结束判定 ===
 	var battle_result := battle_context.phase_machine.check_battle_end()
 	assert_true(battle_result.ended, "空敌人列表时战斗应结束")
-	assert_eq(battle_result.result, "victory", "空敌人列表应判定胜利")
+	assert_eq(battle_result.result, BattlePhaseStateMachine.RESULT_VICTORY, "空敌人列表应判定胜利")
 
 	# === 清理 ===
 	if is_instance_valid(battle):
@@ -301,7 +301,7 @@ func test_battle_phase_machine_with_dead_enemy():
 
 	# === 1. 创建战斗场景 ===
 	var battle := BATTLE_SCENE.instantiate()
-	battle.set("encounter_id", "act1_crab_single")
+	battle.call("init_battle", null, "act1_crab_single", null)
 	get_tree().root.add_child(battle)
 	await get_tree().process_frame
 	await get_tree().create_timer(0.1).timeout
@@ -329,7 +329,7 @@ func test_battle_phase_machine_with_dead_enemy():
 	# === 4. 验证战斗结束判定 ===
 	var battle_result := battle_context.phase_machine.check_battle_end()
 	assert_true(battle_result.ended, "敌人 HP=0 时战斗应结束")
-	assert_eq(battle_result.result, "victory", "敌人死亡应判定胜利")
+	assert_eq(battle_result.result, BattlePhaseStateMachine.RESULT_VICTORY, "敌人死亡应判定胜利")
 
 	# === 清理 ===
 	if is_instance_valid(battle):
@@ -341,7 +341,7 @@ func test_handle_death_signal_for_enemies_group():
 
 	# === 1. 创建战斗场景 ===
 	var battle := BATTLE_SCENE.instantiate()
-	battle.set("encounter_id", "act1_crab_single")
+	battle.call("init_battle", null, "act1_crab_single", null)
 	get_tree().root.add_child(battle)
 	await get_tree().process_frame
 	await get_tree().create_timer(0.1).timeout

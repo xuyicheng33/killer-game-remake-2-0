@@ -203,7 +203,7 @@ func test_battle_ends_when_player_hp_reaches_zero() -> void:
 	assert_true(result.has("result"), "结果应包含 result 字段")
 	
 	assert_true(result.ended, "无 player 时应结束战斗")
-	assert_eq(result.result, "defeat", "结果应为 defeat")
+	assert_eq(result.result, BattlePhaseStateMachine.RESULT_DEFEAT, "结果应为 defeat")
 
 
 func test_phase_machine_does_not_emit_turn_events_directly() -> void:
@@ -280,7 +280,7 @@ func test_killing_all_enemies_triggers_immediate_victory() -> void:
 	
 	var result := phase_machine.check_battle_end()
 	assert_true(result.ended, "所有敌人HP为0时应结束战斗")
-	assert_eq(result.result, "victory", "结果应为 victory")
+	assert_eq(result.result, BattlePhaseStateMachine.RESULT_VICTORY, "结果应为 victory")
 
 	player.free()
 	enemy.free()
@@ -306,7 +306,7 @@ func test_player_death_triggers_immediate_defeat() -> void:
 	
 	var result := phase_machine.check_battle_end()
 	assert_true(result.ended, "玩家HP为0时应结束战斗")
-	assert_eq(result.result, "defeat", "结果应为 defeat")
+	assert_eq(result.result, BattlePhaseStateMachine.RESULT_DEFEAT, "结果应为 defeat")
 
 	player.free()
 	enemy.free()

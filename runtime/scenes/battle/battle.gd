@@ -30,6 +30,12 @@ var _battle_ended := false
 var _active_stats: CharacterStats
 
 
+func init_battle(p_runtime_stats: CharacterStats, p_encounter_id: String, p_relic_potion_system: RelicPotionSystem) -> void:
+	runtime_stats = p_runtime_stats
+	encounter_id = p_encounter_id
+	relic_potion_system = p_relic_potion_system
+
+
 func _ready() -> void:
 	_active_stats = runtime_stats if runtime_stats else char_stats.create_instance()
 	battle_ui.char_stats = _active_stats
@@ -117,13 +123,13 @@ func start_battle(stats: CharacterStats) -> void:
 		get_viewport_rect().size.x,
 		ENEMY_SCENE
 	)
-	var enemies: Array[Enemy] = []
+	var enemies: Array[Node] = []
 	for enemy_node in spawned_enemy_nodes:
 		if enemy_node is Enemy:
-			enemies.append(enemy_node as Enemy)
+			enemies.append(enemy_node)
 	if enemies.is_empty():
 		push_error("battle.gd: battle setup aborted, no valid enemies were spawned")
-		_on_battle_ended("defeat")
+		_on_battle_ended(BattlePhaseStateMachine.RESULT_DEFEAT)
 		return
 	_battle_context.bind_combatants(player, enemies)
 	enemy_handler.reset_enemy_actions()
@@ -204,7 +210,7 @@ func _on_phase_changed(from_phase: BattlePhaseStateMachine.Phase, to_phase: Batt
 		return
 
 
-func _get_battle_enemies() -> Array[Enemy]:
+func _get_battle_enemies() -> Array[Node]:
 	return _enemy_spawn_service.collect_battle_enemies(enemy_handler)
 
 
@@ -222,7 +228,7 @@ func _update_phase_hud(phase_name: String, turn: int) -> void:
 func _on_player_died() -> void:
 	if _battle_ended:
 		return
-	_on_battle_ended("defeat")
+	_on_battle_ended(BattlePhaseStateMachine.RESULT_DEFEAT)
 
 
 func _on_enemy_died(enemy: Enemy) -> void:
@@ -252,7 +258,7 @@ func _on_battle_ended(result: String) -> void:
 	MusicPlayer.stop()
 	var panel_type := BattleOverPanel.Type.WIN
 	var text := "胜利！"
-	if result != "victory":
+	if result != BattlePhaseStateMachine.RESULT_VICTORY:
 		panel_type = BattleOverPanel.Type.LOSE
 		text = "游戏结束！"
 	Events.battle_over_screen_requested.emit(text, panel_type)

@@ -134,7 +134,7 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 	if not bool(command_result.get("accepted", false)):
 		var error_text := str(command_result.get("error_text", ""))
 		if error_text.length() > 0:
-			push_warning("[map] %s" % error_text)
+			print("[map] %s" % error_text)
 			app_flow_orchestrator.push_external_log("节点进入失败：%s" % error_text)
 		return
 	_dispatch_next_route(command_result)
@@ -143,9 +143,8 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 func _open_battle(encounter_id: String = "") -> void:
 	_clear_scene_host()
 	var battle_scene := BATTLE_SCENE.instantiate()
-	battle_scene.set("runtime_stats", run_state.player_stats)
-	battle_scene.set("encounter_id", encounter_id)
-	battle_scene.set("relic_potion_system", relic_potion_system)
+	if battle_scene.has_method("init_battle"):
+		battle_scene.call("init_battle", run_state.player_stats, encounter_id, relic_potion_system)
 	scene_host.add_child(battle_scene)
 
 
@@ -247,14 +246,14 @@ func _clear_scene_host() -> void:
 func _try_load_saved_run() -> bool:
 	var result: Dictionary = app_flow_orchestrator.continue_saved_run()
 	if not bool(result.get("ok", false)):
-		push_warning("[save] %s" % str(result.get("message", "读档失败。")))
+		print("[save] %s" % str(result.get("message", "读档失败。")))
 		return false
 
 	_reset_app_overlay_state()
 
 	run_state = _extract_run_state(result)
 	if run_state == null:
-		push_warning("[save] 读档失败：返回结果中缺少有效的 RunState。")
+		print("[save] 读档失败：返回结果中缺少有效的 RunState。")
 		return false
 	relic_potion_ui.run_state = run_state
 	_open_map()
@@ -265,11 +264,11 @@ func _try_load_saved_run() -> bool:
 func _save_checkpoint(tag: String) -> void:
 	var result := run_flow_service.lifecycle_service.save_checkpoint(run_state, tag)
 	if not bool(result.get("ok", false)):
-		push_warning("[save] %s" % str(result.get("message", "存档失败。")))
+		print("[save] %s" % str(result.get("message", "存档失败。")))
 		return
 
 	if tag.length() > 0:
-		push_warning("[save] checkpoint: %s" % tag)
+		print("[save] checkpoint: %s" % tag)
 
 
 func _extract_run_state(result: Dictionary) -> RunState:

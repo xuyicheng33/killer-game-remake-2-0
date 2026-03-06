@@ -171,7 +171,7 @@ func test_battle_ends_when_enemy_killed() -> void:
 
 	var result := _context.phase_machine.check_battle_end()
 	assert_true(result.ended, "敌人死亡时战斗应结束")
-	assert_eq(result.result, "victory", "应判定为胜利")
+	assert_eq(result.result, BattlePhaseStateMachine.RESULT_VICTORY, "应判定为胜利")
 
 
 func test_battle_ends_when_player_killed() -> void:
@@ -179,7 +179,7 @@ func test_battle_ends_when_player_killed() -> void:
 
 	var result := _context.phase_machine.check_battle_end()
 	assert_true(result.ended, "玩家死亡时战斗应结束")
-	assert_eq(result.result, "defeat", "应判定为失败")
+	assert_eq(result.result, BattlePhaseStateMachine.RESULT_DEFEAT, "应判定为失败")
 
 
 func test_effect_stack_processes_in_priority_order() -> void:
@@ -252,4 +252,4 @@ func test_full_combat_simulation_player_wins() -> void:
 
 	var result := pm.check_battle_end()
 	assert_true(result.ended, "敌人死亡后战斗应结束")
-	assert_eq(result.result, "victory", "应判定为胜利")
+	assert_eq(result.result, BattlePhaseStateMachine.RESULT_VICTORY, "应判定为胜利")
