@@ -4,3 +4,4 @@
 .DS_Store
 dev/tools/baselines/*.txt
 cursor2api-go/
+.cursor/

@@ -83,11 +83,11 @@ func _update_ui_state() -> void:
 	if has_save:
 		continue_button.text = "继续游戏"
 		save_status_label.text = "检测到存档"
-		save_status_label.modulate = Color(0.6, 0.9, 0.6)
+		save_status_label.modulate = UIColors.SAVE_EXISTS
 	else:
 		continue_button.text = "继续游戏（无存档）"
 		save_status_label.text = "无存档"
-		save_status_label.modulate = Color(0.7, 0.7, 0.7)
+		save_status_label.modulate = UIColors.SAVE_MISSING
 
 
 func _on_character_button_pressed(character_id: String) -> void:

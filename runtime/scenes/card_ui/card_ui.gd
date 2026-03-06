@@ -122,13 +122,13 @@ func _set_card(value: Card) -> void:
 func _set_playable(value: bool) -> void:
 	playable = value
 	if not playable:
-		cost.add_theme_color_override("font_color", Color.RED)
-		name_label.modulate = Color(1, 1, 1, 0.5)
-		desc_label.modulate = Color(1, 1, 1, 0.5)
+		cost.add_theme_color_override("font_color", UIColors.CARD_COST_UNPLAYABLE)
+		name_label.modulate = UIColors.CARD_LABEL_DIMMED
+		desc_label.modulate = UIColors.CARD_LABEL_DIMMED
 	else:
 		cost.remove_theme_color_override("font_color")
-		name_label.modulate = Color(1, 1, 1, 1)
-		desc_label.modulate = Color(1, 1, 1, 1)
+		name_label.modulate = Color.WHITE
+		desc_label.modulate = Color.WHITE
 
 
 func _set_char_stats(value: CharacterStats) -> void:

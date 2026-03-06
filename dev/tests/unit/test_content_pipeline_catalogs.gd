@@ -85,6 +85,73 @@ func _collect_ids_from_dict_entries(entries: Array[Dictionary]) -> Dictionary:
 	return ids
 
 
+func test_potion_pool_loaded_from_catalog() -> void:
+	PotionCatalog._cache.clear()
+	var potions := PotionCatalog.get_all()
+
+	assert_eq(potions.size(), PotionCatalog.POTION_POOL.size(),
+		"药水池数量应与 POTION_POOL 路径列表一致")
+
+	for potion in potions:
+		assert_true(potion is PotionData, "药水池元素应为 PotionData")
+		assert_false(potion.id.is_empty(), "药水应有非空 id")
+
+
+func test_potion_pool_has_at_least_three() -> void:
+	PotionCatalog._cache.clear()
+	var potions := PotionCatalog.get_all()
+	assert_true(potions.size() >= 3,
+		"药水池应有至少 3 种药水，当前 %d 种" % potions.size())
+
+
+func test_encounter_registry_loads_encounters() -> void:
+	EncounterRegistry._encounters_cache.clear()
+	EncounterRegistry._encounters_by_id.clear()
+	var encounters := EncounterRegistry.get_encounters_for_floor(0)
+
+	assert_true(encounters.size() > 0,
+		"EncounterRegistry 应能为第 0 层加载至少 1 个遭遇")
+
+
+func test_encounter_registry_boss_encounters() -> void:
+	EncounterRegistry._encounters_cache.clear()
+	EncounterRegistry._encounters_by_id.clear()
+	var boss_tags: Array[String] = ["boss"]
+	var boss_encounters := EncounterRegistry.get_encounters_for_floor(13, boss_tags)
+
+	assert_true(boss_encounters.size() > 0,
+		"EncounterRegistry 应包含至少 1 个 boss 遭遇（第 13 层）")
+
+
+func test_encounter_registry_enemy_ids_resolvable() -> void:
+	EncounterRegistry._encounters_cache.clear()
+	EncounterRegistry._encounters_by_id.clear()
+	var all_encounters := EncounterRegistry.get_encounters_for_floor(0)
+
+	for encounter in all_encounters:
+		var enemy_ids := EncounterRegistry.get_enemy_ids_for_encounter(encounter)
+		assert_true(enemy_ids.size() > 0,
+			"遭遇 '%s' 应有至少 1 个可解析的敌人 ID" % str(encounter.get("id", "unknown")))
+
+
+func test_encounter_registry_get_by_id() -> void:
+	EncounterRegistry._encounters_cache.clear()
+	EncounterRegistry._encounters_by_id.clear()
+	var all_encounters := EncounterRegistry.get_encounters_for_floor(0)
+
+	if all_encounters.is_empty():
+		pass_test("无遭遇数据，跳过 ID 查询测试")
+		return
+
+	var first_id: String = str(all_encounters[0].get("id", ""))
+	if first_id.is_empty():
+		pass_test("首个遭遇无 ID，跳过查询测试")
+		return
+
+	var found := EncounterRegistry.get_encounter_by_id(first_id)
+	assert_false(found.is_empty(), "应能通过 ID 查询到遭遇: %s" % first_id)
+
+
 func _count_tres_files(dir_path: String) -> int:
 	var dir := DirAccess.open(dir_path)
 	if dir == null:

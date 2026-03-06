@@ -1,11 +1,15 @@
 [gd_resource type="StyleBoxFlat" format=3 uid="uid://clbhkbqbyl8et"]
 
 [resource]
-bg_color = Color(0.631373, 0.34902, 0.321569, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.756863, 0.713726, 0.388235, 1)
-shadow_color = Color(0.756863, 0.713726, 0.388235, 0.721569)
-shadow_size = 2
+bg_color = Color(0.164706, 0.188235, 0.25098, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.952941, 0.717647, 0.396078, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.952941, 0.717647, 0.396078, 0.3)
+shadow_size = 8

@@ -218,7 +218,9 @@ func check_battle_end() -> Dictionary:
 	return {"ended": false}
 
 
-func get_phase_name(phase: Phase = _phase) -> String:
+func get_phase_name(phase: Phase = Phase.INVALID) -> String:
+	if phase == Phase.INVALID:
+		phase = _phase
 	match phase:
 		Phase.DRAW:
 			return "DRAW"

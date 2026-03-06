@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://bg2fah855oe40"]
+[gd_scene load_steps=4 format=3 uid="uid://bg2fah855oe40"]
 
 [ext_resource type="Script" path="res://runtime/scenes/shop/shop_screen.gd" id="1_vwogb"]
+[ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://content/art/ui/theme_grid_overlay.svg" id="3_grid"]
 
 [node name="ShopScreen" type="Control"]
 layout_mode = 3
@@ -9,6 +11,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_theme")
 script = ExtResource("1_vwogb")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -18,7 +21,30 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.0745098, 0.0745098, 0.121569, 1)
+color = Color(0.027451, 0.0352941, 0.0588235, 1)
+
+[node name="BackdropPattern" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_grid")
+expand_mode = 1
+stretch_mode = 1
+modulate = Color(1, 1, 1, 0.48)
+
+[node name="ToneOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.18, 0.14, 0.06, 0.2)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 unique_name_in_owner = true
@@ -123,7 +149,6 @@ theme_override_constants/separation = 6
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 3
 text = "完成操作后可继续前进。"
 

@@ -32,9 +32,11 @@ func init_with_character(base_stats: CharacterStats, p_run_seed: int, id: String
 	potions.clear()
 	run_start_relics_applied = false
 
+	if player_stats != null and player_stats.stats_changed.is_connected(_on_player_stats_changed):
+		player_stats.stats_changed.disconnect(_on_player_stats_changed)
+
 	player_stats = base_stats.create_instance()
-	if not player_stats.stats_changed.is_connected(_on_player_stats_changed):
-		player_stats.stats_changed.connect(_on_player_stats_changed)
+	player_stats.stats_changed.connect(_on_player_stats_changed)
 
 	_init_map_progression()
 	emit_changed()

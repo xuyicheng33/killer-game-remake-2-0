@@ -6,6 +6,7 @@ var target_self := false
 
 
 func execute(targets: Array[Node], _battle_context: RefCounted = null) -> void:
+	var applied := false
 	if target_self:
 		var player: Node = null
 		if _battle_context != null:
@@ -19,12 +20,15 @@ func execute(targets: Array[Node], _battle_context: RefCounted = null) -> void:
 					player = fallback_variant as Node
 		if player != null:
 			_apply_lose_hp_to_target(player)
+			applied = true
 	else:
 		for target in targets:
 			if target == null or not is_instance_valid(target):
 				continue
 			_apply_lose_hp_to_target(target)
-	SFXPlayer.play(sound)
+			applied = true
+	if applied:
+		SFXPlayer.play(sound)
 
 
 func _apply_lose_hp_to_target(target: Node) -> void:

@@ -1,0 +1,192 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Card Data Schema",
+  "description": "卡牌数据定义 schema",
+  "type": "object",
+  "required": ["schema_version", "character_id", "cards"],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "description": "Schema 版本号",
+      "minimum": 1,
+      "default": 1
+    },
+    "character_id": {
+      "type": "string",
+      "description": "所属角色标识符",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "cards": {
+      "type": "array",
+      "description": "卡牌定义列表",
+      "items": {
+        "$ref": "#/definitions/card"
+      },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "card": {
+      "type": "object",
+      "required": ["id", "name", "type", "cost", "target", "text", "effects"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "卡牌唯一标识符",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "name": {
+          "type": "string",
+          "description": "卡牌显示名称",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "type": {
+          "type": "string",
+          "description": "卡牌类型",
+          "enum": ["attack", "skill", "power"]
+        },
+        "rarity": {
+          "type": "string",
+          "description": "稀有度",
+          "enum": ["common", "uncommon", "rare"],
+          "default": "common"
+        },
+        "cost": {
+          "type": "integer",
+          "description": "费用",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "target": {
+          "type": "string",
+          "description": "目标类型",
+          "enum": ["self", "enemy", "all_enemies", "everyone"]
+        },
+        "text": {
+          "type": "string",
+          "description": "卡牌效果描述文本",
+          "maxLength": 512
+        },
+        "icon": {
+          "type": "string",
+          "description": "卡牌图标资源路径",
+          "pattern": "^res://"
+        },
+        "sound": {
+          "type": "string",
+          "description": "卡牌音效资源路径",
+          "pattern": "^res://"
+        },
+        "effects": {
+          "type": "array",
+          "description": "卡牌效果列表",
+          "items": {
+            "$ref": "#/definitions/effect"
+          },
+          "minItems": 1
+        },
+        "tags": {
+          "type": "array",
+          "description": "卡牌标签",
+          "items": {
+            "type": "string",
+            "enum": ["starter", "exhaust", "retain", "ethereal", "void", "x_cost"]
+          }
+        },
+        "starter_copies": {
+          "type": "integer",
+          "description": "作为起始牌组时的副本数",
+          "minimum": 0,
+          "default": 0
+        },
+        "upgrade_to": {
+          "type": "string",
+          "description": "升级后的卡牌 ID",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "effect": {
+      "type": "object",
+      "required": ["op"],
+      "properties": {
+        "op": {
+          "type": "string",
+          "description": "效果操作类型",
+          "enum": [
+            "damage",
+            "block",
+            "draw",
+            "gain_energy",
+            "apply_status",
+            "lose_hp",
+            "conditional_damage",
+            "strength_and_damage_multiplier",
+            "damage_and_draw",
+            "strength_multiplier_damage",
+            "missing_hp_block"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "description": "效果数值"
+        },
+        "status_id": {
+          "type": "string",
+          "description": "状态 ID（apply_status 使用）",
+          "enum": ["strength", "dexterity", "weak", "vulnerable"]
+        },
+        "stacks": {
+          "type": "integer",
+          "description": "状态层数（apply_status 使用）",
+          "minimum": 1
+        },
+        "target_self": {
+          "type": "boolean",
+          "description": "是否以自身为目标（lose_hp 使用）"
+        },
+        "condition": {
+          "type": "string",
+          "description": "触发条件（conditional_damage 使用）",
+          "enum": ["hp_below_half"]
+        },
+        "multiplier": {
+          "type": "number",
+          "description": "伤害倍率"
+        },
+        "strength_stacks": {
+          "type": "integer",
+          "description": "力量层数（strength_and_damage_multiplier 使用）"
+        },
+        "draw_count": {
+          "type": "integer",
+          "description": "抽牌数（damage_and_draw 使用）",
+          "minimum": 1
+        },
+        "max_hits": {
+          "type": "integer",
+          "description": "最大命中次数（strength_multiplier_damage 使用）",
+          "minimum": 1
+        },
+        "percent": {
+          "type": "number",
+          "description": "百分比（missing_hp_block 使用）",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_block": {
+          "type": "integer",
+          "description": "最低格挡值（missing_hp_block 使用）",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -37,7 +37,7 @@ func project_node_text(node: MapNodeData, run_state: RunState) -> Dictionary:
 	var projection := {
 		"text": "[未知] %s\n%s" % [node.title if node else "?", node.description if node else ""],
 		"disabled": true,
-		"font_color": Color.WHITE,
+		"font_color": UIColors.NODE_BATTLE,
 		"node_id": "",
 	}
 
@@ -67,14 +67,14 @@ func _node_state_tag(node_id: String, run_state: RunState) -> String:
 func _node_color(type: MapNodeData.NodeType) -> Color:
 	match type:
 		MapNodeData.NodeType.ELITE:
-			return Color("f9c74f")
+			return UIColors.NODE_ELITE
 		MapNodeData.NodeType.REST:
-			return Color("90be6d")
+			return UIColors.NODE_REST
 		MapNodeData.NodeType.EVENT:
-			return Color("4cc9f0")
+			return UIColors.NODE_EVENT
 		MapNodeData.NodeType.SHOP:
-			return Color("b8a06e")
+			return UIColors.NODE_SHOP
 		MapNodeData.NodeType.BOSS:
-			return Color("ff6b6b")
+			return UIColors.NODE_BOSS
 		_:
-			return Color.WHITE
+			return UIColors.NODE_BATTLE

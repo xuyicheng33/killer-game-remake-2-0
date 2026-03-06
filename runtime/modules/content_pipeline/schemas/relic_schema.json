@@ -118,6 +118,60 @@
               "description": "游戏开始时提升的最大生命值",
               "minimum": 0,
               "default": 0
+            },
+            "on_turn_start_energy": {
+              "type": "integer",
+              "description": "每回合开始时获得的额外能量",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_turn_start_damage": {
+              "type": "integer",
+              "description": "每回合开始时对所有敌人造成的伤害",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_enemy_killed_strength": {
+              "type": "integer",
+              "description": "击杀敌人时获得的力量",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_enemy_killed_damage": {
+              "type": "integer",
+              "description": "击杀敌人时对所有敌人造成的伤害",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_enemy_killed_draw": {
+              "type": "integer",
+              "description": "击杀敌人时抽取的卡牌数",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_battle_end_heal_per_kill": {
+              "type": "integer",
+              "description": "战斗结束时每次击杀恢复的生命值",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_attack_played_strength": {
+              "type": "integer",
+              "description": "每打出攻击牌时获得的力量",
+              "minimum": 0,
+              "default": 0
+            },
+            "attack_play_strength_max": {
+              "type": "integer",
+              "description": "攻击牌力量加成的上限",
+              "minimum": 0,
+              "default": 0
+            },
+            "on_run_start_strength": {
+              "type": "integer",
+              "description": "游戏开始时获得的初始力量",
+              "minimum": 0,
+              "default": 0
             }
           },
           "additionalProperties": false
