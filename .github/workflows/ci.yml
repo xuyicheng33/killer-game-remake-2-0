@@ -19,5 +19,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Godot 4.5.1
+        run: |
+          curl -L --retry 3 --fail "https://downloads.godotengine.org/?flavor=stable&platform=linux.64&slug=linux.x86_64.zip&version=4.5.1" -o godot.zip
+          unzip -q godot.zip -d godot-bin
+          chmod +x godot-bin/Godot_v4.5.1-stable_linux.x86_64
+          echo "${GITHUB_WORKSPACE}/godot-bin" >> "$GITHUB_PATH"
+          ln -sf "${GITHUB_WORKSPACE}/godot-bin/Godot_v4.5.1-stable_linux.x86_64" "${GITHUB_WORKSPACE}/godot-bin/godot"
+
+      - name: Pre-import project metadata
+        run: bash dev/tools/ensure_godot_import.sh
+
       - name: Run CI checks
         run: bash dev/tools/ci_checks.sh
+
+      - name: Run full test suite
+        run: make test

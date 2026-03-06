@@ -13,6 +13,7 @@ ALLOWLIST=(
   "runtime/modules/effect_engine/effect_stack_engine.gd"
   "runtime/modules/effect_engine/effect_enqueue_helper.gd"
   "runtime/modules/effect_engine/game_effect_executor.gd"
+  "runtime/modules/buff_system/buff_system.gd"
   "runtime/modules/relic_potion/contracts/battle_session_port.gd"
   "runtime/modules/persistence/run_state_deserializer.gd"
 )

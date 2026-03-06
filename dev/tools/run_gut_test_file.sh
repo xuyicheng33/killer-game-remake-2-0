@@ -29,6 +29,10 @@ echo "[GUT] Running single test (timeout: ${TIMEOUT}s)..."
 echo "[GUT] Test file: ${TEST_SCRIPT_PATH}"
 echo "[GUT] Using HOME=${HOME}"
 
+ensure_import_ready() {
+	GODOT="$GODOT" HOME="$HOME" bash dev/tools/ensure_godot_import.sh
+}
+
 run_godot_once() {
 	$GODOT \
 		--path "$ROOT_DIR" \
@@ -62,6 +66,8 @@ run_godot_once() {
 	return $GODOT_EXIT
 }
 
+ensure_import_ready
+
 if run_godot_once; then
 	GODOT_EXIT=0
 else
@@ -73,6 +79,7 @@ if [ $GODOT_EXIT -ne 0 ] && grep -q "Failed to open 'user://logs/" "$LOG_FILE"; 
 	export HOME=/tmp/sts_godot_home
 	mkdir -p "$HOME" >/dev/null 2>&1 || true
 	echo "[GUT] Using HOME=${HOME}"
+	ensure_import_ready
 	if run_godot_once; then
 		GODOT_EXIT=0
 	else
