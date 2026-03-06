@@ -31,3 +31,16 @@
 - 更新 `dev/tools/workflow_check.sh`，接入 `ui_shell_contract_check + run_flow_contract_check` 聚合门禁。
 - 同步 `modules/ui_shell/README.md`、`modules/run_flow/README.md`、`module_boundaries_v1/module_architecture/repo_structure/work_logs`。
 - 新增任务三件套：`docs/tasks/phase7-quality-gates-and-regression-v1/{plan,handoff,verification}.md`。
+
+## 2026-03-06
+
+- 完成稳定性收口任务 `fix-stability-hardening-v1`，将项目基线从“可跑但不稳”收口到“本地与远端可验证”。
+- `app.gd` 改为显式 battle 属性注入，移除对 `init_battle` 的场景层动态调用，`battle_relic_injection` 门禁恢复通过。
+- 新增 `dev/tools/ensure_godot_import.sh`，并将 `run_gut_tests.sh` / `run_gut_test_file.sh` 接入 import 预热；干净副本下 smoke 可自动导入后通过。
+- GitHub Actions 现在安装 Godot 4.5.1，并执行 project import + `ci-check` + `make test`，远端不再是“未装 Godot 的假绿”。
+- `CharacterStats.create_instance`、`RunState.init_with_character` 补齐空资源容忍；`RunStateDeserializer`、`GameEffectExecutor` 相关回归恢复通过。
+- `battle.gd` 增加敌人回收空父节点保护，修复 DOT/异步击杀链路的空引用风险。
+- `BuffSystem` 保持注册式架构，同时补 `_trigger_poison` / `_trigger_burn` 兼容入口；旧集成测试链路恢复通过。
+- `EnemySpawnService` 去除模块层 `Enemy` 场景类型依赖，`BattleParticipantResolver` 回退为“优先 session_port，失败时选当前有效 player 组节点”。
+- 当前本地验证结果：`make ci-check` 通过、`make test` 通过（30 scripts / 284 tests / 284 passing）。
+- 已知非阻断项保留：自动跑局仍有遭遇表 coverage warning（`floor=5 elite`、`floor=12 common`），以及既有 orphan/resource leak 告警；本轮未扩展到内容表深清理。

@@ -4,18 +4,19 @@
 
 将 V2 路线图从“方向描述”拆成可派发、可验收、可回滚的阶段任务，并与当前项目真实基线对齐。
 
-## 2. 当前基线（2026-02-15）
+## 2. 当前基线（2026-03-06）
 
-已完成：
-- `feat-bootstrap-v0-20260215` 已落地，形成 `地图 -> 战斗 -> 结算回传` 最小闭环。
-- `run_meta`、`map_event` 基础接入，`scenes/app/app.tscn` 已作为流程入口。
-- 协作流程（`make workflow-check`、任务三件套）已可用。
+已完成（当前真实基线）：
+- `app -> map -> battle -> reward -> map` 主流程已可运行，`rest/shop/event` 已接入到 run flow。
+- `battle_loop / effect_engine / buff_system / enemy_intent / card_system` 均已落地到可测试内核，不再是纯骨架。
+- `relic_potion`、`persistence`、`seed replay`、`content pipeline` 已具备可运行实现与回归测试。
+- `ui_shell` 已完成 battle/map/reward/rest/shop/event 等主要页面的 adapter/viewmodel 化；Phase D 视觉重建已启动。
+- 协作流程现状：本地 `ci-check`、全量 `make test`、干净副本 auto-import smoke、远端 Godot CI 均已打通。
 
-未完成（主缺口）：
-- `battle_loop` 仍为 legacy 编排，缺明确阶段状态机。
-- `effect_engine` 未队列化，`buff_system` 基本缺失。
-- `reward_economy`、`relic_potion`、`seed_replay`、`content_pipeline` 仍处于骨架阶段。
-- `ui_shell` 视觉与资源仍是教程基线。
+当前主缺口（非阻断）：
+- 遭遇表 coverage 仍不完整，自动跑局存在 `elite/common` 某些楼层 fallback warning。
+- 测试尾部仍有既有 orphan/resource leak 告警，尚未作为本轮收口目标。
+- Phase D 仍处于起步阶段，资源替换、音频重建与中文 polish 还未完成。
 
 ## 3. 拆分原则
 
@@ -35,14 +36,12 @@
 
 ## 5. 推荐启动顺序（结合当前缺口）
 
-在不偏离 V2 路线图的前提下，建议先做：
-1. `A1 feat-battle-loop-state-machine-v1`
-2. `A3 feat-effect-stack-v1`
-3. `A4 feat-buff-system-core-v1`
-4. `A2 feat-card-zones-keywords-v1`
-5. `A5 feat-enemy-intent-rules-v1`
+在不偏离 V2 路线图的前提下，当前建议优先做：
+1. `art-ui-theme-rebuild-v1` 的继续收口（Phase D 主题统一、视觉细节补完）
+2. 遭遇表 coverage / autoplay warning 清理（内容侧稳定性）
+3. orphan/resource leak 定位与收口（工程质量）
 
-说明：`docs/gap_analysis_2026-02-15_v2.md` 明确指出 effect/buff 为第一优先，故把 A3/A4 提前到 A2 之前执行，能减少后续返工。
+说明：A/B/C 阶段的主链能力已经具备，当前优先级从“补骨架”切换为“稳定性 + Phase D 体验完善”。
 
 ## 6. 每阶段出口定义
 
