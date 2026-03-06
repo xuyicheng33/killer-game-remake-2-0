@@ -12,28 +12,32 @@ const STATUS_METALLICIZE := "metallicize"
 const STATUS_RITUAL := "ritual"
 const STATUS_REGENERATE := "regenerate"
 
-const STATUS_ORDER: Array[String] = [
-	STATUS_STRENGTH,
-	STATUS_DEXTERITY,
-	STATUS_VULNERABLE,
-	STATUS_WEAK,
-	STATUS_POISON,
-	STATUS_BURN,
-	STATUS_CONSTRICTED,
-	STATUS_METALLICIZE,
-	STATUS_RITUAL,
-	STATUS_REGENERATE,
-]
+var _status_registry: Dictionary = {}
+var _status_order: Array[String] = []
 
 var _events_connected := false
-var _enemy_turn_queue: Array[Enemy] = []
-var _active_enemy: Enemy = null
-var _player: Player = null
-var _enemies: Array[Enemy] = []
+var _enemy_turn_queue: Array[Node] = []
+var _active_enemy: Node = null
+var _player: Node = null
+var _enemies: Array[Node] = []
 var _player_damage_multiplier := 1.0
 
 
-func bind_combatants(player: Player, enemies: Array[Enemy]) -> void:
+func _init() -> void:
+	_register_builtin_statuses()
+
+
+func register_status(handler: StatusHandler) -> void:
+	_status_registry[handler.id] = handler
+	if not _status_order.has(handler.id):
+		_status_order.append(handler.id)
+
+
+func has_status(status_id: String) -> bool:
+	return _status_registry.has(status_id)
+
+
+func bind_combatants(player: Node, enemies: Array[Node]) -> void:
 	_player = player
 	_enemies = enemies.duplicate()
 
@@ -43,7 +47,7 @@ func unbind_combatants() -> void:
 	_enemies.clear()
 
 
-func remove_enemy(enemy: Enemy) -> void:
+func remove_enemy(enemy: Node) -> void:
 	_enemies.erase(enemy)
 	if _active_enemy == enemy:
 		_active_enemy = null
@@ -60,7 +64,7 @@ func apply_status_to_stats(stats: Stats, status_id: String, stacks: int) -> void
 		return
 	if stacks == 0:
 		return
-	if not STATUS_ORDER.has(status_id):
+	if not _status_registry.has(status_id):
 		return
 
 	stats.add_status(status_id, stacks)
@@ -117,56 +121,43 @@ func resolve_damage_source(target: Node) -> Node:
 		if _active_enemy != null and is_instance_valid(_active_enemy):
 			return _active_enemy
 		if not _enemy_turn_queue.is_empty():
-			var queued_enemy: Enemy = _enemy_turn_queue[0]
+			var queued_enemy: Node = _enemy_turn_queue[0]
 			if queued_enemy != null and is_instance_valid(queued_enemy):
 				return queued_enemy
 
-		var enemies: Array[Enemy] = _get_enemy_nodes()
+		var enemies: Array[Node] = _get_enemy_nodes()
 		if not enemies.is_empty():
 			return enemies[0]
 
 	return null
 
 
-## 受击触发的状态效果钩子。
-## 为未来可能添加的"受击触发"状态效果提供框架支持。
-##
-## 示例未来扩展：
-## - "thorns" 状态：对攻击者造成反伤
-## - "reactive_armor" 状态：受击后获得格挡
-##
-## 注意：
-## - 当前游戏中无此类状态，此方法为框架预留
-## - 遗物的"受击触发"效果应在 RelicPotionSystem 中处理
-## - 通过 Events.player_hit 信号触发遗物的 ON_DAMAGE_TAKEN
-## - 遗物 thorns_potion（荆棘护符）是"格挡时触发"，由 ON_BLOCK_APPLIED 处理
-func on_entity_hit(target: Node, _source: Node, _final_damage: int) -> void:
+func on_entity_hit(target: Node, source: Node, final_damage: int) -> void:
 	if target == null:
 		return
-
 	var stats: Stats = _extract_stats(target)
 	if stats == null:
 		return
-
-	# 当前游戏中无"受击触发"的状态效果，框架预留
-	# 未来可在此添加状态检查和触发逻辑
+	for status_id in _status_order:
+		var stacks := get_status_stack(stats, status_id)
+		if stacks <= 0:
+			continue
+		var handler: StatusHandler = _status_registry.get(status_id)
+		if handler != null and handler.on_entity_hit.is_valid():
+			handler.on_entity_hit.call(target, stats, stacks, source, final_damage)
 
 
 func get_status_badges(stats: Stats) -> Array[Dictionary]:
 	var badges: Array[Dictionary] = []
 
-	for status_id in STATUS_ORDER:
+	for status_id in _status_order:
 		var stacks := get_status_stack(stats, status_id)
 		if stacks <= 0:
 			continue
 
-		badges.append(
-			{
-				"id": status_id,
-				"label": _get_status_label(status_id),
-				"stacks": stacks,
-			}
-		)
+		var handler: StatusHandler = _status_registry.get(status_id)
+		var label := handler.label if handler != null else "?"
+		badges.append({"id": status_id, "label": label, "stacks": stacks})
 
 	return badges
 
@@ -205,14 +196,14 @@ func disconnect_events() -> void:
 
 func _on_player_turn_start() -> void:
 	reset_player_damage_multiplier()
-	var player: Player = _get_player_node()
+	var player: Node = _get_player_node()
 	if player == null:
 		return
 	_run_turn_start_hooks(player)
 
 
 func _on_player_turn_end() -> void:
-	var player: Player = _get_player_node()
+	var player: Node = _get_player_node()
 	if player == null:
 		return
 	_run_turn_end_hooks(player)
@@ -225,7 +216,7 @@ func _on_enemy_turn_start() -> void:
 
 
 func _on_enemy_turn_end() -> void:
-	var enemies: Array[Enemy] = _get_enemy_nodes()
+	var enemies: Array[Node] = _get_enemy_nodes()
 	for enemy in enemies:
 		_run_turn_end_hooks(enemy)
 
@@ -233,7 +224,7 @@ func _on_enemy_turn_end() -> void:
 	_active_enemy = null
 
 
-func _on_enemy_action_completed(enemy: Enemy) -> void:
+func _on_enemy_action_completed(enemy: Node) -> void:
 	if _enemy_turn_queue.is_empty():
 		_active_enemy = null
 		return
@@ -250,7 +241,7 @@ func _on_enemy_action_completed(enemy: Enemy) -> void:
 
 
 func _on_card_played(_card: Card) -> void:
-	var player: Player = _get_player_node()
+	var player: Node = _get_player_node()
 	if player == null:
 		return
 	_run_after_card_played_hooks(player)
@@ -260,129 +251,47 @@ func _run_turn_start_hooks(target: Node) -> void:
 	var stats: Stats = _extract_stats(target)
 	if stats == null:
 		return
-	
-	_trigger_poison(target, stats)
+	for status_id in _status_order:
+		var stacks := get_status_stack(stats, status_id)
+		if stacks <= 0:
+			continue
+		var handler: StatusHandler = _status_registry.get(status_id)
+		if handler != null and handler.on_turn_start.is_valid():
+			handler.on_turn_start.call(target, stats, stacks)
+		if stats.health <= 0:
+			_handle_death(target)
+			return
 
 
 func _run_turn_end_hooks(target: Node) -> void:
 	var stats: Stats = _extract_stats(target)
 	if stats == null:
 		return
+	for status_id in _status_order:
+		var stacks := get_status_stack(stats, status_id)
+		if stacks <= 0:
+			continue
+		var handler: StatusHandler = _status_registry.get(status_id)
+		if handler != null and handler.on_turn_end.is_valid():
+			handler.on_turn_end.call(target, stats, stacks)
+		if handler != null and handler.decays_on_turn_end:
+			_decay_status(stats, status_id)
+		if stats.health <= 0:
+			_handle_death(target)
+			return
 
-	_trigger_burn(target, stats)
-	_trigger_constricted(target, stats)
-	_trigger_metallicize(target, stats)
-	_trigger_ritual(target, stats)
-	_trigger_regenerate(target, stats)
-	_decay_status(stats, STATUS_WEAK)
-	_decay_status(stats, STATUS_VULNERABLE)
 
-
-## 出牌后触发的状态效果钩子。
-## 为未来可能添加的"出牌后触发"状态效果提供框架支持。
-## 注意：遗物的"出牌触发"效果（如"每打出 3 张牌获得 5 金币"）已在
-## RelicPotionSystem._on_card_played() 中处理。此方法用于状态效果的出牌后触发。
-##
-## 示例未来扩展：
-## - "echo_power": 打出攻击牌后，再次造成等量伤害
-## - "momentum": 每打出一张牌获得 1 层力量
 func _run_after_card_played_hooks(target: Node) -> void:
 	var stats: Stats = _extract_stats(target)
 	if stats == null:
 		return
-
-	var status_dict: Dictionary = stats.get_status_snapshot()
-	for status_id: String in status_dict.keys():
-		var stacks_variant: Variant = status_dict[status_id]
-		if not (stacks_variant is int):
-			continue
-		var stacks: int = stacks_variant
+	for status_id in _status_order:
+		var stacks := get_status_stack(stats, status_id)
 		if stacks <= 0:
 			continue
-
-		match status_id:
-			# 当前游戏中无"出牌后触发"的状态效果
-			# 以下状态在出牌后无特殊行为，保留分支以便未来扩展
-			STATUS_STRENGTH, STATUS_DEXTERITY, STATUS_VULNERABLE, STATUS_WEAK, STATUS_POISON:
-				pass
-			STATUS_BURN, STATUS_CONSTRICTED, STATUS_METALLICIZE, STATUS_RITUAL, STATUS_REGENERATE:
-				pass
-			_:
-				pass
-
-
-func _trigger_poison(target: Node, stats: Stats) -> void:
-	var poison_stacks := get_status_stack(stats, STATUS_POISON)
-	if poison_stacks <= 0:
-		return
-
-	stats.health -= poison_stacks
-	stats.add_status(STATUS_POISON, -1)
-
-	if target.is_in_group("player"):
-		Events.player_hit.emit()
-
-	if stats.health <= 0:
-		_handle_death(target)
-
-
-func _trigger_burn(target: Node, stats: Stats) -> void:
-	var burn_stacks := get_status_stack(stats, STATUS_BURN)
-	if burn_stacks <= 0:
-		return
-
-	stats.health -= burn_stacks
-	_decay_status(stats, STATUS_BURN)
-
-	if target.is_in_group("player"):
-		Events.player_hit.emit()
-
-	if stats.health <= 0:
-		_handle_death(target)
-
-
-func _trigger_constricted(target: Node, stats: Stats) -> void:
-	var constricted_stacks := get_status_stack(stats, STATUS_CONSTRICTED)
-	if constricted_stacks <= 0:
-		return
-
-	stats.health -= constricted_stacks
-
-	if target.is_in_group("player"):
-		Events.player_hit.emit()
-
-	if stats.health <= 0:
-		_handle_death(target)
-
-
-func _trigger_metallicize(_target: Node, stats: Stats) -> void:
-	var metallicize_stacks := get_status_stack(stats, STATUS_METALLICIZE)
-	if metallicize_stacks <= 0:
-		return
-
-	stats.block += metallicize_stacks
-	if _target != null and _target.is_in_group("player"):
-		Events.player_block_applied.emit(metallicize_stacks, "status:metallicize")
-
-
-func _trigger_ritual(_target: Node, stats: Stats) -> void:
-	var ritual_stacks := get_status_stack(stats, STATUS_RITUAL)
-	if ritual_stacks <= 0:
-		return
-
-	stats.add_status(STATUS_STRENGTH, ritual_stacks)
-
-
-func _trigger_regenerate(_target: Node, stats: Stats) -> void:
-	var regen_stacks := get_status_stack(stats, STATUS_REGENERATE)
-	if regen_stacks <= 0:
-		return
-
-	var heal_amount := mini(regen_stacks, stats.max_health - stats.health)
-	if heal_amount > 0:
-		stats.health += heal_amount
-	
-	_decay_status(stats, STATUS_REGENERATE)
+		var handler: StatusHandler = _status_registry.get(status_id)
+		if handler != null and handler.on_card_played.is_valid():
+			handler.on_card_played.call(target, stats, stacks)
 
 
 func _decay_status(stats: Stats, status_id: String) -> void:
@@ -403,14 +312,13 @@ func _handle_death(target: Node) -> void:
 		return
 
 	if target.is_in_group("enemies"):
-		var enemy := target as Enemy
-		Events.enemy_died.emit(enemy)
+		Events.enemy_died.emit(target)
 		return
 
 
 func _rebuild_enemy_turn_queue() -> void:
 	_enemy_turn_queue.clear()
-	var enemies: Array[Enemy] = _get_enemy_nodes()
+	var enemies: Array[Node] = _get_enemy_nodes()
 	for enemy in enemies:
 		_enemy_turn_queue.append(enemy)
 
@@ -423,53 +331,65 @@ func _rebuild_enemy_turn_queue() -> void:
 func _extract_stats(target: Node) -> Stats:
 	if target == null or not is_instance_valid(target):
 		return null
-
-	if target is Player:
-		var player: Player = target
-		return player.stats
-
-	if target is Enemy:
-		var enemy: Enemy = target
-		return enemy.stats
-
+	var s = target.get("stats")
+	if s is Stats:
+		return s
 	return null
 
 
-func _get_player_node() -> Player:
+func _get_player_node() -> Node:
 	if _player != null and is_instance_valid(_player):
 		return _player
 	return null
 
 
-func _get_enemy_nodes() -> Array[Enemy]:
-	var valid_enemies: Array[Enemy] = []
+func _get_enemy_nodes() -> Array[Node]:
+	var valid_enemies: Array[Node] = []
 	for enemy in _enemies:
 		if enemy != null and is_instance_valid(enemy):
 			valid_enemies.append(enemy)
 	return valid_enemies
 
 
-func _get_status_label(status_id: String) -> String:
-	match status_id:
-		STATUS_STRENGTH:
-			return "力"
-		STATUS_DEXTERITY:
-			return "敏"
-		STATUS_VULNERABLE:
-			return "易"
-		STATUS_WEAK:
-			return "弱"
-		STATUS_POISON:
-			return "毒"
-		STATUS_BURN:
-			return "燃"
-		STATUS_CONSTRICTED:
-			return "缚"
-		STATUS_METALLICIZE:
-			return "金"
-		STATUS_RITUAL:
-			return "怒"
-		STATUS_REGENERATE:
-			return "再"
-		_:
-			return "?"
+func _register_builtin_statuses() -> void:
+	register_status(StatusHandler.create(STATUS_STRENGTH, "力"))
+	register_status(StatusHandler.create(STATUS_DEXTERITY, "敏"))
+	register_status(StatusHandler.create(STATUS_VULNERABLE, "易", Callable(), Callable(), true))
+	register_status(StatusHandler.create(STATUS_WEAK, "弱", Callable(), Callable(), true))
+	register_status(StatusHandler.create(STATUS_POISON, "毒",
+		func(target: Node, stats: Stats, stacks: int) -> void:
+			stats.health -= stacks
+			stats.add_status(STATUS_POISON, -1)
+			if target.is_in_group("player"):
+				Events.player_hit.emit()
+	))
+	register_status(StatusHandler.create(STATUS_BURN, "燃", Callable(),
+		func(target: Node, stats: Stats, stacks: int) -> void:
+			stats.health -= stacks
+			if target.is_in_group("player"):
+				Events.player_hit.emit(),
+		true
+	))
+	register_status(StatusHandler.create(STATUS_CONSTRICTED, "缚", Callable(),
+		func(target: Node, stats: Stats, stacks: int) -> void:
+			stats.health -= stacks
+			if target.is_in_group("player"):
+				Events.player_hit.emit()
+	))
+	register_status(StatusHandler.create(STATUS_METALLICIZE, "金", Callable(),
+		func(target: Node, stats: Stats, stacks: int) -> void:
+			stats.block += stacks
+			if target != null and target.is_in_group("player"):
+				Events.player_block_applied.emit(stacks, "status:metallicize")
+	))
+	register_status(StatusHandler.create(STATUS_RITUAL, "怒", Callable(),
+		func(_target: Node, stats: Stats, stacks: int) -> void:
+			stats.add_status(STATUS_STRENGTH, stacks)
+	))
+	register_status(StatusHandler.create(STATUS_REGENERATE, "再", Callable(),
+		func(_target: Node, stats: Stats, stacks: int) -> void:
+			var heal_amount := mini(stacks, stats.max_health - stats.health)
+			if heal_amount > 0:
+				stats.health += heal_amount,
+		true
+	))

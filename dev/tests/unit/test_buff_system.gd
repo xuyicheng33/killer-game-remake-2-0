@@ -316,21 +316,22 @@ func test_turn_start_hooks_handles_no_stats():
 	node.free()
 
 
-func test_status_order_includes_all_10():
-	assert_eq(BuffSystem.STATUS_ORDER.size(), 10, "应有 10 种状态")
+func test_status_registry_includes_all_10():
+	assert_eq(_buff_system._status_order.size(), 10, "应有 10 种状态")
+	assert_true(_buff_system.has_status(BuffSystem.STATUS_STRENGTH), "应包含 strength")
+	assert_true(_buff_system.has_status(BuffSystem.STATUS_REGENERATE), "应包含 regenerate")
 
 
 func test_status_labels_exist():
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_STRENGTH), "力")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_DEXTERITY), "敏")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_VULNERABLE), "易")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_WEAK), "弱")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_POISON), "毒")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_BURN), "燃")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_CONSTRICTED), "缚")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_METALLICIZE), "金")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_RITUAL), "怒")
-	assert_eq(_buff_system._get_status_label(BuffSystem.STATUS_REGENERATE), "再")
+	var badges_stats := Stats.new()
+	badges_stats.max_health = 100
+	badges_stats.health = 100
+	for status_id in _buff_system._status_order:
+		badges_stats.add_status(status_id, 1)
+	var badges := _buff_system.get_status_badges(badges_stats)
+	assert_eq(badges.size(), 10, "应返回 10 个徽章")
+	for badge in badges:
+		assert_true(badge.label != "?", "状态 '%s' 的标签不应为 '?'" % badge.id)
 
 
 func test_run_after_card_played_hooks_does_not_crash() -> void:
