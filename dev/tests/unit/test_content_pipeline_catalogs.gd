@@ -3,6 +3,28 @@ extends GutTest
 const EVENT_SOURCE_PATH := "res://runtime/modules/content_pipeline/sources/events/examples/baseline_events.json"
 const RELIC_DIR := "res://content/custom_resources/relics"
 
+var _event_cache_backup: Array[Dictionary] = []
+var _relic_cache_backup: Array[RelicData] = []
+var _potion_cache_backup: Array[PotionData] = []
+var _encounter_cache_backup: Array[Dictionary] = []
+var _encounter_by_id_backup: Dictionary = {}
+
+
+func before_each() -> void:
+	_event_cache_backup = EventCatalog._templates_cache.duplicate(true)
+	_relic_cache_backup = RelicCatalog._cache.duplicate()
+	_potion_cache_backup = PotionCatalog._cache.duplicate()
+	_encounter_cache_backup = EncounterRegistry._encounters_cache.duplicate(true)
+	_encounter_by_id_backup = EncounterRegistry._encounters_by_id.duplicate(true)
+
+
+func after_each() -> void:
+	EventCatalog._templates_cache = _event_cache_backup
+	RelicCatalog._cache = _relic_cache_backup
+	PotionCatalog._cache = _potion_cache_backup
+	EncounterRegistry._encounters_cache = _encounter_cache_backup
+	EncounterRegistry._encounters_by_id = _encounter_by_id_backup
+
 
 func test_event_templates_loaded_from_pipeline_source() -> void:
 	EventCatalog._templates_cache.clear()

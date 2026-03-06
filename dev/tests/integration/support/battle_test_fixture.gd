@@ -52,6 +52,22 @@ class FakeEnemy:
 		if stats.health <= 0:
 			Events.enemy_died.emit(self)
 
+class PhaseMachineSpy:
+	extends BattlePhaseStateMachine
+
+	var transition_log: Array[int] = []
+
+	func transition_to(next_phase: int) -> bool:
+		transition_log.append(next_phase)
+		return super.transition_to(next_phase)
+
+	func get_transition_log() -> Array[int]:
+		return transition_log
+
+	func clear_log() -> void:
+		transition_log.clear()
+
+
 class SpyEffectStack:
 	extends EffectStackEngine
 

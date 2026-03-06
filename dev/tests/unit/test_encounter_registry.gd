@@ -2,6 +2,19 @@ extends GutTest
 
 const ENCOUNTER_REGISTRY_SCRIPT := preload("res://runtime/modules/enemy_intent/encounter_registry.gd")
 
+var _cache_backup: Array[Dictionary] = []
+var _by_id_backup: Dictionary = {}
+
+
+func before_each() -> void:
+	_cache_backup = ENCOUNTER_REGISTRY_SCRIPT._encounters_cache.duplicate(true)
+	_by_id_backup = ENCOUNTER_REGISTRY_SCRIPT._encounters_by_id.duplicate(true)
+
+
+func after_each() -> void:
+	ENCOUNTER_REGISTRY_SCRIPT._encounters_cache = _cache_backup
+	ENCOUNTER_REGISTRY_SCRIPT._encounters_by_id = _by_id_backup
+
 
 func test_elite_node_picks_elite_encounter() -> void:
 	var encounter := ENCOUNTER_REGISTRY_SCRIPT.pick_encounter(10, ["elite"], "test:elite")
@@ -14,7 +27,6 @@ func test_elite_node_picks_elite_encounter() -> void:
 
 
 func test_no_fallback_to_common_when_elite_missing() -> void:
-	var backup_cache: Array[Dictionary] = ENCOUNTER_REGISTRY_SCRIPT._encounters_cache.duplicate(true)
 	ENCOUNTER_REGISTRY_SCRIPT._encounters_cache = [
 		{
 			"id": "common_only",
@@ -27,5 +39,3 @@ func test_no_fallback_to_common_when_elite_missing() -> void:
 
 	var encounter := ENCOUNTER_REGISTRY_SCRIPT.pick_encounter(10, ["elite"], "test:no_fallback")
 	assert_true(encounter.is_empty(), "当无 elite 候选时不应回退到 common")
-
-	ENCOUNTER_REGISTRY_SCRIPT._encounters_cache = backup_cache
