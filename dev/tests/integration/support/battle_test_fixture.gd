@@ -89,13 +89,14 @@ class TestBattleContext:
 	var gain_mana_calls: Array[int] = []
 
 	func _init(
-		bound_player: Player,
-		bound_enemies: Array[Enemy],
+		bound_player: Node,
+		bound_enemies: Array[Node],
 		bound_stack: EffectStackEngine = null,
 		bound_stats: CharacterStats = null
 	) -> void:
 		super._init()
-		_bound_stats = bound_stats if bound_stats != null else (bound_player.stats if bound_player != null else null)
+		var player_stats_variant = bound_player.get("stats") if bound_player != null and "stats" in bound_player else null
+		_bound_stats = bound_stats if bound_stats != null else (player_stats_variant if player_stats_variant is CharacterStats else null)
 		effect_stack = bound_stack if bound_stack != null else EffectStackEngine.new()
 		buff_system = BuffSystem.new()
 		bind_combatants(bound_player, bound_enemies)

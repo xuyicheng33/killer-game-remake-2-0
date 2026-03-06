@@ -1,14 +1,12 @@
 class_name DamageEffect
 extends Effect
 
-const EFFECT_ENQUEUE_HELPER_SCRIPT := preload("res://runtime/modules/effect_engine/effect_enqueue_helper.gd")
-
 var amount := 0
 
 
 func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 	var effect_name := "Damage(%d)" % amount
-	if EFFECT_ENQUEUE_HELPER_SCRIPT.try_enqueue(
+	if EffectEnqueueHelper.try_enqueue(
 		battle_context,
 		effect_name,
 		targets,
@@ -30,7 +28,7 @@ func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 
 
 func _apply_damage_to_target(target: Node, battle_context: RefCounted) -> void:
-	if not (target is Enemy or target is Player):
+	if not target.has_method("take_damage"):
 		return
 
 	if battle_context == null:

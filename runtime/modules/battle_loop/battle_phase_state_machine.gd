@@ -9,13 +9,16 @@ enum Phase {
 	RESOLVE,
 }
 
+const RESULT_VICTORY := "victory"
+const RESULT_DEFEAT := "defeat"
+
 signal phase_changed(from_phase: Phase, to_phase: Phase, turn: int)
 signal battle_ended(result: String)
 
 var _phase: Phase = Phase.INVALID
 var _turn := 0
-var _player: Player = null
-var _enemies: Array[Enemy] = []
+var _player: Node = null
+var _enemies: Array[Node] = []
 var _battle_context: RefCounted = null
 var _player_handler: PlayerHandler = null
 var _enemy_handler: EnemyHandler = null
@@ -23,7 +26,7 @@ var _battle_setup_done := false
 var _resolve_waiting_for_discard := false
 
 
-func bind_context(player: Player, enemies: Array[Enemy], battle_context: RefCounted) -> void:
+func bind_context(player: Node, enemies: Array[Node], battle_context: RefCounted) -> void:
 	_player = player
 	_enemies = enemies
 	_battle_context = battle_context
@@ -53,11 +56,11 @@ func get_turn() -> int:
 	return _turn
 
 
-func get_player() -> Player:
+func get_player() -> Node:
 	return _player
 
 
-func get_enemies() -> Array[Enemy]:
+func get_enemies() -> Array[Node]:
 	return _enemies
 
 
@@ -132,11 +135,12 @@ func _enter_draw_phase() -> void:
 		return
 	if _player == null or not is_instance_valid(_player):
 		return
-	if _player.stats == null:
+	var player_stats = _player.get("stats") if "stats" in _player else null
+	if player_stats == null:
 		return
 
 	if not _battle_setup_done:
-		_player_handler.start_battle(_player.stats)
+		_player_handler.start_battle(player_stats)
 		_battle_setup_done = true
 		return
 
@@ -201,19 +205,22 @@ func on_resolve_discard_completed() -> void:
 
 func check_battle_end() -> Dictionary:
 	if _player == null or not is_instance_valid(_player):
-		return {"ended": true, "result": "defeat"}
+		return {"ended": true, "result": RESULT_DEFEAT}
 	
-	if _player.stats != null and _player.stats.health <= 0:
-		return {"ended": true, "result": "defeat"}
+	var player_stats: Stats = _player.get("stats") if "stats" in _player else null
+	if player_stats != null and player_stats.health <= 0:
+		return {"ended": true, "result": RESULT_DEFEAT}
 	
 	var alive_enemies := 0
 	for enemy in _enemies:
-		if enemy != null and is_instance_valid(enemy) and enemy.stats != null:
-			if enemy.stats.health > 0:
-				alive_enemies += 1
+		if enemy == null or not is_instance_valid(enemy):
+			continue
+		var enemy_stats: Stats = enemy.get("stats") if "stats" in enemy else null
+		if enemy_stats != null and enemy_stats.health > 0:
+			alive_enemies += 1
 	
 	if alive_enemies == 0:
-		return {"ended": true, "result": "victory"}
+		return {"ended": true, "result": RESULT_VICTORY}
 	
 	return {"ended": false}
 
@@ -234,13 +241,16 @@ func get_phase_name(phase: Phase = Phase.INVALID) -> String:
 			return "INVALID"
 
 
-func remove_enemy(enemy: Enemy) -> void:
+func remove_enemy(enemy: Node) -> void:
 	_enemies.erase(enemy)
 
 
 func _count_alive_enemies() -> int:
 	var alive := 0
 	for enemy in _enemies:
-		if enemy != null and is_instance_valid(enemy) and enemy.stats != null and enemy.stats.health > 0:
+		if enemy == null or not is_instance_valid(enemy):
+			continue
+		var enemy_stats: Stats = enemy.get("stats") if "stats" in enemy else null
+		if enemy_stats != null and enemy_stats.health > 0:
 			alive += 1
 	return alive

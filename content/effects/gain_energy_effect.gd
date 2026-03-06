@@ -1,8 +1,6 @@
 class_name GainEnergyEffect
 extends Effect
 
-const EFFECT_ENQUEUE_HELPER_SCRIPT := preload("res://runtime/modules/effect_engine/effect_enqueue_helper.gd")
-
 var amount := 0
 
 
@@ -14,7 +12,7 @@ func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 		return
 
 	var effect_name := "GainEnergy(%d)" % amount
-	if EFFECT_ENQUEUE_HELPER_SCRIPT.try_enqueue(
+	if EffectEnqueueHelper.try_enqueue(
 		battle_context,
 		effect_name,
 		targets,

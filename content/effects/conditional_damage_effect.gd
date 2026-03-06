@@ -1,8 +1,6 @@
 class_name ConditionalDamageEffect
 extends Effect
 
-const EFFECT_ENQUEUE_HELPER_SCRIPT := preload("res://runtime/modules/effect_engine/effect_enqueue_helper.gd")
-
 var base_amount := 0
 var condition := "hp_below_half"
 var multiplier := 2
@@ -10,7 +8,7 @@ var multiplier := 2
 
 func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 	var effect_name := "ConditionalDamage(%d)" % base_amount
-	if EFFECT_ENQUEUE_HELPER_SCRIPT.try_enqueue(
+	if EffectEnqueueHelper.try_enqueue(
 		battle_context,
 		effect_name,
 		targets,
@@ -28,7 +26,7 @@ func execute(targets: Array[Node], battle_context: RefCounted = null) -> void:
 
 
 func _apply_conditional_damage(target: Node, battle_context: RefCounted) -> void:
-	if not (target is Enemy or target is Player):
+	if not target.has_method("take_damage"):
 		return
 
 	if battle_context == null:

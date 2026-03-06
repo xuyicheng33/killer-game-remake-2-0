@@ -7,8 +7,8 @@ var card_zones: CardZonesModel
 var phase_machine: BattlePhaseStateMachine
 var _character: CharacterStats
 var _hand: Hand
-var _player: Player
-var _enemies: Array[Enemy] = []
+var _player: Node
+var _enemies: Array[Node] = []
 
 
 func _init() -> void:
@@ -25,7 +25,7 @@ func bind_battle_context(character: CharacterStats, hand: Hand) -> void:
 	buff_system.connect_events()
 
 
-func bind_combatants(player: Player, enemies: Array[Enemy]) -> void:
+func bind_combatants(player: Node, enemies: Array[Node]) -> void:
 	_player = player
 	_enemies = enemies.duplicate()
 	if phase_machine != null:
@@ -65,10 +65,9 @@ func end_player_turn() -> bool:
 	return phase_machine.transition_to(BattlePhaseStateMachine.Phase.ENEMY)
 
 
-func remove_enemy(enemy: Enemy) -> void:
+func remove_enemy(enemy: Node) -> void:
 	_enemies.erase(enemy)
 	phase_machine.remove_enemy(enemy)
-	# 同步更新 BuffSystem 的敌人列表
 	if buff_system != null:
 		buff_system.remove_enemy(enemy)
 
@@ -105,11 +104,11 @@ func gain_mana(amount: int) -> int:
 	return _character.mana - before
 
 
-func get_player() -> Player:
+func get_player() -> Node:
 	return _player
 
 
-func get_enemies() -> Array[Enemy]:
+func get_enemies() -> Array[Node]:
 	return _enemies.duplicate()
 
 
