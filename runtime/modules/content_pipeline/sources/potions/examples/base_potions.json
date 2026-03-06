@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "potions": [
+    {
+      "id": "healing_potion",
+      "title": "治疗药水",
+      "description": "使用后恢复生命。",
+      "effect_type": "heal",
+      "value": 12
+    },
+    {
+      "id": "iron_skin_potion",
+      "title": "铁肤药水",
+      "description": "使用后获得格挡。",
+      "effect_type": "block",
+      "value": 12
+    },
+    {
+      "id": "fire_potion",
+      "title": "火焰药水",
+      "description": "对所有敌人造成 20 点伤害。",
+      "effect_type": "damage_all_enemies",
+      "value": 20
+    },
+    {
+      "id": "battle_cry_potion",
+      "title": "战吼药水",
+      "description": "获得金币。",
+      "effect_type": "gold",
+      "value": 30
+    },
+    {
+      "id": "storm_bomb_potion",
+      "title": "风暴炸弹",
+      "description": "对所有敌人造成 15 点伤害。",
+      "effect_type": "damage_all_enemies",
+      "value": 15
+    }
+  ]
+}
