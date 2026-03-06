@@ -39,7 +39,7 @@ func open_map(
 ) -> Node:
 	clear()
 	var map_screen := map_scene.instantiate() as MapScreen
-	map_screen.set("run_state", run_state)
+	map_screen.run_state = run_state
 	map_screen.set_map_graph(run_state.map_graph)
 	if on_node_selected.is_valid():
 		map_screen.connect("node_selected", on_node_selected)
@@ -56,9 +56,9 @@ func open_reward(
 	on_reward_completed: Callable
 ) -> Node:
 	clear()
-	var reward_screen: Node = reward_scene.instantiate()
-	reward_screen.set("run_state", run_state)
-	reward_screen.set("reward_gold", reward_gold)
+	var reward_screen := reward_scene.instantiate() as RewardScreen
+	reward_screen.run_state = run_state
+	reward_screen.reward_gold = reward_gold
 	if on_reward_completed.is_valid():
 		reward_screen.connect("reward_completed", on_reward_completed)
 	scene_host.add_child(reward_screen)
@@ -73,6 +73,7 @@ func open_run_state_screen(
 ) -> Node:
 	clear()
 	var screen: Node = scene.instantiate()
+	assert("run_state" in screen, "screen scene must expose a 'run_state' property")
 	screen.set("run_state", run_state)
 	if not completed_signal.is_empty() and screen.has_signal(completed_signal) and completed_handler.is_valid():
 		screen.connect(completed_signal, completed_handler)

@@ -251,7 +251,7 @@ func _print_debug(event: String, detail: String) -> void:
 	_emit_debug_state()
 	if not _is_debug_logging_enabled():
 		return
-	push_warning("[EffectStack] %s | %s | queue=%d current=%s chain=%d" % [
+	print("[EffectStack] %s | %s | queue=%d current=%s chain=%d" % [
 		event, detail, _queue.size(), _current_item, _chain_depth
 	])
 

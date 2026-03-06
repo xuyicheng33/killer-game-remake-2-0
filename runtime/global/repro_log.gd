@@ -58,7 +58,7 @@ static func log_effect(
 		_seed,
 		_floor,
 	]
-	push_warning(line)
+	print(line)
 
 
 static func get_current_node_id() -> String:
@@ -78,7 +78,7 @@ static func _emit(tag: String, enemy: String, detail: String) -> void:
 	]
 	if detail.length() > 0:
 		line += " %s" % detail
-	push_warning(line)
+	print(line)
 
 
 static func _is_log_enabled(setting_path: String, env_key: String) -> bool:
