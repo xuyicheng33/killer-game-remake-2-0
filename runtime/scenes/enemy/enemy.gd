@@ -52,13 +52,15 @@ func set_battle_context(value: RefCounted) -> void:
 
 
 func set_enemy_stats(value: EnemyStats) -> void:
+	if stats != null:
+		if stats.stats_changed.is_connected(update_stats):
+			stats.stats_changed.disconnect(update_stats)
+		if stats.stats_changed.is_connected(update_action):
+			stats.stats_changed.disconnect(update_action)
 	stats = value.create_instance()
 	_death_notified = false
-	
-	if not stats.stats_changed.is_connected(update_stats):
-		stats.stats_changed.connect(update_stats)
-		stats.stats_changed.connect(update_action)
-	
+	stats.stats_changed.connect(update_stats)
+	stats.stats_changed.connect(update_action)
 	update_enemy()
 
 

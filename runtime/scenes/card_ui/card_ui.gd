@@ -83,17 +83,17 @@ func animate_to_position(new_position: Vector2, duration: float) -> void:
 
 func play() -> void:
 	if not card:
-		queue_free()
+		call_deferred("queue_free")
 		return
 	if char_stats == null:
-		queue_free()
+		call_deferred("queue_free")
 		return
 	if not card.can_play(char_stats, battle_context):
-		queue_free()
+		call_deferred("queue_free")
 		return
 	
 	card.play(targets, char_stats, battle_context)
-	queue_free()
+	call_deferred("queue_free")
 
 
 func _on_gui_input(event: InputEvent) -> void:
