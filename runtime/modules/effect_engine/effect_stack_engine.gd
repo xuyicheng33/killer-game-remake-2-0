@@ -46,19 +46,18 @@ func enqueue_effect(
 			_print_debug("enqueue_skip_invalid_target", effect_name)
 			continue
 
-		_queue.append(
-			{
-				"id": _next_entry_id,
-				"effect": effect_name,
-				"effect_type": effect_type,
-				"target": target,
-				"apply": apply_callable,
-				"priority": priority,
-				"source": source,
-				"value": value,
-				"chain_depth": maxi(0, chain_depth),
-			}
-		)
+		var entry := {
+			"id": _next_entry_id,
+			"effect": effect_name,
+			"effect_type": effect_type,
+			"target": target,
+			"apply": apply_callable,
+			"priority": priority,
+			"source": source,
+			"value": value,
+			"chain_depth": maxi(0, chain_depth),
+		}
+		_insert_sorted(entry)
 		_next_entry_id += 1
 
 	_print_debug("enqueue", effect_name)
@@ -94,7 +93,6 @@ func _process_queue() -> void:
 	_is_processing = true
 
 	while not _queue.is_empty():
-		_sort_by_priority()
 		var entry: Dictionary = _queue.pop_front()
 		var entry_chain_depth := int(entry.get("chain_depth", 0))
 		if entry_chain_depth > MAX_CHAIN_DEPTH:
@@ -139,10 +137,14 @@ func _process_queue() -> void:
 	_print_debug("process_idle", _current_item)
 
 
-func _sort_by_priority() -> void:
-	_queue.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-		return a.get("priority", 50) > b.get("priority", 50)
-	)
+func _insert_sorted(entry: Dictionary) -> void:
+	var priority: int = entry.get("priority", 50)
+	var insert_idx := _queue.size()
+	for i in range(_queue.size()):
+		if _queue[i].get("priority", 50) < priority:
+			insert_idx = i
+			break
+	_queue.insert(insert_idx, entry)
 
 
 func _log_effect(entry: Dictionary, target: Node) -> void:

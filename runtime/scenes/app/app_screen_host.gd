@@ -12,6 +12,7 @@ func clear() -> void:
 	if scene_host == null:
 		return
 	for child in scene_host.get_children():
+		scene_host.remove_child(child)
 		child.queue_free()
 
 

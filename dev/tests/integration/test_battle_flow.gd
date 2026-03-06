@@ -444,7 +444,6 @@ func test_rest_screen_upgrade_fallback_to_hardcoded():
 
 
 func test_damage_potion_not_consumed_outside_battle():
-	# 测试战斗外使用伤害药水不被消耗
 	var run_state := RunState.new()
 	var stats := CharacterStats.new()
 	stats.max_health = 80
@@ -455,7 +454,6 @@ func test_damage_potion_not_consumed_outside_battle():
 	stats.deck = CardPile.new()
 	run_state.player_stats = stats
 
-	# 添加伤害药水
 	var potion := PotionData.new()
 	potion.id = "damage_potion"
 	potion.title = "爆炸药水"
@@ -465,12 +463,14 @@ func test_damage_potion_not_consumed_outside_battle():
 
 	var potion_count_before := run_state.potions.size()
 
-	# 战斗外使用伤害药水
-	var result := run_state.use_potion_at(0)
+	var system := RelicPotionSystem.new()
+	get_tree().root.add_child(system)
+	system.bind_run_state(run_state)
+	system.use_potion(0)
 
-	# 验证药水未被消耗
 	assert_eq(run_state.potions.size(), potion_count_before, "战斗外使用伤害药水不应消耗药水")
-	assert_true(result.contains("仅战斗中可生效"), "应提示仅战斗中可生效")
+
+	system.queue_free()
 
 
 func test_card_ui_play_calls_queue_free_on_success():

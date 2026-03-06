@@ -331,8 +331,8 @@ func _trigger_burn(target: Node, stats: Stats) -> void:
 	if burn_stacks <= 0:
 		return
 
-	stats.health -= 2
-	stats.set_status(STATUS_BURN, 0)
+	stats.health -= burn_stacks
+	_decay_status(stats, STATUS_BURN)
 
 	if target.is_in_group("player"):
 		Events.player_hit.emit()

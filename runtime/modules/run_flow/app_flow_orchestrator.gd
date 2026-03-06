@@ -3,11 +3,11 @@ extends RefCounted
 
 const CHARACTER_REGISTRY_SCRIPT := preload("res://runtime/modules/run_meta/character_registry.gd")
 
-var _run_flow_service
-var _relic_potion_system
+var _run_flow_service: RunFlowService
+var _relic_potion_system: RelicPotionSystem
 
 
-func _init(run_flow_service, relic_potion_system) -> void:
+func _init(run_flow_service: RunFlowService, relic_potion_system: RelicPotionSystem) -> void:
 	_run_flow_service = run_flow_service
 	_relic_potion_system = relic_potion_system
 
@@ -20,7 +20,7 @@ func start_new_run(character_id: String = "") -> Dictionary:
 	if selected_character_id.is_empty():
 		selected_character_id = CHARACTER_REGISTRY_SCRIPT.get_selected_character_id()
 
-	var hero_template = CHARACTER_REGISTRY_SCRIPT.get_character_template(selected_character_id)
+	var hero_template: CharacterStats = CHARACTER_REGISTRY_SCRIPT.get_character_template(selected_character_id)
 	if hero_template == null:
 		return {"ok": false, "message": "无法加载角色模板: %s" % selected_character_id}
 
@@ -28,7 +28,7 @@ func start_new_run(character_id: String = "") -> Dictionary:
 	if not bool(result.get("ok", false)):
 		return {"ok": false, "message": "新局初始化失败。"}
 
-	var run_state = _extract_run_state(result)
+	var run_state: RunState = _extract_run_state(result)
 	if run_state == null:
 		return {"ok": false, "message": "新局初始化失败：返回结果中缺少有效的 RunState。"}
 
@@ -54,7 +54,7 @@ func continue_saved_run() -> Dictionary:
 			"message": str(result.get("message", "读档失败。")),
 		}
 
-	var run_state = _extract_run_state(result)
+	var run_state: RunState = _extract_run_state(result)
 	if run_state == null:
 		return {
 			"ok": false,
@@ -71,7 +71,7 @@ func continue_saved_run() -> Dictionary:
 	}
 
 
-func enter_map_node(run_state, node) -> Dictionary:
+func enter_map_node(run_state: RunState, node: MapNodeData) -> Dictionary:
 	var command_result: Dictionary = _run_flow_service.map_flow_service.enter_map_node(run_state, node)
 	if not bool(command_result.get("accepted", false)):
 		return command_result
@@ -84,7 +84,7 @@ func enter_map_node(run_state, node) -> Dictionary:
 	return command_result
 
 
-func resolve_battle_completion(run_state, battle_result: int) -> Dictionary:
+func resolve_battle_completion(run_state: RunState, battle_result: int) -> Dictionary:
 	var is_win: bool = battle_result == BattleOverPanel.Type.WIN
 	var pending_node_type_value: int = int(_run_flow_service.get_pending_node_type())
 	var is_boss: bool = pending_node_type_value == int(MapNodeData.NodeType.BOSS)
@@ -100,11 +100,11 @@ func resolve_battle_completion(run_state, battle_result: int) -> Dictionary:
 	)
 
 
-func apply_battle_reward(run_state, bundle, chosen_card) -> Dictionary:
+func apply_battle_reward(run_state: RunState, bundle: RewardBundle, chosen_card: Card) -> Dictionary:
 	return _run_flow_service.battle_flow_service.apply_battle_reward(run_state, bundle, chosen_card)
 
 
-func resolve_non_battle_completion(run_state) -> Dictionary:
+func resolve_non_battle_completion(run_state: RunState) -> Dictionary:
 	return _run_flow_service.map_flow_service.resolve_non_battle_completion(
 		run_state,
 		_run_flow_service.get_pending_node_type()
@@ -134,12 +134,12 @@ func on_shop_enter() -> void:
 	_relic_potion_system.on_shop_enter()
 
 
-func save_checkpoint(run_state, tag: String) -> Dictionary:
+func save_checkpoint(run_state: RunState, tag: String) -> Dictionary:
 	return _run_flow_service.lifecycle_service.save_checkpoint(run_state, tag)
 
 
-func _extract_run_state(result: Dictionary):
+func _extract_run_state(result: Dictionary) -> RunState:
 	var run_state_variant: Variant = result.get("run_state")
-	if run_state_variant != null:
+	if run_state_variant is RunState:
 		return run_state_variant
 	return null
