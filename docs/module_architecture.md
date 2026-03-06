@@ -28,7 +28,7 @@
 | `reward_economy` | `runtime/modules/reward_economy/*.gd` | 奖励/商店生成与写回 | 部分 |
 | `relic_potion` | `runtime/modules/relic_potion/relic_potion_system.gd` | 遗物触发与药水使用 | 部分 |
 | `persistence` | `runtime/modules/persistence/save_service.gd` | 存档/读档/版本校验 | 已实现（最小） |
-| `seed_replay` | `runtime/modules/seed_replay/README.md` | 历史命名占位目录 | 占位 |
+| ~~`seed_replay`~~ | _(已删除)_ | 历史命名占位目录，已合并到 persistence | 已清理 |
 | `content_pipeline` | `dev/tools/content_import_cards.py` + `schemas/*.json` | 卡牌导入校验与生成；enemy/relic/event schema 定义 | 部分 |
 | `ui_shell` | `runtime/modules/ui_shell/{viewmodel,adapter}/*.gd` + `runtime/scenes/ui/*.gd` | UI 展示与交互壳层 | 部分 |
 
@@ -67,13 +67,13 @@
 1. `run_flow` 已承接地图节点进入、placeholder 跳转、shop/event/rest/battle/reward 路由决策，且通过 `flow_context` 承接跨页面流程上下文；`runtime/scenes/app/app.gd` 保留页面实例化与事件接线。
 2. `run_flow` 已承接生命周期管理（新局初始化、读档恢复、checkpoint 存档、复盘日志），`runtime/scenes/app/app.gd` 不再直接调用 `persistence`、`run_rng`、`repro_log`。
 3. `ui_shell` 已有首批实现（`viewmodel + adapter`），`stats_ui`、`relic_potion_ui`、`battle_ui` 已完成迁移。
-4. `seed_replay` 与 `persistence` 并存但只有后者有实现。
+4. `seed_replay` 已删除，`persistence` 为唯一存档模块。
 5. 部分模块存在对场景层 class_name 的存量类型依赖（`card_system`/`buff_system`/`enemy_intent`），当前按"禁止新增、存量待迁移"处理。
 
 ## 5. 命名与归属收口（Phase 1 决议）
 
-1. `persistence` 为唯一存档模块名（当前真实实现目录）。
-2. `seed_replay` 仅保留过渡占位，不新增实现。
+1. `persistence` 为唯一存档模块名。
+2. `seed_replay` 已清理删除。
 3. `run_flow` 保留目录并定义为“应用服务编排层”的目标归属。
 
 ## 6. 变更规则（从本版本起）

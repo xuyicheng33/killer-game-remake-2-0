@@ -1,5 +1,11 @@
 # content_pipeline
 
+## Directory Layout
+
+Schema 定义位于 `runtime/modules/content_pipeline/schemas/`，而导入脚本位于 `dev/tools/`。
+这是刻意的分离设计：Schema 属于运行时契约定义，而导入脚本属于开发工具（不参与运行时加载），
+遵循仓库 `runtime/` vs `dev/` 的分层原则。
+
 Status:
 - C3 minimum usable path is implemented for cards.
 - Schema definitions ready for enemies/relics/events (R2 Phase 6).

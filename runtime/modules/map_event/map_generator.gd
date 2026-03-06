@@ -70,9 +70,29 @@ static func _create_node(id: String, type: MapNodeData.NodeType, floor_index: in
 
 static func _roll_node_type(rng: RandomNumberGenerator, floor_index: int) -> MapNodeData.NodeType:
 	var roll := rng.randf()
-	var is_elite_floor := floor_index >= ELITE_FLOOR_START
 
-	if is_elite_floor:
+	if floor_index < 3:
+		# BATTLE 50%, REST 18%, EVENT 27%, SHOP 5%
+		if roll < 0.50:
+			return MapNodeData.NodeType.BATTLE
+		if roll < 0.68:
+			return MapNodeData.NodeType.REST
+		if roll < 0.95:
+			return MapNodeData.NodeType.EVENT
+		return MapNodeData.NodeType.SHOP
+	elif floor_index < ELITE_FLOOR_START:
+		# BATTLE 48%, ELITE 4%, REST 16%, EVENT 27%, SHOP 5%
+		if roll < 0.48:
+			return MapNodeData.NodeType.BATTLE
+		if roll < 0.52:
+			return MapNodeData.NodeType.ELITE
+		if roll < 0.68:
+			return MapNodeData.NodeType.REST
+		if roll < 0.95:
+			return MapNodeData.NodeType.EVENT
+		return MapNodeData.NodeType.SHOP
+	else:
+		# BATTLE 35%, EVENT 28%, REST 12%, SHOP 5%, ELITE 20%
 		if roll < 0.35:
 			return MapNodeData.NodeType.BATTLE
 		if roll < 0.63:
@@ -82,16 +102,6 @@ static func _roll_node_type(rng: RandomNumberGenerator, floor_index: int) -> Map
 		if roll < 0.80:
 			return MapNodeData.NodeType.SHOP
 		return MapNodeData.NodeType.ELITE
-	else:
-		if roll < 0.45:
-			return MapNodeData.NodeType.BATTLE
-		if roll < 0.53:
-			return MapNodeData.NodeType.ELITE
-		if roll < 0.68:
-			return MapNodeData.NodeType.REST
-		if roll < 0.73:
-			return MapNodeData.NodeType.SHOP
-		return MapNodeData.NodeType.EVENT
 
 
 static func _title_for_type(type: MapNodeData.NodeType) -> String:

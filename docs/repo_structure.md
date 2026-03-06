@@ -13,7 +13,7 @@
 │   │   ├── persistence/       # SaveService（已实现）
 │   │   ├── run_flow/          # 应用编排服务目录
 │   │   ├── ui_shell/          # UI 壳层（viewmodel + adapter）
-│   │   ├── seed_replay/       # 占位目录（无实现）
+│   │   ├── # seed_replay 已删除
 │   │   └── ...                # battle/card/effect/buff/enemy/map/reward/relic/content/ui
 │   └── global/                # 全局基础能力（events/run_rng/repro_log 等）
 ├── content/                   # 资源与内容层
@@ -35,7 +35,7 @@
 ## 2. 命名与目录决策（当前）
 
 1. `runtime/modules/persistence`：存档主目录与主命名。
-2. `runtime/modules/seed_replay`：历史占位名，短期冻结，不新增业务实现。
+2. `runtime/modules/seed_replay`：已删除（历史占位名）。
 3. `runtime/modules/run_flow`：流程编排目标目录。
 
 ## 3. 迁移原则（严格执行）
@@ -44,7 +44,7 @@
 2. 任何迁移先有契约，再做代码移动（Contract First）。
 3. 单次任务最多处理一个主模块 + 少量接线，避免跨域雪崩。
 4. 场景层禁止新增核心规则写入点（旧点位按任务逐步清理）。
-5. `runtime/modules/seed_replay` 与 `runtime/modules/persistence` 禁止双轨并行实现，避免真源分裂。
+5. `runtime/modules/persistence` 为唯一存档实现目录。
 
 ## 4. 后续清单
 
