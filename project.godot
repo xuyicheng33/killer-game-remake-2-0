@@ -17,6 +17,11 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+CardEvents="*res://runtime/global/card_events.gd"
+TooltipEvents="*res://runtime/global/tooltip_events.gd"
+PlayerEvents="*res://runtime/global/player_events.gd"
+EnemyEvents="*res://runtime/global/enemy_events.gd"
+BattleEvents="*res://runtime/global/battle_events.gd"
 Events="*res://runtime/global/events.gd"
 Shaker="*res://runtime/global/shaker.gd"
 MusicPlayer="*res://runtime/global/music_player.tscn"
