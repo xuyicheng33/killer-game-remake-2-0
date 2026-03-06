@@ -258,7 +258,7 @@ func _try_load_saved_run() -> bool:
 		return false
 	relic_potion_ui.run_state = run_state
 	_open_map()
-	app_flow_orchestrator.push_external_log("继续游戏：层数 %d，金币 %d" % [run_state.floor + 1, run_state.gold])
+	app_flow_orchestrator.push_external_log("继续游戏：层数 %d，金币 %d" % [run_state.current_floor + 1, run_state.gold])
 	return true
 
 

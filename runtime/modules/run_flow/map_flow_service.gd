@@ -89,8 +89,8 @@ func resolve_non_battle_completion(run_state: RunState, node_type: MapNodeData.N
 
 func _resolve_battle_encounter(run_state: RunState, node: MapNodeData) -> Dictionary:
 	var tags := ENCOUNTER_REGISTRY_SCRIPT.get_node_type_tags(node.type)
-	var rng_key := "encounter:%s:%s" % [run_state.seed, node.id]
-	var encounter := ENCOUNTER_REGISTRY_SCRIPT.pick_encounter(run_state.floor, tags, rng_key)
+	var rng_key := "encounter:%s:%s" % [run_state.run_seed, node.id]
+	var encounter := ENCOUNTER_REGISTRY_SCRIPT.pick_encounter(run_state.current_floor, tags, rng_key)
 	if encounter.is_empty():
 		encounter = ENCOUNTER_REGISTRY_SCRIPT.pick_fallback_encounter(tags)
 
@@ -101,7 +101,7 @@ func _resolve_battle_encounter(run_state: RunState, node: MapNodeData) -> Dictio
 				node.id,
 				str(node.type),
 				str(tags),
-				run_state.floor,
+				run_state.current_floor,
 			]
 		)
 		var failed_result := {

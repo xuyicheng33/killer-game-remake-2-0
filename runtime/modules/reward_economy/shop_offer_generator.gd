@@ -140,8 +140,8 @@ static func _shop_stream_key(run_state: RunState) -> String:
 	if run_state == null:
 		return "reward:shop_offers:null_run"
 	return "reward:shop_offers:seed_%d:floor_%d:node_%s" % [
-		run_state.seed,
-		run_state.floor,
+		run_state.run_seed,
+		run_state.current_floor,
 		run_state.map_current_node_id,
 	]
 

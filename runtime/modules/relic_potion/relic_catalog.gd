@@ -36,8 +36,8 @@ static func pick_random(stream_key: String) -> RelicData:
 static func pick_random_for_reward(run_state: RunState, reward_type: String) -> RelicData:
 	var stream_key := "relic_reward:%s:seed_%d:floor_%d" % [
 		reward_type,
-		run_state.seed if run_state else 0,
-		run_state.floor if run_state else 0,
+		run_state.run_seed if run_state else 0,
+		run_state.current_floor if run_state else 0,
 	]
 	return pick_random(stream_key)
 

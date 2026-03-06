@@ -20,7 +20,7 @@ func start_new_run_with_seed(hero_template: CharacterStats, run_seed: int, chara
 
 	var run_state := RunState.new()
 	run_state.init_with_character(hero_template, run_seed, character_id)
-	_current_floor = run_state.floor
+	_current_floor = run_state.current_floor
 
 	return {
 		"ok": true,
@@ -56,11 +56,11 @@ func try_load_saved_run(fallback_template: CharacterStats = null) -> Dictionary:
 	if typeof(rng_state_variant) == TYPE_DICTIONARY:
 		restored_rng = RUN_RNG_SCRIPT.restore_run_state(rng_state_variant as Dictionary)
 	if not restored_rng:
-		RUN_RNG_SCRIPT.begin_run(loaded_run_state.seed)
+		RUN_RNG_SCRIPT.begin_run(loaded_run_state.run_seed)
 
 	REPRO_LOG_SCRIPT.begin_run(RUN_RNG_SCRIPT.get_run_seed())
-	_current_floor = loaded_run_state.floor
-	REPRO_LOG_SCRIPT.set_progress(loaded_run_state.floor, loaded_run_state.map_current_node_id)
+	_current_floor = loaded_run_state.current_floor
+	REPRO_LOG_SCRIPT.set_progress(loaded_run_state.current_floor, loaded_run_state.map_current_node_id)
 
 	return {
 		"ok": true,
@@ -91,8 +91,8 @@ func save_checkpoint(run_state: RunState, tag: String = "") -> Dictionary:
 func update_repro_progress(run_state: RunState) -> void:
 	if run_state == null:
 		return
-	_current_floor = run_state.floor
-	REPRO_LOG_SCRIPT.set_progress(run_state.floor, run_state.map_current_node_id)
+	_current_floor = run_state.current_floor
+	REPRO_LOG_SCRIPT.set_progress(run_state.current_floor, run_state.map_current_node_id)
 
 
 func update_repro_node(node_id: String, event_tag: String, event_detail: String) -> void:

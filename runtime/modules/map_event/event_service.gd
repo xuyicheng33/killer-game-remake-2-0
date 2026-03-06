@@ -12,8 +12,8 @@ static func pick_event_template(run_state: RunState) -> Dictionary:
 		return {}
 
 	var visited_size: int = run_state.map_visited_node_ids.size() if run_state else 0
-	var floor_value: int = run_state.floor if run_state else 0
-	var seed_value: int = run_state.seed if run_state else 0
+	var floor_value: int = run_state.current_floor if run_state else 0
+	var seed_value: int = run_state.run_seed if run_state else 0
 	var stream_key: String = "event_template:f%d:v%d" % [floor_value, visited_size]
 	var rng: RandomNumberGenerator = RUN_RNG_SCRIPT.create_seeded_rng(seed_value, stream_key)
 
@@ -101,7 +101,7 @@ static func _add_random_card(run_state: RunState) -> String:
 	var pool := REWARD_GENERATOR_SCRIPT.get_card_pool_for_run(run_state)
 	if pool.is_empty():
 		return "(无可用卡池)"
-	var floor_value: int = run_state.floor if run_state else 0
+	var floor_value: int = run_state.current_floor if run_state else 0
 	var visited_size: int = run_state.map_visited_node_ids.size() if run_state else 0
 	var stream_key: String = "event_card:f%d:v%d" % [floor_value, visited_size]
 	var card: Card = REWARD_GENERATOR_SCRIPT.pick_random_card(pool, stream_key)

@@ -30,9 +30,9 @@ func test_floor_advance() -> void:
 	var service = COMMAND_SERVICE_SCRIPT.new()
 	var run_state := _make_run_state()
 
-	assert_eq(run_state.floor, 0, "初始层数应为 0")
+	assert_eq(run_state.current_floor, 0, "初始层数应为 0")
 	service.next_floor(run_state)
-	assert_eq(run_state.floor, 1, "next_floor 后应为 1")
+	assert_eq(run_state.current_floor, 1, "next_floor 后应为 1")
 
 
 func test_deck_add_remove_upgrade() -> void:
@@ -63,3 +63,50 @@ func test_heal_and_increase_max_health() -> void:
 	var max_before := run_state.player_stats.max_health
 	service.increase_max_health(run_state, 5)
 	assert_eq(run_state.player_stats.max_health, max_before + 5, "最大生命应增加")
+
+
+func test_add_relic_fails_when_capacity_full() -> void:
+	var run_state := _make_run_state()
+	run_state.relic_capacity = 1
+	var relic1 := RelicData.new()
+	relic1.id = "relic_a"
+	var relic2 := RelicData.new()
+	relic2.id = "relic_b"
+	assert_true(run_state.add_relic(relic1), "第 1 个遗物应添加成功")
+	assert_false(run_state.add_relic(relic2), "超出容量应添加失败")
+
+
+func test_add_relic_fails_on_duplicate_id() -> void:
+	var run_state := _make_run_state()
+	var relic := RelicData.new()
+	relic.id = "unique_relic"
+	assert_true(run_state.add_relic(relic), "首次添加应成功")
+	var dup := RelicData.new()
+	dup.id = "unique_relic"
+	assert_false(run_state.add_relic(dup), "重复 ID 应添加失败")
+
+
+func test_add_potion_fails_when_capacity_full() -> void:
+	var run_state := _make_run_state()
+	run_state.potion_capacity = 1
+	var p1 := PotionData.new()
+	p1.id = "potion_a"
+	var p2 := PotionData.new()
+	p2.id = "potion_b"
+	assert_true(run_state.add_potion(p1), "第 1 个药水应添加成功")
+	assert_false(run_state.add_potion(p2), "超出容量应添加失败")
+
+
+func test_spend_gold_fails_when_insufficient() -> void:
+	var run_state := _make_run_state()
+	run_state.gold = 10
+	assert_false(run_state.spend_gold(20), "余额不足应返回 false")
+	assert_eq(run_state.gold, 10, "金币不应被扣除")
+
+
+func test_remove_card_from_deck_at_out_of_bounds() -> void:
+	var run_state := _make_run_state()
+	var removed := run_state.remove_card_from_deck_at(999)
+	assert_null(removed, "越界索引应返回 null")
+	var removed_neg := run_state.remove_card_from_deck_at(-1)
+	assert_null(removed_neg, "负索引应返回 null")

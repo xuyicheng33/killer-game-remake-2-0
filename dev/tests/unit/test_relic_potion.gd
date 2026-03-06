@@ -312,7 +312,7 @@ func test_run_start_relic_applies_once() -> void:
 	relic.on_run_start_gold = 25
 	_run_state.relics = [relic]
 	_run_state.gold = 100
-	_run_state.floor = 0
+	_run_state.current_floor = 0
 	_run_state.map_visited_node_ids = PackedStringArray()
 	_run_state.run_start_relics_applied = false
 

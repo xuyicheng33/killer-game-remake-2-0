@@ -24,7 +24,7 @@ func resolve_battle_completion(run_state: RunState, is_win: bool, reward_gold: i
 			return _result(
 				RunRouteDispatcher.ROUTE_RUN_COMPLETE,
 				{
-					"run_complete_text": "恭喜通关！\n到达层数：%d\n最终金币：%d" % [run_state.floor + 1, run_state.gold],
+					"run_complete_text": "恭喜通关！\n到达层数：%d\n最终金币：%d" % [run_state.current_floor + 1, run_state.gold],
 				}
 			)
 		return _result(
@@ -57,7 +57,7 @@ func apply_battle_reward(run_state: RunState, bundle: RewardBundle, chosen_card:
 
 
 func _build_game_over_text(run_state: RunState) -> String:
-	return "本次远征失败\n到达层数：%d\n最终金币：%d" % [run_state.floor + 1, run_state.gold]
+	return "本次远征失败\n到达层数：%d\n最终金币：%d" % [run_state.current_floor + 1, run_state.gold]
 
 
 func _result(next_route: String, payload: Dictionary = {}) -> Dictionary:

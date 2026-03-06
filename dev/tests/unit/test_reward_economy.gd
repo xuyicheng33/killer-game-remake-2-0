@@ -16,8 +16,8 @@ func _create_run_state(gold: int = 300) -> RunState:
 	stats.draw_pile = CardPile.new()
 	stats.discard = CardPile.new()
 	run_state.player_stats = stats
-	run_state.seed = 123
-	run_state.floor = 2
+	run_state.run_seed = 123
+	run_state.current_floor = 2
 	run_state.map_current_node_id = "f02_l1"
 	run_state.gold = gold
 	return run_state

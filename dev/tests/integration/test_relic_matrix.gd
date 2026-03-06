@@ -40,7 +40,7 @@ func _run_relic_case(relic: RelicData) -> void:
 	var run_state := RunState.new()
 	run_state.player_stats = stats
 	run_state.gold = 100
-	run_state.floor = 0
+	run_state.current_floor = 0
 	run_state.map_visited_node_ids = PackedStringArray()
 	run_state.relics = [relic.duplicate(true)]
 

@@ -473,7 +473,7 @@ func _apply_run_start_relics_once() -> void:
 		return
 
 	# 仅在新局起点触发，避免中途读档重复获得开局收益。
-	var is_fresh_run := run_state.floor <= 0 and run_state.map_visited_node_ids.is_empty()
+	var is_fresh_run := run_state.current_floor <= 0 and run_state.map_visited_node_ids.is_empty()
 	if is_fresh_run:
 		_fire_trigger(TriggerType.ON_RUN_START, {})
 	run_state.run_start_relics_applied = true

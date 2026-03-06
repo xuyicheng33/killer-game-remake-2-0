@@ -10,8 +10,8 @@ class DamageCapture extends Node:
 
 func _build_reachable_run_state(node_type: MapNodeData.NodeType, floor: int = 0) -> Dictionary:
 	var run_state := RunState.new()
-	run_state.seed = 12345
-	run_state.floor = floor
+	run_state.run_seed = 12345
+	run_state.current_floor = floor
 	run_state.map_current_node_id = ""
 	run_state.map_visited_node_ids = PackedStringArray()
 
@@ -39,7 +39,7 @@ func _build_reachable_run_state(node_type: MapNodeData.NodeType, floor: int = 0)
 func test_boss_victory_routes_to_run_complete() -> void:
 	var service := BattleFlowService.new()
 	var run_state := RunState.new()
-	run_state.floor = 4
+	run_state.current_floor = 4
 	run_state.gold = 120
 
 	var result := service.resolve_battle_completion(run_state, true, 100, true)
@@ -72,7 +72,7 @@ func test_normal_victory_routes_to_reward() -> void:
 func test_defeat_routes_to_game_over() -> void:
 	var service := BattleFlowService.new()
 	var run_state := RunState.new()
-	run_state.floor = 2
+	run_state.current_floor = 2
 	run_state.gold = 50
 
 	var result := service.resolve_battle_completion(run_state, false, 0, false)

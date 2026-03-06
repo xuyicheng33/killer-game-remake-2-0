@@ -21,7 +21,7 @@ static func generate_post_battle_reward(run_state: RunState, gold_amount: int) -
 	var stream_key: String = _reward_stream_key(run_state, "post_battle_cards")
 	bundle.card_choices = pick_random_cards(get_card_pool_for_run(run_state), 3, stream_key)
 	if run_state != null:
-		if run_state.floor % 2 == 0:
+		if run_state.current_floor % 2 == 0:
 			bundle.potion_reward = POTION_CATALOG_SCRIPT.pick_random_for_reward(run_state, "post_battle")
 		else:
 			bundle.relic_reward = RELIC_CATALOG_SCRIPT.pick_random_for_reward(run_state, "post_battle")
@@ -172,8 +172,8 @@ static func _reward_stream_key(run_state: RunState, suffix: String) -> String:
 		return "reward:%s:null_run" % suffix
 	return "reward:%s:seed_%d:floor_%d:node_%s" % [
 		suffix,
-		run_state.seed,
-		run_state.floor,
+		run_state.run_seed,
+		run_state.current_floor,
 		run_state.map_current_node_id,
 	]
 

@@ -53,7 +53,7 @@ func test_fixed_seed_autoplay_reaches_run_complete() -> void:
 		var next_route := orchestrator.dispatch_next_route(enter_result)
 		trace.append(
 			"floor=%d node=%s type=%d route=%s" % [
-				run_state.floor,
+				run_state.current_floor,
 				node.id,
 				int(node.type),
 				next_route,

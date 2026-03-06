@@ -12,7 +12,7 @@ func project_header(run_state: RunState) -> Dictionary:
 	if run_state == null:
 		return projection
 
-	projection["run_label"] = "第 %d 幕 | 层数 %d" % [run_state.act, run_state.floor + 1]
+	projection["run_label"] = "第 %d 幕 | 层数 %d" % [run_state.act, run_state.current_floor + 1]
 	projection["stats_label"] = "生命：%d/%d   金币：%d" % [
 		run_state.player_stats.health,
 		run_state.player_stats.max_health,

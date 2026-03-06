@@ -6,9 +6,9 @@ static func serialize_run_state(run_state: RunState, save_version: int, rng_stat
 	var payload: Dictionary = {}
 	payload["save_version"] = save_version
 	payload["character_id"] = run_state.character_id
-	payload["seed"] = run_state.seed
+	payload["seed"] = run_state.run_seed
 	payload["act"] = run_state.act
-	payload["floor"] = run_state.floor
+	payload["floor"] = run_state.current_floor
 	payload["gold"] = run_state.gold
 	payload["relic_capacity"] = run_state.relic_capacity
 	payload["potion_capacity"] = run_state.potion_capacity

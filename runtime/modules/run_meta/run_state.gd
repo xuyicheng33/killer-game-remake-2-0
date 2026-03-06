@@ -4,11 +4,9 @@ extends Resource
 const MAP_GENERATOR_SCRIPT := preload("res://runtime/modules/map_event/map_generator.gd")
 
 @export var character_id: String = "warrior"
-@warning_ignore("shadowed_global_identifier")
-@export var seed: int = 0
+@export var run_seed: int = 0
 @export var act: int = 1
-@warning_ignore("shadowed_global_identifier")
-@export var floor: int = 0
+@export var current_floor: int = 0
 @export var gold: int = 99
 @export var relic_capacity: int = 6
 @export var potion_capacity: int = 3
@@ -24,11 +22,11 @@ var player_stats: CharacterStats
 var map_graph: MapGraphData
 
 
-func init_with_character(base_stats: CharacterStats, run_seed: int, id: String = "warrior") -> void:
+func init_with_character(base_stats: CharacterStats, p_run_seed: int, id: String = "warrior") -> void:
 	character_id = id
-	seed = run_seed
+	run_seed = p_run_seed
 	act = 1
-	floor = 0
+	current_floor = 0
 	gold = 99
 	relics.clear()
 	potions.clear()
@@ -88,30 +86,10 @@ func add_potion(potion: PotionData) -> bool:
 	return true
 
 
-func use_potion_at(index: int) -> String:
-	if index < 0 or index >= potions.size():
-		return "药水使用失败：索引越界。"
-
-	var potion := potions[index] as PotionData
-	if potion == null:
-		potions.remove_at(index)
-		emit_changed()
-		return "药水使用失败：无效药水。"
-
-	var result := _apply_potion_effect(potion)
-
-	# 仅对战斗中效果（如伤害药水）不消耗
-	if potion.effect_type == PotionData.EffectType.DAMAGE_ALL_ENEMIES:
-		# 战斗外无法使用伤害药水，不消耗
-		return result
-
-	potions.remove_at(index)
-	emit_changed()
-	return result
 
 
 func next_floor() -> void:
-	floor += 1
+	current_floor += 1
 	emit_changed()
 
 
@@ -242,27 +220,9 @@ func increase_max_health(amount: int) -> void:
 	emit_changed()
 
 
-func _apply_potion_effect(potion: PotionData) -> String:
-	var value := maxi(0, potion.value)
-	match potion.effect_type:
-		PotionData.EffectType.HEAL:
-			heal_player(value)
-			return "使用 %s：恢复 %d 生命" % [potion.title, value]
-		PotionData.EffectType.GOLD:
-			add_gold(value)
-			return "使用 %s：获得 %d 金币" % [potion.title, value]
-		PotionData.EffectType.BLOCK:
-			if player_stats != null:
-				player_stats.block += value
-			return "使用 %s：获得 %d 格挡" % [potion.title, value]
-		PotionData.EffectType.DAMAGE_ALL_ENEMIES:
-			return "使用 %s：仅战斗中可生效（对全体敌人造成 %d 伤害）" % [potion.title, value]
-		_:
-			return "使用 %s：无效果" % potion.title
-
 
 func _init_map_progression() -> void:
-	map_graph = MAP_GENERATOR_SCRIPT.create_act1_seed_graph(seed)
+	map_graph = MAP_GENERATOR_SCRIPT.create_act1_seed_graph(run_seed)
 	map_current_node_id = ""
 	map_visited_node_ids = PackedStringArray()
 	map_reachable_node_ids = map_graph.get_start_node_ids() if map_graph != null else PackedStringArray()

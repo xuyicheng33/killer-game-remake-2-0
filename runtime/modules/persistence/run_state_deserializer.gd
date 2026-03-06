@@ -24,7 +24,7 @@ static func deserialize_run_state(payload: Dictionary, base_stats: CharacterStat
 	restored.init_with_character(base_stats, run_seed, character_id)
 
 	restored.act = maxi(1, int(payload.get("act", restored.act)))
-	restored.floor = maxi(0, int(payload.get("floor", restored.floor)))
+	restored.current_floor = maxi(0, int(payload.get("floor", restored.current_floor)))
 	restored.gold = maxi(0, int(payload.get("gold", restored.gold)))
 	restored.relic_capacity = maxi(0, int(payload.get("relic_capacity", restored.relic_capacity)))
 	restored.potion_capacity = maxi(0, int(payload.get("potion_capacity", restored.potion_capacity)))
@@ -39,7 +39,7 @@ static func deserialize_run_state(payload: Dictionary, base_stats: CharacterStat
 	if deserialized_graph != null:
 		restored.map_graph = deserialized_graph
 	else:
-		restored.map_graph = map_generator_script.create_act1_seed_graph(restored.seed)
+		restored.map_graph = map_generator_script.create_act1_seed_graph(restored.run_seed)
 
 	restored.map_current_node_id = str(payload.get("map_current_node_id", ""))
 	restored.map_reachable_node_ids = variant_to_packed_string_array(payload.get("map_reachable_node_ids", []))
@@ -49,7 +49,7 @@ static func deserialize_run_state(payload: Dictionary, base_stats: CharacterStat
 
 	restored.relics = deserialize_relics(payload.get("relics", []))
 	restored.potions = deserialize_potions(payload.get("potions", []))
-	restored.run_start_relics_applied = bool(payload.get("run_start_relics_applied", restored.floor > 0))
+	restored.run_start_relics_applied = bool(payload.get("run_start_relics_applied", restored.current_floor > 0))
 	restored.card_removal_count = maxi(0, int(payload.get("card_removal_count", 0)))
 	restored.emit_changed()
 	return restored
