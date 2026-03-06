@@ -21,25 +21,31 @@ func _ready() -> void:
 
 
 func get_action() -> EnemyAction:
-	var action: EnemyAction = ENEMY_INTENT_RULES_SCRIPT.pick_next_action(
-		_get_actions(),
+	var actions := _get_actions()
+	var data_list := _to_intent_data(actions)
+	var picked: IntentActionData = ENEMY_INTENT_RULES_SCRIPT.pick_next_action(
+		data_list,
 		last_action_name,
 		ascension_level,
 		disallow_consecutive,
 		_rng_stream_key
 	)
+	var action := _resolve_action(picked, actions)
 	if action != null:
 		REPRO_LOG_SCRIPT.log_enemy(_enemy_log_name(), "intent_action=%s stream=%s" % [action.name, _rng_stream_key])
 	return action
 
 
 func get_first_conditional_action() -> EnemyAction:
-	return ENEMY_INTENT_RULES_SCRIPT.pick_first_conditional_action(
-		_get_actions(),
+	var actions := _get_actions()
+	var data_list := _to_intent_data(actions)
+	var picked: IntentActionData = ENEMY_INTENT_RULES_SCRIPT.pick_first_conditional_action(
+		data_list,
 		last_action_name,
 		ascension_level,
 		disallow_consecutive
 	)
+	return _resolve_action(picked, actions)
 
 
 func note_action_executed(action: EnemyAction) -> void:
@@ -104,3 +110,22 @@ func _enemy_log_name() -> String:
 	if enemy == null:
 		return "unknown_enemy"
 	return enemy.name
+
+
+func _to_intent_data(actions: Array[EnemyAction]) -> Array[IntentActionData]:
+	var out: Array[IntentActionData] = []
+	for i in range(actions.size()):
+		var a := actions[i]
+		var t := IntentActionData.ActionType.CONDITIONAL if a.type == EnemyAction.Type.CONDITIONAL else IntentActionData.ActionType.CHANCE_BASED
+		out.append(IntentActionData.from_values(
+			t, a.name, a.is_performable(), a.get_effective_weight(ascension_level), i
+		))
+	return out
+
+
+func _resolve_action(data: IntentActionData, actions: Array[EnemyAction]) -> EnemyAction:
+	if data == null:
+		return null
+	if data.source_index >= 0 and data.source_index < actions.size():
+		return actions[data.source_index]
+	return null

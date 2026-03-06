@@ -3,19 +3,14 @@ extends RefCounted
 
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
 
-# Phase A / A5: Enemy intent rule layer.
-# - Conditional actions have priority over chance-based actions.
-# - Disallow consecutive actions when there is at least one alternative.
-# - Ascension level is a placeholder parameter for future scaling.
-
 
 static func pick_next_action(
-	actions: Array[EnemyAction],
+	actions: Array[IntentActionData],
 	last_action_name: StringName,
-	ascension_level: int,
+	_ascension_level: int,
 	disallow_consecutive: bool,
 	rng_stream_key: String = "enemy_intent"
-) -> EnemyAction:
+) -> IntentActionData:
 	var conditional := _collect_conditionals(actions)
 	var weighted := _collect_weighted(actions)
 
@@ -23,7 +18,6 @@ static func pick_next_action(
 		return _pick_from_pool(
 			conditional,
 			last_action_name,
-			ascension_level,
 			disallow_consecutive,
 			false,
 			rng_stream_key
@@ -32,7 +26,6 @@ static func pick_next_action(
 	return _pick_from_pool(
 		weighted,
 		last_action_name,
-		ascension_level,
 		disallow_consecutive,
 		true,
 		rng_stream_key
@@ -40,11 +33,11 @@ static func pick_next_action(
 
 
 static func pick_first_conditional_action(
-	actions: Array[EnemyAction],
+	actions: Array[IntentActionData],
 	last_action_name: StringName,
-	ascension_level: int,
+	_ascension_level: int,
 	disallow_consecutive: bool
-) -> EnemyAction:
+) -> IntentActionData:
 	var conditional := _collect_conditionals(actions)
 	if conditional.size() == 0:
 		return null
@@ -52,7 +45,6 @@ static func pick_first_conditional_action(
 	return _pick_from_pool(
 		conditional,
 		last_action_name,
-		ascension_level,
 		disallow_consecutive,
 		false,
 		"enemy_intent_conditional"
@@ -60,20 +52,18 @@ static func pick_first_conditional_action(
 
 
 static func _pick_from_pool(
-	pool: Array[EnemyAction],
+	pool: Array[IntentActionData],
 	last_action_name: StringName,
-	ascension_level: int,
 	disallow_consecutive: bool,
 	is_weighted: bool,
 	rng_stream_key: String
-) -> EnemyAction:
+) -> IntentActionData:
 	if pool.size() == 0:
 		return null
 
 	var candidates := pool
 	if disallow_consecutive:
 		var filtered := _filter_no_repeat(candidates, last_action_name)
-		# "No consecutive" is a soft constraint; don't allow it to make the pool empty.
 		if filtered.size() > 0:
 			candidates = filtered
 
@@ -81,61 +71,58 @@ static func _pick_from_pool(
 		return null
 
 	if not is_weighted:
-		# Conditional actions use stable ordering (node order as priority).
 		return candidates[0]
 
-	return _pick_weighted(candidates, ascension_level, rng_stream_key)
+	return _pick_weighted(candidates, rng_stream_key)
 
 
-static func _collect_conditionals(actions: Array[EnemyAction]) -> Array[EnemyAction]:
-	var out: Array[EnemyAction] = []
+static func _collect_conditionals(actions: Array[IntentActionData]) -> Array[IntentActionData]:
+	var out: Array[IntentActionData] = []
 	for action in actions:
-		if not action:
+		if action == null:
 			continue
-		if action.type != EnemyAction.Type.CONDITIONAL:
+		if action.type != IntentActionData.ActionType.CONDITIONAL:
 			continue
-		if action.is_performable():
+		if action.is_performable:
 			out.append(action)
 	return out
 
 
-static func _collect_weighted(actions: Array[EnemyAction]) -> Array[EnemyAction]:
-	var out: Array[EnemyAction] = []
+static func _collect_weighted(actions: Array[IntentActionData]) -> Array[IntentActionData]:
+	var out: Array[IntentActionData] = []
 	for action in actions:
-		if not action:
+		if action == null:
 			continue
-		if action.type != EnemyAction.Type.CHANCE_BASED:
+		if action.type != IntentActionData.ActionType.CHANCE_BASED:
 			continue
 		out.append(action)
 	return out
 
 
 static func _filter_no_repeat(
-	actions: Array[EnemyAction],
+	actions: Array[IntentActionData],
 	last_action_name: StringName
-) -> Array[EnemyAction]:
+) -> Array[IntentActionData]:
 	if last_action_name == &"":
 		return actions
 
-	var out: Array[EnemyAction] = []
+	var out: Array[IntentActionData] = []
 	for action in actions:
-		if action and action.name != last_action_name:
+		if action != null and action.action_name != last_action_name:
 			out.append(action)
 	return out
 
 
 static func _pick_weighted(
-	actions: Array[EnemyAction],
-	ascension_level: int,
+	actions: Array[IntentActionData],
 	rng_stream_key: String
-) -> EnemyAction:
+) -> IntentActionData:
 	var total := 0.0
 	for action in actions:
-		if not action:
+		if action == null:
 			continue
-		total += maxf(0.0, action.get_effective_weight(ascension_level))
+		total += maxf(0.0, action.effective_weight)
 
-	# Defensive fallback: avoid division-by-zero / always-null selection.
 	if total <= 0.0:
 		return actions[0] if actions.size() > 0 else null
 
@@ -143,11 +130,10 @@ static func _pick_weighted(
 	var roll := RUN_RNG_SCRIPT.randf("%s:weighted_roll" % stream_key) * total
 	var acc := 0.0
 	for action in actions:
-		if not action:
+		if action == null:
 			continue
-		acc += maxf(0.0, action.get_effective_weight(ascension_level))
+		acc += maxf(0.0, action.effective_weight)
 		if roll < acc:
 			return action
 
-	# In case of float rounding.
 	return actions[actions.size() - 1]
