@@ -145,6 +145,26 @@ func test_encounter_registry_boss_encounters() -> void:
 		"EncounterRegistry 应包含至少 1 个 boss 遭遇（第 13 层）")
 
 
+func test_encounter_registry_has_elite_coverage_for_floor_five() -> void:
+	EncounterRegistry._encounters_cache.clear()
+	EncounterRegistry._encounters_by_id.clear()
+	var elite_tags: Array[String] = ["elite"]
+	var elite_encounters := EncounterRegistry.get_encounters_for_floor(5, elite_tags)
+
+	assert_true(elite_encounters.size() > 0,
+		"EncounterRegistry 应覆盖第 5 层 elite 遭遇，避免自动跑局 fallback warning")
+
+
+func test_encounter_registry_has_common_coverage_for_floor_twelve() -> void:
+	EncounterRegistry._encounters_cache.clear()
+	EncounterRegistry._encounters_by_id.clear()
+	var common_tags: Array[String] = ["common"]
+	var common_encounters := EncounterRegistry.get_encounters_for_floor(12, common_tags)
+
+	assert_true(common_encounters.size() > 0,
+		"EncounterRegistry 应覆盖第 12 层 common 遭遇，避免自动跑局 fallback warning")
+
+
 func test_encounter_registry_enemy_ids_resolvable() -> void:
 	EncounterRegistry._encounters_cache.clear()
 	EncounterRegistry._encounters_by_id.clear()

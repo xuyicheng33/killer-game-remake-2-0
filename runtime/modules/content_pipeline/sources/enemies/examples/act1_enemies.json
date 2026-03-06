@@ -180,11 +180,18 @@
       "floor_range": {"min": 6, "max": 11}
     },
     {
+      "id": "act1_elite_crab_bat",
+      "enemies": ["crab", "bat"],
+      "weight": 2,
+      "tags": ["elite"],
+      "floor_range": {"min": 3, "max": 6}
+    },
+    {
       "id": "act1_elite_viper_pair",
       "enemies": ["viper", "viper"],
       "weight": 2,
       "tags": ["elite"],
-      "floor_range": {"min": 7, "max": 13}
+      "floor_range": {"min": 5, "max": 13}
     },
     {
       "id": "act1_elite_viper_bat",
@@ -199,6 +206,13 @@
       "weight": 1,
       "tags": ["boss"],
       "floor_range": {"min": 12, "max": 14}
+    },
+    {
+      "id": "act1_common_viper_pair_late",
+      "enemies": ["viper", "viper"],
+      "weight": 1,
+      "tags": ["common"],
+      "floor_range": {"min": 12, "max": 13}
     }
   ]
 }

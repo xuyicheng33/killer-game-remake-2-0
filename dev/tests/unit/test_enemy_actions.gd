@@ -240,3 +240,8 @@ func test_viper_poison_applies_poison_and_damage() -> void:
 
 	assert_lt(player.stats.health, 50, "毒蛇毒动作应造成伤害")
 	assert_gt(player.stats.get_status("poison"), 0, "毒蛇应施加毒状态")
+
+	if is_instance_valid(action):
+		action.free()
+	enemy.free()
+	player.free()
