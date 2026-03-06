@@ -328,7 +328,7 @@ func current_overlay_mode() -> int:
 
 
 func _set_overlay_mode(mode: int) -> void:
-	_overlay_mode = mode
+	_overlay_mode = mode as OverlayMode
 	if relic_potion_ui != null:
 		relic_potion_ui.set_overlay_mode(mode)
 	_apply_overlay_layout()

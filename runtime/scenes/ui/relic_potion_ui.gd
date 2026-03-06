@@ -74,7 +74,7 @@ func _disconnect_signals() -> void:
 
 
 func set_overlay_mode(value: int) -> void:
-	_overlay_mode = value
+	_overlay_mode = value as OverlayMode
 	match _overlay_mode:
 		OverlayMode.HIDDEN:
 			_compact_expanded = false

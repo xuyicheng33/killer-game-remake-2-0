@@ -115,8 +115,6 @@ func _setup_zone_counts_ui() -> void:
 	margin.anchors_preset = 15
 	margin.anchor_right = 1.0
 	margin.anchor_bottom = 1.0
-	margin.grow_horizontal = 2
-	margin.grow_vertical = 2
 	margin.add_theme_constant_override("margin_left", 12)
 	margin.add_theme_constant_override("margin_top", 10)
 	margin.add_theme_constant_override("margin_right", 12)
