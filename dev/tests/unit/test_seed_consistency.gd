@@ -119,3 +119,8 @@ func test_map_generator_uses_seed_correctly() -> void:
 	# 注意：由于概率分布，某些节点可能偶然相同
 	# 我们只验证整个地图不完全相同
 	assert_false(all_same, "不同种子应产生不同的地图配置")
+
+
+func test_restore_run_state_empty_dict_returns_false() -> void:
+	var result := RunRng.restore_run_state({})
+	assert_false(result, "空字典应返回 false")
