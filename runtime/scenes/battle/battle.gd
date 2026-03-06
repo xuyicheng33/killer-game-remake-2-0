@@ -241,7 +241,9 @@ func _on_enemy_died(enemy: Enemy) -> void:
 
 	# 从敌人处理器中移除并释放节点
 	if enemy != null and is_instance_valid(enemy):
-		enemy.get_parent().remove_child(enemy)
+		var enemy_parent := enemy.get_parent()
+		if enemy_parent != null:
+			enemy_parent.remove_child(enemy)
 		enemy.queue_free()
 
 	# 立即检查战斗是否结束（DOT击杀或普通击杀都应触发）

@@ -35,7 +35,12 @@ func init_with_character(base_stats: CharacterStats, p_run_seed: int, id: String
 	if player_stats != null and player_stats.stats_changed.is_connected(_on_player_stats_changed):
 		player_stats.stats_changed.disconnect(_on_player_stats_changed)
 
-	player_stats = base_stats.create_instance()
+	var source_stats := base_stats if base_stats != null else _build_fallback_character_stats()
+	var instance_variant: Variant = source_stats.create_instance()
+	if instance_variant is CharacterStats:
+		player_stats = instance_variant
+	else:
+		player_stats = _build_fallback_character_stats()
 	player_stats.stats_changed.connect(_on_player_stats_changed)
 
 	_init_map_progression()
@@ -232,3 +237,16 @@ func _init_map_progression() -> void:
 
 func _on_player_stats_changed() -> void:
 	emit_changed()
+
+
+func _build_fallback_character_stats() -> CharacterStats:
+	var stats := CharacterStats.new()
+	stats.max_health = 1
+	stats.health = 1
+	stats.max_mana = 3
+	stats.cards_per_turn = 5
+	stats.starting_deck = CardPile.new()
+	stats.deck = CardPile.new()
+	stats.draw_pile = CardPile.new()
+	stats.discard = CardPile.new()
+	return stats

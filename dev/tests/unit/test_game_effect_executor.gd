@@ -108,11 +108,11 @@ func test_unknown_effect_type_does_not_crash() -> void:
 
 
 func test_draw_with_callable() -> void:
-	var drawn := 0
+	var draw_state := {"drawn": 0}
 	var draw_fn := func(amount: int) -> void:
-		drawn = amount
+		draw_state["drawn"] = amount
 	GameEffectExecutor.execute("draw", 3, _ctx({"draw_callable": draw_fn}))
-	assert_eq(drawn, 3, "draw_callable 应被调用并传入数量")
+	assert_eq(int(draw_state.get("drawn", 0)), 3, "draw_callable 应被调用并传入数量")
 
 
 func test_negative_value_clamped_to_zero() -> void:

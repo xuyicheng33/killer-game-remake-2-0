@@ -271,6 +271,14 @@ func _run_turn_start_hooks(target: Node) -> void:
 			return
 
 
+func _trigger_poison(target: Node, stats: Stats = null) -> void:
+	_run_turn_start_status(STATUS_POISON, target, stats)
+
+
+func _trigger_burn(target: Node, stats: Stats = null) -> void:
+	_run_turn_end_status(STATUS_BURN, target, stats)
+
+
 func _run_turn_end_hooks(target: Node) -> void:
 	var stats: Stats = _extract_stats(target)
 	if stats == null:
@@ -300,6 +308,36 @@ func _run_after_card_played_hooks(target: Node) -> void:
 		var handler: StatusHandler = _status_registry.get(status_id)
 		if handler != null and handler.on_card_played.is_valid():
 			handler.on_card_played.call(target, stats, stacks)
+
+
+func _run_turn_start_status(status_id: String, target: Node, stats: Stats = null) -> void:
+	var target_stats := stats if stats != null else _extract_stats(target)
+	if target_stats == null:
+		return
+	var stacks := get_status_stack(target_stats, status_id)
+	if stacks <= 0:
+		return
+	var handler: StatusHandler = _status_registry.get(status_id)
+	if handler != null and handler.on_turn_start.is_valid():
+		handler.on_turn_start.call(target, target_stats, stacks)
+	if target_stats.health <= 0:
+		_handle_death(target)
+
+
+func _run_turn_end_status(status_id: String, target: Node, stats: Stats = null) -> void:
+	var target_stats := stats if stats != null else _extract_stats(target)
+	if target_stats == null:
+		return
+	var stacks := get_status_stack(target_stats, status_id)
+	if stacks <= 0:
+		return
+	var handler: StatusHandler = _status_registry.get(status_id)
+	if handler != null and handler.on_turn_end.is_valid():
+		handler.on_turn_end.call(target, target_stats, stacks)
+	if handler != null and handler.decays_on_turn_end:
+		_decay_status(target_stats, status_id)
+	if target_stats.health <= 0:
+		_handle_death(target)
 
 
 func _decay_status(stats: Stats, status_id: String) -> void:

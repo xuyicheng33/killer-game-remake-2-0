@@ -32,13 +32,33 @@ func can_play_card(card: Card) -> bool:
 
 
 func create_instance() -> Resource:
-	var instance: CharacterStats = self.duplicate()
-	instance._status_container = _status_container.duplicate(true)
-	instance._status_container.clear_all()
-	instance.health = max_health
+	var instance: CharacterStats = self.duplicate(true) as CharacterStats
+	if instance == null:
+		instance = CharacterStats.new()
+		instance.max_health = max_health
+		instance.max_mana = max_mana
+		instance.cards_per_turn = cards_per_turn
+		instance.art = art
+	if _status_container != null:
+		instance._status_container = _status_container.duplicate(true)
+		instance._status_container.clear_all()
+	instance.max_health = maxi(1, instance.max_health)
+	instance.health = instance.max_health
 	instance.block = 0
 	instance.reset_mana()
-	instance.deck = instance.starting_deck.duplicate()
+	var template_deck: CardPile = null
+	if instance.starting_deck != null:
+		template_deck = instance.starting_deck
+	elif deck != null:
+		template_deck = deck
+	if template_deck != null:
+		var duplicated_deck: Variant = template_deck.duplicate(true)
+		if duplicated_deck is CardPile:
+			instance.deck = duplicated_deck
+		else:
+			instance.deck = CardPile.new()
+	else:
+		instance.deck = CardPile.new()
 	instance.draw_pile = CardPile.new()
 	instance.discard = CardPile.new()
 	return instance
