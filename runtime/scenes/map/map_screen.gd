@@ -22,6 +22,7 @@ var _adapter: MapUIAdapter = MAP_UI_ADAPTER_SCRIPT.new() as MapUIAdapter
 func _ready() -> void:
 	_connect_signals()
 	# 触发初始渲染（run_state 可能在 _ready 之前通过 @export 设置）
+	_apply_responsive_layout()
 	_adapter.refresh()
 
 
@@ -130,6 +131,7 @@ func _render_nodes(projection: Dictionary) -> void:
 			var font_color: Variant = node_data.get("font_color", UIColors.NODE_BATTLE)
 			if font_color is Color:
 				button.add_theme_color_override("font_color", font_color)
+				_apply_node_button_style(button, font_color, button.disabled)
 
 			button.pressed.connect(_on_node_button_pressed.bind(node_id))
 			floor_row.add_child(button)
@@ -172,3 +174,38 @@ func _apply_responsive_layout() -> void:
 
 	var viewport_size := get_viewport_rect().size
 	UILayout.apply_frame_layout(frame, viewport_size)
+
+
+func _apply_node_button_style(button: Button, accent: Color, disabled: bool) -> void:
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = UIColors.BG_PANEL_SOFT
+	normal.border_width_left = 2
+	normal.border_width_top = 2
+	normal.border_width_right = 2
+	normal.border_width_bottom = 2
+	normal.border_color = accent.darkened(0.1)
+	normal.corner_radius_top_left = 14
+	normal.corner_radius_top_right = 14
+	normal.corner_radius_bottom_left = 14
+	normal.corner_radius_bottom_right = 14
+	normal.content_margin_left = 16
+	normal.content_margin_top = 12
+	normal.content_margin_right = 16
+	normal.content_margin_bottom = 12
+	var hover := normal.duplicate()
+	hover.bg_color = UIColors.BG_HUD
+	hover.border_color = accent.lightened(0.2)
+	var pressed := normal.duplicate()
+	pressed.bg_color = UIColors.BG_DARK
+	pressed.border_color = accent
+	var disabled_style := normal.duplicate()
+	disabled_style.bg_color = Color(UIColors.BG_PANEL_SOFT.r, UIColors.BG_PANEL_SOFT.g, UIColors.BG_PANEL_SOFT.b, 0.5)
+	disabled_style.border_color = Color(accent.r, accent.g, accent.b, 0.45)
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.add_theme_stylebox_override("disabled", disabled_style)
+	if disabled:
+		button.modulate = Color(1, 1, 1, 0.78)
+	else:
+		button.modulate = Color.WHITE

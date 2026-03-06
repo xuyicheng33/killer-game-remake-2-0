@@ -49,7 +49,8 @@ func _project_card_choices(bundle: RewardBundle) -> Array[Dictionary]:
 		choices.append({
 			"card": card,
 			"text": _format_card_label(card),
-			"tooltip": card.tooltip_text if card != null and card.tooltip_text.length() > 0 else "",
+			"tooltip_title": card.get_display_name() if card != null else "卡牌说明",
+			"tooltip_body": card.tooltip_text if card != null and card.tooltip_text.length() > 0 else "",
 		})
 
 	return choices

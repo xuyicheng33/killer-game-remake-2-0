@@ -34,6 +34,8 @@ func _project_offers(run_state: RunState, offers: Array[Dictionary]) -> Array[Di
 		var offer_type := str(offer.get("offer_type", OFFER_TYPE_CARD))
 		var label := ""
 		var disabled := run_state.gold < price
+		var tooltip_title := "商店物品"
+		var tooltip_body := ""
 
 		match offer_type:
 			OFFER_TYPE_CARD:
@@ -42,12 +44,16 @@ func _project_offers(run_state: RunState, offers: Array[Dictionary]) -> Array[Di
 				if card_variant is Card:
 					card = card_variant
 				label = "购买卡牌：%s（%d 金币）" % [_card_name(card), price]
+				tooltip_title = _card_name(card)
+				tooltip_body = card.tooltip_text if card != null else ""
 			OFFER_TYPE_RELIC:
 				var relic: RelicData = null
 				var relic_variant: Variant = offer.get("relic")
 				if relic_variant is RelicData:
 					relic = relic_variant
 				label = "购买遗物：%s（%d 金币）" % [_relic_name(relic), price]
+				tooltip_title = _relic_name(relic)
+				tooltip_body = relic.description if relic != null else ""
 				disabled = disabled or run_state.relics.size() >= run_state.relic_capacity
 			OFFER_TYPE_POTION:
 				var potion: PotionData = null
@@ -55,6 +61,8 @@ func _project_offers(run_state: RunState, offers: Array[Dictionary]) -> Array[Di
 				if potion_variant is PotionData:
 					potion = potion_variant
 				label = "购买药水：%s（%d 金币）" % [_potion_name(potion), price]
+				tooltip_title = _potion_name(potion)
+				tooltip_body = potion.description if potion != null else ""
 				disabled = disabled or _is_potion_inventory_full(run_state)
 			_:
 				label = "购买商品（%d 金币）" % price
@@ -64,7 +72,8 @@ func _project_offers(run_state: RunState, offers: Array[Dictionary]) -> Array[Di
 			"text": label,
 			"disabled": disabled,
 			"tooltip_icon": _tooltip_icon_for_offer(offer),
-			"tooltip_text": _tooltip_text_for_offer(offer),
+			"tooltip_title": tooltip_title,
+			"tooltip_body": tooltip_body,
 		})
 
 	return buttons
@@ -121,25 +130,4 @@ func _tooltip_icon_for_offer(offer: Dictionary) -> Texture:
 	var card_variant: Variant = offer.get("card")
 	if card_variant is Card and card_variant.icon != null:
 		return card_variant.icon
-	# Note: RelicData and PotionData do not have art/icon fields yet
-	# When icon support is added, uncomment the following:
-	# var relic_variant: Variant = offer.get("relic")
-	# if relic_variant is RelicData and relic_variant.icon != null:
-	# 	return relic_variant.icon
-	# var potion_variant: Variant = offer.get("potion")
-	# if potion_variant is PotionData and potion_variant.icon != null:
-	# 	return potion_variant.icon
 	return null
-
-
-func _tooltip_text_for_offer(offer: Dictionary) -> String:
-	var card_variant: Variant = offer.get("card")
-	if card_variant is Card:
-		return card_variant.tooltip_text
-	var relic_variant: Variant = offer.get("relic")
-	if relic_variant is RelicData:
-		return "[center]%s\\n%s[/center]" % [relic_variant.title, relic_variant.description]
-	var potion_variant: Variant = offer.get("potion")
-	if potion_variant is PotionData:
-		return "[center]%s\\n%s[/center]" % [potion_variant.title, potion_variant.description]
-	return ""

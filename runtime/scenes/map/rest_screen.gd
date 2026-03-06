@@ -18,6 +18,7 @@ var _adapter: RestUIAdapter = REST_UI_ADAPTER_SCRIPT.new() as RestUIAdapter
 
 func _ready() -> void:
 	_connect_signals()
+	_apply_responsive_layout()
 	_adapter.refresh()
 
 

@@ -19,7 +19,9 @@ var _adapter: RewardUIAdapter = REWARD_UI_ADAPTER_SCRIPT.new() as RewardUIAdapte
 
 func _ready() -> void:
 	_connect_signals()
+	_apply_responsive_layout()
 	_adapter.generate_bundle()
+	_apply_static_button_style(skip_button, UIColors.SUCCESS)
 
 
 func _exit_tree() -> void:
@@ -70,7 +72,6 @@ func _render(projection: Dictionary) -> void:
 
 	gold_label.text = str(projection.get("gold_text", "金币：+0"))
 	extra_reward_label.text = str(projection.get("extra_reward_text", "额外奖励：无"))
-
 	_render_cards(projection)
 
 
@@ -83,6 +84,7 @@ func _render_cards(projection: Dictionary) -> void:
 		hint.text = str(projection.get("empty_hint", "当前无卡牌奖励，可直接继续前进。"))
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		hint.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BODY)
+		hint.modulate = UIColors.TEXT_MUTED
 		cards_container.add_child(hint)
 		return
 
@@ -94,7 +96,6 @@ func _render_cards(projection: Dictionary) -> void:
 		if not (card_variant is Dictionary):
 			continue
 		var card_data: Dictionary = card_variant
-
 		var card: Variant = card_data.get("card")
 		var btn := Button.new()
 		btn.text = str(card_data.get("text", "(null card)"))
@@ -102,30 +103,63 @@ func _render_cards(projection: Dictionary) -> void:
 		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_CARD)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BUTTON_LARGE)
-
-		# Connect tooltip hover signals
-		var tooltip := str(card_data.get("tooltip", ""))
+		_apply_static_button_style(btn, UIColors.TOOLTIP_CARD)
+		var tooltip_title := str(card_data.get("tooltip_title", btn.text))
+		var tooltip_body := str(card_data.get("tooltip_body", ""))
 		var card_icon: Texture = null
 		if card is Card and card.icon != null:
 			card_icon = card.icon
-		if tooltip.length() > 0:
-			btn.mouse_entered.connect(_on_card_button_mouse_entered.bind(card_icon, tooltip))
-			btn.mouse_exited.connect(_on_card_button_mouse_exited)
-
+		if tooltip_body.length() > 0 or tooltip_title.length() > 0:
+			btn.mouse_entered.connect(_emit_tooltip.bind("card", tooltip_title, tooltip_body, card_icon, UIColors.TOOLTIP_CARD, "reward:%s" % tooltip_title))
+			btn.mouse_exited.connect(_on_tooltip_mouse_exited)
 		btn.pressed.connect(_on_card_pressed.bind(card))
 		cards_container.add_child(btn)
 
 
+func _apply_static_button_style(button: Button, accent: Color) -> void:
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = UIColors.BG_PANEL_SOFT
+	normal.border_width_left = 2
+	normal.border_width_top = 2
+	normal.border_width_right = 2
+	normal.border_width_bottom = 2
+	normal.border_color = accent.darkened(0.1)
+	normal.corner_radius_top_left = 14
+	normal.corner_radius_top_right = 14
+	normal.corner_radius_bottom_left = 14
+	normal.corner_radius_bottom_right = 14
+	normal.content_margin_left = 18
+	normal.content_margin_top = 14
+	normal.content_margin_right = 18
+	normal.content_margin_bottom = 14
+	var hover := normal.duplicate()
+	hover.bg_color = UIColors.BG_HUD
+	hover.border_color = accent.lightened(0.2)
+	var pressed := normal.duplicate()
+	pressed.bg_color = UIColors.BG_DARK
+	pressed.border_color = accent
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+
+
+func _emit_tooltip(kind: String, title: String, body: String, icon: Texture, accent_color: Color, source_id: String) -> void:
+	Events.tooltip_requested.emit({
+		"kind": kind,
+		"title": title,
+		"body": body,
+		"icon": icon,
+		"accent_color": accent_color,
+		"source_id": source_id,
+	})
+
+
+func _on_tooltip_mouse_exited() -> void:
+	Events.tooltip_hide_requested.emit()
+
+
 func _on_card_pressed(card: Card) -> void:
 	_adapter.select_card(card)
-
-
-func _on_card_button_mouse_entered(icon: Texture, text: String) -> void:
-	Events.card_tooltip_requested.emit(icon, text)
-
-
-func _on_card_button_mouse_exited() -> void:
-	Events.tooltip_hide_requested.emit()
 
 
 func _on_skip_pressed() -> void:
@@ -143,6 +177,5 @@ func _on_viewport_resized() -> void:
 func _apply_responsive_layout() -> void:
 	if not is_node_ready():
 		return
-
 	var viewport_size := get_viewport_rect().size
-	UILayout.apply_frame_layout(frame, viewport_size)
+	UILayout.apply_screen_frame_layout(frame, viewport_size)

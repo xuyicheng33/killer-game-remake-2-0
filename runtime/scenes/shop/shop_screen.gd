@@ -19,7 +19,8 @@ var _adapter: ShopUIAdapter = SHOP_UI_ADAPTER_SCRIPT.new() as ShopUIAdapter
 
 func _ready() -> void:
 	_connect_signals()
-	# 触发初始渲染
+	_apply_responsive_layout()
+	_apply_action_button_style(leave_button, UIColors.ACCENT)
 	_adapter.refresh()
 
 
@@ -63,10 +64,8 @@ func _set_run_state(value: RunState) -> void:
 func _render(projection: Dictionary) -> void:
 	if not is_node_ready():
 		return
-
 	gold_label.text = str(projection.get("gold_text", "金币：--"))
-	status_label.text = str(projection.get("status_text", ""))
-
+	status_label.text = str(projection.get("status_text", "完成操作后可继续前进。"))
 	_render_offers(projection)
 	_render_deck(projection)
 
@@ -83,11 +82,9 @@ func _render_offers(projection: Dictionary) -> void:
 		if not (button_variant is Dictionary):
 			continue
 		var button_data: Dictionary = button_variant
-
 		var index := int(button_data.get("index", -1))
 		if index < 0:
 			continue
-
 		var btn := Button.new()
 		btn.text = str(button_data.get("text", "购买卡牌"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -95,14 +92,14 @@ func _render_offers(projection: Dictionary) -> void:
 		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_DEFAULT)
 		btn.disabled = bool(button_data.get("disabled", true))
 		btn.pressed.connect(_on_buy_offer.bind(index))
-
-		# Connect tooltip hover signals
 		var tooltip_icon: Texture = button_data.get("tooltip_icon")
-		var tooltip_body: String = str(button_data.get("tooltip_text", ""))
-		if tooltip_body.length() > 0:
-			btn.mouse_entered.connect(_on_offer_button_mouse_entered.bind(tooltip_icon, tooltip_body))
-			btn.mouse_exited.connect(_on_offer_button_mouse_exited)
-
+		var tooltip_title := str(button_data.get("tooltip_title", btn.text))
+		var tooltip_body := str(button_data.get("tooltip_body", ""))
+		var accent := _accent_for_offer(tooltip_title)
+		_apply_action_button_style(btn, accent)
+		if tooltip_body.length() > 0 or tooltip_title.length() > 0:
+			btn.mouse_entered.connect(_emit_tooltip.bind("card", tooltip_title, tooltip_body, tooltip_icon, accent, "shop_offer:%d" % index))
+			btn.mouse_exited.connect(_on_tooltip_mouse_exited)
 		offers_container.add_child(btn)
 
 
@@ -118,11 +115,9 @@ func _render_deck(projection: Dictionary) -> void:
 		if not (button_variant is Dictionary):
 			continue
 		var button_data: Dictionary = button_variant
-
 		var index := int(button_data.get("index", -1))
 		if index < 0:
 			continue
-
 		var btn := Button.new()
 		btn.text = str(button_data.get("text", "移除卡牌"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -130,19 +125,62 @@ func _render_deck(projection: Dictionary) -> void:
 		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_DEFAULT)
 		btn.disabled = bool(button_data.get("disabled", true))
 		btn.pressed.connect(_on_remove_card.bind(index))
+		_apply_action_button_style(btn, UIColors.WARNING)
 		deck_container.add_child(btn)
+
+
+func _accent_for_offer(tooltip_title: String) -> Color:
+	if tooltip_title.contains("遗物") or tooltip_title.contains("徽章"):
+		return UIColors.TOOLTIP_RELIC
+	if tooltip_title.contains("药水"):
+		return UIColors.TOOLTIP_POTION
+	return UIColors.TOOLTIP_CARD
+
+
+func _apply_action_button_style(button: Button, accent: Color) -> void:
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = UIColors.BG_PANEL_SOFT
+	normal.border_width_left = 2
+	normal.border_width_top = 2
+	normal.border_width_right = 2
+	normal.border_width_bottom = 2
+	normal.border_color = accent.darkened(0.1)
+	normal.corner_radius_top_left = 14
+	normal.corner_radius_top_right = 14
+	normal.corner_radius_bottom_left = 14
+	normal.corner_radius_bottom_right = 14
+	normal.content_margin_left = 18
+	normal.content_margin_top = 14
+	normal.content_margin_right = 18
+	normal.content_margin_bottom = 14
+	var hover := normal.duplicate()
+	hover.bg_color = UIColors.BG_HUD
+	hover.border_color = accent.lightened(0.2)
+	var pressed := normal.duplicate()
+	pressed.bg_color = UIColors.BG_DARK
+	pressed.border_color = accent
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+
+
+func _emit_tooltip(kind: String, title: String, body: String, icon: Texture, accent_color: Color, source_id: String) -> void:
+	Events.tooltip_requested.emit({
+		"kind": kind,
+		"title": title,
+		"body": body,
+		"icon": icon,
+		"accent_color": accent_color,
+		"source_id": source_id,
+	})
+
+
+func _on_tooltip_mouse_exited() -> void:
+	Events.tooltip_hide_requested.emit()
 
 
 func _on_buy_offer(index: int) -> void:
 	_adapter.execute_buy_offer(index)
-
-
-func _on_offer_button_mouse_entered(icon: Texture, text: String) -> void:
-	Events.card_tooltip_requested.emit(icon, text)
-
-
-func _on_offer_button_mouse_exited() -> void:
-	Events.tooltip_hide_requested.emit()
 
 
 func _on_remove_card(index: int) -> void:
@@ -164,6 +202,5 @@ func _on_viewport_resized() -> void:
 func _apply_responsive_layout() -> void:
 	if not is_node_ready():
 		return
-
 	var viewport_size := get_viewport_rect().size
-	UILayout.apply_frame_layout(content_margin, viewport_size)
+	UILayout.apply_screen_frame_layout(content_margin, viewport_size)

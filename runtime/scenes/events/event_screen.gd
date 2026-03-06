@@ -21,6 +21,7 @@ func _ready() -> void:
 	_connect_signals()
 	continue_button.hide()
 	# 触发初始渲染
+	_apply_responsive_layout()
 	_adapter.refresh()
 
 
@@ -130,3 +131,30 @@ func _apply_responsive_layout() -> void:
 
 	var viewport_size := get_viewport_rect().size
 	UILayout.apply_frame_layout(content_margin, viewport_size)
+
+
+func _apply_option_button_style(button: Button) -> void:
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = UIColors.BG_PANEL_SOFT
+	normal.border_width_left = 2
+	normal.border_width_top = 2
+	normal.border_width_right = 2
+	normal.border_width_bottom = 2
+	normal.border_color = UIColors.SECONDARY
+	normal.corner_radius_top_left = 14
+	normal.corner_radius_top_right = 14
+	normal.corner_radius_bottom_left = 14
+	normal.corner_radius_bottom_right = 14
+	normal.content_margin_left = 18
+	normal.content_margin_top = 14
+	normal.content_margin_right = 18
+	normal.content_margin_bottom = 14
+	var hover := normal.duplicate()
+	hover.bg_color = UIColors.BG_HUD
+	hover.border_color = UIColors.SECONDARY.lightened(0.2)
+	var pressed := normal.duplicate()
+	pressed.bg_color = UIColors.BG_DARK
+	pressed.border_color = UIColors.SECONDARY
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
