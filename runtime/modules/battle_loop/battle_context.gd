@@ -6,7 +6,8 @@ var buff_system: BuffSystem
 var card_zones: CardZonesModel
 var phase_machine: BattlePhaseStateMachine
 var _character: CharacterStats
-var _hand: Hand
+var _hand: Node
+var _hand_port: HandZonePort
 var _player: Node
 var _enemies: Array[Node] = []
 
@@ -18,10 +19,11 @@ func _init() -> void:
 	phase_machine = BattlePhaseStateMachine.new()
 
 
-func bind_battle_context(character: CharacterStats, hand: Hand) -> void:
+func bind_battle_context(character: CharacterStats, hand: Node) -> void:
 	_character = character
 	_hand = hand
-	card_zones.bind_context(character, hand)
+	_hand_port = HandZonePort.from_node(hand)
+	card_zones.bind_context(character, _hand_port)
 	buff_system.connect_events()
 
 
@@ -41,6 +43,7 @@ func unbind_battle_context() -> void:
 	card_zones.unbind_context()
 	_character = null
 	_hand = null
+	_hand_port = null
 	_player = null
 	_enemies.clear()
 

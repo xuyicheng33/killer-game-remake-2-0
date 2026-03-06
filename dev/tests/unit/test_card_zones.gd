@@ -18,7 +18,7 @@ func before_each() -> void:
 	_stats.discard = CardPile.new()
 	_stats.deck = CardPile.new()
 	_hand = Hand.new()
-	_zones.bind_context(_stats, _hand)
+	_zones.bind_context(_stats, HandZonePort.from_node(_hand))
 
 
 func after_each() -> void:

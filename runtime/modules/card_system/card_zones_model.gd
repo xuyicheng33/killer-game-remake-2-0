@@ -5,7 +5,7 @@ signal zone_counts_changed(draw_count: int, hand_count: int, discard_count: int,
 
 var _events_connected := false
 var _character: CharacterStats = null
-var _hand: Node = null
+var _hand_port: HandZonePort = null
 var _exhaust_pile: CardPile = CardPile.new()
 var _bound_draw_pile: CardPile = null
 var _bound_discard_pile: CardPile = null
@@ -13,13 +13,13 @@ var _turn_end_hand_snapshot: Array[Card] = []
 var _player_action_window_open := false
 
 
-func bind_context(character: CharacterStats, hand: Node) -> void:
+func bind_context(character: CharacterStats, hand_port: HandZonePort) -> void:
 	_disconnect_pile_signals()
 	_disconnect_hand_signals()
 	_disconnect_events()
 
 	_character = character
-	_hand = hand
+	_hand_port = hand_port
 	_exhaust_pile = CardPile.new()
 	_turn_end_hand_snapshot.clear()
 	_player_action_window_open = false
@@ -35,7 +35,9 @@ func unbind_context() -> void:
 	_disconnect_hand_signals()
 	_disconnect_events()
 	_character = null
-	_hand = null
+	if _hand_port != null:
+		_hand_port.unbind()
+	_hand_port = null
 	_exhaust_pile = CardPile.new()
 	_turn_end_hand_snapshot.clear()
 	_player_action_window_open = false
@@ -52,9 +54,9 @@ func get_draw_count() -> int:
 
 
 func get_hand_count() -> int:
-	if _hand == null or not is_instance_valid(_hand):
+	if _hand_port == null:
 		return 0
-	return _hand.get_child_count()
+	return _hand_port.get_count()
 
 
 func get_discard_count() -> int:
@@ -134,14 +136,10 @@ func _handle_post_card_played(card: Card) -> void:
 func _on_player_turn_ended() -> void:
 	_player_action_window_open = false
 	_turn_end_hand_snapshot.clear()
-	if _hand == null or not is_instance_valid(_hand):
+	if _hand_port == null:
 		return
 
-	for child_node: Node in _hand.get_children():
-		var card := _extract_card_from_hand_child(child_node)
-		if card == null:
-			continue
-		_turn_end_hand_snapshot.append(card)
+	_turn_end_hand_snapshot = _hand_port.get_cards()
 
 
 func _on_player_hand_discarded() -> void:
@@ -161,8 +159,8 @@ func _on_player_hand_discarded() -> void:
 
 		if card.keyword_retain:
 			if _character.discard.remove_card(card):
-				if _hand != null and is_instance_valid(_hand) and _hand.has_method("add_card"):
-					_hand.add_card(card)
+				if _hand_port != null:
+					_hand_port.try_add_card(card)
 
 	_turn_end_hand_snapshot.clear()
 	_emit_zone_counts()
@@ -206,30 +204,24 @@ func _disconnect_pile_signals() -> void:
 
 
 func _connect_hand_signals() -> void:
-	if _hand == null or not is_instance_valid(_hand):
+	if _hand_port == null:
 		return
-
-	if not _hand.child_entered_tree.is_connected(_on_hand_children_changed):
-		_hand.child_entered_tree.connect(_on_hand_children_changed)
-	if not _hand.child_exiting_tree.is_connected(_on_hand_children_changed):
-		_hand.child_exiting_tree.connect(_on_hand_children_changed)
+	if not _hand_port.cards_changed.is_connected(_on_hand_children_changed):
+		_hand_port.cards_changed.connect(_on_hand_children_changed)
 
 
 func _disconnect_hand_signals() -> void:
-	if _hand == null or not is_instance_valid(_hand):
+	if _hand_port == null:
 		return
-
-	if _hand.child_entered_tree.is_connected(_on_hand_children_changed):
-		_hand.child_entered_tree.disconnect(_on_hand_children_changed)
-	if _hand.child_exiting_tree.is_connected(_on_hand_children_changed):
-		_hand.child_exiting_tree.disconnect(_on_hand_children_changed)
+	if _hand_port.cards_changed.is_connected(_on_hand_children_changed):
+		_hand_port.cards_changed.disconnect(_on_hand_children_changed)
 
 
 func _on_pile_size_changed(_size: int) -> void:
 	_emit_zone_counts()
 
 
-func _on_hand_children_changed(_node: Node) -> void:
+func _on_hand_children_changed() -> void:
 	call_deferred("_emit_zone_counts")
 
 
@@ -242,12 +234,3 @@ func _emit_zone_counts() -> void:
 	)
 
 
-func _extract_card_from_hand_child(child_node: Node) -> Card:
-	if child_node == null or not is_instance_valid(child_node):
-		return null
-	if not ("card" in child_node):
-		return null
-	var card_variant: Variant = child_node.get("card")
-	if card_variant is Card:
-		return card_variant as Card
-	return null

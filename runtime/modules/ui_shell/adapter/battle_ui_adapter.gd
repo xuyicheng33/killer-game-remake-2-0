@@ -47,10 +47,10 @@ func bind_battle_context(battle_context: BattleContext) -> void:
 		_card_zones_model.zone_counts_changed.connect(_on_zone_counts_changed)
 
 
-func bind_context(char_stats: CharacterStats, hand: Hand) -> void:
+func bind_context(char_stats: CharacterStats, hand: Node) -> void:
 	if _card_zones_model == null:
 		return
-	_card_zones_model.bind_context(char_stats, hand)
+	_card_zones_model.bind_context(char_stats, HandZonePort.from_node(hand))
 	var counts: Dictionary = _card_zones_model.get_zone_counts()
 	var projection := _view_model.project_zone_counts(
 		int(counts.get("draw", 0)),
