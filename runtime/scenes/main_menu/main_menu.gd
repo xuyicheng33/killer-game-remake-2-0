@@ -6,6 +6,7 @@ signal continue_game_requested
 
 const SAVE_SERVICE_SCRIPT := preload("res://runtime/modules/persistence/save_service.gd")
 const CHARACTER_REGISTRY_SCRIPT := preload("res://runtime/modules/run_meta/character_registry.gd")
+const UI_COLORS_SCRIPT := preload("res://runtime/global/ui_colors.gd")
 
 @onready var new_game_button: Button = %NewGameButton
 @onready var continue_button: Button = %ContinueButton
@@ -83,11 +84,11 @@ func _update_ui_state() -> void:
 	if has_save:
 		continue_button.text = "继续游戏"
 		save_status_label.text = "检测到存档"
-		save_status_label.modulate = UIColors.SAVE_EXISTS
+		save_status_label.modulate = UI_COLORS_SCRIPT.SAVE_EXISTS
 	else:
 		continue_button.text = "继续游戏（无存档）"
 		save_status_label.text = "无存档"
-		save_status_label.modulate = UIColors.SAVE_MISSING
+		save_status_label.modulate = UI_COLORS_SCRIPT.SAVE_MISSING
 
 
 func _on_character_button_pressed(character_id: String) -> void:

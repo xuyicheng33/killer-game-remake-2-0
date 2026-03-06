@@ -22,10 +22,11 @@ bash dev/tools/scene_nested_state_write_check.sh
 bash dev/tools/type_safety_check.sh
 
 if command -v godot >/dev/null 2>&1; then
-  echo "[ci-checks] godot detected, running smoke tests..."
-  GODOT=godot bash dev/tools/run_gut_test_file.sh res://dev/tests/test_gut_smoke.gd 120
-  GODOT=godot bash dev/tools/run_gut_test_file.sh res://dev/tests/unit/test_run_flow.gd 180
-else
+	 echo "[ci-checks] godot detected, running smoke tests..."
+	 GODOT=godot bash dev/tools/run_gut_test_file.sh res://dev/tests/test_gut_smoke.gd 120
+	 GODOT=godot bash dev/tools/run_gut_test_file.sh res://dev/tests/unit/test_compile_regression_smoke.gd 120
+	 GODOT=godot bash dev/tools/run_gut_test_file.sh res://dev/tests/unit/test_run_flow.gd 180
+	else
   echo "[ci-checks] godot not found, skipping engine tests."
 fi
 

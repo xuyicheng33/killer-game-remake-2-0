@@ -5,6 +5,7 @@ signal projection_changed(projection: Dictionary)
 signal end_turn_button_enabled_changed(enabled: bool)
 
 const BATTLE_UI_VIEW_MODEL_SCRIPT := preload("res://runtime/modules/ui_shell/viewmodel/battle_ui_view_model.gd")
+const HAND_ZONE_PORT_SCRIPT := preload("res://runtime/modules/card_system/hand_zone_port.gd")
 
 var _card_zones_model: CardZonesModel
 var _view_model: BattleUIViewModel = BATTLE_UI_VIEW_MODEL_SCRIPT.new() as BattleUIViewModel
@@ -50,7 +51,7 @@ func bind_battle_context(battle_context: BattleContext) -> void:
 func bind_context(char_stats: CharacterStats, hand: Node) -> void:
 	if _card_zones_model == null:
 		return
-	_card_zones_model.bind_context(char_stats, HandZonePort.from_node(hand))
+		_card_zones_model.bind_context(char_stats, HAND_ZONE_PORT_SCRIPT.from_node(hand))
 	var counts: Dictionary = _card_zones_model.get_zone_counts()
 	var projection := _view_model.project_zone_counts(
 		int(counts.get("draw", 0)),

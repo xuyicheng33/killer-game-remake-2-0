@@ -2,15 +2,16 @@ class_name EnemyIntentRules
 extends RefCounted
 
 const RUN_RNG_SCRIPT := preload("res://runtime/global/run_rng.gd")
+const INTENT_ACTION_DATA_SCRIPT := preload("res://runtime/modules/enemy_intent/intent_action_data.gd")
 
 
 static func pick_next_action(
-	actions: Array[IntentActionData],
+	actions: Array,
 	last_action_name: StringName,
 	_ascension_level: int,
 	disallow_consecutive: bool,
 	rng_stream_key: String = "enemy_intent"
-) -> IntentActionData:
+) -> Variant:
 	var conditional := _collect_conditionals(actions)
 	var weighted := _collect_weighted(actions)
 
@@ -33,11 +34,11 @@ static func pick_next_action(
 
 
 static func pick_first_conditional_action(
-	actions: Array[IntentActionData],
+	actions: Array,
 	last_action_name: StringName,
 	_ascension_level: int,
 	disallow_consecutive: bool
-) -> IntentActionData:
+) -> Variant:
 	var conditional := _collect_conditionals(actions)
 	if conditional.size() == 0:
 		return null
@@ -52,12 +53,12 @@ static func pick_first_conditional_action(
 
 
 static func _pick_from_pool(
-	pool: Array[IntentActionData],
+	pool: Array,
 	last_action_name: StringName,
 	disallow_consecutive: bool,
 	is_weighted: bool,
 	rng_stream_key: String
-) -> IntentActionData:
+) -> Variant:
 	if pool.size() == 0:
 		return null
 
@@ -76,37 +77,37 @@ static func _pick_from_pool(
 	return _pick_weighted(candidates, rng_stream_key)
 
 
-static func _collect_conditionals(actions: Array[IntentActionData]) -> Array[IntentActionData]:
-	var out: Array[IntentActionData] = []
+static func _collect_conditionals(actions: Array) -> Array:
+	var out: Array = []
 	for action in actions:
 		if action == null:
 			continue
-		if action.type != IntentActionData.ActionType.CONDITIONAL:
+		if action.type != INTENT_ACTION_DATA_SCRIPT.ActionType.CONDITIONAL:
 			continue
 		if action.is_performable:
 			out.append(action)
 	return out
 
 
-static func _collect_weighted(actions: Array[IntentActionData]) -> Array[IntentActionData]:
-	var out: Array[IntentActionData] = []
+static func _collect_weighted(actions: Array) -> Array:
+	var out: Array = []
 	for action in actions:
 		if action == null:
 			continue
-		if action.type != IntentActionData.ActionType.CHANCE_BASED:
+		if action.type != INTENT_ACTION_DATA_SCRIPT.ActionType.CHANCE_BASED:
 			continue
 		out.append(action)
 	return out
 
 
 static func _filter_no_repeat(
-	actions: Array[IntentActionData],
+	actions: Array,
 	last_action_name: StringName
-) -> Array[IntentActionData]:
+) -> Array:
 	if last_action_name == &"":
 		return actions
 
-	var out: Array[IntentActionData] = []
+	var out: Array = []
 	for action in actions:
 		if action != null and action.action_name != last_action_name:
 			out.append(action)
@@ -114,9 +115,9 @@ static func _filter_no_repeat(
 
 
 static func _pick_weighted(
-	actions: Array[IntentActionData],
+	actions: Array,
 	rng_stream_key: String
-) -> IntentActionData:
+) -> Variant:
 	var total := 0.0
 	for action in actions:
 		if action == null:

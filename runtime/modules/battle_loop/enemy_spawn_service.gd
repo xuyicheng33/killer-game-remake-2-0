@@ -37,12 +37,12 @@ func spawn_enemies(
 			push_error("EnemySpawnService: failed to load enemy stats for '%s'" % enemy_id)
 			continue
 
-		var enemy := enemy_scene.instantiate() as Enemy
-		if enemy == null:
-			push_error("EnemySpawnService: failed to instantiate enemy scene")
-			continue
-		enemy.stats = enemy_stats
-		enemy.battle_context = battle_context
+			var enemy := enemy_scene.instantiate() as Node2D
+			if enemy == null:
+				push_error("EnemySpawnService: failed to instantiate enemy scene")
+				continue
+			enemy.set("stats", enemy_stats)
+			enemy.set("battle_context", battle_context)
 
 		var offset_x := (i - (enemy_count - 1) / 2.0) * spacing
 		# 视觉布局随机抖动，不影响游戏逻辑或种子一致性

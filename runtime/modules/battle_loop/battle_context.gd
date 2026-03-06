@@ -1,13 +1,15 @@
 class_name BattleContext
 extends RefCounted
 
+const HAND_ZONE_PORT_SCRIPT := preload("res://runtime/modules/card_system/hand_zone_port.gd")
+
 var effect_stack: EffectStackEngine
 var buff_system: BuffSystem
 var card_zones: CardZonesModel
 var phase_machine: BattlePhaseStateMachine
 var _character: CharacterStats
 var _hand: Node
-var _hand_port: HandZonePort
+var _hand_port = null
 var _player: Node
 var _enemies: Array[Node] = []
 
@@ -22,7 +24,7 @@ func _init() -> void:
 func bind_battle_context(character: CharacterStats, hand: Node) -> void:
 	_character = character
 	_hand = hand
-	_hand_port = HandZonePort.from_node(hand)
+	_hand_port = HAND_ZONE_PORT_SCRIPT.from_node(hand)
 	card_zones.bind_context(character, _hand_port)
 	buff_system.connect_events()
 

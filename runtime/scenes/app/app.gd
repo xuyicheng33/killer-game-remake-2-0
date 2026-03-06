@@ -143,8 +143,9 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 func _open_battle(encounter_id: String = "") -> void:
 	_clear_scene_host()
 	var battle_scene := BATTLE_SCENE.instantiate()
-	if battle_scene.has_method("init_battle"):
-		battle_scene.call("init_battle", run_state.player_stats, encounter_id, relic_potion_system)
+	battle_scene.set("runtime_stats", run_state.player_stats)
+	battle_scene.set("encounter_id", encounter_id)
+	battle_scene.set("relic_potion_system", relic_potion_system)
 	scene_host.add_child(battle_scene)
 
 

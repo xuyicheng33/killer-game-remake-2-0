@@ -2,6 +2,8 @@ class_name BattleUI
 extends CanvasLayer
 
 const BATTLE_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/battle_ui_adapter.gd")
+const UI_COLORS_SCRIPT := preload("res://runtime/global/ui_colors.gd")
+const UI_LAYOUT_SCRIPT := preload("res://runtime/global/ui_layout.gd")
 
 @export var char_stats: CharacterStats : set = _set_char_stats
 
@@ -99,8 +101,8 @@ func _setup_zone_counts_ui() -> void:
 	_zone_counts_label.anchor_bottom = 0.0
 	_zone_counts_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_zone_counts_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_zone_counts_label.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_ZONE_COUNTS)
-	_zone_counts_label.add_theme_color_override("font_color", UIColors.ZONE_COUNTS_TEXT)
+	_zone_counts_label.add_theme_font_size_override("font_size", UI_LAYOUT_SCRIPT.FONT_SIZE_ZONE_COUNTS)
+	_zone_counts_label.add_theme_color_override("font_color", UI_COLORS_SCRIPT.ZONE_COUNTS_TEXT)
 	_zone_counts_label.text = "抽牌堆：0  手牌：0\n弃牌堆：0  消耗堆：0"
 	add_child(_zone_counts_label)
 	_apply_zone_counts_responsive_layout()

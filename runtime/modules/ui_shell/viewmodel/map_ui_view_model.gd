@@ -1,6 +1,8 @@
 class_name MapUIViewModel
 extends RefCounted
 
+const UI_COLORS_SCRIPT := preload("res://runtime/global/ui_colors.gd")
+
 
 func project_header(run_state: RunState) -> Dictionary:
 	var projection := {
@@ -37,7 +39,7 @@ func project_node_text(node: MapNodeData, run_state: RunState) -> Dictionary:
 	var projection := {
 		"text": "[未知] %s\n%s" % [node.title if node else "?", node.description if node else ""],
 		"disabled": true,
-		"font_color": UIColors.NODE_BATTLE,
+		"font_color": UI_COLORS_SCRIPT.NODE_BATTLE,
 		"node_id": "",
 	}
 
@@ -67,14 +69,14 @@ func _node_state_tag(node_id: String, run_state: RunState) -> String:
 func _node_color(type: MapNodeData.NodeType) -> Color:
 	match type:
 		MapNodeData.NodeType.ELITE:
-			return UIColors.NODE_ELITE
+			return UI_COLORS_SCRIPT.NODE_ELITE
 		MapNodeData.NodeType.REST:
-			return UIColors.NODE_REST
+			return UI_COLORS_SCRIPT.NODE_REST
 		MapNodeData.NodeType.EVENT:
-			return UIColors.NODE_EVENT
+			return UI_COLORS_SCRIPT.NODE_EVENT
 		MapNodeData.NodeType.SHOP:
-			return UIColors.NODE_SHOP
+			return UI_COLORS_SCRIPT.NODE_SHOP
 		MapNodeData.NodeType.BOSS:
-			return UIColors.NODE_BOSS
+			return UI_COLORS_SCRIPT.NODE_BOSS
 		_:
-			return UIColors.NODE_BATTLE
+			return UI_COLORS_SCRIPT.NODE_BATTLE

@@ -3,9 +3,11 @@ extends RefCounted
 
 signal zone_counts_changed(draw_count: int, hand_count: int, discard_count: int, exhaust_count: int)
 
+const HAND_ZONE_PORT_SCRIPT := preload("res://runtime/modules/card_system/hand_zone_port.gd")
+
 var _events_connected := false
 var _character: CharacterStats = null
-var _hand_port: HandZonePort = null
+var _hand_port = null
 var _exhaust_pile: CardPile = CardPile.new()
 var _bound_draw_pile: CardPile = null
 var _bound_discard_pile: CardPile = null
@@ -13,7 +15,7 @@ var _turn_end_hand_snapshot: Array[Card] = []
 var _player_action_window_open := false
 
 
-func bind_context(character: CharacterStats, hand_port: HandZonePort) -> void:
+func bind_context(character: CharacterStats, hand_port) -> void:
 	_disconnect_pile_signals()
 	_disconnect_hand_signals()
 	_disconnect_events()
@@ -232,5 +234,4 @@ func _emit_zone_counts() -> void:
 		get_discard_count(),
 		get_exhaust_count()
 	)
-
 

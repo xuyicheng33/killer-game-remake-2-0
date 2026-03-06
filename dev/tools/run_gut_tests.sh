@@ -22,6 +22,17 @@ mkdir -p "$HOME" >/dev/null 2>&1 || true
 echo "[GUT] Running tests (timeout: ${TIMEOUT}s)..."
 echo "[GUT] Using HOME=${HOME}"
 
+ensure_godot_import() {
+	$GODOT \
+		--path "$ROOT_DIR" \
+		--headless \
+		--display-driver headless \
+		--audio-driver Dummy \
+		--import >/dev/null 2>&1 || true
+}
+
+ensure_godot_import
+
 run_godot_once() {
     # 在后台运行 Godot（显式关闭显示/音频，避免 macOS headless 阻塞）
     $GODOT \

@@ -4,6 +4,7 @@ extends Control
 signal event_completed
 
 const EVENT_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/event_ui_adapter.gd")
+const UI_LAYOUT_SCRIPT := preload("res://runtime/global/ui_layout.gd")
 
 @export var run_state: RunState : set = _set_run_state
 
@@ -97,7 +98,7 @@ func _render_options(projection: Dictionary, options_disabled: bool) -> void:
 		var btn := Button.new()
 		btn.text = str(option_data.get("label", "选项"))
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_DEFAULT)
+		btn.custom_minimum_size = Vector2(0, UI_LAYOUT_SCRIPT.BTN_HEIGHT_DEFAULT)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.disabled = options_disabled
 
@@ -129,4 +130,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	UILayout.apply_frame_layout(content_margin, viewport_size)
+	UI_LAYOUT_SCRIPT.apply_frame_layout(content_margin, viewport_size)

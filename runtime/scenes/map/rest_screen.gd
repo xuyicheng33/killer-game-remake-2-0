@@ -4,6 +4,7 @@ extends Control
 signal rest_completed
 
 const REST_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/rest_ui_adapter.gd")
+const UI_LAYOUT_SCRIPT := preload("res://runtime/global/ui_layout.gd")
 
 @export var run_state: RunState : set = _set_run_state
 
@@ -97,4 +98,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	UILayout.apply_frame_layout(frame, viewport_size)
+	UI_LAYOUT_SCRIPT.apply_frame_layout(frame, viewport_size)

@@ -2,6 +2,7 @@ class_name RelicPotionUI
 extends PanelContainer
 
 const RELIC_POTION_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/relic_potion_ui_adapter.gd")
+const UI_LAYOUT_SCRIPT := preload("res://runtime/global/ui_layout.gd")
 
 @export var run_state: RunState : set = _set_run_state
 
@@ -84,7 +85,7 @@ func _render_relics(projection: Dictionary) -> void:
 	if not (relic_items is Array) or relic_items.is_empty():
 		var hint := Label.new()
 		hint.text = "（无）"
-		hint.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_SMALL)
+		hint.add_theme_font_size_override("font_size", UI_LAYOUT_SCRIPT.FONT_SIZE_SMALL)
 		relic_list_label.add_child(hint)
 		return
 
@@ -166,7 +167,7 @@ func _render_potions(projection: Dictionary) -> void:
 	if bool(projection.get("battle_only_hint_visible", false)):
 		var battle_hint := Label.new()
 		battle_hint.text = str(projection.get("battle_only_hint", "药水仅可在战斗中使用。"))
-		battle_hint.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_SMALL)
+		battle_hint.add_theme_font_size_override("font_size", UI_LAYOUT_SCRIPT.FONT_SIZE_SMALL)
 		battle_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		potion_container.add_child(battle_hint)
 

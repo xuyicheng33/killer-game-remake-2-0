@@ -5,6 +5,8 @@ signal node_selected(node: MapNodeData)
 signal restart_requested
 
 const MAP_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/map_ui_adapter.gd")
+const UI_COLORS_SCRIPT := preload("res://runtime/global/ui_colors.gd")
+const UI_LAYOUT_SCRIPT := preload("res://runtime/global/ui_layout.gd")
 
 @export var run_state: RunState : set = _set_run_state
 
@@ -100,12 +102,12 @@ func _render_nodes(projection: Dictionary) -> void:
 
 		var floor_title := Label.new()
 		floor_title.text = str(floor_row_data.get("floor_label", "第 ? 层"))
-		floor_title.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BODY)
+		floor_title.add_theme_font_size_override("font_size", UI_LAYOUT_SCRIPT.FONT_SIZE_BODY)
 		node_list.add_child(floor_title)
 
 		var floor_row := HBoxContainer.new()
 		floor_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		floor_row.add_theme_constant_override("separation", UILayout.LIST_SEPARATION)
+		floor_row.add_theme_constant_override("separation", UI_LAYOUT_SCRIPT.LIST_SEPARATION)
 		node_list.add_child(floor_row)
 
 		var nodes: Variant = floor_row_data.get("nodes", [])
@@ -120,14 +122,14 @@ func _render_nodes(projection: Dictionary) -> void:
 			var node_id := str(node_data.get("node_id", ""))
 			var button := Button.new()
 			button.text = str(node_data.get("text", "[未知]"))
-			button.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_MAP_NODE)
+			button.custom_minimum_size = Vector2(0, UI_LAYOUT_SCRIPT.BTN_HEIGHT_MAP_NODE)
 			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			button.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BUTTON)
+			button.add_theme_font_size_override("font_size", UI_LAYOUT_SCRIPT.FONT_SIZE_BUTTON)
 			button.disabled = bool(node_data.get("disabled", true))
 
-			var font_color: Variant = node_data.get("font_color", UIColors.NODE_BATTLE)
+			var font_color: Variant = node_data.get("font_color", UI_COLORS_SCRIPT.NODE_BATTLE)
 			if font_color is Color:
 				button.add_theme_color_override("font_color", font_color)
 
@@ -171,4 +173,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	UILayout.apply_frame_layout(frame, viewport_size)
+	UI_LAYOUT_SCRIPT.apply_frame_layout(frame, viewport_size)

@@ -7,6 +7,7 @@ signal reparent_requested(which_card_ui: CardUI)
 const BASE_STYLEBOX := preload("res://runtime/scenes/card_ui/card_base_stylebox.tres")
 const DRAG_STYLEBOX := preload("res://runtime/scenes/card_ui/card_drag_stylebox.tres")
 const HOVER_STYLEBOX := preload("res://runtime/scenes/card_ui/card_hover_stylebox.tres")
+const UI_COLORS_SCRIPT := preload("res://runtime/global/ui_colors.gd")
 
 @export var card: Card : set = _set_card
 @export var char_stats: CharacterStats : set = _set_char_stats
@@ -122,9 +123,9 @@ func _set_card(value: Card) -> void:
 func _set_playable(value: bool) -> void:
 	playable = value
 	if not playable:
-		cost.add_theme_color_override("font_color", UIColors.CARD_COST_UNPLAYABLE)
-		name_label.modulate = UIColors.CARD_LABEL_DIMMED
-		desc_label.modulate = UIColors.CARD_LABEL_DIMMED
+		cost.add_theme_color_override("font_color", UI_COLORS_SCRIPT.CARD_COST_UNPLAYABLE)
+		name_label.modulate = UI_COLORS_SCRIPT.CARD_LABEL_DIMMED
+		desc_label.modulate = UI_COLORS_SCRIPT.CARD_LABEL_DIMMED
 	else:
 		cost.remove_theme_color_override("font_color")
 		name_label.modulate = Color.WHITE

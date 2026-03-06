@@ -1,6 +1,7 @@
 extends GutTest
 
 const CARD_ZONES_MODEL_SCRIPT := preload("res://runtime/modules/card_system/card_zones_model.gd")
+const HAND_ZONE_PORT_SCRIPT := preload("res://runtime/modules/card_system/hand_zone_port.gd")
 
 var _zones: CardZonesModel
 var _stats: CharacterStats
@@ -18,7 +19,7 @@ func before_each() -> void:
 	_stats.discard = CardPile.new()
 	_stats.deck = CardPile.new()
 	_hand = Hand.new()
-	_zones.bind_context(_stats, HandZonePort.from_node(_hand))
+	_zones.bind_context(_stats, HAND_ZONE_PORT_SCRIPT.from_node(_hand))
 
 
 func after_each() -> void:

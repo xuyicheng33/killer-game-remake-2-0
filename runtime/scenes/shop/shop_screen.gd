@@ -4,6 +4,7 @@ extends Control
 signal shop_completed
 
 const SHOP_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/shop_ui_adapter.gd")
+const UI_LAYOUT_SCRIPT := preload("res://runtime/global/ui_layout.gd")
 
 @export var run_state: RunState : set = _set_run_state
 
@@ -92,7 +93,7 @@ func _render_offers(projection: Dictionary) -> void:
 		btn.text = str(button_data.get("text", "购买卡牌"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_DEFAULT)
+		btn.custom_minimum_size = Vector2(0, UI_LAYOUT_SCRIPT.BTN_HEIGHT_DEFAULT)
 		btn.disabled = bool(button_data.get("disabled", true))
 		btn.pressed.connect(_on_buy_offer.bind(index))
 
@@ -127,7 +128,7 @@ func _render_deck(projection: Dictionary) -> void:
 		btn.text = str(button_data.get("text", "移除卡牌"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_DEFAULT)
+		btn.custom_minimum_size = Vector2(0, UI_LAYOUT_SCRIPT.BTN_HEIGHT_DEFAULT)
 		btn.disabled = bool(button_data.get("disabled", true))
 		btn.pressed.connect(_on_remove_card.bind(index))
 		deck_container.add_child(btn)
@@ -166,4 +167,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	UILayout.apply_frame_layout(content_margin, viewport_size)
+	UI_LAYOUT_SCRIPT.apply_frame_layout(content_margin, viewport_size)

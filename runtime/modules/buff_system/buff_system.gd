@@ -1,6 +1,8 @@
 class_name BuffSystem
 extends RefCounted
 
+const COMBATANT_ROLE_SCRIPT := preload("res://runtime/modules/buff_system/combatant_role.gd")
+
 const STATUS_STRENGTH := "strength"
 const STATUS_DEXTERITY := "dexterity"
 const STATUS_VULNERABLE := "vulnerable"
@@ -43,9 +45,9 @@ func bind_combatants(player: Node, enemies: Array[Node]) -> void:
 	_enemies = enemies.duplicate()
 	_role_map.clear()
 	if player != null:
-		_role_map[player] = CombatantRole.Type.PLAYER
+		_role_map[player] = COMBATANT_ROLE_SCRIPT.Type.PLAYER
 	for enemy in enemies:
-		_role_map[enemy] = CombatantRole.Type.ENEMY
+		_role_map[enemy] = COMBATANT_ROLE_SCRIPT.Type.ENEMY
 
 
 func unbind_combatants() -> void:
@@ -91,7 +93,7 @@ func get_modified_damage(base_damage: int, source: Node, target: Node) -> int:
 
 	adjusted += get_status_stack(source_stats, STATUS_STRENGTH)
 
-	if _get_role(source) == CombatantRole.Type.PLAYER:
+	if _get_role(source) == COMBATANT_ROLE_SCRIPT.Type.PLAYER:
 		adjusted = int(round(float(adjusted) * _player_damage_multiplier))
 
 	if get_status_stack(source_stats, STATUS_WEAK) > 0:
@@ -122,10 +124,10 @@ func resolve_damage_source(target: Node) -> Node:
 	if target == null:
 		return null
 
-	if _get_role(target) == CombatantRole.Type.ENEMY:
+	if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.ENEMY:
 		return _get_player_node()
 
-	if _get_role(target) == CombatantRole.Type.PLAYER:
+	if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.PLAYER:
 		if _active_enemy != null and is_instance_valid(_active_enemy):
 			return _active_enemy
 		if not _enemy_turn_queue.is_empty():
@@ -313,11 +315,11 @@ func _handle_death(target: Node) -> void:
 	if target == null or not is_instance_valid(target):
 		return
 
-	if _get_role(target) == CombatantRole.Type.PLAYER:
+	if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.PLAYER:
 		Events.player_died.emit()
 		return
 
-	if _get_role(target) == CombatantRole.Type.ENEMY:
+	if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.ENEMY:
 		Events.enemy_died.emit(target)
 		return
 
@@ -345,8 +347,8 @@ func _extract_stats(target: Node) -> Stats:
 
 func _get_role(target: Node) -> int:
 	if target == null or not is_instance_valid(target):
-		return CombatantRole.Type.UNKNOWN
-	return _role_map.get(target, CombatantRole.Type.UNKNOWN)
+		return COMBATANT_ROLE_SCRIPT.Type.UNKNOWN
+	return _role_map.get(target, COMBATANT_ROLE_SCRIPT.Type.UNKNOWN)
 
 
 func _get_player_node() -> Node:
@@ -368,40 +370,46 @@ func _register_builtin_statuses() -> void:
 	register_status(StatusHandler.create(STATUS_DEXTERITY, "敏"))
 	register_status(StatusHandler.create(STATUS_VULNERABLE, "易", Callable(), Callable(), true))
 	register_status(StatusHandler.create(STATUS_WEAK, "弱", Callable(), Callable(), true))
-	register_status(StatusHandler.create(STATUS_POISON, "毒",
-		func(target: Node, stats: Stats, stacks: int) -> void:
-			stats.health -= stacks
-			stats.add_status(STATUS_POISON, -1)
-			if _get_role(target) == CombatantRole.Type.PLAYER:
-				Events.player_hit.emit()
-	))
-	register_status(StatusHandler.create(STATUS_BURN, "燃", Callable(),
-		func(target: Node, stats: Stats, stacks: int) -> void:
-			stats.health -= stacks
-			if _get_role(target) == CombatantRole.Type.PLAYER:
-				Events.player_hit.emit(),
-		true
-	))
-	register_status(StatusHandler.create(STATUS_CONSTRICTED, "缚", Callable(),
-		func(target: Node, stats: Stats, stacks: int) -> void:
-			stats.health -= stacks
-			if _get_role(target) == CombatantRole.Type.PLAYER:
-				Events.player_hit.emit()
-	))
-	register_status(StatusHandler.create(STATUS_METALLICIZE, "金", Callable(),
-		func(target: Node, stats: Stats, stacks: int) -> void:
-			stats.block += stacks
-			if _get_role(target) == CombatantRole.Type.PLAYER:
-				Events.player_block_applied.emit(stacks, "status:metallicize")
-	))
-	register_status(StatusHandler.create(STATUS_RITUAL, "怒", Callable(),
-		func(_target: Node, stats: Stats, stacks: int) -> void:
-			stats.add_status(STATUS_STRENGTH, stacks)
-	))
-	register_status(StatusHandler.create(STATUS_REGENERATE, "再", Callable(),
-		func(_target: Node, stats: Stats, stacks: int) -> void:
-			var heal_amount := mini(stacks, stats.max_health - stats.health)
-			if heal_amount > 0:
-				stats.health += heal_amount,
-		true
-	))
+
+	var poison_handler := StatusHandler.create(STATUS_POISON, "毒")
+	poison_handler.on_turn_start = func(target: Node, stats: Stats, stacks: int) -> void:
+		stats.health -= stacks
+		stats.add_status(STATUS_POISON, -1)
+		if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.PLAYER:
+			Events.player_hit.emit()
+	register_status(poison_handler)
+
+	var burn_handler := StatusHandler.create(STATUS_BURN, "燃")
+	burn_handler.on_turn_end = func(target: Node, stats: Stats, stacks: int) -> void:
+		stats.health -= stacks
+		if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.PLAYER:
+			Events.player_hit.emit()
+	burn_handler.decays_on_turn_end = true
+	register_status(burn_handler)
+
+	var constricted_handler := StatusHandler.create(STATUS_CONSTRICTED, "缚")
+	constricted_handler.on_turn_end = func(target: Node, stats: Stats, stacks: int) -> void:
+		stats.health -= stacks
+		if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.PLAYER:
+			Events.player_hit.emit()
+	register_status(constricted_handler)
+
+	var metallicize_handler := StatusHandler.create(STATUS_METALLICIZE, "金")
+	metallicize_handler.on_turn_end = func(target: Node, stats: Stats, stacks: int) -> void:
+		stats.block += stacks
+		if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.PLAYER:
+			Events.player_block_applied.emit(stacks, "status:metallicize")
+	register_status(metallicize_handler)
+
+	var ritual_handler := StatusHandler.create(STATUS_RITUAL, "怒")
+	ritual_handler.on_turn_end = func(_target: Node, stats: Stats, stacks: int) -> void:
+		stats.add_status(STATUS_STRENGTH, stacks)
+	register_status(ritual_handler)
+
+	var regenerate_handler := StatusHandler.create(STATUS_REGENERATE, "再")
+	regenerate_handler.on_turn_end = func(_target: Node, stats: Stats, stacks: int) -> void:
+		var heal_amount := mini(stacks, stats.max_health - stats.health)
+		if heal_amount > 0:
+			stats.health += heal_amount
+	regenerate_handler.decays_on_turn_end = true
+	register_status(regenerate_handler)

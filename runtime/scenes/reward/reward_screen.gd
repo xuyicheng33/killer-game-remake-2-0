@@ -4,6 +4,7 @@ extends Control
 signal reward_completed(bundle: RewardBundle, chosen_card: Card)
 
 const REWARD_UI_ADAPTER_SCRIPT := preload("res://runtime/modules/ui_shell/adapter/reward_ui_adapter.gd")
+const UI_LAYOUT_SCRIPT := preload("res://runtime/global/ui_layout.gd")
 
 @export var run_state: RunState : set = _set_run_state
 @export var reward_gold: int = 0 : set = _set_reward_gold
@@ -82,7 +83,7 @@ func _render_cards(projection: Dictionary) -> void:
 		var hint := Label.new()
 		hint.text = str(projection.get("empty_hint", "当前无卡牌奖励，可直接继续前进。"))
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		hint.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BODY)
+		hint.add_theme_font_size_override("font_size", UI_LAYOUT_SCRIPT.FONT_SIZE_BODY)
 		cards_container.add_child(hint)
 		return
 
@@ -99,9 +100,9 @@ func _render_cards(projection: Dictionary) -> void:
 		var btn := Button.new()
 		btn.text = str(card_data.get("text", "(null card)"))
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_CARD)
+		btn.custom_minimum_size = Vector2(0, UI_LAYOUT_SCRIPT.BTN_HEIGHT_CARD)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		btn.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BUTTON_LARGE)
+		btn.add_theme_font_size_override("font_size", UI_LAYOUT_SCRIPT.FONT_SIZE_BUTTON_LARGE)
 
 		# Connect tooltip hover signals
 		var tooltip := str(card_data.get("tooltip", ""))
@@ -145,4 +146,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	UILayout.apply_frame_layout(frame, viewport_size)
+	UI_LAYOUT_SCRIPT.apply_frame_layout(frame, viewport_size)
