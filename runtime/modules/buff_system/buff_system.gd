@@ -304,6 +304,20 @@ func _run_after_card_played_hooks(target: Node) -> void:
 			handler.on_card_played.call(target, stats, stacks)
 
 
+func _trigger_poison(target: Node, stats: Stats) -> void:
+	if stats == null:
+		return
+	var stacks := get_status_stack(stats, STATUS_POISON)
+	if stacks <= 0:
+		return
+	stats.health -= stacks
+	stats.add_status(STATUS_POISON, -1)
+	if _get_role(target) == COMBATANT_ROLE_SCRIPT.Type.PLAYER:
+		Events.player_hit.emit()
+	if stats.health <= 0:
+		_handle_death(target)
+
+
 func _decay_status(stats: Stats, status_id: String) -> void:
 	if get_status_stack(stats, status_id) <= 0:
 		return

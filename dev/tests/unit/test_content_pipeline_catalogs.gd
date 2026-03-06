@@ -1,6 +1,7 @@
 extends GutTest
 
 const EVENT_SOURCE_PATH := "res://runtime/modules/content_pipeline/sources/events/examples/baseline_events.json"
+const POTION_SOURCE_PATH := "res://runtime/modules/content_pipeline/sources/potions/examples/base_potions.json"
 const RELIC_DIR := "res://content/custom_resources/relics"
 
 var _event_cache_backup: Array[Dictionary] = []
@@ -107,16 +108,46 @@ func _collect_ids_from_dict_entries(entries: Array[Dictionary]) -> Dictionary:
 	return ids
 
 
-func test_potion_pool_loaded_from_catalog() -> void:
+func _collect_dict_entries_by_id(entries: Array[Dictionary]) -> Dictionary:
+	var entries_by_id := {}
+	for entry in entries:
+		entries_by_id[str(entry.get("id", ""))] = entry
+	return entries_by_id
+
+
+func _effect_type_from_string(effect_type: String) -> int:
+	match effect_type:
+		"heal":
+			return PotionData.EffectType.HEAL
+		"gold":
+			return PotionData.EffectType.GOLD
+		"block":
+			return PotionData.EffectType.BLOCK
+		"damage_all_enemies":
+			return PotionData.EffectType.DAMAGE_ALL_ENEMIES
+		_:
+			return -1
+
+
+func test_potion_pool_loaded_from_pipeline_source() -> void:
 	PotionCatalog._cache.clear()
+	var source_potions := _load_entries_from_json(POTION_SOURCE_PATH, "potions")
+	var source_by_id := _collect_dict_entries_by_id(source_potions)
 	var potions := PotionCatalog.get_all()
 
-	assert_eq(potions.size(), PotionCatalog.POTION_POOL.size(),
-		"药水池数量应与 POTION_POOL 路径列表一致")
+	assert_eq(potions.size(), source_potions.size(), "药水池数量应与 pipeline 源数据一致")
 
 	for potion in potions:
 		assert_true(potion is PotionData, "药水池元素应为 PotionData")
-		assert_false(potion.id.is_empty(), "药水应有非空 id")
+		assert_true(source_by_id.has(potion.id), "药水应来自 pipeline 数据源: %s" % potion.id)
+		var source := source_by_id.get(potion.id, {})
+		assert_eq(potion.title, str(source.get("title", "")), "药水 title 应与源数据一致: %s" % potion.id)
+		assert_eq(potion.value, int(source.get("value", -1)), "药水 value 应与源数据一致: %s" % potion.id)
+		assert_eq(
+			potion.effect_type,
+			_effect_type_from_string(str(source.get("effect_type", ""))),
+			"药水 effect_type 应与源数据一致: %s" % potion.id
+		)
 
 
 func test_potion_pool_has_at_least_three() -> void:

@@ -123,10 +123,10 @@ static func draw_cards(value: int, context: Dictionary) -> void:
 		return
 
 	var battle_context = context.get("battle_context")
-	var draw_callable: Callable = context.get("draw_callable")
+	var draw_callable_variant: Variant = context.get("draw_callable", null)
 
-	if draw_callable.is_valid():
-		draw_callable.call(value)
+	if draw_callable_variant != null:
+		draw_callable_variant.call(value)
 		return
 
 	if battle_context != null and battle_context.has_method("draw_cards"):

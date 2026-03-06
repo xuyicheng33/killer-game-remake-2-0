@@ -10,8 +10,11 @@ from pathlib import Path
 from typing import Any
 
 REQUIRED_POTION_FIELDS = ["id", "title", "effect_type", "value"]
+OPTIONAL_POTION_FIELDS = ["description", "art_path"]
+ALLOWED_POTION_FIELDS = set(REQUIRED_POTION_FIELDS + OPTIONAL_POTION_FIELDS)
 VALID_EFFECT_TYPES = {"heal", "gold", "block", "damage_all_enemies"}
 ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
+ART_PATH_PATTERN = re.compile(r"^res://")
 
 
 @dataclass
@@ -85,46 +88,74 @@ def _validate_potion(
         _append_error(errors, source_file, index, "", f"potions[{index}]", "POTION_INVALID_TYPE", "potion must be an object")
         return None
 
+    start_error_count = len(errors)
     potion_id = str(potion.get("id", ""))
+
     for field in REQUIRED_POTION_FIELDS:
         if field not in potion:
             _append_error(errors, source_file, index, potion_id, f"potions[{index}].{field}", "POTION_MISSING_REQUIRED", f"required field '{field}' is missing")
 
-    if any(e.item_index == index and e.code == "POTION_MISSING_REQUIRED" for e in errors):
-        return None
+    for field in potion.keys():
+        if field not in ALLOWED_POTION_FIELDS:
+            _append_error(errors, source_file, index, potion_id, f"potions[{index}].{field}", "POTION_UNKNOWN_FIELD", f"unknown field '{field}' is not allowed")
 
     normalized: dict[str, Any] = {}
 
     id_value = potion.get("id")
-    if isinstance(id_value, str) and id_value:
-        if not ID_PATTERN.match(id_value):
-            _append_error(errors, source_file, index, potion_id, f"potions[{index}].id", "POTION_INVALID_ID", f"id '{id_value}' must match ^[a-z][a-z0-9_]*$")
-        normalized["id"] = id_value
-        if id_value in seen_ids:
-            _append_error(errors, source_file, index, potion_id, f"potions[{index}].id", "POTION_DUPLICATE_ID", f"duplicate potion id '{id_value}'")
+    if isinstance(id_value, str):
+        if len(id_value) == 0 or len(id_value) > 64 or not ID_PATTERN.match(id_value):
+            _append_error(errors, source_file, index, potion_id, f"potions[{index}].id", "POTION_INVALID_ID", "id must match ^[a-z][a-z0-9_]*$ and be 1-64 chars")
         else:
-            seen_ids.add(id_value)
+            normalized["id"] = id_value
+            if id_value in seen_ids:
+                _append_error(errors, source_file, index, potion_id, f"potions[{index}].id", "POTION_DUPLICATE_ID", f"duplicate potion id '{id_value}'")
+            else:
+                seen_ids.add(id_value)
+    elif "id" in potion:
+        _append_error(errors, source_file, index, potion_id, f"potions[{index}].id", "POTION_INVALID_ID", "id must be a string")
 
-    for str_field in ["title", "description"]:
-        value = potion.get(str_field, "")
-        if value is not None and isinstance(value, str):
-            normalized[str_field] = value
+    title_value = potion.get("title")
+    if isinstance(title_value, str):
+        title = title_value.strip()
+        if len(title) == 0 or len(title) > 64:
+            _append_error(errors, source_file, index, potion_id, f"potions[{index}].title", "POTION_INVALID_TITLE", "title must be a non-empty string with max length 64")
+        else:
+            normalized["title"] = title
+    elif "title" in potion:
+        _append_error(errors, source_file, index, potion_id, f"potions[{index}].title", "POTION_INVALID_TITLE", "title must be a string")
+
+    description_value = potion.get("description", "")
+    if description_value is None:
+        description_value = ""
+    if isinstance(description_value, str):
+        if len(description_value) > 512:
+            _append_error(errors, source_file, index, potion_id, f"potions[{index}].description", "POTION_INVALID_DESCRIPTION", "description must be a string with max length 512")
+        else:
+            normalized["description"] = description_value
+    elif "description" in potion:
+        _append_error(errors, source_file, index, potion_id, f"potions[{index}].description", "POTION_INVALID_DESCRIPTION", "description must be a string")
+
+    if "art_path" in potion:
+        art_path_value = potion.get("art_path")
+        if not isinstance(art_path_value, str) or not ART_PATH_PATTERN.match(art_path_value):
+            _append_error(errors, source_file, index, potion_id, f"potions[{index}].art_path", "POTION_INVALID_ART_PATH", "art_path must be a string starting with res://")
+        else:
+            normalized["art_path"] = art_path_value
 
     effect_type = potion.get("effect_type")
     if isinstance(effect_type, str) and effect_type in VALID_EFFECT_TYPES:
         normalized["effect_type"] = effect_type
-    else:
+    elif "effect_type" in potion:
         _append_error(errors, source_file, index, potion_id, f"potions[{index}].effect_type", "POTION_INVALID_EFFECT", f"effect_type must be one of {sorted(VALID_EFFECT_TYPES)}")
 
     value = potion.get("value")
     if isinstance(value, int) and value >= 0:
         normalized["value"] = value
-    else:
+    elif "value" in potion:
         _append_error(errors, source_file, index, potion_id, f"potions[{index}].value", "POTION_INVALID_VALUE", "value must be a non-negative integer")
 
-    if any(e.item_index == index for e in errors):
+    if len(errors) > start_error_count:
         return None
-
     return normalized
 
 
@@ -182,7 +213,7 @@ def main() -> int:
         return 1
 
     if payload.get("schema_version") != 1:
-        _append_error(errors, _to_repo_relative(input_path, root), -1, "", "schema_version", "unsupported_version", f"expected schema_version 1")
+        _append_error(errors, _to_repo_relative(input_path, root), -1, "", "schema_version", "unsupported_version", "expected schema_version 1")
 
     potions_raw = payload.get("potions")
     if not isinstance(potions_raw, list):

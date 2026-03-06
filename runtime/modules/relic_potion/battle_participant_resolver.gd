@@ -11,11 +11,10 @@ func resolve_player(session_port) -> Node:
 	if not (Engine.get_main_loop() is SceneTree):
 		return null
 	var players: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("player")
-	if players.is_empty():
-		return null
-	var first_player: Node = players[0]
-	if _is_player_node(first_player):
-		return first_player
+	for i in range(players.size() - 1, -1, -1):
+		var player_candidate: Node = players[i]
+		if _is_player_node(player_candidate):
+			return player_candidate
 	return null
 
 
