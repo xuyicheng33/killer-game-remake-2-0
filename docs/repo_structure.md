@@ -1,11 +1,16 @@
 # 仓库结构说明（当前结构 + 迁移原则）
 
-更新时间：2026-02-17
+更新时间：2026-03-06
 
 ## 1. 当前结构（以代码现状为准）
 
 ```text
 .
+├── addons/                    # Godot 插件（当前主要为 GUT）
+├── project.godot              # Godot 工程入口
+├── icon.svg / icon.svg.import # 工程图标资源
+├── main_theme.tres            # 全局 UI 主题
+├── default_bus_layout.tres    # 音频总线配置
 ├── runtime/                   # 运行时代码层
 │   ├── scenes/                # 运行入口与页面脚本（app/map/battle/reward/shop/events/ui）
 │   ├── modules/               # 领域模块目录
@@ -23,13 +28,16 @@
 │   ├── effects/
 │   └── custom_resources/
 ├── dev/
-│   └── dev/tools/                 # 工具脚本（workflow/content import/ui_shell + run_flow contract checks）
+│   └── tools/                 # 工具脚本（workflow/content import/ui_shell + run_flow contract checks）
 ├── docs/                      # 文档主目录（含 roadmap/session/tasks/contracts）
 │   ├── roadmap/               # 阶段路线图与任务池
 │   ├── session/               # 协作会话记录（task_plan/findings/progress）
 │   ├── tasks/                 # 任务三件套
+│   ├── archive/               # 归档后的方案、评审与历史说明
 │   └── contracts/             # 契约文档
 └── references/                # 只读参考资料
+    ├── slay_the_spire_cn/     # 参考资料索引输入源
+    └── tutorial_baseline/     # 只读人工对照工程
 ```
 
 ## 2. 命名与目录决策（当前）
@@ -55,7 +63,14 @@
    - 方案 B：独立 `seed_replay` 模块，仅承载 RNG/复盘。
 4. 继续扩展 `ui_shell` 样板改造范围：将 `battle_ui` 等页面迁移到“viewmodel/adapter + 只读投影 + 命令转发”模式。
 
-## 5. 当前质量门禁入口
+## 5. 结构补充约束（2026-03 收口）
+
+1. 根目录只保留工程入口、Godot 根资产与一级主目录；新的零散文件由结构门禁拦截。
+2. `docs/tasks/` 保留完整历史，不迁移旧任务；归档类文档统一进入 `docs/archive/`。
+3. `references/` 顶层只保留声明过的只读参考子目录与说明文档；不混入新的工具输出或运行时代码。
+4. 本地状态目录（如 `.godot/`、`.cursor/`、`.claude/`、`.ruff_cache/`）不计入仓库结构，不得追踪进 git。
+
+## 6. 当前质量门禁入口
 
 1. `bash dev/tools/ui_shell_contract_check.sh`
    - 拦截 `runtime/scenes/ui` 直写 `run_state` 核心入口，校验迁移页面 adapter/viewmodel 接线。

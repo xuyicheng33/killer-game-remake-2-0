@@ -26,6 +26,7 @@
 
 ## 目录说明（当前）
 
+- 根目录工程资产：`addons/`、`project.godot`、`icon.svg`/`icon.svg.import`、`main_theme.tres`、`default_bus_layout.tres` 为合法入口资产；不再新增零散脚本或分析文件到根目录。
 - `runtime/scenes/`：可运行页面与场景脚本。
 - `runtime/modules/`：领域模块（规则、流程、存档、UI 壳层等）。
 - `runtime/global/`：全局基础设施（事件、随机、音频播放器）。
@@ -33,8 +34,9 @@
 - `dev/tools/`：流程守门、测试执行、内容导入与检查脚本。
 - `docs/roadmap/`：路线图与阶段任务池。
 - `docs/session/`：会话级计划与发现记录。
-- `docs/tasks/`：按任务归档的 plan/handoff/verification。
-- `references/`：只读参考资料库（不参与运行时加载）。
+- `docs/tasks/`：按任务保留完整历史的 plan/handoff/verification。
+- `docs/archive/`：归档后的方案、评审与历史说明文档。
+- `references/`：只读参考资料库（不参与运行时加载）；其中 `slay_the_spire_cn/` 是 `make content-index` 的索引源，`tutorial_baseline/` 仅作人工对照参考。
 
 ## 关键约束
 
