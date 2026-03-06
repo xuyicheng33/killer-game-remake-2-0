@@ -1,24 +1,28 @@
 # 杀戮游戏复刻 2.0（Godot）
 
-基于 Godot 的类杀戮尖塔复刻工程。当前重点是先把规则内核和流程架构打稳，再做创新机制和新卡扩展。
+基于 Godot 的类杀戮尖塔复刻工程。当前重点已从“先把规则内核和流程架构打稳”切换为：继续推进 Phase D 主题与体验收口，并持续清理内容 coverage / leak warning 等非阻断工程问题。
 
 ## 3 分钟上手
 
 1. 用 Godot 4.5.1 打开本目录。
 2. 运行主场景（当前入口在 `project.godot`）：
    - `res://runtime/scenes/app/app.tscn`
-3. 预期最小流程：
-   - 地图选点 -> 战斗 -> 结算/奖励 -> 返回流程
+3. 当前可运行基线：
+   - 地图选点 -> 战斗 -> 奖励 -> 返回地图
+   - 已接入营火 / 商店 / 事件 / 继续游戏
 
 ## 常用命令
 
+- `make test`：执行全量 GUT 测试。
+- `make ci-check`：执行本地 CI 同步门禁（结构 + 契约 + 类型 + 引擎 smoke）。
+- `make workflow-check TASK_ID=<task-id>`：提交前聚合门禁。
 - `make content-index`：重建参考资料索引。
 - `make repo-structure-check`：检查目录规范（根目录与 docs 分层）。
-- `make workflow-check TASK_ID=<task-id>`：提交前聚合门禁。
-- `make ci-check`：执行 CI 同步门禁（结构 + 契约 + 类型；检测到 Godot 时附带最小冒烟测试）。
 - `make install-hooks`：安装本地 hooks。
 - `make new-task TASK_ID=<task-id>`：创建任务三件套模板。
 - `make migration-draft`：输出 runtime/content/dev 大迁移草案命令。
+
+说明：测试脚本在干净副本或首次运行时会自动执行 Godot import 预热，无需手工预生成 `.godot` 缓存。
 
 ## 目录说明（当前）
 
@@ -26,7 +30,7 @@
 - `runtime/modules/`：领域模块（规则、流程、存档、UI 壳层等）。
 - `runtime/global/`：全局基础设施（事件、随机、音频播放器）。
 - `content/art/`、`content/characters/`、`content/enemies/`、`content/effects/`、`content/custom_resources/`：运行时资源与资源脚本。
-- `dev/tools/`：流程守门、内容导入与检查脚本。
+- `dev/tools/`：流程守门、测试执行、内容导入与检查脚本。
 - `docs/roadmap/`：路线图与阶段任务池。
 - `docs/session/`：会话级计划与发现记录。
 - `docs/tasks/`：按任务归档的 plan/handoff/verification。

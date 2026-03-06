@@ -59,3 +59,11 @@
   - `ROUTE_*` 常量单点定义锁定到 `route_dispatcher.gd`。
   - map/battle 关键 `next_route + payload` 键位回归检查。
 - `dev/tools/workflow_check.sh` 已串行执行两个门禁脚本，形成提交前可一键执行的质量门禁入口。
+
+## 2026-03-06 稳定性收口后的文档口径
+
+- 当前项目口径应统一为“2026-03-06 真实基线”：A/B/C 主链能力已落地，D1 已启动且在继续收口。
+- `task_backlog` 不应再把 `battle_loop / effect_engine / buff_system / reward_flow / save_load / seed / content_pipeline` 标成 ready 或 blocked；这些能力已进入当前运行基线。
+- README、路线图、进度与任务档案的推荐优先级应统一为：`art-ui-theme-rebuild-v1` + 非阻断工程清理（encounter coverage warning、orphan/resource leak）。
+- 当前测试/CI 口径应统一为：本地 `make ci-check`、`make test` 均通过；测试脚本支持自动 Godot import 预热；远端 CI 也运行真实 Godot 校验。
+- 当前保留问题也应统一描述为“warning / 已知保留项”，而不是“主流程未实现”或“模块仍处于骨架阶段”。
