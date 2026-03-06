@@ -110,10 +110,10 @@ assert_has 'RUN_RNG_SCRIPT\.begin_run\([a-zA-Z_][a-zA-Z0-9_]*\)' \
   "$RUN_LIFECYCLE_FILE" \
   "start_new_run_with_seed 调用 RunRng.begin_run(seed)"
 
-echo "[smoke] 1.3 检查 RunState 保存 seed..."
-assert_has 'var seed: int' \
+echo "[smoke] 1.3 检查 RunState 保存 run_seed..."
+assert_has 'var run_seed: int' \
   "$RUN_STATE_FILE" \
-  "RunState.seed 字段存在"
+  "RunState.run_seed 字段存在"
 
 # ========== 2. Save/Load RNG Continuity Check ==========
 echo ""
@@ -258,9 +258,9 @@ assert_has 'if not restored_rng:' \
   "$RUN_LIFECYCLE_FILE" \
   "try_load_saved_run 检查 restored_rng 失败标记"
 
-assert_has 'RUN_RNG_SCRIPT\.begin_run\(loaded_run_state\.seed\)' \
+assert_has 'RUN_RNG_SCRIPT\.begin_run\(loaded_run_state\.run_seed\)' \
   "$RUN_LIFECYCLE_FILE" \
-  "restore 失败时使用 begin_run(loaded_run_state.seed) 回退"
+  "restore 失败时使用 begin_run(loaded_run_state.run_seed) 回退"
 
 echo "[smoke] 5.2 检查 restore_run_state 空状态处理..."
 assert_has 'if state\.is_empty\(\)' \
