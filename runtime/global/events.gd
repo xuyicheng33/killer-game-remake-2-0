@@ -18,6 +18,8 @@ signal card_played(card: Card)
 
 # Tooltip-related (forwarded to TooltipEvents)
 @warning_ignore("unused_signal")
+signal tooltip_requested(payload: Dictionary)
+@warning_ignore("unused_signal")
 signal card_tooltip_requested(icon: Texture, text: String)
 @warning_ignore("unused_signal")
 signal relic_tooltip_requested(icon: Texture, text: String)
@@ -64,6 +66,7 @@ func _ready() -> void:
 	card_aim_ended.connect(func(card_ui): CardEvents.card_aim_ended.emit(card_ui))
 	card_played.connect(func(card): CardEvents.card_played.emit(card))
 
+	tooltip_requested.connect(func(payload): TooltipEvents.tooltip_requested.emit(payload))
 	card_tooltip_requested.connect(func(icon, text): TooltipEvents.card_tooltip_requested.emit(icon, text))
 	relic_tooltip_requested.connect(func(icon, text): TooltipEvents.relic_tooltip_requested.emit(icon, text))
 	potion_tooltip_requested.connect(func(icon, text): TooltipEvents.potion_tooltip_requested.emit(icon, text))

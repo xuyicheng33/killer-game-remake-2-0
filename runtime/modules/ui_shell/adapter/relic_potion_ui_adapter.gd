@@ -39,21 +39,29 @@ func use_potion(index: int) -> void:
 	refresh()
 
 
+func is_battle_active() -> bool:
+	return _relic_potion_system != null and _relic_potion_system.is_battle_active()
+
+
 func refresh() -> void:
 	var projection := _view_model.project(_run_state, _latest_log)
-	var button_enabled := _relic_potion_system != null and _relic_potion_system.is_battle_active()
-	var raw_buttons: Variant = projection.get("potion_buttons", [])
-	var buttons_with_state: Array[Dictionary] = []
-	if raw_buttons is Array:
-		for button_variant in raw_buttons:
-			if not (button_variant is Dictionary):
-				continue
-			var button_data: Dictionary = (button_variant as Dictionary).duplicate(true)
-			button_data["enabled"] = button_enabled
-			buttons_with_state.append(button_data)
-	projection["potion_buttons"] = buttons_with_state
-	projection["battle_only_hint_visible"] = not button_enabled and not buttons_with_state.is_empty()
-	projection["battle_only_hint"] = "药水仅可在战斗中使用。"
+	var battle_active := is_battle_active()
+	var battle_projection_variant: Variant = projection.get("battle_projection", {})
+	if battle_projection_variant is Dictionary:
+		var battle_projection: Dictionary = (battle_projection_variant as Dictionary).duplicate(true)
+		var raw_buttons: Variant = battle_projection.get("potion_buttons", [])
+		var buttons_with_state: Array[Dictionary] = []
+		if raw_buttons is Array:
+			for button_variant in raw_buttons:
+				if not (button_variant is Dictionary):
+					continue
+				var button_data: Dictionary = (button_variant as Dictionary).duplicate(true)
+				button_data["enabled"] = battle_active
+				buttons_with_state.append(button_data)
+		battle_projection["potion_buttons"] = buttons_with_state
+		battle_projection["battle_only_hint_visible"] = not battle_active and not buttons_with_state.is_empty()
+		projection["battle_projection"] = battle_projection
+	projection["battle_active"] = battle_active
 	projection_changed.emit(projection)
 
 

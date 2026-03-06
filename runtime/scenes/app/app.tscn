@@ -1,9 +1,27 @@
-[gd_scene load_steps=5 format=3 uid="uid://dunsi43i0v3e3"]
+[gd_scene load_steps=6 format=3 uid="uid://dunsi43i0v3e3"]
 
 [ext_resource type="Script" path="res://runtime/scenes/app/app.gd" id="1_6u3al"]
 [ext_resource type="PackedScene" uid="uid://cmj8r4q7wwo6f" path="res://runtime/scenes/ui/relic_potion_ui.tscn" id="2_h7ej8"]
 [ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="3_7i0u6"]
 [ext_resource type="PackedScene" uid="uid://chry0sgk7t0yf" path="res://runtime/scenes/ui/tooltip.tscn" id="4_tooltip"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal_panel"]
+bg_color = Color(0.0588235, 0.0745098, 0.117647, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.898039, 0.807843, 0.52549, 0.9)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_size = 8
 
 [node name="App" type="Node"]
 script = ExtResource("1_6u3al")
@@ -11,15 +29,16 @@ script = ExtResource("1_6u3al")
 [node name="SceneHost" type="Node" parent="."]
 unique_name_in_owner = true
 
-[node name="OverlayLayer" type="CanvasLayer" parent="."]
-layer = 10
+[node name="HUDOverlay" type="CanvasLayer" parent="."]
+layer = 20
 
-[node name="RelicPotionUI" parent="OverlayLayer" instance=ExtResource("2_h7ej8")]
+[node name="RelicPotionUI" parent="HUDOverlay" instance=ExtResource("2_h7ej8")]
 unique_name_in_owner = true
 
-[node name="Tooltip" parent="OverlayLayer" instance=ExtResource("4_tooltip")]
+[node name="ModalOverlay" type="CanvasLayer" parent="."]
+layer = 30
 
-[node name="GameOverPanel" type="Panel" parent="OverlayLayer"]
+[node name="GameOverPanel" type="Panel" parent="ModalOverlay"]
 unique_name_in_owner = true
 visible = false
 anchors_preset = 8
@@ -34,8 +53,9 @@ offset_bottom = 260.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("3_7i0u6")
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal_panel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="OverlayLayer/GameOverPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ModalOverlay/GameOverPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,13 +68,13 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 18
 
-[node name="Title" type="Label" parent="OverlayLayer/GameOverPanel/VBoxContainer"]
+[node name="Title" type="Label" parent="ModalOverlay/GameOverPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 54
 horizontal_alignment = 1
 text = "远征结束"
 
-[node name="GameOverText" type="Label" parent="OverlayLayer/GameOverPanel/VBoxContainer"]
+[node name="GameOverText" type="Label" parent="ModalOverlay/GameOverPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -64,9 +84,14 @@ horizontal_alignment = 1
 vertical_alignment = 1
 text = "本次远征失败"
 
-[node name="RestartButton" type="Button" parent="OverlayLayer/GameOverPanel/VBoxContainer"]
+[node name="RestartButton" type="Button" parent="ModalOverlay/GameOverPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
 custom_minimum_size = Vector2(0, 74)
 text = "重新开始"
+
+[node name="TooltipLayer" type="CanvasLayer" parent="."]
+layer = 40
+
+[node name="Tooltip" parent="TooltipLayer" instance=ExtResource("4_tooltip")]

@@ -7,6 +7,7 @@ cd "$ROOT_DIR"
 echo "[ci-checks] running contract and structure gates..."
 bash dev/tools/repo_structure_check.sh
 bash dev/tools/ui_shell_contract_check.sh
+bash dev/tools/tooltip_overlay_contract_check.sh
 bash dev/tools/run_flow_contract_check.sh
 bash dev/tools/run_flow_payload_contract_check.sh
 bash dev/tools/run_flow_result_shape_check.sh

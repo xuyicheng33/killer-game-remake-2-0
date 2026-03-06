@@ -15,6 +15,12 @@ const APP_SCREEN_HOST_SCRIPT := preload("res://runtime/scenes/app/app_screen_hos
 const PRE_ATTACH_NONE := &"none"
 const PRE_ATTACH_SHOP_ENTER := &"shop_enter"
 
+enum OverlayMode {
+	HIDDEN,
+	COMPACT,
+	BATTLE,
+}
+
 @onready var scene_host: Node = %SceneHost
 @onready var relic_potion_ui: RelicPotionUI = %RelicPotionUI
 @onready var game_over_panel: Panel = %GameOverPanel
@@ -26,6 +32,7 @@ var relic_potion_system: RelicPotionSystem
 var run_flow_service: RunFlowService
 var app_flow_orchestrator
 var app_screen_host: AppScreenHost
+var _overlay_mode: OverlayMode = OverlayMode.HIDDEN
 
 
 func _ready() -> void:
@@ -42,6 +49,7 @@ func _ready() -> void:
 	)
 
 	_connect_signals()
+	_set_overlay_mode(OverlayMode.HIDDEN)
 	_open_main_menu()
 
 
@@ -120,6 +128,7 @@ func _on_continue_game_requested() -> void:
 
 
 func _open_map() -> void:
+	_set_overlay_mode(OverlayMode.COMPACT)
 	app_screen_host.open_map(
 		MAP_SCREEN_SCENE,
 		run_state,
@@ -141,6 +150,7 @@ func _on_map_node_selected(node: MapNodeData) -> void:
 
 
 func _open_battle(encounter_id: String = "") -> void:
+	_set_overlay_mode(OverlayMode.BATTLE)
 	_clear_scene_host()
 	var battle_scene := BATTLE_SCENE.instantiate()
 	battle_scene.set("runtime_stats", run_state.player_stats)
@@ -156,6 +166,7 @@ func _on_battle_finished(result: int) -> void:
 
 
 func _open_reward(reward_gold: int) -> void:
+	_set_overlay_mode(OverlayMode.COMPACT)
 	app_screen_host.open_reward(
 		REWARD_SCREEN_SCENE,
 		run_state,
@@ -286,6 +297,7 @@ func _notify_shop_enter() -> void:
 func _reset_app_overlay_state() -> void:
 	_clear_scene_host()
 	game_over_panel.hide()
+	_set_overlay_mode(OverlayMode.HIDDEN)
 	get_tree().paused = false
 
 
@@ -295,6 +307,7 @@ func _open_run_state_screen(
 	completed_handler: Callable,
 	before_attach_action: StringName = PRE_ATTACH_NONE
 ) -> Node:
+	_set_overlay_mode(OverlayMode.COMPACT)
 	_clear_scene_host()
 	_run_pre_attach_action(before_attach_action)
 	return app_screen_host.open_run_state_screen(scene, run_state, completed_signal, completed_handler)
@@ -306,6 +319,19 @@ func _run_pre_attach_action(action: StringName) -> void:
 			_notify_shop_enter()
 		_:
 			pass
+
+
+
+
+func current_overlay_mode() -> int:
+	return int(_overlay_mode)
+
+
+func _set_overlay_mode(mode: int) -> void:
+	_overlay_mode = mode
+	if relic_potion_ui != null:
+		relic_potion_ui.set_overlay_mode(mode)
+	_apply_overlay_layout()
 
 
 func _on_viewport_resized() -> void:
@@ -321,10 +347,4 @@ func _apply_overlay_layout() -> void:
 		return
 
 	var viewport_size: Vector2 = viewport.get_visible_rect().size
-	var panel_width := clampf(viewport_size.x * 0.55, 520.0, 980.0)
-	var panel_height := clampf(viewport_size.y * 0.55, 320.0, 640.0)
-
-	game_over_panel.offset_left = -panel_width * 0.5
-	game_over_panel.offset_top = -panel_height * 0.5
-	game_over_panel.offset_right = panel_width * 0.5
-	game_over_panel.offset_bottom = panel_height * 0.5
+	UILayout.apply_modal_layout(game_over_panel, viewport_size)

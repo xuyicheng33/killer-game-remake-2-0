@@ -12,11 +12,15 @@ const ACCENT := Color("f48c06")
 # === Background ===
 const BG_DARK := Color(0.027451, 0.0352941, 0.0588235, 1)
 const BG_PANEL := Color(0.039, 0.055, 0.086, 0.86)
+const BG_PANEL_SOFT := Color(0.062, 0.078, 0.117, 0.82)
+const BG_HUD := Color(0.062, 0.074, 0.121, 0.94)
+const BG_TOOLTIP := Color(0.0706, 0.0902, 0.1451, 0.96)
 const BG_OVERLAY := Color(0.0, 0.0, 0.0, 0.65)
 
 # === Text ===
 const TEXT_DEFAULT := Color(0.933, 0.941, 0.953, 1)
 const TEXT_MUTED := Color(0.667, 0.682, 0.722, 0.8)
+const TEXT_SUBTLE := Color(0.596, 0.639, 0.725, 0.92)
 const TEXT_HIGHLIGHT := Color(1.0, 0.976, 0.875, 1.0)
 
 # === Semantic ===
@@ -50,6 +54,7 @@ const ZONE_COUNTS_TEXT := Color("dbe3f2")
 const ENERGY_FULL := Color("e5ce86")
 const ENERGY_EMPTY := Color("555555")
 const BLOCK_ACTIVE := Color("5599dd")
+const HUD_OUTLINE := Color(0.898, 0.808, 0.525, 0.88)
 
 # === Menu ===
 const SAVE_EXISTS := Color(0.6, 0.9, 0.6)
@@ -58,6 +63,12 @@ const SAVE_MISSING := Color(0.7, 0.7, 0.7)
 # === Borders ===
 const BORDER_DEFAULT := Color(0.678, 0.596, 0.416, 0.72)
 const BORDER_HIGHLIGHT := Color(0.898, 0.808, 0.525, 1.0)
+
+# === Tooltip accents ===
+const TOOLTIP_CARD := Color("5fa8ff")
+const TOOLTIP_RELIC := Color("f3c969")
+const TOOLTIP_POTION := Color("90be6d")
+const TOOLTIP_DEFAULT := Color("c9d5ef")
 
 
 static func hp_color_for_percent(percent: float) -> Color:

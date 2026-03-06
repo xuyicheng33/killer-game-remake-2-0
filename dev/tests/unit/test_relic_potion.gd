@@ -404,26 +404,29 @@ func test_relic_potion_adapter_disables_potion_buttons_outside_battle() -> void:
 	adapter.refresh()
 
 	var latest_projection: Dictionary = projection_state["latest"] as Dictionary
-	var outside_buttons: Array = latest_projection.get("potion_buttons", [])
+	var battle_projection: Dictionary = latest_projection.get("battle_projection", {}) as Dictionary
+	var outside_buttons: Array = battle_projection.get("potion_buttons", [])
 	assert_eq(outside_buttons.size(), 1, "应渲染 1 个药水按钮")
 	if outside_buttons.size() > 0:
 		var button_data: Dictionary = outside_buttons[0] as Dictionary
 		assert_false(bool(button_data.get("enabled", true)), "战斗外药水按钮应禁用")
-	assert_true(bool(latest_projection.get("battle_only_hint_visible", false)), "战斗外应显示战斗限定提示")
+	assert_true(bool(battle_projection.get("battle_only_hint_visible", false)), "战斗外应显示战斗限定提示")
 
 	_system.start_battle()
 	adapter.refresh()
 	latest_projection = projection_state["latest"] as Dictionary
-	var battle_buttons: Array = latest_projection.get("potion_buttons", [])
+	battle_projection = latest_projection.get("battle_projection", {}) as Dictionary
+	var battle_buttons: Array = battle_projection.get("potion_buttons", [])
 	if battle_buttons.size() > 0:
 		var battle_button: Dictionary = battle_buttons[0] as Dictionary
 		assert_true(bool(battle_button.get("enabled", false)), "战斗中药水按钮应启用")
-	assert_false(bool(latest_projection.get("battle_only_hint_visible", true)), "战斗中不应显示战斗限定提示")
+	assert_false(bool(battle_projection.get("battle_only_hint_visible", true)), "战斗中不应显示战斗限定提示")
 
 	_system.end_battle()
 	adapter.refresh()
 	latest_projection = projection_state["latest"] as Dictionary
-	var after_buttons: Array = latest_projection.get("potion_buttons", [])
+	battle_projection = latest_projection.get("battle_projection", {}) as Dictionary
+	var after_buttons: Array = battle_projection.get("potion_buttons", [])
 	if after_buttons.size() > 0:
 		var after_button: Dictionary = after_buttons[0] as Dictionary
 		assert_false(bool(after_button.get("enabled", true)), "战斗结束后药水按钮应恢复禁用")
@@ -655,15 +658,16 @@ func test_relic_view_model_produces_tooltip_data() -> void:
 	run_state.relics = [relic]
 
 	var projection: Dictionary = view_model.project(run_state, "")
+	var battle_projection: Dictionary = projection.get("battle_projection", {}) as Dictionary
 
-	assert_true(projection.has("relic_items"), "projection 应包含 relic_items")
-	var relic_items: Array = projection.get("relic_items", [])
+	assert_true(battle_projection.has("relic_items"), "battle_projection 应包含 relic_items")
+	var relic_items: Array = battle_projection.get("relic_items", [])
 	assert_eq(relic_items.size(), 1, "应有一个遗物项")
 
 	var item: Dictionary = relic_items[0]
 	assert_eq(item.get("title", ""), "测试遗物", "遗物标题应正确")
-	assert_true(item.get("tooltip_text", "").contains("测试遗物"), "tooltip 应包含遗物标题")
-	assert_true(item.get("tooltip_text", "").contains("测试效果描述"), "tooltip 应包含遗物描述")
+	assert_eq(item.get("tooltip_title", ""), "测试遗物", "tooltip_title 应包含遗物标题")
+	assert_eq(item.get("tooltip_body", ""), "测试效果描述", "tooltip_body 应包含遗物描述")
 
 
 func test_relic_view_model_handles_empty_relics() -> void:
@@ -675,9 +679,10 @@ func test_relic_view_model_handles_empty_relics() -> void:
 	run_state.relics = []
 
 	var projection: Dictionary = view_model.project(run_state, "")
+	var battle_projection: Dictionary = projection.get("battle_projection", {}) as Dictionary
 
-	assert_true(projection.has("relic_items"), "projection 应包含 relic_items")
-	var relic_items: Array = projection.get("relic_items", [])
+	assert_true(battle_projection.has("relic_items"), "battle_projection 应包含 relic_items")
+	var relic_items: Array = battle_projection.get("relic_items", [])
 	assert_eq(relic_items.size(), 0, "无遗物时应为空数组")
 
 
@@ -692,27 +697,28 @@ func test_relic_ui_emits_tooltip_on_hover() -> void:
 	relic.title = "悬停测试遗物"
 	relic.description = "悬停应触发 tooltip"
 	run_state.relics = [relic]
+	ui.set_overlay_mode(RelicPotionUI.OverlayMode.BATTLE)
 	ui.run_state = run_state
 	await get_tree().process_frame
 
-	var relic_list := ui.get_node("MarginContainer/ContentScroll/VBox/RelicListLabel") as VBoxContainer
+	var relic_list := ui.get_node("MarginContainer/VBox/DetailRoot/Columns/RelicPanel/RelicMargin/RelicVBox/RelicScroll/RelicListLabel") as VBoxContainer
 	assert_not_null(relic_list, "RelicListLabel 应存在")
 	assert_true(relic_list.get_child_count() > 0, "应渲染至少一个遗物按钮")
 
 	var button := relic_list.get_child(0) as Button
 	assert_not_null(button, "第一个遗物项应为 Button")
 
-	var tooltip_state := {"text": ""}
-	var on_tooltip := func(_icon: Texture, text: String) -> void:
-		tooltip_state["text"] = text
-	Events.relic_tooltip_requested.connect(on_tooltip, CONNECT_ONE_SHOT)
+	var tooltip_state := {"title": "", "body": ""}
+	var on_tooltip := func(payload: Dictionary) -> void:
+		tooltip_state["title"] = str(payload.get("title", ""))
+		tooltip_state["body"] = str(payload.get("body", ""))
+	Events.tooltip_requested.connect(on_tooltip, CONNECT_ONE_SHOT)
 
 	button.mouse_entered.emit()
 	await get_tree().process_frame
 
-	var emitted_text := str(tooltip_state["text"])
-	assert_true(emitted_text.contains("悬停测试遗物"), "悬停遗物应发出包含标题的 tooltip")
-	assert_true(emitted_text.contains("悬停应触发 tooltip"), "悬停遗物应发出包含描述的 tooltip")
+	assert_eq(str(tooltip_state["title"]), "悬停测试遗物", "悬停遗物应发出包含标题的 tooltip payload")
+	assert_eq(str(tooltip_state["body"]), "悬停应触发 tooltip", "悬停遗物应发出包含描述的 tooltip payload")
 
 	if is_instance_valid(ui):
 		ui.free()

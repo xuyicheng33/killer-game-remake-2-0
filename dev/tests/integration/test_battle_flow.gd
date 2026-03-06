@@ -81,6 +81,35 @@ func test_battle_scene_does_not_end_immediately_after_setup():
 		battle.free()
 
 
+func test_app_overlay_mode_tracks_routes() -> void:
+	var app := APP_SCENE.instantiate()
+	get_tree().root.add_child(app)
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	var relic_ui := app.get("relic_potion_ui") as RelicPotionUI
+	assert_not_null(relic_ui, "App 应挂载 RelicPotionUI")
+	if relic_ui == null:
+		if is_instance_valid(app):
+			app.free()
+		return
+
+	assert_eq(relic_ui.get_overlay_mode(), RelicPotionUI.OverlayMode.HIDDEN, "主菜单阶段应隐藏 overlay")
+
+	app.start_new_game()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	assert_eq(relic_ui.get_overlay_mode(), RelicPotionUI.OverlayMode.COMPACT, "地图阶段应使用 compact overlay")
+
+	app.start_battle_for_test("act1_crab_single")
+	await get_tree().process_frame
+	await get_tree().create_timer(0.1, false).timeout
+	assert_eq(relic_ui.get_overlay_mode(), RelicPotionUI.OverlayMode.BATTLE, "战斗阶段应使用 battle overlay")
+
+	if is_instance_valid(app):
+		app.free()
+
+
 func test_on_battle_start_relic_fires_after_battle_scene_ready():
 	var app := APP_SCENE.instantiate()
 	get_tree().root.add_child(app)

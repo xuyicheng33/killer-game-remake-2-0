@@ -1,61 +1,204 @@
-[gd_scene load_steps=3 format=3 uid="uid://cmj8r4q7wwo6f"]
+[gd_scene load_steps=4 format=3 uid="uid://cmj8r4q7wwo6f"]
 
 [ext_resource type="Script" path="res://runtime/scenes/ui/relic_potion_ui.gd" id="1_6i7u5"]
 [ext_resource type="Theme" uid="uid://c8cqncsqlplyu" path="res://main_theme.tres" id="2_7bb4t"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_panel"]
+bg_color = Color(0.054902, 0.0705882, 0.113725, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.898039, 0.807843, 0.52549, 0.86)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 6
+
 [node name="RelicPotionUI" type="PanelContainer"]
+visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -430.0
-offset_top = 16.0
-offset_right = -16.0
+offset_left = -360.0
+offset_top = 18.0
+offset_right = -18.0
 offset_bottom = 360.0
 grow_horizontal = 0
+mouse_filter = 2
 theme = ExtResource("2_7bb4t")
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud_panel")
 script = ExtResource("1_6i7u5")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SummaryRow" type="HBoxContainer" parent="MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SummaryTextBox" type="VBoxContainer" parent="MarginContainer/VBox/SummaryRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="SummaryTitleLabel" type="Label" parent="MarginContainer/VBox/SummaryRow/SummaryTextBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "旅途物资"
+
+[node name="SummaryTextLabel" type="Label" parent="MarginContainer/VBox/SummaryRow/SummaryTextBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 3
+text = "遗物 0/0 · 药水 0/0"
+
+[node name="SummaryMetaLabel" type="Label" parent="MarginContainer/VBox/SummaryRow/SummaryTextBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 3
+modulate = Color(0.678431, 0.721569, 0.811765, 0.92)
+text = "当前无额外战斗日志。"
+
+[node name="ToggleButton" type="Button" parent="MarginContainer/VBox/SummaryRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(110, 44)
+text = "展开详情"
+
+[node name="DetailRoot" type="VBoxContainer" parent="MarginContainer/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="Columns" type="HBoxContainer" parent="MarginContainer/VBox/DetailRoot"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="RelicPanel" type="PanelContainer" parent="MarginContainer/VBox/DetailRoot/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RelicMargin" type="MarginContainer" parent="MarginContainer/VBox/DetailRoot/Columns/RelicPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="ContentScroll" type="ScrollContainer" parent="MarginContainer"]
+[node name="RelicVBox" type="VBoxContainer" parent="MarginContainer/VBox/DetailRoot/Columns/RelicPanel/RelicMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RelicLabel" type="Label" parent="MarginContainer/VBox/DetailRoot/Columns/RelicPanel/RelicMargin/RelicVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "遗物 0/0"
+
+[node name="RelicScroll" type="ScrollContainer" parent="MarginContainer/VBox/DetailRoot/Columns/RelicPanel/RelicMargin/RelicVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBox" type="VBoxContainer" parent="MarginContainer/ContentScroll"]
+[node name="RelicListLabel" type="VBoxContainer" parent="MarginContainer/VBox/DetailRoot/Columns/RelicPanel/RelicMargin/RelicVBox/RelicScroll"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="RelicLabel" type="Label" parent="MarginContainer/ContentScroll/VBox"]
-unique_name_in_owner = true
+[node name="PotionPanel" type="PanelContainer" parent="MarginContainer/VBox/DetailRoot/Columns"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "遗物 0/0"
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="RelicListLabel" type="VBoxContainer" parent="MarginContainer/ContentScroll/VBox"]
-unique_name_in_owner = true
+[node name="PotionMargin" type="MarginContainer" parent="MarginContainer/VBox/DetailRoot/Columns/PotionPanel"]
 layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="PotionLabel" type="Label" parent="MarginContainer/ContentScroll/VBox"]
+[node name="PotionVBox" type="VBoxContainer" parent="MarginContainer/VBox/DetailRoot/Columns/PotionPanel/PotionMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PotionLabel" type="Label" parent="MarginContainer/VBox/DetailRoot/Columns/PotionPanel/PotionMargin/PotionVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 text = "药水 0/0"
 
-[node name="PotionContainer" type="VBoxContainer" parent="MarginContainer/ContentScroll/VBox"]
-unique_name_in_owner = true
+[node name="PotionScroll" type="ScrollContainer" parent="MarginContainer/VBox/DetailRoot/Columns/PotionPanel/PotionMargin/PotionVBox"]
 layout_mode = 2
-theme_override_constants/separation = 4
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="LogLabel" type="Label" parent="MarginContainer/ContentScroll/VBox"]
+[node name="PotionContainer" type="VBoxContainer" parent="MarginContainer/VBox/DetailRoot/Columns/PotionPanel/PotionMargin/PotionVBox/PotionScroll"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="LogPanel" type="PanelContainer" parent="MarginContainer/VBox/DetailRoot"]
+layout_mode = 2
+size_flags_vertical = 1
+
+[node name="LogMargin" type="MarginContainer" parent="MarginContainer/VBox/DetailRoot/LogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="LogVBox" type="VBoxContainer" parent="MarginContainer/VBox/DetailRoot/LogPanel/LogMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="LogTitle" type="Label" parent="MarginContainer/VBox/DetailRoot/LogPanel/LogMargin/LogVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+modulate = Color(0.941176, 0.917647, 0.74902, 0.9)
+text = "战斗外部日志"
+
+[node name="LogLabel" type="Label" parent="MarginContainer/VBox/DetailRoot/LogPanel/LogMargin/LogVBox"]
+unique_name_in_owner = true
+layout_mode = 2
 autowrap_mode = 3
-text = "日志：-"
+theme_override_font_sizes/font_size = 16
+text = "等待新的战斗日志……"
+
+[node name="EmptyHintLabel" type="Label" parent="MarginContainer/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 14
+modulate = Color(0.678431, 0.721569, 0.811765, 0.92)
+text = "当前没有遗物或药水。"
