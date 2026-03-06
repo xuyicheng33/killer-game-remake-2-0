@@ -100,12 +100,12 @@ func _render_nodes(projection: Dictionary) -> void:
 
 		var floor_title := Label.new()
 		floor_title.text = str(floor_row_data.get("floor_label", "第 ? 层"))
-		floor_title.add_theme_font_size_override("font_size", 22)
+		floor_title.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BODY)
 		node_list.add_child(floor_title)
 
 		var floor_row := HBoxContainer.new()
 		floor_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		floor_row.add_theme_constant_override("separation", 10)
+		floor_row.add_theme_constant_override("separation", UILayout.LIST_SEPARATION)
 		node_list.add_child(floor_row)
 
 		var nodes: Variant = floor_row_data.get("nodes", [])
@@ -120,14 +120,14 @@ func _render_nodes(projection: Dictionary) -> void:
 			var node_id := str(node_data.get("node_id", ""))
 			var button := Button.new()
 			button.text = str(node_data.get("text", "[未知]"))
-			button.custom_minimum_size = Vector2(0, 96)
+			button.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_MAP_NODE)
 			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			button.add_theme_font_size_override("font_size", 22)
+			button.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BUTTON)
 			button.disabled = bool(node_data.get("disabled", true))
 
-			var font_color: Variant = node_data.get("font_color", Color.WHITE)
+			var font_color: Variant = node_data.get("font_color", UIColors.NODE_BATTLE)
 			if font_color is Color:
 				button.add_theme_color_override("font_color", font_color)
 
@@ -171,16 +171,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	var horizontal_margin := clampf(viewport_size.x * 0.04, 20.0, 120.0)
-	var vertical_margin := clampf(viewport_size.y * 0.04, 16.0, 72.0)
-	var reserved_overlay_width := clampf(viewport_size.x * 0.22, 260.0, 500.0)
-
-	frame.offset_left = horizontal_margin
-	frame.offset_top = vertical_margin
-	frame.offset_right = -(horizontal_margin + reserved_overlay_width)
-	frame.offset_bottom = -vertical_margin
-
-	# Keep map content readable on narrower windows.
-	var content_width := viewport_size.x + frame.offset_right - frame.offset_left
-	if content_width < 760.0:
-		frame.offset_right = -horizontal_margin
+	UILayout.apply_frame_layout(frame, viewport_size)

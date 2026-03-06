@@ -92,7 +92,7 @@ func _render_offers(projection: Dictionary) -> void:
 		btn.text = str(button_data.get("text", "购买卡牌"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, 64)
+		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_DEFAULT)
 		btn.disabled = bool(button_data.get("disabled", true))
 		btn.pressed.connect(_on_buy_offer.bind(index))
 
@@ -127,7 +127,7 @@ func _render_deck(projection: Dictionary) -> void:
 		btn.text = str(button_data.get("text", "移除卡牌"))
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, 64)
+		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_DEFAULT)
 		btn.disabled = bool(button_data.get("disabled", true))
 		btn.pressed.connect(_on_remove_card.bind(index))
 		deck_container.add_child(btn)
@@ -166,15 +166,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	var horizontal_margin := clampf(viewport_size.x * 0.04, 16.0, 120.0)
-	var vertical_margin := clampf(viewport_size.y * 0.05, 14.0, 84.0)
-	var reserved_overlay_width := clampf(viewport_size.x * 0.23, 280.0, 460.0)
-
-	content_margin.offset_left = horizontal_margin
-	content_margin.offset_top = vertical_margin
-	content_margin.offset_right = -(horizontal_margin + reserved_overlay_width)
-	content_margin.offset_bottom = -vertical_margin
-
-	var content_width := viewport_size.x + content_margin.offset_right - content_margin.offset_left
-	if content_width < 760.0:
-		content_margin.offset_right = -horizontal_margin
+	UILayout.apply_frame_layout(content_margin, viewport_size)

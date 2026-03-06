@@ -97,7 +97,7 @@ func _render_options(projection: Dictionary, options_disabled: bool) -> void:
 		var btn := Button.new()
 		btn.text = str(option_data.get("label", "选项"))
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, 64)
+		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_DEFAULT)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.disabled = options_disabled
 
@@ -129,15 +129,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	var horizontal_margin := clampf(viewport_size.x * 0.05, 20.0, 180.0)
-	var vertical_margin := clampf(viewport_size.y * 0.06, 18.0, 120.0)
-	var reserved_overlay_width := clampf(viewport_size.x * 0.23, 280.0, 460.0)
-
-	content_margin.offset_left = horizontal_margin
-	content_margin.offset_top = vertical_margin
-	content_margin.offset_right = -(horizontal_margin + reserved_overlay_width)
-	content_margin.offset_bottom = -vertical_margin
-
-	var content_width := viewport_size.x + content_margin.offset_right - content_margin.offset_left
-	if content_width < 700.0:
-		content_margin.offset_right = -horizontal_margin
+	UILayout.apply_frame_layout(content_margin, viewport_size)

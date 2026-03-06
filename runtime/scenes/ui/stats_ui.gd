@@ -50,7 +50,7 @@ func _apply_projection(projection: Dictionary) -> void:
 	if status_badges_variant is Array:
 		for badge_variant in status_badges_variant:
 			var status_label := Label.new()
-			status_label.add_theme_font_size_override("font_size", 18)
+			status_label.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_STATUS_BADGE)
 			status_label.text = str(badge_variant)
 			statuses.add_child(status_label)
 

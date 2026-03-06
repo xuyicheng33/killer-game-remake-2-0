@@ -82,7 +82,7 @@ func _render_cards(projection: Dictionary) -> void:
 		var hint := Label.new()
 		hint.text = str(projection.get("empty_hint", "当前无卡牌奖励，可直接继续前进。"))
 		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		hint.add_theme_font_size_override("font_size", 22)
+		hint.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BODY)
 		cards_container.add_child(hint)
 		return
 
@@ -99,9 +99,9 @@ func _render_cards(projection: Dictionary) -> void:
 		var btn := Button.new()
 		btn.text = str(card_data.get("text", "(null card)"))
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.custom_minimum_size = Vector2(0, 76)
+		btn.custom_minimum_size = Vector2(0, UILayout.BTN_HEIGHT_CARD)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		btn.add_theme_font_size_override("font_size", 24)
+		btn.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_BUTTON_LARGE)
 
 		# Connect tooltip hover signals
 		var tooltip := str(card_data.get("tooltip", ""))
@@ -145,15 +145,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	var horizontal_margin := clampf(viewport_size.x * 0.045, 18.0, 150.0)
-	var vertical_margin := clampf(viewport_size.y * 0.05, 16.0, 96.0)
-	var reserved_overlay_width := clampf(viewport_size.x * 0.23, 280.0, 460.0)
-
-	frame.offset_left = horizontal_margin
-	frame.offset_top = vertical_margin
-	frame.offset_right = -(horizontal_margin + reserved_overlay_width)
-	frame.offset_bottom = -vertical_margin
-
-	var content_width := viewport_size.x + frame.offset_right - frame.offset_left
-	if content_width < 720.0:
-		frame.offset_right = -horizontal_margin
+	UILayout.apply_frame_layout(frame, viewport_size)

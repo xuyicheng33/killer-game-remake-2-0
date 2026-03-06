@@ -97,15 +97,4 @@ func _apply_responsive_layout() -> void:
 		return
 
 	var viewport_size := get_viewport_rect().size
-	var horizontal_margin := clampf(viewport_size.x * 0.05, 20.0, 160.0)
-	var vertical_margin := clampf(viewport_size.y * 0.06, 18.0, 110.0)
-	var reserved_overlay_width := clampf(viewport_size.x * 0.23, 280.0, 460.0)
-
-	frame.offset_left = horizontal_margin
-	frame.offset_top = vertical_margin
-	frame.offset_right = -(horizontal_margin + reserved_overlay_width)
-	frame.offset_bottom = -vertical_margin
-
-	var content_width := viewport_size.x + frame.offset_right - frame.offset_left
-	if content_width < 700.0:
-		frame.offset_right = -horizontal_margin
+	UILayout.apply_frame_layout(frame, viewport_size)

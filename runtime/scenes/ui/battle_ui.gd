@@ -99,7 +99,7 @@ func _setup_zone_counts_ui() -> void:
 	_zone_counts_label.anchor_bottom = 0.0
 	_zone_counts_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_zone_counts_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_zone_counts_label.add_theme_font_size_override("font_size", 20)
+	_zone_counts_label.add_theme_font_size_override("font_size", UILayout.FONT_SIZE_ZONE_COUNTS)
 	_zone_counts_label.add_theme_color_override("font_color", UIColors.ZONE_COUNTS_TEXT)
 	_zone_counts_label.text = "抽牌堆：0  手牌：0\n弃牌堆：0  消耗堆：0"
 	add_child(_zone_counts_label)
