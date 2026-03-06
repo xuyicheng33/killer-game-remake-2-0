@@ -154,8 +154,8 @@ func test_burn_deals_damage_and_removes():
 
 	_buff_system._run_turn_end_hooks(player)
 
-	assert_eq(char_stats.health, 48, "燃烧应造成 2 点伤害")
-	assert_eq(_buff_system.get_status_stack(char_stats, BuffSystem.STATUS_BURN), 0, "燃烧应消除")
+	assert_eq(char_stats.health, 45, "燃烧应造成 5 点伤害（等于层数）")
+	assert_eq(_buff_system.get_status_stack(char_stats, BuffSystem.STATUS_BURN), 4, "燃烧应衰减 1 层")
 	player.free()
 
 

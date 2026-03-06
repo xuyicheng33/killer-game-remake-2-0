@@ -187,22 +187,19 @@ func test_effect_stack_processes_in_priority_order() -> void:
 	var execution_order: Array[String] = []
 
 	engine.enqueue_effect(
-		"low_priority", [_player] as Array[Node],
-		func(_t): execution_order.append("low"),
-		10
+		"trigger", [_player] as Array[Node],
+		func(_t):
+			engine.enqueue_effect(
+				"low_priority", [_player] as Array[Node],
+				func(_t2): execution_order.append("low"), 10)
+			engine.enqueue_effect(
+				"high_priority", [_player] as Array[Node],
+				func(_t2): execution_order.append("high"), 90)
+			engine.enqueue_effect(
+				"mid_priority", [_player] as Array[Node],
+				func(_t2): execution_order.append("mid"), 50),
+		100
 	)
-	engine.enqueue_effect(
-		"high_priority", [_player] as Array[Node],
-		func(_t): execution_order.append("high"),
-		90
-	)
-	engine.enqueue_effect(
-		"mid_priority", [_player] as Array[Node],
-		func(_t): execution_order.append("mid"),
-		50
-	)
-
-	engine.process_queue()
 
 	assert_eq(execution_order.size(), 3, "应执行 3 个效果")
 	assert_eq(execution_order[0], "high", "最高优先级应先执行")
@@ -227,8 +224,6 @@ func test_effect_stack_chain_effects() -> void:
 			),
 		50
 	)
-
-	engine.process_queue()
 
 	assert_eq(log.size(), 2, "父子效果都应执行")
 	assert_eq(log[0], "parent", "父效果先执行")
