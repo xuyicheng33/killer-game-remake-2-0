@@ -3,5 +3,6 @@
 /android/
 .DS_Store
 dev/tools/baselines/*.txt
+dev/reports/
 cursor2api-go/
 .cursor/
